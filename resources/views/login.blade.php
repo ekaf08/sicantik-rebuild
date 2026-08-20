@@ -415,7 +415,7 @@
         {{-- <script type="text/javascript">
         $('#pop-up-hjks').modal('show');
     </script> --}}
-        <script type="text/javascript">
+        <!-- <script type="text/javascript">
             $(window).on('load', function() {
                 $('#pop-up-hjks').modal('show');
             });
@@ -438,7 +438,7 @@
                         const dataToken = $('meta[name="csrf-token"]').attr('content');
 
                         $.ajax({
-                            url: "{{ route('auth.login') }}",
+                            url: "{{ route('.login') }}",
                             type: "POST",
                             data: formData + '&_token=' + dataToken,
                             dataType: "json",
@@ -535,7 +535,7 @@
                     refreshCaptcha();
                 });
             });
-        </script>
+        </script> -->
     </body>
 
 </html>
