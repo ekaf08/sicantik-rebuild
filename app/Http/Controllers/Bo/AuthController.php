@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Captcha;
+
 
 class AuthController extends Controller
 {
@@ -60,5 +62,11 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    public function refresh_captcha()
+    {
+        $captcha = Captcha::img();
+        return response()->json(['captcha' => $captcha]);
     }
 }

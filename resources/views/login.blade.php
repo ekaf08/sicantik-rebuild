@@ -332,15 +332,17 @@
 
                                             {{-- Captcha --}}
                                             <div class="mb-5 text-center">
-                                                <div class="d-flex justify-content-center align-items-center gap-2">
-                                                    <img src="{{ captcha_src('flat') }}" id="captchaImage"
-                                                        style="cursor:pointer;" onclick="refreshCaptcha()"
-                                                        title="Klik untuk refresh">
-                                                    <button type="button" class="btn btn-sm btn-icon btn-light"
-                                                        id="btnRefreshCaptcha" onclick="refreshCaptcha()"
-                                                        title="Refresh captcha">
-                                                        <i class="fas fa-sync-alt"></i>
-                                                    </button>
+                                                <div class="input-group mb-5">
+                                                    <div class="captcha d-flex align-items-center">
+                                                        <div class="card shadow-none">
+                                                            {{-- <div class="card-body p-2"> --}}
+                                                            <span class="captcha-img">{!! captcha_img() !!}</span>
+                                                            {{-- </div> --}}
+                                                        </div>
+                                                        <button type="button"
+                                                            class="btn btn-danger btn-refresh ms-5"><i
+                                                                class="fas fa-sync-alt"></i> Reload</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="input-group mb-5">
@@ -449,25 +451,15 @@
             });
 
             // Refresh captcha dengan animasi loading pada tombol
-            function refreshCaptcha() {
-                const $btn = $('#btnRefreshCaptcha');
-                const $icon = $btn.find('i');
-
-                $icon.addClass('fa-spin');
-
+            $(".btn-refresh").click(function() {
                 $.ajax({
-                    url: "{{ route('captcha.refresh') }}",
-                    type: "GET",
-                    cache: false, // <-- penting, cegah browser cache response AJAX
+                    type: 'GET',
+                    url: '{{ route('refresh_captcha') }}',
                     success: function(data) {
-                        // tambahkan timestamp di query string agar <img> tidak load dari cache
-                        $('#captchaImage').attr('src', data.captcha + '&t=' + new Date().getTime());
-                    },
-                    complete: function() {
-                        $icon.removeClass('fa-spin');
+                        $(".captcha span").html(data.captcha);
                     }
                 });
-            }
+            });
 
             $(document).ready(function() {
                 $('#form').on('submit', function(e) {
