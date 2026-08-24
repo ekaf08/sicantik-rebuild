@@ -1,15 +1,23 @@
 <?php
 
+use App\Http\Controllers\Bo\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Bo\DashboardController;
 
-Route::get('/', function () {
-    return view('welcome');
+
+// Guest routes — hanya bisa diakses kalau BELUM login
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'index'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    Route::get('/captcha/refresh', function () {
+        return response()->json(['captcha' => captcha_src('flat')]);
+    })->name('captcha.refresh');
 });
 
-Route::get('/login', function () {
-    return view('login');
-});
+// Protected routes — hanya bisa diakses kalau SUDAH login
+Route::middleware(['auth', 'prevent-back-history'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->name('dashboard');
+    // taruh route-route lain yang butuh login di sini
+});

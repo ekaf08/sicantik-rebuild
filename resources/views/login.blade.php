@@ -314,37 +314,41 @@
                                     <form class="form w-100" id="form">
                                         @csrf
                                         <div class="fv-row mb-10">
-                                            {{-- <label class="form-label fs-6 fw-bolder text-dark">Username</label> --}}
                                             <div class="input-group mb-5">
                                                 <span class="input-group-text"><i class="fas fa-user"></i></span>
                                                 <input type="text" class="form-control" placeholder="Username"
                                                     name="username" />
                                             </div>
-                                            {{-- <input class="form-control form-control-lg form-control-solid" name="username" type="text" /> --}}
-                                            {{-- <label class="form-label fw-bolder text-dark fs-6 mb-0">Password</label> --}}
+
                                             <div class="input-group mb-5">
                                                 <span class="input-group-text"><i class="fas fa-key"></i></span>
                                                 <input type="password" class="form-control" placeholder="Password"
                                                     name="password" />
                                             </div>
-                                            {{-- <input class="form-control form-control-lg form-control-solid" type="password" name="password" /> --}}
-                                        </div>
-                                        <!-- Google Recaptcha -->
-                                        {{-- <div class="g-recaptcha mt-4" data-sitekey={{ config('services.recaptcha.key') }}>
-                                    </div> --}}
-                                        {{-- captcha --}}
-                                        {{-- <div class="fw-row input-group mb-10">
-                                        {!! $captchaHtml !!}
 
-                                    </div> --}}
+                                            {{-- Captcha --}}
+                                            <div class="mb-5 text-center">
+                                                <img src="{{ captcha_src('flat') }}" id="captchaImage" class="mb-2"
+                                                    style="cursor:pointer;" onclick="refreshCaptcha()"
+                                                    title="Klik untuk refresh">
+                                            </div>
+                                            <div class="input-group mb-5">
+                                                <span class="input-group-text"><i class="fas fa-shield-alt"></i></span>
+                                                <input type="text" class="form-control"
+                                                    placeholder="Masukkan kode captcha" name="captcha" />
+                                            </div>
+                                            <div class="text-danger fs-8" id="captchaError"></div>
+                                        </div>
+
                                         <div class="text-center">
                                             <button type="submit" id="kt_sign_in_submit"
                                                 class="btn btn-success w-40 mb-5">
                                                 <span class="indicator-label btn-login fw-bold"><i
                                                         class="fas fa-sign-in-alt me-2"></i>Login</span>
-                                                <span class="indicator-progress wait-login">Please wait...
-                                                    <span
-                                                        class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                                <span class="indicator-progress wait-login" style="display:none;">
+                                                    Please wait... <span
+                                                        class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                                </span>
                                             </button>
                                         </div>
                                     </form>
@@ -415,7 +419,56 @@
         {{-- <script type="text/javascript">
         $('#pop-up-hjks').modal('show');
     </script> --}}
-       
+
+        <script>
+            function refreshCaptcha() {
+                $.get("{{ route('captcha.refresh') }}", function(data) {
+                    $('#captchaImage').attr('src', data.captcha);
+                });
+            }
+
+            $(document).ready(function() {
+                $('#form').on('submit', function(e) {
+                    e.preventDefault();
+
+                    const $btn = $('#kt_sign_in_submit');
+                    const $label = $btn.find('.indicator-label');
+                    const $wait = $btn.find('.indicator-progress');
+
+                    // Tampilkan loading
+                    $btn.prop('disabled', true);
+                    $label.hide();
+                    $wait.show();
+                    $('#captchaError').text('');
+
+                    $.ajax({
+                        url: "{{ route('login.post') }}",
+                        method: "POST",
+                        data: $(this).serialize(),
+                        success: function(res) {
+                            if (res.status) {
+                                window.location.href = res.redirect;
+                            }
+                        },
+                        error: function(xhr) {
+                            const res = xhr.responseJSON;
+                            if (res && res.message) {
+                                $('#captchaError').text(res.message);
+                            }
+                            // Refresh captcha setiap kali gagal login
+                            refreshCaptcha();
+                            $('input[name=captcha]').val('');
+                        },
+                        complete: function() {
+                            $btn.prop('disabled', false);
+                            $label.show();
+                            $wait.hide();
+                        }
+                    });
+                });
+            });
+        </script>
+
     </body>
 
 </html>
