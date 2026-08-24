@@ -10,7 +10,10 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'index'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::get('/captcha/refresh', function () {
-        return response()->json(['captcha' => captcha_src('flat')]);
+        return response()->json(['captcha' => captcha_src('flat')])
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     })->name('captcha.refresh');
 });
 

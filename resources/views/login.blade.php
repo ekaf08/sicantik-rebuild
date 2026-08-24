@@ -322,15 +322,26 @@
 
                                             <div class="input-group mb-5">
                                                 <span class="input-group-text"><i class="fas fa-key"></i></span>
-                                                <input type="password" class="form-control" placeholder="Password"
-                                                    name="password" />
+                                                <input type="password" class="form-control" id="passwordInput"
+                                                    placeholder="Password" name="password" />
+                                                <span class="input-group-text" style="cursor:pointer;"
+                                                    id="togglePassword">
+                                                    <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                                                </span>
                                             </div>
 
                                             {{-- Captcha --}}
                                             <div class="mb-5 text-center">
-                                                <img src="{{ captcha_src('flat') }}" id="captchaImage" class="mb-2"
-                                                    style="cursor:pointer;" onclick="refreshCaptcha()"
-                                                    title="Klik untuk refresh">
+                                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                                    <img src="{{ captcha_src('flat') }}" id="captchaImage"
+                                                        style="cursor:pointer;" onclick="refreshCaptcha()"
+                                                        title="Klik untuk refresh">
+                                                    <button type="button" class="btn btn-sm btn-icon btn-light"
+                                                        id="btnRefreshCaptcha" onclick="refreshCaptcha()"
+                                                        title="Refresh captcha">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                             <div class="input-group mb-5">
                                                 <span class="input-group-text"><i class="fas fa-shield-alt"></i></span>
@@ -421,9 +432,40 @@
     </script> --}}
 
         <script>
+            // Toggle show/hide password
+            $(document).ready(function() {
+                $('#togglePassword').on('click', function() {
+                    const $input = $('#passwordInput');
+                    const $icon = $('#togglePasswordIcon');
+
+                    if ($input.attr('type') === 'password') {
+                        $input.attr('type', 'text');
+                        $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                    } else {
+                        $input.attr('type', 'password');
+                        $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                    }
+                });
+            });
+
+            // Refresh captcha dengan animasi loading pada tombol
             function refreshCaptcha() {
-                $.get("{{ route('captcha.refresh') }}", function(data) {
-                    $('#captchaImage').attr('src', data.captcha);
+                const $btn = $('#btnRefreshCaptcha');
+                const $icon = $btn.find('i');
+
+                $icon.addClass('fa-spin');
+
+                $.ajax({
+                    url: "{{ route('captcha.refresh') }}",
+                    type: "GET",
+                    cache: false, // <-- penting, cegah browser cache response AJAX
+                    success: function(data) {
+                        // tambahkan timestamp di query string agar <img> tidak load dari cache
+                        $('#captchaImage').attr('src', data.captcha + '&t=' + new Date().getTime());
+                    },
+                    complete: function() {
+                        $icon.removeClass('fa-spin');
+                    }
                 });
             }
 
