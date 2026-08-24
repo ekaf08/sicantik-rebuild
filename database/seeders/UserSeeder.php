@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'role_id'    => 1,
+                'username'   => 'kominfo',
                 'name'       => 'Admin Kota',
                 'email'      => 'admin.kota@sicantik.surabaya.go.id',
                 'password'   => Hash::make('password123'),
@@ -27,6 +28,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'role_id'    => 2,
+                'username'   => 'admin_kecamatan',
                 'name'       => 'Admin Kecamatan',
                 'email'      => 'admin.kecamatan@sicantik.surabaya.go.id',
                 'password'   => Hash::make('password123'),
@@ -38,6 +40,7 @@ class UserSeeder extends Seeder
             [
                 'role_id'    => 3,
                 'name'       => 'Admin Kelurahan',
+                'username'   => 'admin_kelurahan',
                 'email'      => 'admin.kelurahan@sicantik.surabaya.go.id',
                 'password'   => Hash::make('password123'),
                 'keterangan' => 'Administrator Kelurahan',
@@ -48,6 +51,7 @@ class UserSeeder extends Seeder
             [
                 'role_id'    => 4,
                 'name'       => 'Ketua PKK',
+                'username'   => 'ketua_pkk',
                 'email'      => 'ketua.pkk@sicantik.surabaya.go.id',
                 'password'   => Hash::make('password123'),
                 'keterangan' => 'Ketua Tim Penggerak PKK',
@@ -58,6 +62,7 @@ class UserSeeder extends Seeder
             [
                 'role_id'    => 5,
                 'name'       => 'Anggota PKK',
+                'username'   => 'anggota_pkk',
                 'email'      => 'anggota.pkk@sicantik.surabaya.go.id',
                 'password'   => Hash::make('password123'),
                 'keterangan' => 'Anggota Tim Penggerak PKK',
