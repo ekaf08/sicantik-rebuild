@@ -61,7 +61,10 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return response()->json([
+            'status' => true,
+            'redirect' => route('login')
+        ]);
     }
 
     public function refresh_captcha()
