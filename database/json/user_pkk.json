@@ -10062,24 +10062,6 @@
     "id_kel": null
   },
   {
-    "id": 1119,
-    "role_id": 6,
-    "name": "ADITYA RAMA DANIAL TRIAL",
-    "username": null,
-    "password": "$2y$10$YN/M7eNokzyIyiFBQTPhjuivXISPquTTJMqUPgADaHReGDJPwf16O",
-    "id_kec": 15,
-    "id_kel": 81
-  },
-  {
-    "id": 1120,
-    "role_id": 6,
-    "name": "Trial Kominfo",
-    "username": null,
-    "password": "$2y$10$MrW3nHS50wB2J3M6ySFFjuSs.0UvSCu0OABdEL6xJ4RJNWnrhL.gS",
-    "id_kec": 19,
-    "id_kel": 101
-  },
-  {
     "id": 1121,
     "role_id": 2,
     "name": "MOCHAMMAD GAMAL KOLBIN SALIM",
@@ -10096,33 +10078,6 @@
     "password": "$2y$10$1RilAVm.kdGdW9cSqtXIK.TPlFv3wsuJDl8z5kfyVETCKyo1pgqoW",
     "id_kec": 12,
     "id_kel": 155
-  },
-  {
-    "id": 1123,
-    "role_id": 6,
-    "name": "FANI VIBRIANITA",
-    "username": null,
-    "password": "$2y$10$CBbhKWB0geMP2SJyXgZZ/./7XeYU2nkDN3h23xdgKsf27oqH.vLrK",
-    "id_kec": 2,
-    "id_kel": 5
-  },
-  {
-    "id": 1124,
-    "role_id": null,
-    "name": "",
-    "username": null,
-    "password": null,
-    "id_kec": null,
-    "id_kel": null
-  },
-  {
-    "id": 1126,
-    "role_id": null,
-    "name": "coba gus eka",
-    "username": "999999999999999",
-    "password": "$2y$10$vTQYDzvoUigOFOfE./4cjedBIEB.Zt/gsmwVRb0yekU5XBC8fhHwC",
-    "id_kec": null,
-    "id_kel": null
   },
   {
     "id": 1127,
