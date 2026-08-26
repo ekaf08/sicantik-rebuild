@@ -350,7 +350,7 @@
                                                 <input type="text" class="form-control"
                                                     placeholder="Masukkan kode captcha" name="captcha" />
                                             </div>
-                                            <div class="text-danger fs-8" id="captchaError"></div>
+                                            <div class="text-danger" id="captchaError"></div>
                                         </div>
 
                                         <div class="text-center">
@@ -469,7 +469,6 @@
                     const $label = $btn.find('.indicator-label');
                     const $wait = $btn.find('.indicator-progress');
 
-                    // Tampilkan loading
                     $btn.prop('disabled', true);
                     $label.hide();
                     $wait.show();
@@ -485,13 +484,23 @@
                             }
                         },
                         error: function(xhr) {
-                            const res = xhr.responseJSON;
-                            if (res && res.message) {
-                                $('#captchaError').text(res.message);
+                            try {
+                                const res = xhr.responseJSON;
+                                if (res && res.message) {
+                                    $('#captchaError').text(res.message);
+                                } else {
+                                    $('#captchaError').text(
+                                        'Terjadi kesalahan, silakan coba lagi.');
+                                }
+
+                                $('input[name=captcha]').val('');
+
+                                if (typeof refreshCaptcha === 'function') {
+                                    refreshCaptcha();
+                                }
+                            } catch (err) {
+                                console.error('Gagal reset captcha:', err);
                             }
-                            // Refresh captcha setiap kali gagal login
-                            refreshCaptcha();
-                            $('input[name=captcha]').val('');
                         },
                         complete: function() {
                             $btn.prop('disabled', false);
