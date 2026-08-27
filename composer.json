@@ -9,7 +9,8 @@
         "php": "^8.2",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "mews/captcha": "^3.5"
+        "mews/captcha": "^3.5",
+        "yajra/laravel-datatables-oracle": "^12.7"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
