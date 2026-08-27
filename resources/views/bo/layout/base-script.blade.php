@@ -45,9 +45,9 @@
                     $.ajax({
                         url: "{{ route('logout') }}",
                         method: "POST",
-						headers: {
-							'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-						},
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
                         success: function(res) {
                             window.location.href = res.redirect ??
                                 "{{ route('login') }}";
@@ -62,4 +62,23 @@
             });
         });
     });
+
+    // untuk file input
+    //menghilangkan url image
+    $('.custom-file-input').on('change', function() {
+        let filename = $(this).val().split('\\').pop();
+        $(this)
+            .next('.custom-file-label')
+            .addClass('selected')
+            .html(filename);
+    })
+
+    // untuk preview input gambar
+    function preview(target, image) {
+        $(target)
+            .attr('src', window.URL.createObjectURL(image))
+            .show();
+    }
 </script>
+
+@yield('js')
