@@ -17,6 +17,12 @@
         .table tbody td {
             text-align: center !important;
         }
+        .bg-pink {
+            background-color: #d63384 !important;
+        }
+        .bg-light-pink {
+            background-color: #fce4f0 !important;
+        }
     </style>
 @endpush
 @section('content')
@@ -70,19 +76,19 @@
                         <!--begin:mana:Table head-->
                         <thead>
                             <tr class="fw-bold fs-7 text-uppercase bg-light align-middle text-center">
-                                <th rowspan="3" class="w-50px bg-dark text-white align-middle text-center">NO</th>
-                                <th rowspan="3" class="min-w-150px bg-secondary text-dark align-middle text-center  ">Nama Kecamatan</th>
-                                <th colspan="2" class="bg-danger text-white align-middle">Jumlah TP. PKK</th>
-                                <th rowspan="3" class="w-60px align-middle">RW</th>
-                                <th colspan="4" class="bg-primary text-white align-middle">Jumlah Kelompok</th>
+                                <th rowspan="3" class="w-50px bg-dark text-white">NO</th>
+                                <th rowspan="3" class="min-w-150px bg-secondary text-dark">Nama Kecamatan</th>
+                                <th colspan="2" class="bg-danger text-white">Jumlah TP. PKK</th>
+                                <th rowspan="3" class="w-60px bg-secondary text-dark">RW</th>
+                                <th colspan="4" class="bg-primary text-white">Jumlah Kelompok</th>
                                 <th colspan="2" class="bg-success text-white">Jumlah</th>
                                 <th colspan="2" class="bg-info text-white">Jumlah Jiwa</th>
                                 <th colspan="6" class="bg-warning text-white">Jumlah Kader</th>
-                                <th colspan="4" class="bg-info text-white">Jumlah Tenaga Sekretariat</th>
-                                <th rowspan="3" class="w-100px align-middle">Keterangan</th>
+                                <th colspan="4" class="bg-pink text-white">Jumlah Tenaga Sekretariat</th>
+                                <th rowspan="3" class="w-100px bg-secondary text-dark">Keterangan</th>
                             </tr>
                             <tr class="fw-bold fs-7 text-uppercase align-middle text-center">
-                                <th rowspan="2" class="bg-light-danger text-center">Desa</th>
+                                <th rowspan="2" class="bg-light-danger">Desa</th>
                                 <th rowspan="2" class="bg-light-danger">Kelurahan</th>
                                 <th rowspan="2" class="bg-light-primary">Dusun / Lingkungan</th>
                                 <th rowspan="2" class="bg-light-primary">PKK RW</th>
@@ -95,8 +101,8 @@
                                 <th colspan="2" class="bg-light-warning">Anggota TP PKK</th>
                                 <th colspan="2" class="bg-light-warning">Umum</th>
                                 <th colspan="2" class="bg-light-warning">Khusus</th>
-                                <th colspan="2" class="bg-light-info">Honorer</th>
-                                <th colspan="2" class="bg-light-info">Bantuan</th>
+                                <th colspan="2" class="bg-light-pink">Honorer</th>
+                                <th colspan="2" class="bg-light-pink">Bantuan</th>
                             </tr>
                             <tr class="fw-bold fs-7 text-uppercase text-center">
                                 <th class="bg-light-warning">L</th>
@@ -105,10 +111,10 @@
                                 <th class="bg-light-warning">P</th>
                                 <th class="bg-light-warning">L</th>
                                 <th class="bg-light-warning">P</th>
-                                <th class="bg-light-info">L</th>
-                                <th class="bg-light-info">P</th>
-                                <th class="bg-light-info">L</th>
-                                <th class="bg-light-info">P</th>
+                                <th class="bg-light-pink">L</th>
+                                <th class="bg-light-pink">P</th>
+                                <th class="bg-light-pink">L</th>
+                                <th class="bg-light-pink">P</th>
                             </tr>
                         </thead>
                         <!--end::Table head-->
