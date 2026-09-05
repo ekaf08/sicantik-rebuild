@@ -1,7 +1,205 @@
 @extends('bo.layout.app')
 @stack('css')
+
+@push('css')
+    <style>
+        .table td, .table th {
+            padding: 12px 16px !important;
+        }
+        .table th:first-child,
+        .table td:first-child {
+            min-width: 60px;
+        }
+        .table th:nth-child(3),
+        .table td:nth-child(3) {
+            min-width: 70px;
+        }
+        .table tbody td {
+            text-align: center !important;
+        }
+    </style>
+@endpush
 @section('content')
 
+<div class="card mb-5 mb-xl-10">
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-5">
+        <!--begin::Nav Tabs (Data Umum PKK, Pokja, dll)-->
+        <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-5">
+            <li class="nav-item">
+                <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#kt_tab_data_umum">Data Umum PKK</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_1">Pokja I</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_2">Pokja II</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_3">Pokja III</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_4">Pokja IV</a>
+            </li>
+        </ul>
+        <!--end::Nav Tabs-->
+    </div>
+    <!--end::Card header-->
+
+    <!--begin::Card body-->
+    <div class="card-body pt-0">
+        <!--begin::Filter Periode-->
+        <div class="d-flex align-items-center mb-8">
+            <label class="fs-6 fw-bold text-gray-700 me-3">Periode</label>
+            <div class="w-150px">
+                <select class="form-select form-select-solid" data-control="select2" data-hide-search="true">
+                    <option value="2026" selected>2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                </select>
+            </div>
+        </div>
+        <!--end::Filter Periode-->
+
+        <!--begin::Tab Content-->
+        <div class="tab-content">
+            <div id="kt_tab_data_umum" class="tab-pane fade show active">
+                <!--begin::Table Container-->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle gs-0 gy-4 text-center">
+                        <!--begin:mana:Table head-->
+                        <thead>
+                            <tr class="fw-bold fs-7 text-uppercase bg-light align-middle text-center">
+                                <th rowspan="3" class="w-50px bg-dark text-white align-middle text-center">NO</th>
+                                <th rowspan="3" class="min-w-150px bg-secondary text-dark align-middle text-center  ">Nama Kecamatan</th>
+                                <th colspan="2" class="bg-danger text-white align-middle">Jumlah TP. PKK</th>
+                                <th rowspan="3" class="w-60px align-middle">RW</th>
+                                <th colspan="4" class="bg-primary text-white align-middle">Jumlah Kelompok</th>
+                                <th colspan="2" class="bg-success text-white">Jumlah</th>
+                                <th colspan="2" class="bg-info text-white">Jumlah Jiwa</th>
+                                <th colspan="6" class="bg-warning text-white">Jumlah Kader</th>
+                                <th colspan="4" class="bg-info text-white">Jumlah Tenaga Sekretariat</th>
+                                <th rowspan="3" class="w-100px align-middle">Keterangan</th>
+                            </tr>
+                            <tr class="fw-bold fs-7 text-uppercase align-middle text-center">
+                                <th rowspan="2" class="bg-light-danger text-center">Desa</th>
+                                <th rowspan="2" class="bg-light-danger">Kelurahan</th>
+                                <th rowspan="2" class="bg-light-primary">Dusun / Lingkungan</th>
+                                <th rowspan="2" class="bg-light-primary">PKK RW</th>
+                                <th rowspan="2" class="bg-light-primary">PKK RT</th>
+                                <th rowspan="2" class="bg-light-primary">Dasa Wisma</th>
+                                <th rowspan="2" class="bg-light-success">KRT</th>
+                                <th rowspan="2" class="bg-light-success">KK</th>
+                                <th rowspan="2" class="bg-light-info">L</th>
+                                <th rowspan="2" class="bg-light-info">P</th>
+                                <th colspan="2" class="bg-light-warning">Anggota TP PKK</th>
+                                <th colspan="2" class="bg-light-warning">Umum</th>
+                                <th colspan="2" class="bg-light-warning">Khusus</th>
+                                <th colspan="2" class="bg-light-info">Honorer</th>
+                                <th colspan="2" class="bg-light-info">Bantuan</th>
+                            </tr>
+                            <tr class="fw-bold fs-7 text-uppercase text-center">
+                                <th class="bg-light-warning">L</th>
+                                <th class="bg-light-warning">P</th>
+                                <th class="bg-light-warning">L</th>
+                                <th class="bg-light-warning">P</th>
+                                <th class="bg-light-warning">L</th>
+                                <th class="bg-light-warning">P</th>
+                                <th class="bg-light-info">L</th>
+                                <th class="bg-light-info">P</th>
+                                <th class="bg-light-info">L</th>
+                                <th class="bg-light-info">P</th>
+                            </tr>
+                        </thead>
+                        <!--end::Table head-->
+                        <!--begin::Table body-->
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td class="text-start fw-bold">Tegalsari</td>
+                                <td>0</td>
+                                <td>6</td>
+                                <td>45</td>
+                                <td>45</td>
+                                <td>189</td>
+                                <td>135</td>
+                                <td>18</td>
+                                <td>1.245</td>
+                                <td>1.087</td>
+                                <td>23.456</td>
+                                <td>24.112</td>
+                                <td>125</td>
+                                <td>135</td>
+                                <td>32</td>
+                                <td>28</td>
+                                <td>1.087</td>
+                                <td>23.456</td>
+                                <td>24.112</td>
+                                <td>125</td>
+                                <td>135</td>
+                                <td>32</td>
+                                <td>28</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td class="text-start fw-bold">Genteng</td>
+                                <td>0</td>
+                                <td>7</td>
+                                <td>62</td>
+                                <td>62</td>
+                                <td>256</td>
+                                <td>184</td>
+                                <td>22</td>
+                                <td>1.376</td>
+                                <td>1.198</td>
+                                <td>25.332</td>
+                                <td>25.821</td>
+                                <td>132</td>
+                                <td>142</td>
+                                <td>35</td>
+                                <td>30</td>
+                                <td>1.087</td>
+                                <td>23.456</td>
+                                <td>24.112</td>
+                                <td>125</td>
+                                <td>135</td>
+                                <td>32</td>
+                                <td>28</td>
+                            </tr>
+                        </tbody>
+                        <!--end::Table body-->
+                        <!--begin::Table foot (Total)-->
+                        <tfoot>
+                            <tr class="fw-bold fs-6 bg-light text-dark">
+                                <td colspan="2" class="text-center">TOTAL</td>
+                                <td>0</td>
+                                <td>42</td>
+                                <td>342</td>
+                                <td>342</td>
+                                <td>342</td>
+                                <td>1.393</td>
+                                <td>984</td>
+                                <td>8.030</td>
+                                <td>7.003</td>
+                                <td>146.280</td>
+                                <td>149.647</td>
+                                <td>769</td>
+                                <td>827</td>
+                                <td>200</td>
+                                <td>175</td>
+                            </tr>
+                        </tfoot>
+                        <!--end::Table foot-->
+                    </table>
+                </div>
+                                <!--end::Table Container-->
+                            </div>
+                            <!-- Tab pane lainnya bisa ditambah di bawah sini -->
+                        </div>
+                        <!--end::Tab Content-->
+                    </div>
+                    <!--end::Card body-->
+                </div>
 
 {{-- <!--begin::Row-->
 <div class="row g-5 gx-xl-10">
