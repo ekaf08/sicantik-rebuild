@@ -77,57 +77,54 @@
             <tr>
                 <td>1</td>
                 <td class="text-start fw-bold">Tegalsari</td>
-                {{-- kolom yang udah bisa diklik (contoh: Desa & Kelurahan) --}}
-                <td class="agregat-trigger" data-field="Desa" data-kecamatan="Tegalsari" data-value="0">0</td>
-                <td class="agregat-trigger" data-field="Kelurahan" data-kecamatan="Tegalsari" data-value="6">6</td>
-
-                {{-- kolom lain masih statis biasa dulu, belum diklik --}}
-                <td>45</td>
-                <td>45</td>
-                <td>189</td>
-                <td>135</td>
-                <td>18</td>
-                <td>1.245</td>
-                <td>1.087</td>
-                <td>23.456</td>
-                <td>24.112</td>
-                <td>125</td>
-                <td>135</td>
-                <td>32</td>
-                <td>28</td>
-                <td>1.087</td>
-                <td>23.456</td>
-                <td>24.112</td>
-                <td>125</td>
-                <td>135</td>
-                <td>32</td>
-                <td>28</td>
+                <td>0</td>
+                <td>6</td>
+                <td class="agregat-trigger" data-field="Lainnya" data-kecamatan="Tegalsari" data-value="45">45</td>
+                <td class="agregat-trigger" data-field="Lainnya" data-kecamatan="Tegalsari" data-value="45">45</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="189">189</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="18">18</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.245">1.245</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
             </tr>
             <tr>
                 <td>2</td>
                 <td class="text-start fw-bold">Genteng</td>
                 <td>0</td>
                 <td>7</td>
-                <td>62</td>
-                <td>62</td>
-                <td>256</td>
-                <td>184</td>
-                <td>22</td>
-                <td>1.376</td>
-                <td>1.198</td>
-                <td>25.332</td>
-                <td>25.821</td>
-                <td>132</td>
-                <td>142</td>
-                <td>35</td>
-                <td>30</td>
-                <td>1.087</td>
-                <td>23.456</td>
-                <td>24.112</td>
-                <td>125</td>
-                <td>135</td>
-                <td>32</td>
-                <td>28</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="62">62</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="62">62</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="256">256</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="184">184</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="22">22</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="1.376">1.376</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="1.198">1.198</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="25.332">25.332</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="25.821">25.821</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="132">132</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="142">142</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="35">35</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="30">30</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="1.087">1.087</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="23.456">23.456</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="24.112">24.112</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="125">125</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="135">135</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="32">32</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="28">28</td>
             </tr>
         </tbody>
         <!--end::Table body-->
@@ -156,30 +153,3 @@
     </table>
 </div>
 <!--end::Table Container-->
-@push('js')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const modalEl = document.getElementById('kt_modal_agregat');
-    const modal = new bootstrap.Modal(modalEl);
-
-    document.querySelectorAll('.agregat-trigger').forEach(function (el) {
-        el.style.cursor = 'pointer';
-        el.addEventListener('click', function () {
-            document.getElementById('modalAgregatTitle').textContent =
-                'Agregate ' + this.dataset.field + ' - ' + this.dataset.kecamatan;
-            document.getElementById('modalAgregatValue').value = this.dataset.value;
-            modal.show();
-        });
-    });
-
-    modalEl.addEventListener('hidden.bs.modal', function () {
-        document.body.classList.remove('modal-open');
-        document.body.style.removeProperty('overflow');
-        document.body.style.removeProperty('padding-right');
-        document.querySelectorAll('.modal-backdrop').forEach(function (el) {
-            el.remove();
-        });
-    });
-});
-</script>
-@endpush
