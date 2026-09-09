@@ -1,5 +1,4 @@
 @extends('bo.layout.app')
-@stack('css')
 
 @push('css')
     <style>
@@ -22,6 +21,12 @@
         }
         .bg-light-pink {
             background-color: #fce4f0 !important;
+        }
+        .agregat-trigger {
+        cursor: pointer !important;
+        }
+        .agregat-trigger:hover {
+            opacity: 0.8;
         }
     </style>
 @endpush
@@ -1993,5 +1998,21 @@
 </div>
 <!--end::Row--> --}}
 
+<div class="modal fade" id="kt_modal_agregat" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-uppercase" id="modalAgregatTitle">Agregate</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-6">
+                <input type="text" class="form-control form-control-solid fs-3 fw-bold text-gray-800" id="modalAgregatValue" readonly>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('js')
+    <script src="{{ asset('assets/js/custom/pages/dashboard-pkk/index.js') }}"></script>
+@endpush
 @endsection
-@stack('js')

@@ -59,7 +59,7 @@
 		<!--end::Modals-->
 		<!--begin::Javascript-->
         @include('bo.layout.base-script')
-        @stack('js')
+		@stack('js')
 		<!--end::Javascript-->
 	</body>
 	<!--end::Body-->

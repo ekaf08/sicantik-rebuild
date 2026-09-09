@@ -15,46 +15,46 @@
             <!-- Header Level 2 -->
             <tr class="fw-bold fs-7 text-uppercase align-middle text-center">
                 <!-- Sub KESEHATAN -->
-                <th colspan="6" class="bg-light-success text-success">JUMLAH KADER</th>
-                <th rowspan="2" class="bg-light-success text-success">POSYANDU</th>
-                <th rowspan="2" class="bg-light-success text-success">IMUNISASI / VAKSINASI BAYI/BALITA</th>
-                <th rowspan="2" class="bg-light-success text-success">PKG</th>
-                <th rowspan="2" class="bg-light-success text-success">TBC</th>
+                <th colspan="6" class="bg-light-success">JUMLAH KADER</th>
+                <th rowspan="2" class="bg-light-warning">POSYANDU</th>
+                <th rowspan="2" class="bg-light-warning">IMUNISASI / VAKSINASI BAYI/BALITA</th>
+                <th rowspan="2" class="bg-light-warning">PKG</th>
+                <th rowspan="2" class="bg-light-warning">TBC</th>
                 <!-- Sub KELESTARIAN LINGKUNGAN HIDUP -->
-                <th colspan="3" class="bg-light-info text-info">JUMLAH RUMAH YANG MEMILIKI</th>
-                <th rowspan="2">MCK</th>
-                <th colspan="3" class="bg-light-info text-info">JUMLAH KRT YANG MENGGUNAKAN AIR</th>
+                <th colspan="4" class="bg-light-info ">JUMLAH RUMAH YANG MEMILIKI</th>
+                <th colspan="3" class="bg-light-info ">JUMLAH KRT YANG MENGGUNAKAN AIR</th>
                 <!-- Sub PERENCANAAN SEHAT -->
-                <th rowspan="2" class="bg-light-warning text-warning">JUMLAH PUS</th>
-                <th rowspan="2" class="bg-light-warning text-warning">JUMLAH WUS</th>
-                <th colspan="2" class="bg-light-warning text-warning">JUMLAH AKSEPTOR KB</th>
-                <th rowspan="2" class="bg-light-warning text-warning">JML. KK YANG MEMILIKI TABUNGAN KELUARGA</th>
-                <th rowspan="2" class="bg-light-warning text-warning">JML. KK YANG MEMILIKI ASURANSI KESEHATAN</th>
+                <th rowspan="2">JUMLAH PUS</th>
+                <th rowspan="2">JUMLAH WUS</th>
+                <th colspan="2">JUMLAH AKSEPTOR KB</th>
+                <th rowspan="2">JML. KK YANG MEMILIKI TABUNGAN KELUARGA</th>
+                <th rowspan="2">JML. KK YANG MEMILIKI ASURANSI KESEHATAN</th>
                 <!-- Sub PROGRAM UNGGULAN GKSTB -->
-                <th rowspan="2" class="bg-light-primary text-primary">KESEHATAN</th>
-                <th rowspan="2" class="bg-light-primary text-primary">KELESTARIAN LINGKUNGAN HIDUP</th>
-                <th rowspan="2" class="bg-light-primary text-primary">PERENCANAAN SEHAT</th>
+                <th rowspan="2" class="bg-light-primary" >KESEHATAN</th>
+                <th rowspan="2" class="bg-light-primary" >KELESTARIAN LINGKUNGAN HIDUP</th>
+                <th rowspan="2" class="bg-light-primary" >PERENCANAAN SEHAT</th>
             </tr>
             <!-- Header Level 3 -->
             <tr class="fw-bold fs-7 text-uppercase align-middle text-center">
                 <!-- Detail JUMLAH KADER -->
-                <th class="bg-light">KADER KESEHATAN</th>
-                <th class="bg-light">GIZI</th>
-                <th class="bg-light">KESLING</th>
-                <th class="bg-light">PHBS</th>
-                <th class="bg-light">KB</th>
-                <th class="bg-light">KADER SURABAYA HEBAT</th>
+                <th class="bg-light-success text-dark">KADER KESEHATAN</th>
+                <th class="text-dark">GIZI</th>
+                <th class="text-dark">KESLING</th>
+                <th class="text-dark">PHBS</th>
+                <th class="text-dark">KB</th>
+                <th class="bg-light-success text-dark">KADER SURABAYA HEBAT</th>
                 <!-- Detail JUMLAH RUMAH YANG MEMILIKI -->
-                <th class="bg-light">JAMBAN</th>
-                <th class="bg-light">SPAL</th>
-                <th class="bg-light">TEMPAT SAMPAH</th>
+                <th class="bg-light-primary text-dark">JAMBAN</th>
+                <th class="bg-light-primary text-dark">SPAL</th>
+                <th class="bg-light-primary text-dark">TEMPAT SAMPAH</th>
+                <th class="bg-light-primary text-dark">MCK</th>
                 <!-- Detail JUMLAH KRT YANG MENGGUNAKAN AIR -->
-                <th class="bg-light">PDAM</th>
-                <th class="bg-light">SUMUR</th>
-                <th class="bg-light">LAIN-LAIN</th>
+                <th class="bg-light-info text-dark">PDAM</th>
+                <th class="bg-light-info text-dark">SUMUR</th>
+                <th class="bg-light-info text-dark">LAIN-LAIN</th>
                 <!-- Detail JUMLAH AKSEPTOR KB -->
-                <th class="bg-light">L</th>
-                <th class="bg-light">P</th>
+                <th class="text-dark">L</th>
+                <th class="text-dark">P</th>
             </tr>
             <!-- Header Level 4 (Penomoran Kolom 1-28) -->
             <tr class="fw-semibold fs-8 text-gray-500 bg-light text-center">
@@ -89,135 +89,154 @@
             </tr>
         </thead>
         <!--end::Table head-->
-
+ 
         <!--begin::Table body-->
         <tbody>
             <tr>
                 <td>1</td>
                 <td class="text-start fw-bold">ASEMROWO</td>
+                <!-- Kesehatan -->
                 <td>0</td>
                 <td>0</td>
                 <td>0</td>
                 <td>0</td>
-                <td class="text-primary fw-bold">39</td>
+                <td class="text-primary fw-bold agregat-trigger" data-field="KB" data-kecamatan="ASEMROWO" data-value="39">39</td>
                 <td class="fw-bold">501</td>
                 <td class="fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">5.892</td>
-                <td class="text-primary fw-bold">1.170</td>
-                <td class="text-primary fw-bold">5.845</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">1.271</td>
-                <td class="text-primary fw-bold">81</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="fw-bold">8.484</td>
+                <td class="text-primary fw-bold agregat-trigger" data-field="Imunisasi" data-kecamatan="ASEMROWO" data-value="0">0</td>
+                <td class="text-primary fw-bold agregat-trigger" data-field="PKG" data-kecamatan="ASEMROWO" data-value="0">0</td>
+                <td class="text-primary fw-bold agregat-trigger" data-field="TBC" data-kecamatan="ASEMROWO" data-value="0">0</td>
+                <!-- Kelestarian Lingkungan Hidup -->
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Jamban" data-kecamatan="ASEMROWO" data-value="5.892">5.892</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="SPAL" data-kecamatan="ASEMROWO" data-value="1.170">1.170</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Tempat Sampah" data-kecamatan="ASEMROWO" data-value="5.845">5.845</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="MCK" data-kecamatan="ASEMROWO" data-value="0">0</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="PDAM" data-kecamatan="ASEMROWO" data-value="1.271">1.271</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Sumur" data-kecamatan="ASEMROWO" data-value="81">81</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Lain-Lain" data-kecamatan="ASEMROWO" data-value="0">0</td>
+                <!-- Perencanaan Sehat -->
                 <td class="fw-bold">15.197</td>
                 <td class="fw-bold">23</td>
                 <td class="fw-bold">4.035</td>
                 <td class="fw-bold">970</td>
                 <td class="fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
+                <td class="fw-bold">0</td>
+                <!-- Program Unggulan GKSTB -->
+                <td class="bg-light-primary text-primary fw-bold agregat-trigger" data-field="GKSTB Kesehatan" data-kecamatan="ASEMROWO" data-value="0">0</td>
+                <td class="bg-light-primary text-primary fw-bold agregat-trigger" data-field="GKSTB Lingkungan Hidup" data-kecamatan="ASEMROWO" data-value="0">0</td>
+                <td class="bg-light-primary text-primary fw-bold agregat-trigger" data-field="GKSTB Perencanaan Sehat" data-kecamatan="ASEMROWO" data-value="0">0</td>
             </tr>
             <tr>
                 <td>2</td>
                 <td class="text-start fw-bold">BENOWO</td>
+                <!-- Kesehatan -->
                 <td>0</td>
                 <td>0</td>
                 <td>0</td>
                 <td>0</td>
-                <td class="text-primary fw-bold">65</td>
-                <td class="fw-bold">707</td>
-                <td class="fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">777</td>
-                <td class="text-primary fw-bold">5.772</td>
-                <td class="text-primary fw-bold">777</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">1.036</td>
-                <td class="text-primary fw-bold">6</td>
-                <td class="text-primary fw-bold">0</td>
+                <td class=" text-primary fw-bold agregat-trigger" data-field="KB" data-kecamatan="BENOWO" data-value="65">65</td>
+                <td class=" fw-bold">707</td>
+                <td class=" fw-bold">0</td>
+                <td class=" text-primary fw-bold agregat-trigger" data-field="Imunisasi" data-kecamatan="BENOWO" data-value="0">0</td>
+                <td class=" text-primary fw-bold agregat-trigger" data-field="PKG" data-kecamatan="BENOWO" data-value="0">0</td>
+                <td class=" text-primary fw-bold agregat-trigger" data-field="TBC" data-kecamatan="BENOWO" data-value="0">0</td>
+                <!-- Kelestarian Lingkungan Hidup -->
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Jamban" data-kecamatan="BENOWO" data-value="777">777</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="SPAL" data-kecamatan="BENOWO" data-value="5.772">5.772</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Tempat Sampah" data-kecamatan="BENOWO" data-value="777">777</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="MCK" data-kecamatan="BENOWO" data-value="0">0</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="PDAM" data-kecamatan="BENOWO" data-value="1.036">1.036</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Sumur" data-kecamatan="BENOWO" data-value="6">6</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Lain-Lain" data-kecamatan="BENOWO" data-value="0">0</td>
+                <!-- Perencanaan Sehat -->
                 <td class="fw-bold">13.257</td>
                 <td class="fw-bold">23.359</td>
                 <td class="fw-bold">306</td>
                 <td class="fw-bold">7.925</td>
                 <td class="fw-bold">782</td>
                 <td class="fw-bold">0</td>
-                <td class="text-primary fw-bold">5</td>
-                <td class="text-primary fw-bold">4</td>
-                <td class="text-primary fw-bold">0</td>
+                <!-- Program Unggulan GKSTB -->
+                <td class="bg-light-primary text-primary fw-bold agregat-trigger" data-field="GKSTB Kesehatan" data-kecamatan="BENOWO" data-value="5">5</td>
+                <td class="bg-light-primary text-primary fw-bold agregat-trigger" data-field="GKSTB Lingkungan Hidup" data-kecamatan="BENOWO" data-value="4">4</td>
+                <td class="bg-light-primary text-primary fw-bold agregat-trigger" data-field="GKSTB Perencanaan Sehat" data-kecamatan="BENOWO" data-value="0">0</td>
             </tr>
             <tr>
                 <td>3</td>
                 <td class="text-start fw-bold">BUBUTAN</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td class="text-primary fw-bold">92</td>
-                <td class="fw-bold">972</td>
-                <td class="fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">1.536</td>
-                <td class="text-primary fw-bold">1.554</td>
-                <td class="text-primary fw-bold">2.757</td>
-                <td class="text-primary fw-bold">8</td>
-                <td class="text-primary fw-bold">2.575</td>
-                <td class="text-primary fw-bold">98</td>
-                <td class="text-primary fw-bold">0</td>
+                <!-- Kesehatan -->
+                <td class="bg-light-success">0</td>
+                <td class="bg-light-success">0</td>
+                <td class="bg-light-success">0</td>
+                <td class="bg-light-success">0</td>
+                <td class="bg-light-success text-primary fw-bold agregat-trigger" data-field="KB" data-kecamatan="BUBUTAN" data-value="92">92</td>
+                <td class="bg-light-success fw-bold">972</td>
+                <td class="bg-light-success fw-bold">0</td>
+                <td class="bg-light-success text-primary fw-bold agregat-trigger" data-field="Imunisasi" data-kecamatan="BUBUTAN" data-value="0">0</td>
+                <td class="bg-light-success text-primary fw-bold agregat-trigger" data-field="PKG" data-kecamatan="BUBUTAN" data-value="0">0</td>
+                <td class="bg-light-success text-primary fw-bold agregat-trigger" data-field="TBC" data-kecamatan="BUBUTAN" data-value="0">0</td>
+                <!-- Kelestarian Lingkungan Hidup -->
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Jamban" data-kecamatan="BUBUTAN" data-value="1.536">1.536</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="SPAL" data-kecamatan="BUBUTAN" data-value="1.554">1.554</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Tempat Sampah" data-kecamatan="BUBUTAN" data-value="2.757">2.757</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="MCK" data-kecamatan="BUBUTAN" data-value="8">8</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="PDAM" data-kecamatan="BUBUTAN" data-value="2.575">2.575</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Sumur" data-kecamatan="BUBUTAN" data-value="98">98</td>
+                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Lain-Lain" data-kecamatan="BUBUTAN" data-value="0">0</td>
+                <!-- Perencanaan Sehat -->
                 <td class="fw-bold">13.285</td>
                 <td class="fw-bold">26.535</td>
                 <td class="fw-bold">1.122</td>
                 <td class="fw-bold">12.017</td>
                 <td class="fw-bold">160</td>
                 <td class="fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
-                <td class="text-primary fw-bold">0</td>
+                <!-- Program Unggulan GKSTB -->
+                <td class="bg-light-primary text-primary fw-bold agregat-trigger" data-field="GKSTB Kesehatan" data-kecamatan="BUBUTAN" data-value="0">0</td>
+                <td class="bg-light-primary text-primary fw-bold agregat-trigger" data-field="GKSTB Lingkungan Hidup" data-kecamatan="BUBUTAN" data-value="0">0</td>
+                <td class="bg-light-primary text-primary fw-bold agregat-trigger" data-field="GKSTB Perencanaan Sehat" data-kecamatan="BUBUTAN" data-value="0">0</td>
             </tr>
         </tbody>
         <!--end::Table body-->
-
+ 
         <!--begin::Table foot-->
         <tfoot>
             <tr class="fw-bold fs-6 bg-light text-dark">
                 <td colspan="2" class="text-center">TOTAL</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td class="text-primary">196</td>
-                <td>2.180</td>
-                <td>0</td>
-                <td class="text-primary">0</td>
-                <td class="text-primary">0</td>
-                <td class="text-primary">0</td>
-                <td class="text-primary">8.205</td>
-                <td class="text-primary">8.496</td>
-                <td class="text-primary">9.379</td>
-                <td class="text-primary">8</td>
-                <td class="text-primary">4.882</td>
-                <td class="text-primary">185</td>
-                <td class="text-primary">0</td>
+                <!-- Kesehatan -->
+                <td class="bg-light-success">0</td>
+                <td class="bg-light-success">0</td>
+                <td class="bg-light-success">0</td>
+                <td class="bg-light-success">0</td>
+                <td class="bg-light-success text-primary">196</td>
+                <td class="bg-light-success">2.180</td>
+                <td class="bg-light-success">0</td>
+                <td class="bg-light-success text-primary">0</td>
+                <td class="bg-light-success text-primary">0</td>
+                <td class="bg-light-success text-primary">0</td>
+                <!-- Kelestarian Lingkungan Hidup -->
+                <td class="bg-light-info text-primary">8.205</td>
+                <td class="bg-light-info text-primary">8.496</td>
+                <td class="bg-light-info text-primary">9.379</td>
+                <td class="bg-light-info text-primary">8</td>
+                <td class="bg-light-info text-primary">4.882</td>
+                <td class="bg-light-info text-primary">185</td>
+                <td class="bg-light-info text-primary">0</td>
+                <!-- Perencanaan Sehat -->
                 <td>35.026</td>
                 <td>65.091</td>
                 <td>1.451</td>
                 <td>23.977</td>
                 <td>1.912</td>
                 <td>0</td>
-                <td class="text-primary">5</td>
-                <td class="text-primary">4</td>
-                <td class="text-primary">0</td>
+                <!-- Program Unggulan GKSTB -->
+                <td class="bg-light-primary text-primary">5</td>
+                <td class="bg-light-primary text-primary">4</td>
+                <td class="bg-light-primary text-primary">0</td>
             </tr>
         </tfoot>
         <!--end::Table foot-->
     </table>
 </div>
+{{-- Note: index.js is already pushed once from dashboard_blade.php.
+     Do not push it again here — it was causing the script (and its
+     click listener) to load and run twice on the page. --}}
 <!--end::Table Container-->

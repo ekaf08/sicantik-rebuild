@@ -156,23 +156,6 @@
     </table>
 </div>
 <!--end::Table Container-->
-
-<!--begin::Modal Agregat-->
-<div class="modal fade" id="kt_modal_agregat" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold text-uppercase" id="modalAgregatTitle">Agregate</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body py-6">
-                <input type="text" class="form-control form-control-solid" id="modalAgregatValue" readonly>
-            </div>
-        </div>
-    </div>
-</div>
-<!--end::Modal Agregat-->
-
 @push('js')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
