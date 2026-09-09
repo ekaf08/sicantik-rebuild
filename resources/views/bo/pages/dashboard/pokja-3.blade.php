@@ -3,7 +3,7 @@
         <thead>
             <tr class="fw-bold fs-7 text-uppercase align-middle text-center">
                 <th rowspan="3" class="w-50px bg-dark text-white">NO</th>
-                <th rowspan="3" class="min-w-150px bg-secondary text-dark">NAMA WILAYAH</th>
+                <th rowspan="3" class="min-w-150px bg-light text-dark">NAMA WILAYAH</th>
                 <th colspan="3" class="bg-primary text-white">JUMLAH KADER</th>
                 <th colspan="9" class="bg-success text-white">PANGAN</th>
                 <th colspan="3" class="bg-info text-white">JUMLAH INDUSTRI RUMAH TANGGA</th>
@@ -14,7 +14,7 @@
                 <th rowspan="2" class="bg-light-primary">SANDANG</th>
                 <th rowspan="2" class="bg-light-primary">TATA LAKSANA RUMAH TANGGA</th>
                 <th colspan="2" class="bg-light-success">MAKANAN POKOK</th>
-                <th colspan="7" class="bg-light">PEMANFAATAN PEKARANGAN / HATINYA PKK</th>
+                <th colspan="7" class="bg-light-danger">PEMANFAATAN PEKARANGAN / HATINYA PKK</th>
                 <th rowspan="2" class="bg-light-info">PANGAN</th>
                 <th rowspan="2" class="bg-light-info">SANDANG</th>
                 <th rowspan="2" class="bg-light-info">JASA</th>
@@ -24,15 +24,15 @@
             <tr class="fw-bold fs-7 text-uppercase align-middle text-center">
                 <th class="bg-light-success">BERAS</th>
                 <th class="bg-light-success">NON BERAS</th>
-                <th class="bg-light">PETERNAKAN</th>
-                <th class="bg-light">PERIKANAN</th>
-                <th class="bg-light">WARUNG HIDUP</th>
-                <th class="bg-light">LUMBUNG HIDUP</th>
-                <th class="bg-light">TOGA</th>
-                <th class="bg-light">TANAMAN KERAS</th>
-                <th class="bg-light">TANAMAN LAINNYA</th>
+                <th class="bg-light-danger">PETERNAKAN</th>
+                <th class="bg-light-danger">PERIKANAN</th>
+                <th class="bg-light-danger">WARUNG HIDUP</th>
+                <th class="bg-light-danger">LUMBUNG HIDUP</th>
+                <th class="bg-light-danger">TOGA</th>
+                <th class="bg-light-danger">TANAMAN KERAS</th>
+                <th class="bg-light-danger">TANAMAN LAINNYA</th>
             </tr>
-            <tr class="fw-semibold fs-8 text-gray-500 bg-light text-center">
+            <tr class="fw-semibold fs-8 text-gray-500 bg-secondary text-center">
                 <td>1</td>
                 <td>2</td>
                 <td>3</td>
@@ -124,24 +124,24 @@
         <!--begin::Table foot-->
         <tfoot>
             <tr class="fw-bold fs-6 bg-light text-dark">
-                <td colspan="2" class="text-center">TOTAL</td>
-                <td class="text-primary">75</td>
-                <td class="text-primary">75</td>
-                <td class="text-primary">75</td>
-                <td class="text-primary">27.722</td>
-                <td>0</td>
-                <td class="text-primary">867</td>
-                <td class="text-primary">21</td>
-                <td class="text-primary">5.779</td>
-                <td class="text-primary">40</td>
-                <td class="text-primary">14.259</td>
-                <td class="text-primary">5.402</td>
-                <td>0</td>
-                <td class="text-primary">303</td>
-                <td class="text-primary">643</td>
-                <td class="text-primary">425</td>
-                <td class="text-primary">10.881</td>
-                <td class="text-primary">236</td>
+                <td colspan="2" class="text-center bg-secondary">TOTAL</td>
+                <td class="text-primary bg-secondary">75</td>
+                <td class="text-primary bg-secondary">75</td>
+                <td class="text-primary bg-secondary">75</td>
+                <td class="text-primary bg-secondary">27.722</td>
+                <td class="bg-secondary">0</td>
+                <td class="text-primary bg-secondary">867</td>
+                <td class="text-primary bg-secondary">21</td>
+                <td class="text-primary bg-secondary">5.779</td>
+                <td class="text-primary bg-secondary">40</td>
+                <td class="text-primary bg-secondary">14.259</td>
+                <td class="text-primary bg-secondary">5.402</td>
+                <td class="bg-secondary">0</td>
+                <td class="text-primary bg-secondary">303</td>
+                <td class="text-primary bg-secondary">643</td>
+                <td class="text-primary bg-secondary">425</td>
+                <td class="text-primary bg-secondary">10.881</td>
+                <td class="text-primary bg-secondary">236</td>
             </tr>
         </tfoot>
     </table>
