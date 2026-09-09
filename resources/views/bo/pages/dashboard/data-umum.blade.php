@@ -51,8 +51,11 @@
             <tr>
                 <td>1</td>
                 <td class="text-start fw-bold">Tegalsari</td>
-                <td>0</td>
-                <td>6</td>
+                {{-- kolom yang udah bisa diklik (contoh: Desa & Kelurahan) --}}
+                <td class="agregat-trigger" data-field="Desa" data-kecamatan="Tegalsari" data-value="0">0</td>
+                <td class="agregat-trigger" data-field="Kelurahan" data-kecamatan="Tegalsari" data-value="6">6</td>
+
+                {{-- kolom lain masih statis biasa dulu, belum diklik --}}
                 <td>45</td>
                 <td>45</td>
                 <td>189</td>
@@ -127,3 +130,48 @@
     </table>
 </div>
 <!--end::Table Container-->
+
+<!--begin::Modal Agregat-->
+<div class="modal fade" id="kt_modal_agregat" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-uppercase" id="modalAgregatTitle">Agregate</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body py-6">
+                <input type="text" class="form-control form-control-solid" id="modalAgregatValue" readonly>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end::Modal Agregat-->
+
+@push('js')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modalEl = document.getElementById('kt_modal_agregat');
+    const modal = new bootstrap.Modal(modalEl);
+
+    document.querySelectorAll('.agregat-trigger').forEach(function (el) {
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', function () {
+            document.getElementById('modalAgregatTitle').textContent =
+                'Agregate ' + this.dataset.field + ' - ' + this.dataset.kecamatan;
+            document.getElementById('modalAgregatValue').value = this.dataset.value;
+            modal.show();
+        });
+    });
+
+    // Fix: paksa bersihin backdrop & scroll lock kalau nyangkut
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+        document.querySelectorAll('.modal-backdrop').forEach(function (el) {
+            el.remove();
+        });
+    });
+});
+</script>
+@endpush

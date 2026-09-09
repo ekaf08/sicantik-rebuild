@@ -1993,8 +1993,5 @@
 </div>
 <!--end::Row--> --}}
 
-@push('js')
-<script src="{{ asset('js/dashboard-agregat.js') }}"></script>
-@endpush
 @endsection
 @stack('js')
