@@ -44,6 +44,32 @@
                 <th class="bg-light-pink">L</th>
                 <th class="bg-light-pink">P</th>
             </tr>
+            <tr class="fw-semibold fs-7 text-gray-700 bg-light text-center">
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+                <td>5</td>
+                <td>6</td>
+                <td>7</td>
+                <td>8</td>
+                <td>9</td>
+                <td>10</td>
+                <td>11</td>
+                <td>12</td>
+                <td>13</td>
+                <td>14</td>
+                <td>15</td>
+                <td>16</td>
+                <td>17</td>
+                <td>18</td>
+                <td>19</td>
+                <td>20</td>
+                <td>21</td>
+                <td>22</td>
+                <td>23</td>
+                <td>24</td>
+            </tr>
         </thead>
         <!--end::Table head-->
         <!--begin::Table body-->
@@ -163,7 +189,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Fix: paksa bersihin backdrop & scroll lock kalau nyangkut
     modalEl.addEventListener('hidden.bs.modal', function () {
         document.body.classList.remove('modal-open');
         document.body.style.removeProperty('overflow');

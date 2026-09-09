@@ -4,45 +4,92 @@
         <!--begin:mana:Table head-->
         <thead>
             <tr class="fw-bold fs-7 text-uppercase bg-light align-middle text-center">
-                <th rowspan="3" class="w-50px bg-dark text-white">NO</th>
-                <th rowspan="3" class="min-w-150px bg-secondary text-dark">Nama Kecamatan</th>
-                <th colspan="2" class="bg-danger text-white">Jumlah TP. PKK</th>
-                <th rowspan="3" class="w-60px bg-secondary text-dark">RW</th>
-                <th colspan="4" class="bg-primary text-white">Jumlah Kelompok</th>
-                <th colspan="2" class="bg-success text-white">Jumlah</th>
-                <th colspan="2" class="bg-info text-white">Jumlah Jiwa</th>
-                <th colspan="6" class="bg-warning text-white">Jumlah Kader</th>
-                <th colspan="4" class="bg-pink text-white">Jumlah Tenaga Sekretariat</th>
-                <th rowspan="3" class="w-100px bg-secondary text-dark">Keterangan</th>
+                <th rowspan="4" class="w-50px bg-dark text-white">NO</th>
+                <th rowspan="4" class="min-w-150px bg-secondary text-dark">Nama Wilayah</th>
+                <th colspan="23" class="bg-info text-white">PENDIDIKAN KETERAMPILAN</th>
+                <th colspan="10" class="w-60px bg-warning text-white">PENGEMBANGAN KEHIDUPAN BERKOPERASI</th>
+                <th rowspan="4" class="w-100px bg-primary text-white">Keterangan</th>
             </tr>
             <tr class="fw-bold fs-7 text-uppercase align-middle text-center">
-                <th rowspan="2" class="bg-light-danger">Desa</th>
-                <th rowspan="2" class="bg-light-danger">Kelurahan</th>
-                <th rowspan="2" class="bg-light-primary">Dusun / Lingkungan</th>
-                <th rowspan="2" class="bg-light-primary">PKK RW</th>
-                <th rowspan="2" class="bg-light-primary">PKK RT</th>
-                <th rowspan="2" class="bg-light-primary">Dasa Wisma</th>
-                <th rowspan="2" class="bg-light-success">KRT</th>
-                <th rowspan="2" class="bg-light-success">KK</th>
-                <th rowspan="2" class="bg-light-info">L</th>
-                <th rowspan="2" class="bg-light-info">P</th>
-                <th colspan="2" class="bg-light-warning">Anggota TP PKK</th>
-                <th colspan="2" class="bg-light-warning">Umum</th>
-                <th colspan="2" class="bg-light-warning">Khusus</th>
-                <th colspan="2" class="bg-light-pink">Honorer</th>
-                <th colspan="2" class="bg-light-pink">Bantuan</th>
+                <th rowspan="3" class="bg-light-warning">Jml Warga yang Masih 3 Buta</th>
+                <th colspan="8" class="bg-light-success">Kelompok Belajar</th>
+                <th rowspan="3" class="bg-light-primary">Paud Sejenis</th>
+                <th rowspan="3" class="bg-light-danger">TAMAN BACAAN/ PERPUSTAKAAN</th>
+                <th colspan="4" class="bg-light-warning">BKB</th>
+                <th colspan="5" class="bg-light-danger">Kader Khusus</th>
+                <th colspan="3" class="bg-light-success">JML KADER YG SDH DILATIH</th>
+                <th colspan="8" class="bg-light-primary">Prakoperasi/Usaha bersama/UP2K PKK</th>
+                <th colspan="2" rowspan="2" class="bg-light-warning">Koperasi Berbadan Hukum</th>
+            </tr>
+            <tr class="fw-bold fs-7 text-uppercase align-middle text-center">
+                <th colspan="2" class="bg-light-danger">Paket A</th>
+                <th colspan="2" class="bg-light-info">Paket B</th>
+                <th colspan="2" class="bg-light-pink">Paket C</th>
+                <th colspan="2" class="bg-light-warning">KF</th>
+                <th rowspan="2" class="bg-light-success">JML KELP</th>
+                <th rowspan="2" class="bg-light-success">JML IBU PESERTA</th>
+                <th rowspan="2" class="bg-light-success">JML APE ( Set)</th>
+                <th rowspan="2" class="bg-light-success">JML KELP Simulasi</th>
+                <th colspan="2" class="bg-light-info">Tutor</th>
+                <th rowspan="2" class="bg-light-info">BKB</th>
+                <th rowspan="2" class="bg-light-info">KOPERASI</th>
+                <th rowspan="2" class="bg-light-info">KETERAMPILAN</th>
+                <th rowspan="2" class="bg-light-primary">LP3 PKK</th>
+                <th rowspan="2" class="bg-light-primary">TPK3 PKK</th>
+                <th rowspan="2" class="bg-light-primary">DAMAS PKK</th>
+                <th colspan="2" class="bg-light-info">Pemula</th>
+                <th colspan="2" class="bg-light-success">Madya</th>
+                <th colspan="2" class="bg-light-danger">Utama</th>
+                <th colspan="2" class="bg-light-pink">Mandiri</th>
+
             </tr>
             <tr class="fw-bold fs-7 text-uppercase text-center">
-                <th class="bg-light-warning">L</th>
-                <th class="bg-light-warning">P</th>
-                <th class="bg-light-warning">L</th>
-                <th class="bg-light-warning">P</th>
-                <th class="bg-light-warning">L</th>
-                <th class="bg-light-warning">P</th>
-                <th class="bg-light-pink">L</th>
-                <th class="bg-light-pink">P</th>
-                <th class="bg-light-pink">L</th>
-                <th class="bg-light-pink">P</th>
+                <th class="bg-light-info">Jml KLP Belajar</th>
+                <th class="bg-light-info">Warga Belajar</th>
+                <th class="bg-light-info">Jml KLP Belajar</th>
+                <th class="bg-light-info">Warga Belajar</th>
+                <th class="bg-light-info">Jml KLP Belajar</th>
+                <th class="bg-light-info">Warga Belajar</th>
+                <th class="bg-light-info">Jml KLP Belajar</th>
+                <th class="bg-light-info">Warga Belajar</th>
+                <th class="bg-light-primary">KF</th>
+                <th class="bg-light-primary">Paud Sejenis</th>
+                <th class="bg-light-white">KELP</th>
+                <th class="bg-light-white">PSRT</th>
+                <th class="bg-light-white">KELP</th>
+                <th class="bg-light-white">PSRT</th>
+                <th class="bg-light-white">KELP</th>
+                <th class="bg-light-white">PSRT</th>
+                <th class="bg-light-white">KELP</th>
+                <th class="bg-light-white">PSRT</th>
+                <th class="bg-light-white">KOPERASI</th>
+                <th class="bg-light-white">Anggota</th>
+            </tr>
+            <tr class="fw-semibold fs-7 text-gray-700 bg-light text-center">
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+                <td>5</td>
+                <td>6</td>
+                <td>7</td>
+                <td>8</td>
+                <td>9</td>
+                <td>10</td>
+                <td>11</td>
+                <td>12</td>
+                <td>13</td>
+                <td>14</td>
+                <td>15</td>
+                <td>16</td>
+                <td>17</td>
+                <td>18</td>
+                <td>19</td>
+                <td>20</td>
+                <td>21</td>
+                <td>22</td>
+                <td>23</td>
+                <td>24</td>
             </tr>
         </thead>
         <!--end::Table head-->
