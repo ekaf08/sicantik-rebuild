@@ -2001,7 +2001,6 @@
 </div>
 <!--end::Row--> --}}
 
-<! --begin::Modal - Agregat-->
 <div class="modal fade" id="kt_modal_agregat" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
