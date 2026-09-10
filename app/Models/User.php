@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -18,12 +19,9 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
-
+    protected $table = 'users';
+    protected $guarded = [];
+    protected $primaryKey = 'id';
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -45,5 +43,43 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function kecamatan()
+    {
+        return $this->belongsTo(Kecamatan::class, 'id_kec', 'id_kec');
+    }
+
+    public function kelurahan()
+    {
+        return $this->belongsTo(Kelurahan::class, 'id_kel', 'id_kel');
+    }
+
+    /**
+     * Base query untuk datatable list user.
+     */
+    public function scopeForDatatable(Builder $query): Builder
+    {
+        return $query
+            ->select([
+                'users.id',
+                'users.role_id',
+                'users.name',
+                'users.username',
+                'users.password',
+                'kec.nama_kec',
+                'kel.nama_kel',
+                'roles.name as role',
+            ])
+            ->leftJoin('roles', 'roles.id', '=', 'users.role_id')
+            ->leftJoin('m_kecamatan as kec', 'kec.id_kec', '=', 'users.id_kec')
+            ->leftJoin('m_kelurahan as kel', 'kel.id_kel', '=', 'users.id_kel')
+            ->whereNotNull('users.username')
+            ->orderBy('users.id');
     }
 }
