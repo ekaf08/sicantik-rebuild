@@ -1,7 +1,99 @@
 @extends('bo.layout.app')
-@stack('css')
+
+@push('css')
+    <style>
+        .table td, .table th {
+            padding: 12px 16px !important;
+        }
+        .table th:first-child,
+        .table td:first-child {
+            min-width: 60px;
+        }
+        .table th:nth-child(3),
+        .table td:nth-child(3) {
+            min-width: 70px;
+        }
+        .table tbody td {
+            text-align: center !important;
+        }
+        .bg-pink {
+            background-color: #d63384 !important;
+        }
+        .bg-light-pink {
+            background-color: #fce4f0 !important;
+        }
+        .agregat-trigger {
+        cursor: pointer !important;
+        }
+        .agregat-trigger:hover {
+            opacity: 0.8;
+        }
+    </style>
+@endpush
 @section('content')
 
+<div class="card mb-5 mb-xl-10">
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-5">
+        <!--begin::Nav Tabs (Data Umum PKK, Pokja, dll)-->
+        <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-5">
+            <li class="nav-item">
+                <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#kt_tab_data_umum">Data Umum PKK</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_1">Pokja I</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_2">Pokja II</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_3">Pokja III</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_4">Pokja IV</a>
+            </li>
+        </ul>
+        <!--end::Nav Tabs-->
+    </div>
+    <!--end::Card header-->
+
+    <!--begin::Card body-->
+    <div class="card-body pt-0">
+        <!--begin::Filter Periode-->
+        <div class="d-flex align-items-center mb-8">
+            <label class="fs-6 fw-bold text-gray-700 me-3">Periode</label>
+            <div class="w-150px">
+                <select class="form-select form-select-solid" data-control="select2" data-hide-search="true">
+                    <option value="2026" selected>2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                </select>
+            </div>
+        </div>
+        <!--end::Filter Periode-->
+
+        <!--begin::Tab Content-->
+        <div class="tab-content">
+            <div id="kt_tab_data_umum" class="tab-pane fade show active">
+                @include('bo.pages.dashboard.data-umum')
+            </div>
+            <div id="kt_tab_pokja_1" class="tab-pane fade">
+                @include('bo.pages.dashboard.pokja-1')
+            </div>
+            <div id="kt_tab_pokja_2" class="tab-pane fade">
+                @include('bo.pages.dashboard.pokja-2')
+            </div>
+            <div id="kt_tab_pokja_3" class="tab-pane fade">
+                @include('bo.pages.dashboard.pokja-3')
+            </div>
+            <div id="kt_tab_pokja_4" class="tab-pane fade">
+                @include('bo.pages.dashboard.pokja-4')
+            </div>
+        </div>
+        <!--end::Tab Content-->
+    </div>
+    <!--end::Card body-->
+</div>
 
 {{-- <!--begin::Row-->
 <div class="row g-5 gx-xl-10">
@@ -1906,5 +1998,25 @@
 </div>
 <!--end::Row--> --}}
 
+<! --begin::Modal - Agregat-->
+<div class="modal fade" id="kt_modal_agregat" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-uppercase" id="modalAgregatTitle">Agregate</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-6">
+                <input type="text" class="form-control form-control-solid fs-3 fw-bold text-gray-800" id="modalAgregatValue" readonly>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('js')
+    <script src="{{ asset('assets/js/custom/pages/dashboard-pkk/index.js') }}"></script>
+@endpush
+@include('bo.pages.dashboard.modals.detail-pengurus-pj1')
+@include('bo.pages.dashboard.modals.edit-data-volume-pj1')
+@include('bo.pages.dashboard.modals.edit-data-jumlah-pj1')
 @endsection
-@stack('js')

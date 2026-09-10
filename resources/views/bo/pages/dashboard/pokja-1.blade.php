@@ -76,7 +76,7 @@
             <tr>
                 <td>1</td>
                 <td class="text-start fw-bold">Tegalsari</td>
-                <td>0</td>
+                <td class="detail-pengurus-trigger" data-bs-toggle="modal" data-bs-target="#kt_modal_detail_pengurus" data-kecamatan-id="1" data-kecamatan="Tegalsari" style="cursor: pointer;">0</td>
                 <td>6</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="45">45</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="45">45</td>
@@ -95,6 +95,9 @@
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
@@ -121,6 +124,9 @@
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="23.456">23.456</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="24.112">24.112</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="125">125</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="135">135</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="32">32</td>
+                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="28">28</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="135">135</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="32">32</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="28">28</td>
