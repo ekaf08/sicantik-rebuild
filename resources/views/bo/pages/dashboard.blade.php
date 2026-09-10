@@ -2017,4 +2017,6 @@
     <script src="{{ asset('assets/js/custom/pages/dashboard-pkk/index.js') }}"></script>
 @endpush
 @include('bo.pages.dashboard.modals.detail-pengurus-pj1')
+@include('bo.pages.dashboard.modals.edit-data-volume-pj1')
+@include('bo.pages.dashboard.modals.edit-data-jumlah-pj1')
 @endsection
