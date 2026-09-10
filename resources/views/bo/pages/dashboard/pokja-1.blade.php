@@ -68,6 +68,9 @@
                 <td>22</td>
                 <td>23</td>
                 <td>24</td>
+                <td>25</td>
+                <td>26</td>
+                <td>27</td>
             </tr>
         </thead>
         <!--end::Table head-->
@@ -76,65 +79,81 @@
             <tr>
                 <td>1</td>
                 <td class="text-start fw-bold">Tegalsari</td>
-                <td class="detail-pengurus-trigger" data-bs-toggle="modal" data-bs-target="#kt_modal_detail_pengurus" data-kecamatan-id="1" data-kecamatan="Tegalsari" style="cursor: pointer;">0</td>
-                <td>6</td>
-                <td class="edit-data-trigger"
+                <td class="fw-bold detail-pengurus-trigger" data-bs-toggle="modal" data-bs-target="#kt_modal_detail_pengurus" data-kecamatan-id="1" data-kecamatan="Tegalsari" style="cursor: pointer;">21</td>
+                <td class="fw-bold">KEMANGI</td>
+                <td class="fw-bold edit-data-trigger"
                     data-bs-toggle="modal"
                     data-bs-target="#kt_modal_edit_data"
                     data-nama-item="KISAH VOLUME"
                     style="cursor: pointer;">
-                    45
+                    21
                 </td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="45">45</td>
-                <td class="edit-data-trigger"
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="45">BELAJAR</td>
+                <td class="fw-bold edit-data-trigger"
                     data-bs-toggle="modal"
                     data-bs-target="#kt_modal_edit_data_peserta"
                     data-nama-item="Kisah Peserta"
                     style="cursor: pointer;">
-                    45
+                    12
                 </td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="18">18</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.245">1.245</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">KEMANGI</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="18">18</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.245">BEAJAR</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">KEMANGI</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">BELAJAR</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">KEMANGI</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">BELAJAR</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">10</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">MONEV BUMIL</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">PENDAMPINGAN</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">KEMANGI</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">BELAJAR</td>
+                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
             </tr>
         </tbody>
         <!--end::Table body-->
         <!--begin::Table foot (Total)-->
         <tfoot>
             <tr class="fw-bold fs-6 bg-light text-dark">
-                <td colspan="2" class="text-center">TOTAL</td>
-                <td>0</td>
-                <td>42</td>
-                <td>342</td>
-                <td>342</td>
-                <td>342</td>
-                <td>1.393</td>
-                <td>984</td>
-                <td>8.030</td>
-                <td>7.003</td>
-                <td>146.280</td>
-                <td>149.647</td>
-                <td>769</td>
-                <td>827</td>
-                <td>200</td>
-                <td>175</td>
+                <td colspan="2" class="text-center">JUMLAH SELURUHNYA</td>
+                <td>999</td>
+                {{-- Kisah --}}
+                <td></td>
+                <td class="text-center">0</td>
+                <td></td>
+                <td class="text-center">342</td>
+                {{-- Krisan --}}
+                <td></td>
+                <td class="text-center">0</td>
+                <td></td>
+                <td class="text-center">984</td>
+                {{-- Kilas --}}
+                <td></td>
+                <td class="text-center">0</td>
+                <td></td>
+                <td class="text-center">7.003</td>
+                {{-- Kiat --}}
+                <td></td>
+                <td class="text-center">0</td>
+                <td></td>
+                <td class="text-center">14</td>
+                {{-- Kisak --}}
+                <td></td>
+                <td class="text-center">0</td>
+                <td></td>
+                <td class="text-center">984</td>
+                {{-- PKBN --}}
+                <td></td>
+                <td class="text-center">0</td>
+                <td></td>
+                <td class="text-center">7.003</td>
             </tr>
         </tfoot>
         <!--end::Table foot-->
