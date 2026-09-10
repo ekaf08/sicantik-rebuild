@@ -44,7 +44,7 @@
                 <th class="bg-light-pink">L</th>
                 <th class="bg-light-pink">P</th>
             </tr>
-            <tr class="fw-semibold fs-7 text-gray-700 bg-light text-center">
+            <tr class="fw-semibold fs-7 text-gray bg-light text-center">
                 <td>1</td>
                 <td>2</td>
                 <td>3</td>
@@ -79,7 +79,7 @@
                 <td class="text-start fw-bold">Tegalsari</td>
                 <td>0</td>
                 <td>6</td>
-                <td class="agregat-trigger" data-field="Lainnya" data-kecamatan="Tegalsari" data-value="45">45</td>
+                <td class="agregat-trigger text-success" data-field="Lainnya" data-kecamatan="Tegalsari" data-value="45">45</td>
                 <td class="agregat-trigger" data-field="Lainnya" data-kecamatan="Tegalsari" data-value="45">45</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="189">189</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>

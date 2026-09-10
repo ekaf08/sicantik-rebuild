@@ -32,7 +32,7 @@
                 <th class="bg-light-danger">TANAMAN KERAS</th>
                 <th class="bg-light-danger">TANAMAN LAINNYA</th>
             </tr>
-            <tr class="fw-semibold fs-8 text-gray-500 bg-secondary text-center">
+            <tr class="fw-semibold fs-8 text-gray bg-secondary text-center">
                 <td>1</td>
                 <td>2</td>
                 <td>3</td>

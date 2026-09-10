@@ -28,6 +28,9 @@
         .agregat-trigger:hover {
             opacity: 0.8;
         }
+        tr.text-gray td {
+            color: var(--bs-gray-500) !important;
+        }
     </style>
 @endpush
 @section('content')
@@ -2007,7 +2010,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body py-6">
-                <input type="text" class="form-control form-control-solid fs-3 fw-bold text-gray-800" id="modalAgregatValue" readonly>
+                <input type="text" class="form-control form-control-solid fs-3 text-gray-430" id="modalAgregatValue" readonly>
             </div>
         </div>
     </div>

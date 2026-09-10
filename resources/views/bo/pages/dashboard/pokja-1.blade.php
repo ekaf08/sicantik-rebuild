@@ -43,7 +43,7 @@
                 <th class="bg-light-pink">Metode</th>
                 <th class="bg-light-pink">Jumlah</th>
             </tr>
-            <tr class="fw-semibold fs-7 text-gray-700 bg-light text-center">
+            <tr class="fw-semibold fs-7 text-gray bg-light text-center">
                 <td>1</td>
                 <td>2</td>
                 <td>3</td>
@@ -88,7 +88,7 @@
                     style="cursor: pointer;">
                     21
                 </td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="45">BELAJAR</td>
+                <td class="fw-bold">BELAJAR</td>
                 <td class="fw-bold edit-data-trigger"
                     data-bs-toggle="modal"
                     data-bs-target="#kt_modal_edit_data_peserta"
@@ -96,25 +96,25 @@
                     style="cursor: pointer;">
                     12
                 </td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">KEMANGI</td>
+                <td class="fw-bold">KEMANGI</td>
                 <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="18">18</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.245">BEAJAR</td>
+                <td class="fw-bold">BELAJAR</td>
                 <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">KEMANGI</td>
+                <td class="fw-bold">KEMANGI</td>
                 <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">BELAJAR</td>
+                <td class="fw-bold">BELAJAR</td>
                 <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">KEMANGI</td>
+                <td class="fw-bold">KEMANGI</td>
                 <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">BELAJAR</td>
+                <td class="fw-bold">BELAJAR</td>
                 <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">10</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">MONEV BUMIL</td>
+                <td class="fw-bold">MONEV BUMIL</td>
                 <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">PENDAMPINGAN</td>
+                <td class="fw-bold">PENDAMPINGAN</td>
                 <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">KEMANGI</td>
+                <td class="fw-bold">KEMANGI</td>
                 <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">BELAJAR</td>
+                <td class="fw-bold">BELAJAR</td>
                 <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
             </tr>
         </tbody>

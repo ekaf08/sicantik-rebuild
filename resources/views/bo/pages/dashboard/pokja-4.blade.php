@@ -45,7 +45,7 @@
                 <th class="bg-light-primary text-dark">L</th>
                 <th class="bg-light-primary text-dark">P</th>
             </tr>
-            <tr class="fw-semibold fs-8 text-gray-500 bg-secondary text-center">
+            <tr class="fw-semibold fs-8 text-gray bg-secondary text-center">
                 <td>1</td>
                 <td>2</td>
                 <td>3</td>
