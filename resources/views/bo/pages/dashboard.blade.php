@@ -2016,4 +2016,5 @@
 @push('js')
     <script src="{{ asset('assets/js/custom/pages/dashboard-pkk/index.js') }}"></script>
 @endpush
+@include('bo.pages.dashboard.modals.detail-pengurus-pj1')
 @endsection

@@ -1,5 +1,5 @@
 /* global bootstrap */
-
+/* Modal Basic */
 document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("click", function (e) {
         const trigger = e.target.closest(".agregat-trigger");
@@ -51,5 +51,51 @@ document.addEventListener("DOMContentLoaded", function () {
             const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
             modal.show();
         }
+    });
+});
+
+/* Detail DataTables PJ 1 */
+document.addEventListener('DOMContentLoaded', function () {
+    const table = $('#kt_table_pengurus').DataTable({
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        language: {
+            search: "Search:",
+            lengthMenu: "Show _MENU_",
+            info: "Showing _START_ to _END_ of _TOTAL_ records",
+            paginate: { previous: "‹", next: "›" }
+        }
+    });
+
+    const modalEl = document.getElementById('kt_modal_detail_pengurus');
+    if (modalEl) {
+        modalEl.addEventListener('shown.bs.modal', function () {
+            table.columns.adjust();
+        });
+    }
+});
+
+/* Aksi */
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-aksi-terkunci');
+        if (!btn) return;
+
+        if (typeof Swal === 'undefined') {
+            console.error('[akses dibatasi] SweetAlert2 (Swal) tidak ditemukan. Pastikan plugin SweetAlert2 sudah di-load.');
+            return;
+        }
+
+        Swal.fire({
+            icon: 'info',
+            title: 'Akses Dibatasi',
+            text: 'Perubahan data hanya bisa dilakukan di akun kecamatan atau kelurahan',
+            confirmButtonText: 'Mengerti',
+            confirmButtonColor: '#6f42c1',
+            customClass: {
+                confirmButton: 'btn fw-bold btn-primary'
+            },
+            buttonsStyling: false
+        });
     });
 });
