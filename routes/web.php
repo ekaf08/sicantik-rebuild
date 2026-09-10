@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Bo\AuthController;
 use App\Http\Controllers\Bo\DashboardController;
+use App\Http\Controllers\Bo\InovasiController;
 use App\Http\Controllers\Bo\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,11 @@ Route::middleware('guest')->group(function () {
     Route::get('/refresh_captcha', [AuthController::class, 'refresh_captcha'])->name('refresh_captcha');
 });
 
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->name('dashboard');
+
+   Route::get('/inovasi/global', [InovasiController::class, 'global'])->name('inovasi.global');
+       Route::get('/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
 // Protected routes — hanya bisa diakses kalau SUDAH login
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
