@@ -2005,6 +2005,7 @@
 </div>
 <!--end::Row--> --}}
 
+<! --begin::Modal - Agregat-->
 <div class="modal fade" id="kt_modal_agregat" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -2026,5 +2027,4 @@
 @include('bo.pages.dashboard.modals.edit-data-volume-pj1')
 @include('bo.pages.dashboard.modals.edit-data-jumlah-pj1')
 @include('bo.pages.dashboard.modals.detail-buta-pj2')
-@include('bo.pages.dashboard.modals.detail-gkstb-pj4')
 @endsection

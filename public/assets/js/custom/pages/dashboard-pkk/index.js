@@ -5,15 +5,21 @@
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
     // DataTables Detail Pengurus Pokja I
+    // DataTables Detail Pengurus Pokja I
     const tableEl = $("#kt_table_pengurus");
     if (tableEl.length) {
         const table = tableEl.DataTable({
             destroy: true,
             pageLength: 10,
             lengthMenu: [10, 25, 50, 100],
+            // Penambahan properti DOM untuk mengatur layout posisi elemen
+            dom: 
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
             language: {
                 search: "Search:",
-                lengthMenu: "Show _MENU_",
+                lengthMenu: "_MENU_", // Diubah menjadi _MENU_ saja agar tulisan "Show" hilang sesuai dengan gambar referensi Anda
                 info: "Showing _START_ to _END_ of _TOTAL_ records",
                 paginate: { previous: "‹", next: "›" },
             },
@@ -51,6 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
             buttonsStyling: false,
         });
     });
+    
 
     // DataTables Modal Edit Volume
     if ($("#kt_table_edit_data").length) {
