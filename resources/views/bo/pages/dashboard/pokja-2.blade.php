@@ -105,16 +105,59 @@
                     style="cursor: pointer;">
                     0
                 </td>
-                <td>6</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="45">45</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="45">45</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="189">189</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="18">18</td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Jml_KLP_Belajar"
+                    data-field="Paket A Klp Belajar"
+                    data-kecamatan="Asemrowo"
+                    style="cursor: pointer;">
+                    0
+                </td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Warga_Belajar"
+                    data-field="Paket A Warga Belajar"
+                    data-kecamatan="Asemrowo"
+                    style="cursor: pointer;">
+                    45
+                </td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Jml_KLP_Belajar"
+                    data-field="Paket B Klp Belajar"
+                    data-kecamatan="Asemrowo"
+                    style="cursor: pointer;">
+                    0
+                </td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Warga_Belajar"
+                    data-field="Paket B Warga Belajar"
+                    data-kecamatan="Asemrowo"
+                    style="cursor: pointer;">
+                    189
+                </td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Warga_Belajar"
+                    data-field="Paket C Warga Belajar"
+                    data-kecamatan="Asemrowo"
+                    style="cursor: pointer;">
+                    135
+                </td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Warga_Belajar"
+                    data-field="Paket C Warga Belajar"
+                    data-kecamatan="Asemrowo"
+                    style="cursor: pointer;">
+                    18
+                </td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.245">1.245</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Paud_Sejenis"
+                    data-field="Paud"
+                    data-kecamatan="Tegalsari"
+                    data-value="24.112"
+                    style="cursor: pointer;">
+                    24.112
+                </td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>

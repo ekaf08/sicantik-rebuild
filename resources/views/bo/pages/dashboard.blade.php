@@ -2005,6 +2005,7 @@
 </div>
 <!--end::Row--> --}}
 
+<! --begin::Modal - Agregat-->
 <div class="modal fade" id="kt_modal_agregat" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -2022,9 +2023,7 @@
 @push('js')
     <script src="{{ asset('assets/js/custom/pages/dashboard-pkk/index.js') }}"></script>
 @endpush
-@include('bo.pages.dashboard.modals.detail-pengurus-pj1')
-@include('bo.pages.dashboard.modals.edit-data-volume-pj1')
-@include('bo.pages.dashboard.modals.edit-data-jumlah-pj1')
-@include('bo.pages.dashboard.modals.detail-buta-pj2')
+@include('bo.pages.dashboard.modals.pokja1-modal')
+@include('bo.pages.dashboard.modals.pokja2-modal')
 @include('bo.pages.dashboard.modals.detail-gkstb-pj4')
 @endsection

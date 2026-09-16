@@ -97,7 +97,7 @@
                     12
                 </td>
                 <td class="fw-bold">KEMANGI</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="18">18</td>
+                <td class="fw-bold detail-pengurus-trigger" data-bs-toggle="modal" data-bs-target="#kt_modal_detail_pengurus" data-kecamatan-id="1" data-kecamatan="Tegalsari" style="cursor: pointer;">18</td>
                 <td class="fw-bold">BELAJAR</td>
                 <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
                 <td class="fw-bold">KEMANGI</td>
