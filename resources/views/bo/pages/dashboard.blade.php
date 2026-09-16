@@ -2026,4 +2026,5 @@
 @include('bo.pages.dashboard.modals.edit-data-volume-pj1')
 @include('bo.pages.dashboard.modals.edit-data-jumlah-pj1')
 @include('bo.pages.dashboard.modals.detail-buta-pj2')
+@include('bo.pages.dashboard.modals.detail-gkstb-pj4')
 @endsection
