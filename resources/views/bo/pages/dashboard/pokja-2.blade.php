@@ -105,7 +105,13 @@
                     style="cursor: pointer;">
                     0
                 </td>
-                <td>6</td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Jml_KLP_Belajar"
+                    data-field="Paket A Klp Belajar"
+                    data-kecamatan="Asemrowo"
+                    style="cursor: pointer;">
+                    0
+                </td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="45">45</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="45">45</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="189">189</td>

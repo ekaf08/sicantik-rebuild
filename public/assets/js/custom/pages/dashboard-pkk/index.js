@@ -4,25 +4,43 @@
 // 1. Pokja 1
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-    // DataTables Detail Pengurus Pokja I
-    // DataTables Detail Pengurus Pokja I
+// DataTables Detail Pengurus Pokja I
     const tableEl = $("#kt_table_pengurus");
     if (tableEl.length) {
         const table = tableEl.DataTable({
             destroy: true,
             pageLength: 10,
             lengthMenu: [10, 25, 50, 100],
-            // Penambahan properti DOM untuk mengatur layout posisi elemen
+            // Mengatur layout: l (length) di kiri atas, f (filter/search) di kanan atas
             dom: 
                 "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
                 "<'row'<'col-sm-12'tr>>" +
                 "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
             language: {
                 search: "Search:",
-                lengthMenu: "_MENU_", // Diubah menjadi _MENU_ saja agar tulisan "Show" hilang sesuai dengan gambar referensi Anda
+                // Menambahkan kembali teks "Show" di samping parameter _MENU_ (dropdown)
+                lengthMenu: "Show _MENU_", 
                 info: "Showing _START_ to _END_ of _TOTAL_ records",
                 paginate: { previous: "‹", next: "›" },
             },
+            // Menambahkan initComplete untuk memaksa tata letak horizontal
+            initComplete: function() {
+                // Memaksa label menjadi baris horizontal
+                $('.dataTables_length label, .dataTables_filter label').css({
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'flex-direction': 'row',
+                    'gap': '8px',
+                    'margin-bottom': '0',
+                    'white-space': 'nowrap'
+                });
+                
+                // Mencegah select dan input mengambil lebar penuh
+                $('.dataTables_length select, .dataTables_filter input').css({
+                    'width': 'auto',
+                    'display': 'inline-block'
+                });
+            }
         });
 
         const modalEl = document.getElementById("kt_modal_detail_pengurus");
@@ -39,9 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!btn) return;
 
         if (typeof Swal === "undefined") {
-            console.error(
-                "[akses dibatasi] SweetAlert2 (Swal) tidak ditemukan.",
-            );
+            console.error("[akses dibatasi] SweetAlert2 (Swal) tidak ditemukan.");
             return;
         }
 
@@ -50,9 +66,9 @@ document.addEventListener("DOMContentLoaded", function () {
             title: "Akses Dibatasi",
             text: "Perubahan data hanya bisa dilakukan di akun kecamatan atau kelurahan",
             confirmButtonText: "Mengerti",
-            confirmButtonColor: "#6f42c1",
+            confirmButtonColor: "bg-info",
             customClass: {
-                confirmButton: "btn fw-bold btn-primary",
+                confirmButton: "btn fw-bold btn-info",
             },
             buttonsStyling: false,
         });
@@ -154,6 +170,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+/* Modal Detail Jumlah Kelompok Belajar Pj 2 */
+document.addEventListener('DOMContentLoaded', function () {
+    if (!$.fn.DataTable.isDataTable('#kt_table_Jml_KLP_Belajar')) {
+        $('#kt_table_Jml_KLP_Belajar').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            language: {
+                lengthMenu: "_MENU_",
+                zeroRecords: "Tidak ada data untuk ditampilkan",
+                info: "Showing _START_ to _END_ of _TOTAL_ records",
+                infoEmpty: "Showing no records",
+                infoFiltered: "",
+                search: "Search:",
+                paginate: { previous: "‹", next: "›" }
+            }
+        });
+    }
+
+    const modalJmlKLPBelajarEl = document.getElementById('kt_modal_Jml_KLP_Belajar');
+    if (modalJmlKLPBelajarEl) {
+        modalJmlKLPBelajarEl.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
+            const field = trigger.getAttribute('data-field') || '';
+            const kecamatan = trigger.getAttribute('data-kecamatan') || '';
+            document.getElementById('modalJmlKLPBelajarTitle').textContent =
+                `DETAIL ${field} - ${kecamatan}`.toUpperCase();
+        });
+    }
+});
 
 // ==========================================
 // 2. Pokja 4
