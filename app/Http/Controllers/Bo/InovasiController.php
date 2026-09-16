@@ -8,8 +8,10 @@ class InovasiController extends Controller
 {
     public function global()
     {
-    return view('bo.pages.inovasi.inovasiglobal.index');
-    
+        // Siapkan variabel $data (nanti jika sudah ada Model DB, ganti jadi: InovasiModel::all();)
+        $data = [];
+
+        return view('bo.pages.inovasi.inovasiglobal.index', compact('data'));
     }
 
     public function kota()
