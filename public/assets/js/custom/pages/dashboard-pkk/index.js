@@ -147,6 +147,10 @@ document.addEventListener("DOMContentLoaded", function () {
         $("#kt_table_detail_buta").DataTable({
             pageLength: 10,
             lengthMenu: [10, 25, 50, 100],
+            dom:
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
             language: {
                 lengthMenu: "_MENU_",
                 zeroRecords: "Tidak ada data untuk ditampilkan",
@@ -177,6 +181,10 @@ document.addEventListener("DOMContentLoaded", function () {
         $("#kt_table_Jml_KLP_Belajar").DataTable({
             pageLength: 10,
             lengthMenu: [10, 25, 50, 100],
+            dom:
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
             language: {
                 lengthMenu: "_MENU_",
                 zeroRecords: "Tidak ada data untuk ditampilkan",
@@ -203,6 +211,73 @@ document.addEventListener("DOMContentLoaded", function () {
                     `DETAIL ${field} - ${kecamatan}`.toUpperCase();
             },
         );
+    }
+});
+
+/* Modal Detail Warga Belajar Pj 2 */
+document.addEventListener('DOMContentLoaded', function () {
+    if (!$.fn.DataTable.isDataTable('#kt_table_Warga_Belajar')) {
+        $('#kt_table_Warga_Belajar').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            dom:
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
+            language: {
+                lengthMenu: "_MENU_",
+                zeroRecords: "Tidak ada data untuk ditampilkan",
+                info: "Showing _START_ to _END_ of _TOTAL_ records",
+                infoEmpty: "Showing no records",
+                infoFiltered: "",
+                search: "Search:",
+                paginate: { previous: "‹", next: "›" }
+            }
+        });
+    }
+
+    const modalWargaBelajarEl = document.getElementById('kt_modal_Warga_Belajar');
+    if (modalWargaBelajarEl) {
+        modalWargaBelajarEl.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
+            const field = trigger.getAttribute('data-field') || '';
+            const kecamatan = trigger.getAttribute('data-kecamatan') || '';
+            document.getElementById('modalWarga_BelajarTitle').textContent =
+                `DETAIL ${field} - ${kecamatan}`.toUpperCase();
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (!$.fn.DataTable.isDataTable('#kt_table_Paud_Sejenis')) {
+        $('#kt_table_Paud_Sejenis').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            dom:
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
+            language: {
+                lengthMenu: "_MENU_",
+                zeroRecords: "Tidak ada data untuk ditampilkan",
+                info: "Showing _START_ to _END_ of _TOTAL_ records",
+                infoEmpty: "Showing no records",
+                infoFiltered: "",
+                search: "Search:",
+                paginate: { previous: "‹", next: "›" }
+            }
+        });
+    }
+
+    const modalPaudSejenisEl = document.getElementById('kt_modal_Paud_Sejenis');
+    if (modalPaudSejenisEl) {
+        modalPaudSejenisEl.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
+            const field = trigger.getAttribute('data-field') || '';
+            const kecamatan = trigger.getAttribute('data-kecamatan') || '';
+            document.getElementById('modalPaud_SejenisTitle').textContent =
+                `DETAIL ${field} - ${kecamatan}`.toUpperCase();
+        });
     }
 });
 
