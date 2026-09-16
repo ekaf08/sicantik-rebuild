@@ -3,7 +3,7 @@
 @push('css')
     <style>
         .table td, .table th {
-            padding: 12px 16px !important;
+            padding: 16px 16px !important;
         }
         .table th:first-child,
         .table td:first-child {
@@ -15,6 +15,10 @@
         }
         .table tbody td {
             text-align: center !important;
+        }
+        .table thead th > :not(caption) > * > * {
+            border-left: 0.5px solid #dee2e6;
+            border-right: 0.5px solid #dee2e6;
         }
         .bg-pink {
             background-color: #d63384 !important;
@@ -29,7 +33,7 @@
             opacity: 0.8;
         }
         tr.text-gray td {
-            color: var(--bs-gray-500) !important;
+            color: var(--bs-gray-600) !important;
         }
     </style>
 @endpush
@@ -2022,4 +2026,5 @@
 @include('bo.pages.dashboard.modals.detail-pengurus-pj1')
 @include('bo.pages.dashboard.modals.edit-data-volume-pj1')
 @include('bo.pages.dashboard.modals.edit-data-jumlah-pj1')
+@include('bo.pages.dashboard.modals.detail-buta-pj2')
 @endsection

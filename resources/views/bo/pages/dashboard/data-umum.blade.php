@@ -76,62 +76,36 @@
         <tbody>
             <tr>
                 <td>1</td>
-                <td class="text-start fw-bold">Tegalsari</td>
+                <td class="text-start text-success fw-bold text-uppercase">Tegalsari</td>
                 <td>0</td>
                 <td>6</td>
-                <td class="agregat-trigger text-success" data-field="Lainnya" data-kecamatan="Tegalsari" data-value="45">45</td>
-                <td class="agregat-trigger" data-field="Lainnya" data-kecamatan="Tegalsari" data-value="45">45</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="189">189</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="18">18</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.245">1.245</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td class="text-start fw-bold">Genteng</td>
-                <td>0</td>
-                <td>7</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="62">62</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="62">62</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="256">256</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="184">184</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="22">22</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="1.376">1.376</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="1.198">1.198</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="25.332">25.332</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="25.821">25.821</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="132">132</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="142">142</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="35">35</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="30">30</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="1.087">1.087</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="23.456">23.456</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="24.112">24.112</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="125">125</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="32">32</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Genteng" data-value="28">28</td>
+                <td class="agregat-trigger fw-bold" data-field="Lainnya" data-kecamatan="Tegalsari" data-value="45">45</td>
+                <td>45</td>
+                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="189">189</td>
+                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
+                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="18">18</td>
+                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="1.245">1.245</td>
+                <td class="agregat-trigger fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
+                <td class="agregat-trigger fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
+                <td class="agregat-trigger fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
+                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
+                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
+                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
+                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
+                <td class="agregat-trigger fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
+                <td class="agregat-trigger fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
+                <td>24.112</td>
+                <td>125</td>
+                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
+                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
+                <td>28</td>
             </tr>
         </tbody>
         <!--end::Table body-->
         <!--begin::Table foot (Total)-->
         <tfoot>
-            <tr class="fw-bold fs-6 bg-light text-dark">
-                <td colspan="2" class="text-center">TOTAL</td>
+            <tr class="fw-bold fs-6 bg-light-success text-dark">
+                <td colspan="2" class="text-center">JUMLAH SELURUHNYA</td>
                 <td>0</td>
                 <td>42</td>
                 <td>342</td>
@@ -147,6 +121,13 @@
                 <td>827</td>
                 <td>200</td>
                 <td>175</td>
+                <td>0</td>
+                <td>42</td>
+                <td>342</td>
+                <td>342</td>
+                <td>342</td>
+                <td>1.393</td>
+                <td>984</td>
             </tr>
         </tfoot>
         <!--end::Table foot-->

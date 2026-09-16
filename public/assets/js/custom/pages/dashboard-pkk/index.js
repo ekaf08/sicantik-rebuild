@@ -157,3 +157,33 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+/* Modal Detail Warga Masih Buta Pj 2 */
+document.addEventListener('DOMContentLoaded', function () {
+    if (!$.fn.DataTable.isDataTable('#kt_table_detail_buta')) {
+        $('#kt_table_detail_buta').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            language: {
+                lengthMenu: "_MENU_",
+                zeroRecords: "Tidak ada data untuk ditampilkan",
+                info: "Showing _START_ to _END_ of _TOTAL_ records",
+                infoEmpty: "Showing no records",
+                infoFiltered: "",
+                search: "Search:",
+                paginate: { previous: "‹", next: "›" }
+            }
+        });
+    }
+
+    const modalDetailButaEl = document.getElementById('kt_modal_detail_buta');
+    if (modalDetailButaEl) {
+        modalDetailButaEl.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
+            const field = trigger.getAttribute('data-field') || '';
+            const kecamatan = trigger.getAttribute('data-kecamatan') || '';
+            document.getElementById('modalDetailButaTitle').textContent =
+                `DETAIL ${field} - ${kecamatan}`.toUpperCase();
+        });
+    }
+});
