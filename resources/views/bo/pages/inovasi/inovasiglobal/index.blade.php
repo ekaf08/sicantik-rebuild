@@ -661,10 +661,10 @@
 
                 <div class="modal-footer px-4 py-3 bg-light border-top">
                     <button type="button" class="btn btn-sm btn-light-danger text-danger bg-danger-subtle border-0 fw-bold px-3 py-2 rounded-3" data-bs-dismiss="modal">
-                        ✕ Batal
+                        Batal
                     </button>
                     <button type="submit" class="btn btn-sm btn-success fw-bold px-4 py-2 rounded-3 shadow-sm" id="btn-save-inovasi">
-                        ✓ Simpan
+                        Simpan
                     </button>
                 </div>
             </form>
