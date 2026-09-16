@@ -85,7 +85,7 @@
                 <td>0</td>
                 <td>0</td>
                 <td class="text-primary fw-bold agregat-trigger" data-field="KB" data-kecamatan="ASEMROWO" data-value="39">39</td>
-                <td class="fw-bold">501</td>
+                <td class="text-primary fw-bold agregat-trigger" data-field="Kader Surabaya Hebat" data-kecamatan="ASEMROWO" data-value="501">501</td>
                 <td class="fw-bold">0</td>
                 <td class="text-primary fw-bold agregat-trigger" data-field="Imunisasi" data-kecamatan="ASEMROWO" data-value="0">0</td>
                 <td class="text-primary fw-bold agregat-trigger" data-field="PKG" data-kecamatan="ASEMROWO" data-value="0">0</td>
@@ -115,7 +115,7 @@
                 <td>0</td>
                 <td>0</td>
                 <td class=" text-primary fw-bold agregat-trigger" data-field="KB" data-kecamatan="BENOWO" data-value="65">65</td>
-                <td class=" fw-bold">707</td>
+                <td class=" text-primary fw-bold agregat-trigger" data-field="Kader Surabaya Hebat" data-kecamatan="BENOWO" data-value="707">707</td>
                 <td class=" fw-bold">0</td>
                 <td class=" text-primary fw-bold agregat-trigger" data-field="Imunisasi" data-kecamatan="BENOWO" data-value="0">0</td>
                 <td class=" text-primary fw-bold agregat-trigger" data-field="PKG" data-kecamatan="BENOWO" data-value="0">0</td>
@@ -145,7 +145,7 @@
                 <td class="bg-light">0</td>
                 <td class="bg-light">0</td>
                 <td class="bg-light text-primary fw-bold agregat-trigger" data-field="KB" data-kecamatan="BUBUTAN" data-value="92">92</td>
-                <td class="bg-light fw-bold">972</td>
+                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="Kader Surabaya Hebat" data-kecamatan="BUBUTAN" data-value="972">972</td>
                 <td class="bg-light fw-bold">0</td>
                 <td class="bg-light text-primary fw-bold agregat-trigger" data-field="Imunisasi" data-kecamatan="BUBUTAN" data-value="0">0</td>
                 <td class="bg-light text-primary fw-bold agregat-trigger" data-field="PKG" data-kecamatan="BUBUTAN" data-value="0">0</td>

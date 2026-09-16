@@ -2025,4 +2025,5 @@
 @endpush
 @include('bo.pages.dashboard.modals.pokja1-modal')
 @include('bo.pages.dashboard.modals.pokja2-modal')
+@include('bo.pages.dashboard.modals.detail-gkstb-pj4')
 @endsection
