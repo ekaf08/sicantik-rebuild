@@ -99,38 +99,37 @@
                     <h2 class="fw-bolder text-white mb-2 text-uppercase tracking-wide" style="font-size: 2.1rem; letter-spacing: 0.5px;">
                         INOVASI KOTA
                     </h2>
-                    <span class="fw-semibold" style="color: #e6fffa; font-size: 1.05rem;">
+                    <span id="banner-subtitle-inovasi" class="fw-semibold" style="color: #e6fffa; font-size: 1.05rem;">
                         Data Inovasi Kota
                     </span>
                 </div>
             </div>
 
             <!-- 2. Filter Dropdown Pokja & Inovasi -->
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-body p-4">
-                    <div class="row g-4">
-                        <div class="col-12 col-md-6">
-                            <label for="select-filter-pokja" class="label-filter-custom">Pilih Pokja</label>
-                            <select id="select-filter-pokja" class="form-select form-select-custom" onchange="handlePokjaChange()">
-                                <option value="semua" selected>Semua</option>
-                                <option value="sekretaris">Sekretaris</option>
-                                <option value="pokja 1">Pokja 1</option>
-                                <option value="pokja 2">Pokja 2</option>
-                                <option value="pokja 3">Pokja 3</option>
-                                <option value="pokja 4">Pokja 4</option>
-                            </select>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <label for="select-filter-inovasi" class="label-filter-custom">Pilih Inovasi</label>
-                            <select id="select-filter-inovasi" class="form-select form-select-custom" onchange="handleInovasiChange()">
-                                <option value="" selected disabled>Pilih salah satu inovasi...</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+<div class="card border-0 shadow-sm rounded-4 mb-5">
+    <div class="card-body p-5">
+        <div class="row g-4">
+            <div class="col-12 col-md-6">
+                <label class="form-label fw-bold text-gray-700 fs-6">Pilih Pokja</label>
+                <select id="select-filter-pokja" class="form-select form-select-solid fw-semibold" onchange="handlePokjaChange()">
+                    <option value="semua" selected>Semua</option>
+                    <option value="sekretaris">Sekretaris</option>
+                    <option value="pokja 1">Pokja 1</option>
+                    <option value="pokja 2">Pokja 2</option>
+                    <option value="pokja 3">Pokja 3</option>
+                    <option value="pokja 4">Pokja 4</option>
+                </select>
             </div>
 
+            <div class="col-12 col-md-6">
+                <label class="form-label fw-bold text-gray-700 fs-6">Pilih Inovasi</label>
+                <select id="select-filter-inovasi" class="form-select form-select-solid fw-semibold" onchange="handleInovasiChange()">
+                    <option value="" selected disabled>Pilih salah satu inovasi...</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
             <!-- 3. Area Konten Detail Inovasi -->
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body py-5 px-4">
@@ -193,103 +192,11 @@
     </div>
     <!--end::Content container-->
 </div>
-<!--end::Content-->
 
-<script>
-    // Data list inovasi kota dengan key slug untuk pemanggilan file blade
-    const daftarInovasiKota = [
-        { key: 'elearning-puspaga', pokja: 'pokja 1', title: 'E-learning Puspaga PKK' },
-        { key: 'kemanggi', pokja: 'pokja 1', title: 'Kemanggi (Kelas Remaja dan Orang Tua Tangguh, Kreatif, dan Mandiri)' },
-        { key: 'selantang', pokja: 'pokja 2', title: 'Selantang' },
-        { key: 'soth', pokja: 'pokja 2', title: 'SOTH (Sekolah Orang Tua Hebat)' },
-        { key: 'empty-sekretaris', pokja: 'sekretaris', title: 'Data Inovasi tidak ditemukan' },
-        { key: 'makan-ketan', pokja: 'pokja 3', title: 'Makan Ketan (Pemanfaatan Pekarangan untuk Ketahanan Pangan)' },
-        { key: 'pisang-danor', pokja: 'pokja 3', title: 'Pisang Danor (Pilah Sampah Anorganik dan Organik)' },
-        { key: 'pmt', pokja: 'pokja 3', title: 'PMT (Pemberian Makanan Tambahan)' },
-        { key: 'pendampingan-bumil', pokja: 'pokja 4', title: 'Inovasi Pendampingan Ibu Hamil dan Ibu Hamil Resti' },
-        { key: 'kampung-asi', pokja: 'pokja 4', title: 'Kampung ASI' },
-        { key: 'surabaya-emas', pokja: 'pokja 4', title: 'Surabaya Emas' }
-    ];
+<!-- Script Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    function populateInovasiOptions(selectedPokja = 'semua') {
-        const inovasiSelect = document.getElementById('select-filter-inovasi');
-        if (!inovasiSelect) return;
-
-        inovasiSelect.innerHTML = '';
-
-        // Kasus khusus Sekretaris: Otomatis terpilih dan disabled
-        if (selectedPokja.toLowerCase() === 'sekretaris') {
-            const opt = document.createElement('option');
-            opt.value = "empty-sekretaris";
-            opt.textContent = "Data Inovasi tidak ditemukan";
-            opt.selected = true;
-            opt.disabled = true;
-            inovasiSelect.appendChild(opt);
-            return;
-        }
-
-        // Placeholder default untuk Pokja lainnya
-        const defaultOpt = document.createElement('option');
-        defaultOpt.value = "";
-        defaultOpt.textContent = "Pilih salah satu inovasi...";
-        defaultOpt.selected = true;
-        defaultOpt.disabled = true;
-        inovasiSelect.appendChild(defaultOpt);
-
-        const filtered = daftarInovasiKota.filter(item => {
-            if (item.pokja.toLowerCase() === 'sekretaris') return false;
-            return selectedPokja === 'semua' || item.pokja.toLowerCase() === selectedPokja.toLowerCase();
-        });
-
-        filtered.forEach(item => {
-            const opt = document.createElement('option');
-            opt.value = item.key;
-            opt.textContent = item.title;
-            inovasiSelect.appendChild(opt);
-        });
-    }
-
-    function handlePokjaChange() {
-        const selectedPokja = document.getElementById('select-filter-pokja').value;
-        populateInovasiOptions(selectedPokja);
-        resetDetailState();
-    }
-
-    function handleInovasiChange() {
-        const selectedKey = document.getElementById('select-filter-inovasi').value;
-        const emptyState = document.getElementById('state-placeholder-empty');
-        const detailState = document.getElementById('state-detail-content');
-
-        // Sembunyikan semua partial inovasi terlebih dahulu
-        document.querySelectorAll('.inovasi-item-view').forEach(el => el.classList.add('d-none'));
-
-        if (selectedKey && selectedKey !== 'empty-sekretaris') {
-            emptyState.classList.add('d-none');
-            detailState.classList.remove('d-none');
-
-            // Tampilkan komponen blade yang sesuai key
-            const activeContent = document.getElementById('content-' + selectedKey);
-            if (activeContent) {
-                activeContent.classList.remove('d-none');
-            }
-        } else {
-            resetDetailState();
-        }
-    }
-
-    function resetDetailState() {
-        const emptyState = document.getElementById('state-placeholder-empty');
-        const detailState = document.getElementById('state-detail-content');
-
-        if (emptyState && detailState) {
-            emptyState.classList.remove('d-none');
-            detailState.classList.add('d-none');
-            document.querySelectorAll('.inovasi-item-view').forEach(el => el.classList.add('d-none'));
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        populateInovasiOptions('semua');
-    });
-</script>
+<!-- Script Inovasi Kota sesuai folder Anda -->
+<script src="{{ asset('assets/js/custom/pages/inovasi/inovasi-kota.js') }}?v={{ time() }}"></script>
 @endsection
+
