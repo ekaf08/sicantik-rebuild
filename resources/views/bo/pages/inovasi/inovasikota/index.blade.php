@@ -106,34 +106,35 @@
             </div>
 
             <!-- 2. Filter Dropdown Pokja & Inovasi -->
-<div class="card border-0 shadow-sm rounded-4 mb-5">
-    <div class="card-body p-5">
-        <div class="row g-4">
-            <div class="col-12 col-md-6">
-                <label class="form-label fw-bold text-gray-700 fs-6">Pilih Pokja</label>
-                <select id="select-filter-pokja" class="form-select form-select-solid fw-semibold" onchange="handlePokjaChange()">
-                    <option value="semua" selected>Semua</option>
-                    <option value="sekretaris">Sekretaris</option>
-                    <option value="pokja 1">Pokja 1</option>
-                    <option value="pokja 2">Pokja 2</option>
-                    <option value="pokja 3">Pokja 3</option>
-                    <option value="pokja 4">Pokja 4</option>
-                </select>
+            <div class="card border-0 shadow-sm rounded-4 mb-5">
+                <div class="card-body p-5">
+                    <div class="row g-4">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold text-gray-700 fs-6">Pilih Pokja</label>
+                            <select id="select-filter-pokja" class="form-select form-select-solid fw-semibold" onchange="handlePokjaChange()">
+                                <option value="semua" selected>Semua</option>
+                                <option value="sekretaris">Sekretaris</option>
+                                <option value="pokja 1">Pokja 1</option>
+                                <option value="pokja 2">Pokja 2</option>
+                                <option value="pokja 3">Pokja 3</option>
+                                <option value="pokja 4">Pokja 4</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold text-gray-700 fs-6">Pilih Inovasi</label>
+                            <select id="select-filter-inovasi" class="form-select form-select-solid fw-semibold" onchange="handleInovasiChange()">
+                                <option value="" selected disabled>Pilih salah satu inovasi...</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-12 col-md-6">
-                <label class="form-label fw-bold text-gray-700 fs-6">Pilih Inovasi</label>
-                <select id="select-filter-inovasi" class="form-select form-select-solid fw-semibold" onchange="handleInovasiChange()">
-                    <option value="" selected disabled>Pilih salah satu inovasi...</option>
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
             <!-- 3. Area Konten Detail Inovasi -->
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body py-5 px-4">
-                    
+
                     <!-- State 1: Placeholder Putihan Bersih Sesuai Teks Saja -->
                     <div id="state-placeholder-empty" class="empty-detail-clean">
                         <p class="text-muted fw-semibold mb-0" style="font-size: 0.95rem;">
@@ -199,4 +200,3 @@
 <!-- Script Inovasi Kota sesuai folder Anda -->
 <script src="{{ asset('assets/js/custom/pages/inovasi/inovasi-kota.js') }}?v={{ time() }}"></script>
 @endsection
-
