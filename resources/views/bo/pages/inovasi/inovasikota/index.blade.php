@@ -134,7 +134,7 @@
             <!-- 3. Area Konten Detail Inovasi -->
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body py-5 px-4">
-                    
+
                     <!-- State 1: Placeholder Putihan Bersih Sesuai Teks Saja -->
                     <div id="state-placeholder-empty" class="empty-detail-clean">
                         <p class="text-muted fw-semibold mb-0" style="font-size: 0.95rem;">
