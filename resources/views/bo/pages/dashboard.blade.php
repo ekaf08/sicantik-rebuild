@@ -35,6 +35,18 @@
         tr.text-gray td {
             color: var(--bs-gray-600) !important;
         }
+        /* Memaksa isi th dan td pada tabel tersebut agar rata tengah */
+        /* Otomatis menargetkan semua ID yang diawali dengan "kt_table_" */
+        table[id^="kt_table_"] th, 
+        table[id^="kt_table_"] td {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+
+        .dataTables_wrapper table[id^="kt_table_"] th, 
+        .dataTables_wrapper table[id^="kt_table_"] td {
+            text-align: center !important;
+        }
     </style>
 @endpush
 @section('content')

@@ -158,16 +158,64 @@
                     24.112
                 </td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Bkb_Jml_Kelp"
+                    data-field="Bkb Jml Kelp"
+                    data-kecamatan="Tegalsari"
+                    style="cursor: pointer;">
+                    125
+                </td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Bkb_Jml_Ibu"
+                    data-field="Bkb Jml Ibu"
+                    data-kecamatan="Tegalsari"
+                    style="cursor: pointer;">
+                    135
+                </td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Bkb_Jml_Ape"
+                    data-field="Bkb Jml Ape"
+                    data-kecamatan="Tegalsari"
+                    style="cursor: pointer;">
+                    32
+                </td>
+                <td>28</td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Tutor_KF"
+                    data-field="Kader Khusus Tutor KF"
+                    data-kecamatan="Tegalsari"
+                    style="cursor: pointer;">
+                    1.087
+                </td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Bkb_Khusus"
+                    data-field="Kader Khusus BKB"
+                    data-kecamatan="Tegalsari"
+                    style="cursor: pointer;">
+                    24.112
+                </td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Tutor_KF"
+                    data-field="Kader Khusus Koperasi"
+                    data-kecamatan="Tegalsari"
+                    style="cursor: pointer;">
+                    125
+                </td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Tutor_KF"
+                    data-field="Kader Khusus Ketrampilan "
+                    data-kecamatan="Tegalsari"
+                    style="cursor: pointer;">
+                    135
+                </td>
+                <td data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_Lp3_Pkk"
+                    data-field="Kader Khusus Lp3 Pkk Kota"
+                    data-kecamatan="Tegalsari"
+                    style="cursor: pointer;">
+                    32
+                </td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
                 <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>

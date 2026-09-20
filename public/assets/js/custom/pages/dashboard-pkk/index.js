@@ -279,7 +279,206 @@ document.addEventListener('DOMContentLoaded', function () {
                 `DETAIL ${field} - ${kecamatan}`.toUpperCase();
         });
     }
+
+    /* Modal Detail Bkb Jml Kelp */
+    if (!$.fn.DataTable.isDataTable('#kt_table_Bkb_Jml_Kelp')) {
+        $('#kt_table_Bkb_Jml_Kelp').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            dom:
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
+            language: {
+                lengthMenu: "_MENU_",
+                zeroRecords: "Tidak ada data untuk ditampilkan",
+                info: "Showing _START_ to _END_ of _TOTAL_ records",
+                infoEmpty: "Showing no records",
+                infoFiltered: "",
+                search: "Search:",
+                paginate: { previous: "‹", next: "›" }
+            }
+        });
+    }
+
+    const modalBkbJmlKelpEl = document.getElementById('kt_modal_Bkb_Jml_Kelp');
+    if (modalBkbJmlKelpEl) {
+        modalBkbJmlKelpEl.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
+            const field = trigger.getAttribute('data-field') || '';
+            const kecamatan = trigger.getAttribute('data-kecamatan') || '';
+            document.getElementById('modalBkb_Jml_KelpTitle').textContent =
+                `DETAIL ${field} - ${kecamatan}`.toUpperCase();
+        });
+    }
+
+    /* Modal Detail Bkb Jml Ibu */
+    if (!$.fn.DataTable.isDataTable('#kt_table_Bkb_Jml_Ibu')) {
+        $('#kt_table_Bkb_Jml_Ibu').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            dom:
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
+            language: {
+                lengthMenu: "_MENU_",
+                zeroRecords: "Tidak ada data untuk ditampilkan",
+                info: "Showing _START_ to _END_ of _TOTAL_ records",
+                infoEmpty: "Showing no records",
+                infoFiltered: "",
+                search: "Search:",
+                paginate: { previous: "‹", next: "›" }
+            }
+        });
+    }
+
+    const modalBkbJmlIbuEl = document.getElementById('kt_modal_Bkb_Jml_Ibu');
+    if (modalBkbJmlIbuEl) {
+        modalBkbJmlIbuEl.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
+            const field = trigger.getAttribute('data-field') || '';
+            const kecamatan = trigger.getAttribute('data-kecamatan') || '';
+            document.getElementById('modalBkb_Jml_IbuTitle').textContent =
+                `DETAIL ${field} - ${kecamatan}`.toUpperCase();
+        });
+    }
+
+    /* Modal Detail Bkb Jml Ape */
+    if (!$.fn.DataTable.isDataTable('#kt_table_Bkb_Jml_Ape')) {
+        $('#kt_table_Bkb_Jml_Ape').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            dom:
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
+            language: {
+                lengthMenu: "_MENU_",
+                zeroRecords: "Tidak ada data untuk ditampilkan",
+                info: "Showing _START_ to _END_ of _TOTAL_ records",
+                infoEmpty: "Showing no records",
+                infoFiltered: "",
+                search: "Search:",
+                paginate: { previous: "‹", next: "›" }
+            }
+        });
+    }
+
+    const modalBkbJmlApeEl = document.getElementById('kt_modal_Bkb_Jml_Ape');
+    if (modalBkbJmlApeEl) {
+        modalBkbJmlApeEl.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
+            const field = trigger.getAttribute('data-field') || '';
+            const kecamatan = trigger.getAttribute('data-kecamatan') || '';
+            document.getElementById('modalBkb_Jml_ApeTitle').textContent =
+                `DETAIL ${field} - ${kecamatan}`.toUpperCase();
+        });
+    }
+
+    /* Modal Detail Kader Khusus Tutor KF */
+    if (!$.fn.DataTable.isDataTable('#kt_table_Tutor_KF')) {
+        $('#kt_table_Tutor_KF').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            dom:
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
+            language: {
+                lengthMenu: "_MENU_",
+                zeroRecords: "Tidak ada data untuk ditampilkan",
+                info: "Showing _START_ to _END_ of _TOTAL_ records",
+                infoEmpty: "Showing no records",
+                infoFiltered: "",
+                search: "Search:",
+                paginate: { previous: "‹", next: "›" }
+            }
+        });
+    }
+
+    const modalTutorKfEl = document.getElementById('kt_modal_Tutor_KF');
+    if (modalTutorKfEl) {
+        modalTutorKfEl.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
+            const field = trigger.getAttribute('data-field') || '';
+            const kecamatan = trigger.getAttribute('data-kecamatan') || '';
+            document.getElementById('modalTutor_KFTitle').textContent =
+                `DETAIL ${field} - ${kecamatan}`.toUpperCase();
+                
+        });
+    }
+
+    /* Modal Detail Kader Khusus BKB */
+    if (!$.fn.DataTable.isDataTable('#kt_table_Bkb_Khusus')) {
+        $('#kt_table_Bkb_Khusus').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            dom:
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
+            language: {
+                lengthMenu: "_MENU_",
+                zeroRecords: "Tidak ada data untuk ditampilkan",
+                info: "Showing _START_ to _END_ of _TOTAL_ records",
+                infoEmpty: "Showing no records",
+                infoFiltered: "",
+                search: "Search:",
+                paginate: { previous: "‹", next: "›" }
+            }
+        });
+    }
+
+    const modalBkbKhususEl = document.getElementById('kt_modal_Bkb_Khusus');
+    if (modalBkbKhususEl) {
+        modalBkbKhususEl.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
+            const field = trigger.getAttribute('data-field') || '';
+            const kecamatan = trigger.getAttribute('data-kecamatan') || '';
+            document.getElementById('modalBkb_KhususTitle').textContent =
+                `DETAIL ${field} - ${kecamatan}`.toUpperCase();
+        });
+    }
+
+    /* Modal Detail Lp3 Pkk Kota */
+    if (!$.fn.DataTable.isDataTable('#kt_table_Lp3_Pkk')) {
+        $('#kt_table_Lp3_Pkk').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            dom:
+                "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>",
+            language: {
+                lengthMenu: "_MENU_",
+                zeroRecords: "Tidak ada data untuk ditampilkan",
+                info: "Showing _START_ to _END_ of _TOTAL_ records",
+                infoEmpty: "Showing no records",
+                infoFiltered: "",
+                search: "Search:",
+                paginate: { previous: "‹", next: "›" }
+            }
+        });
+    }
+
+    const modalLp3PkkKotaEl = document.getElementById('kt_modal_Lp3_Pkk');
+    if (modalLp3PkkKotaEl) {
+        modalLp3PkkKotaEl.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
+            const field = trigger.getAttribute('data-field') || '';
+            const kecamatan = trigger.getAttribute('data-kecamatan') || '';
+            document.getElementById('modalLp3_PkkTitle').textContent =
+                `DETAIL ${field} - ${kecamatan}`.toUpperCase();
+        });
+    }
+
+
+
+
+
 });
+
 
 // ==========================================
 // FITUR DETAIL KADER SURABAYA HEBAT (POKJA 4)
