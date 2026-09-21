@@ -19,10 +19,10 @@
         <h2 class="fs-2hx fw-bold text-gray-900 mb-1">Makan Ketan</h2>
     </div>
     <div>
-<!-- Tombol Tambah Makan Ketan Warna Hijau -->
-<button type="button" class="btn btn-success fw-bold px-5" data-bs-toggle="modal" data-bs-target="#modal_tambah_makan_ketan">
-    <i class="ki-outline ki-plus fs-2 me-1"></i> Tambah Makan Ketan
-</button>
+        <!-- Tombol Tambah Makan Ketan Warna Hijau -->
+        <button type="button" class="btn btn-success fw-bold px-5" data-bs-toggle="modal" data-bs-target="#modal_tambah_makan_ketan">
+            <i class="ki-outline ki-plus fs-2 me-1"></i> Tambah Makan Ketan
+        </button>
     </div>
 </div>
 
@@ -170,8 +170,12 @@
                         <td><span class="badge badge-light-primary fw-bold">2025</span></td>
                         <td>Pemanfaatan Pekarangan RT 03</td>
                         <td class="text-end">
-                            <button class="btn btn-sm btn-icon btn-light-primary me-1"><i class="ki-outline ki-eye fs-5"></i></button>
-                            <button class="btn btn-sm btn-icon btn-light-warning"><i class="ki-outline ki-pencil fs-5"></i></button>
+                            <button type="button" class="btn btn-sm btn-icon btn-light-primary me-1" data-bs-toggle="modal" data-bs-target="#modal_detail_makan_ketan">
+                                <i class="ki-outline ki-eye fs-5"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-icon btn-light-warning" data-bs-toggle="modal" data-bs-target="#modal_edit_makan_ketan">
+                                <i class="ki-outline ki-pencil fs-5"></i>
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -180,11 +184,13 @@
 
     </div>
 </div>
-<!-- Modal Form Tambah Kegiatan -->
+
+<!-- ========================================== -->
+<!-- MODAL FORM TAMBAH KEGIATAN                 -->
+<!-- ========================================== -->
 <div class="modal fade" id="modal_tambah_makan_ketan" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-4">
-            <!-- Modal Header -->
             <div class="modal-header border-0 pb-0">
                 <h3 class="modal-title fw-bold text-gray-900 fs-4">Tambah Kegiatan</h3>
                 <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
@@ -192,12 +198,10 @@
                 </button>
             </div>
 
-            <!-- Modal Body -->
             <div class="modal-body py-6 px-8">
                 <form id="form_tambah_makan_ketan" action="#" method="POST" enctype="multipart/form-data">
                     @csrf
 
-                    <!-- Row 1: Kecamatan & Kelurahan -->
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">KECAMATAN <span class="text-danger">*</span></label>
@@ -218,7 +222,6 @@
                         </div>
                     </div>
 
-                    <!-- Row 2: Nama Dasa Wisma & Jumlah Rumah -->
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">NAMA DASA WISMA <span class="text-danger">*</span></label>
@@ -230,7 +233,6 @@
                         </div>
                     </div>
 
-                    <!-- Row 3: RT & RW -->
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">RT <span class="text-danger">*</span></label>
@@ -242,7 +244,6 @@
                         </div>
                     </div>
 
-                    <!-- Row 4: Tahun -->
                     <div class="row g-4 mb-6">
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">TAHUN <span class="text-danger">*</span></label>
@@ -255,17 +256,14 @@
                         </div>
                     </div>
 
-                    <!-- Section Preview Foto -->
                     <div class="mb-4">
                         <label class="form-label fs-7 fw-semibold text-gray-700 mb-3">Preview Foto</label>
                         <div class="row g-4">
-                            <!-- Placeholder Foto 1 -->
                             <div class="col-6">
                                 <div class="border rounded-3 p-8 text-center bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
                                     <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
                                 </div>
                             </div>
-                            <!-- Placeholder Foto 2 -->
                             <div class="col-6">
                                 <div class="border rounded-3 p-8 text-center bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
                                     <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
@@ -274,7 +272,6 @@
                         </div>
                     </div>
 
-                    <!-- Row Upload File Foto 1 & Foto 2 -->
                     <div class="row g-4 mb-6">
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-gray-700">Foto 1</label>
@@ -288,7 +285,6 @@
                         </div>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="d-flex justify-content-end gap-3 pt-4 border-top">
                         <button type="button" class="btn btn-danger fw-bold px-6" data-bs-dismiss="modal">
                             <i class="ki-outline ki-cross fs-3 me-1"></i> Batal
@@ -296,6 +292,88 @@
                         <button type="submit" class="btn btn-success fw-bold px-6">
                             <i class="ki-outline ki-check fs-3 me-1"></i> Simpan
                         </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL DETAIL INOVASI (TOMBOL MATA)        -->
+<!-- ========================================== -->
+<div class="modal fade" id="modal_detail_makan_ketan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h3 class="modal-title fw-bold text-gray-900 fs-4">Detail Kegiatan Makan Ketan</h3>
+                <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <i class="ki-outline ki-cross fs-1"></i>
+                </button>
+            </div>
+            <div class="modal-body py-6 px-8">
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label class="fw-bold text-gray-600 fs-7 d-block">Kecamatan:</label>
+                        <span class="fw-bolder text-gray-800 fs-6">Wonocolo</span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-bold text-gray-600 fs-7 d-block">Kelurahan:</label>
+                        <span class="fw-bolder text-gray-800 fs-6">Ketintang</span>
+                    </div>
+                </div>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label class="fw-bold text-gray-600 fs-7 d-block">Detail Program:</label>
+                        <span class="fw-bolder text-gray-800 fs-6">Pemanfaatan Pekarangan RT 03</span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-bold text-gray-600 fs-7 d-block">Tahun:</label>
+                        <span class="badge badge-light-primary fw-bold">2025</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light fw-bold px-6" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL EDIT INOVASI (TOMBOL PENSIL)         -->
+<!-- ========================================== -->
+<div class="modal fade" id="modal_edit_makan_ketan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h3 class="modal-title fw-bold text-gray-900 fs-4">Edit Kegiatan Makan Ketan</h3>
+                <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <i class="ki-outline ki-cross fs-1"></i>
+                </button>
+            </div>
+            <div class="modal-body py-6 px-8">
+                <form id="form_edit_makan_ketan" action="#" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">KECAMATAN <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-solid" name="kecamatan">
+                                <option value="wonocolo" selected>WONOCOLO</option>
+                                <option value="wonokromo">WONOKROMO</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">KELURAHAN <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-solid" name="kelurahan">
+                                <option value="ketintang" selected>KETINTANG</option>
+                                <option value="darmo">DARMO</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                        <button type="button" class="btn btn-light fw-bold px-6" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary fw-bold px-6">Simpan Perubahan</button>
                     </div>
                 </form>
             </div>
