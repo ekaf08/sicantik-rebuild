@@ -98,46 +98,17 @@
                 <label class="form-label fs-7 fw-bold text-gray-700">Kecamatan</label>
                 <select class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Kecamatan">
                     <option value="">Pilih Kecamatan</option>
-                    <option value="asemrowo">ASEMROWO</option>
-                    <option value="benowo">BENOWO</option>
-                    <option value="bubutan">BUBUTAN</option>
-                    <option value="bulak">BULAK</option>
-                    <option value="dukuh pakis">DUKUH PAKIS</option>
-                    <option value="gayungan">GAYUNGAN</option>
-                    <option value="genteng">GENTENG</option>
-                    <option value="gubeng">GUBENG</option>
-                    <option value="gunung anyar">GUNUNG ANYAR</option>
-                    <option value="jambangan">JAMBANGAN</option>
-                    <option value="karang pilang">KARANG PILANG</option>
-                    <option value="kenjeran">KENJERAN</option>
-                    <option value="kota surabaya">KOTA SURABAYA</option>
-                    <option value="krembangan">KREMBANGAN</option>
-                    <option value="lakar santri">LAKAR SANTRI</option>
-                    <option value="mulyorejo">MULYOREJO</option>
-                    <option value="pabean cantian">PABEAN CANTIAN</option>
-                    <option value="pakal">PAKAL</option>
-                    <option value="rungkut">RUNGKUT</option>
-                    <option value="sambi kerep">SAMBI KEREP</option>
-                    <option value="sawahan">SAWAHAN</option>
-                    <option value="semampir">SEMAMPIR</option>
-                    <option value="simokerto">SIMOKERTO</option>
-                    <option value="sukolilo">SUKOLILO</option>
-                    <option value="sukomanunggal">SUKOMANUNGGAL</option>
-                    <option value="tambaksari">TAMBAKSARI</option>
-                    <option value="tandes">TANDES</option>
-                    <option value="tegalsari">TEGALSARI</option>
-                    <option value="tenggilis mejoyo">TENGGILIS MEJOYO</option>
-                    <option value="wiyung">WIYUNG</option>
                     <option value="wonocolo">WONOCOLO</option>
                     <option value="wonokromo">WONOKROMO</option>
+                    <option value="gubeng">GUBENG</option>
                 </select>
             </div>
             <div class="col-12 col-md-4">
                 <label class="form-label fs-7 fw-bold text-gray-700">Kelurahan</label>
                 <select class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Kelurahan">
                     <option value="">Kelurahan</option>
-                    <option value="asemrowo">ASEMROWO</option>
-                    <option value="darmo">Darmo</option>
+                    <option value="ketintang">KETINTANG</option>
+                    <option value="darmo">DARMO</option>
                 </select>
             </div>
             <div class="col-12 col-md-4">
@@ -154,21 +125,42 @@
             <table class="table align-middle table-row-dashed fs-6 gy-4">
                 <thead>
                     <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                        <th>No</th>
-                        <th>Kecamatan</th>
-                        <th>Kelurahan</th>
-                        <th>Tahun</th>
-                        <th>Detail Program</th>
-                        <th class="text-end">Aksi</th>
+                        <th>NO</th>
+                        <th>KECAMATAN</th>
+                        <th>KELURAHAN</th>
+                        <th>NAMA DASAWISMA</th>
+                        <th>RT</th>
+                        <th>RW</th>
+                        <th>JUMLAH RUMAH</th>
+                        <th>TAHUN</th>
+                        <th>FILE DOKUMENTASI</th>
+                        <th>JUARA</th>
+                        <th class="text-end">AKSI</th>
                     </tr>
                 </thead>
                 <tbody class="fw-semibold text-gray-600">
                     <tr>
                         <td>1</td>
-                        <td>Wonocolo</td>
-                        <td>Ketintang</td>
+                        <td>WONOCOLO</td>
+                        <td>KETINTANG</td>
+                        <td>Mawar 1</td>
+                        <td>03</td>
+                        <td>02</td>
+                        <td>15</td>
                         <td><span class="badge badge-light-primary fw-bold">2025</span></td>
-                        <td>Pemanfaatan Pekarangan RT 03</td>
+                        <td>
+                            <!-- Link Lihat Foto Bergaris Bawah -->
+                            <a href="javascript:void(0)"
+                               class="text-primary fw-bold text-hover-primary text-decoration-underline d-inline-flex align-items-center gap-1"
+                               data-bs-toggle="modal"
+                               data-bs-target="#modal_detail_makan_ketan">
+                                <i class="ki-outline ki-file fs-5 text-primary"></i>
+                                Lihat Foto
+                            </a>
+                        </td>
+                        <td>
+                            <span class="badge badge-light-success fw-bold">Juara 1</span>
+                        </td>
                         <td class="text-end">
                             <button type="button" class="btn btn-sm btn-icon btn-light-primary me-1" data-bs-toggle="modal" data-bs-target="#modal_detail_makan_ketan">
                                 <i class="ki-outline ki-eye fs-5"></i>
@@ -254,6 +246,10 @@
                                 <option value="2026">2026</option>
                             </select>
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">JUARA</label>
+                            <input type="text" class="form-control form-control-solid" name="juara" placeholder="Contoh: Juara 1" />
+                        </div>
                     </div>
 
                     <div class="mb-4">
@@ -314,22 +310,61 @@
             <div class="modal-body py-6 px-8">
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
-                        <label class="fw-bold text-gray-600 fs-7 d-block">Kecamatan:</label>
-                        <span class="fw-bolder text-gray-800 fs-6">Wonocolo</span>
+                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Kecamatan</label>
+                        <span class="fw-bolder text-gray-800 fs-6">WONOCOLO</span>
                     </div>
                     <div class="col-md-6">
-                        <label class="fw-bold text-gray-600 fs-7 d-block">Kelurahan:</label>
-                        <span class="fw-bolder text-gray-800 fs-6">Ketintang</span>
+                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Kelurahan</label>
+                        <span class="fw-bolder text-gray-800 fs-6">KETINTANG</span>
                     </div>
                 </div>
+
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
-                        <label class="fw-bold text-gray-600 fs-7 d-block">Detail Program:</label>
-                        <span class="fw-bolder text-gray-800 fs-6">Pemanfaatan Pekarangan RT 03</span>
+                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Nama Dasawisma</label>
+                        <span class="fw-bolder text-gray-800 fs-6">Mawar 1</span>
                     </div>
                     <div class="col-md-6">
-                        <label class="fw-bold text-gray-600 fs-7 d-block">Tahun:</label>
+                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Jumlah Rumah</label>
+                        <span class="fw-bolder text-gray-800 fs-6">15 Rumah</span>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">RT</label>
+                        <span class="fw-bolder text-gray-800 fs-6">03</span>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">RW</label>
+                        <span class="fw-bolder text-gray-800 fs-6">02</span>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Tahun</label>
                         <span class="badge badge-light-primary fw-bold">2025</span>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Juara</label>
+                        <span class="badge badge-light-success fw-bold">Juara 1</span>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-3">File Dokumentasi</label>
+                    <div class="row g-4">
+                        <div class="col-6">
+                            <div class="border rounded-3 p-8 text-center bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="border rounded-3 p-8 text-center bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -371,6 +406,62 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">NAMA DASA WISMA <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-solid" name="nama_dasa_wisma" value="Mawar 1" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">JUMLAH RUMAH <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control form-control-solid" name="jumlah_rumah" value="15" />
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">RT <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-solid" name="rt" value="03" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">RW <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-solid" name="rw" value="02" />
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-6">
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">TAHUN <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-solid" name="tahun">
+                                <option value="2024">2024</option>
+                                <option value="2025" selected>2025</option>
+                                <option value="2026">2026</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">JUARA</label>
+                            <input type="text" class="form-control form-control-solid" name="juara" value="Juara 1" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fs-7 fw-semibold text-gray-700 mb-3">Preview / Ubah Foto</label>
+                        <div class="row g-4">
+                            <div class="col-6">
+                                <div class="border rounded-3 p-8 text-center bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                                    <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
+                                </div>
+                                <input type="file" class="form-control form-control-solid mt-2" name="foto_1" accept="image/jpg, image/jpeg, image/png" />
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded-3 p-8 text-center bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                                    <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
+                                </div>
+                                <input type="file" class="form-control form-control-solid mt-2" name="foto_2" accept="image/jpg, image/jpeg, image/png" />
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-end gap-3 pt-4 border-top">
                         <button type="button" class="btn btn-light fw-bold px-6" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary fw-bold px-6">Simpan Perubahan</button>
