@@ -41,7 +41,7 @@
                     <!--begin:Menu sub-->
                     <div class="menu-sub menu-sub-accordion">
                         <div class="menu-item">
-                            <a class="menu-link active" href="index.html">
+                            <a class="menu-link active" href="{{ route('dashboard') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
@@ -52,6 +52,33 @@
                     <!--end:Menu sub-->
                 </div>
                 <!--end:Menu item Dashboards-->
+
+                <!--begin:Menu item Master-->
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                    <!--begin:Menu link-->
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-home-2 fs-2"></i>
+                        </span>
+                        <span class="menu-title">Master</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+                    <!--end:Menu link-->
+                    <!--begin:Menu sub-->
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link active" href="{{ route('dashboard') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Default</span>
+                            </a>
+                        </div>
+                    </div>
+                    <!--end:Menu sub-->
+                </div>
+                <!--end:Menu item Master-->
+
 
                 <!--begin:Menu item Inovasi (Parent)-->
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('inovasi.*') ? 'here show' : '' }}">
