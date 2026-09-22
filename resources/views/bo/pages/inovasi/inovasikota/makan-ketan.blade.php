@@ -19,7 +19,6 @@
         <h2 class="fs-2hx fw-bold text-gray-900 mb-1">Makan Ketan</h2>
     </div>
     <div>
-        <!-- Tombol Tambah Makan Ketan Warna Hijau -->
         <button type="button" class="btn btn-success fw-bold px-5" data-bs-toggle="modal" data-bs-target="#modal_tambah_makan_ketan">
             <i class="ki-outline ki-plus fs-2 me-1"></i> Tambah Makan Ketan
         </button>
@@ -28,7 +27,6 @@
 
 <!-- 3. Stat Cards: Total Data per Tahun (2024, 2025, 2026) -->
 <div class="row g-4 mb-6">
-    <!-- Tahun 2024 -->
     <div class="col-12 col-md-4">
         <div class="card card-flush h-100 shadow-sm border-start border-4 border-primary">
             <div class="card-body p-5 d-flex align-items-center justify-content-between">
@@ -48,7 +46,6 @@
         </div>
     </div>
 
-    <!-- Tahun 2025 -->
     <div class="col-12 col-md-4">
         <div class="card card-flush h-100 shadow-sm border-start border-4" style="border-color: #7239ea !important;">
             <div class="card-body p-5 d-flex align-items-center justify-content-between">
@@ -68,7 +65,6 @@
         </div>
     </div>
 
-    <!-- Tahun 2026 -->
     <div class="col-12 col-md-4">
         <div class="card card-flush h-100 shadow-sm border-start border-4 border-success">
             <div class="card-body p-5 d-flex align-items-center justify-content-between">
@@ -92,7 +88,6 @@
 <!-- 4. Form Filter & Tabel Data -->
 <div class="card card-flush shadow-sm">
     <div class="card-body pt-6">
-        <!-- Form Filter Horizontal -->
         <div class="row g-3 mb-5">
             <div class="col-12 col-md-4">
                 <label class="form-label fs-7 fw-bold text-gray-700">Kecamatan</label>
@@ -149,7 +144,6 @@
                         <td>15</td>
                         <td><span class="badge badge-light-primary fw-bold">2025</span></td>
                         <td>
-                            <!-- Link Lihat Foto Bergaris Bawah -->
                             <a href="javascript:void(0)"
                                class="text-primary fw-bold text-hover-primary text-decoration-underline d-inline-flex align-items-center gap-1"
                                data-bs-toggle="modal"
@@ -173,7 +167,6 @@
                 </tbody>
             </table>
         </div>
-
     </div>
 </div>
 
@@ -452,12 +445,14 @@
                                     <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
                                 </div>
                                 <input type="file" class="form-control form-control-solid mt-2" name="foto_1" accept="image/jpg, image/jpeg, image/png" />
+                                <span class="text-danger fs-9 mt-1 d-block">File harus di bawah 2MB dan berformat jpg, png atau jpeg.</span>
                             </div>
                             <div class="col-6">
                                 <div class="border rounded-3 p-8 text-center bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
                                     <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
                                 </div>
                                 <input type="file" class="form-control form-control-solid mt-2" name="foto_2" accept="image/jpg, image/jpeg, image/png" />
+                                <span class="text-danger fs-9 mt-1 d-block">File harus di bawah 2MB dan berformat jpg, png atau jpeg.</span>
                             </div>
                         </div>
                     </div>
