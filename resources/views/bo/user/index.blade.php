@@ -203,31 +203,36 @@
             });
 
             // === handle submit form modal ===
-            $('#form_user').on('submit', function(e) {
-                e.preventDefault();
+            // === handle submit form modal ===
+$('#form_user').on('submit', function(e) {
+    e.preventDefault();
 
-                $.ajax({
-                    url: $(this).attr('action'),
-                    method: 'POST',
-                    data: $(this).serialize(),
-                    success: function(res) {
-                        if (res.status) {
-                            $('#kt_modal_add_users').modal('hide');
-                            table.draw();
-                            alert(res.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 422) {
-                            var errors = xhr.responseJSON.errors;
-                            var msg = Object.values(errors).map(e => e[0]).join('\n');
-                            alert(msg);
-                        } else {
-                            alert('Terjadi kesalahan server');
-                        }
-                    }
+    $.ajax({
+        url: $(this).attr('action'),
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(res) {
+            if (res.status) {
+                $('#kt_modal_add_users').modal('hide');
+                table.draw();
+                Swal.fire('Berhasil!', res.message, 'success');
+            }
+        },
+        error: function(xhr) {
+            if (xhr.status === 422) {
+                var errors = xhr.responseJSON.errors;
+                var msg = Object.values(errors).map(e => e[0]).join('<br>');
+                Swal.fire({
+                    title: 'Gagal',
+                    html: msg,
+                    icon: 'error'
                 });
-            });
+            } else {
+                Swal.fire('Error', 'Terjadi kesalahan server', 'error');
+            }
+        }
+    });
+});
         });
 
         $(document).on('click', '.btn-edit', function() {
@@ -263,29 +268,38 @@
 
         // Ketika tombol Delete diklik
         $(document).on('click', '.btn-delete', function() {
-            var id = $(this).data('id');
-            var url = "{{ url('master/user') }}/" + id; // Route untuk destroy/delete
+    var id = $(this).data('id');
+    var url = "{{ url('master/user') }}/" + id;
 
-            if (confirm('Apakah Anda yakin ingin menghapus user ini?')) {
-                $.ajax({
-                    url: url,
-                    method: 'POST',
-                    data: {
-                        '_token': '{{ csrf_token() }}',
-                        '_method': 'DELETE'
-                    },
-                    success: function(res) {
-                        if (res.status) {
-                            $('#kt_table_user').DataTable().ajax.reload(null, false);
-                            alert(res.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        alert('Gagal menghapus data user.');
-                    }
-                });
-            }
-        });
+    Swal.fire({
+        title: 'Yakin mau hapus?',
+        text: "User ini akan dihapus permanen.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#d33',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    '_token': '{{ csrf_token() }}',
+                    '_method': 'DELETE'
+                },
+                success: function(res) {
+                    $('#kt_table_user').DataTable().ajax.reload(null, false);
+                    Swal.fire('Berhasil!', res.message, 'success');
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                    Swal.fire('Gagal', 'Gagal menghapus data user.', 'error');
+                }
+            });
+        }
+    });
+});
     </script>
    
 @endsection
