@@ -37,6 +37,7 @@ Route::group([], function () {
 
     Route::get('master/user/data', [UserController::class, 'data'])->name('users.data');
     Route::resource('master/user', UserController::class)->except(['create', 'edit']);
+    Route::post('/user', [UserController::class, 'store'])->name('user.store');
 
     Route::get('master/permission/data', [PermissionController::class, 'data'])->name('permission.data');
     Route::resource('master/permission', PermissionController::class)->except(['create', 'edit']);

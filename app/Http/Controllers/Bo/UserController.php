@@ -60,7 +60,18 @@ class UserController extends Controller
                 ';
             })
             ->rawColumns(['action'])
-            ->rawColumns(['action'])
+
+            ->filter(function ($instance) use ($request) {
+                if ($keyword = $request->get('search')['value']) {
+                    $instance->where(function($w) use ($keyword) {
+                        $w->orWhere('users.name', 'LIKE', "%{$keyword}%")
+                          ->orWhere('users.username', 'LIKE', "%{$keyword}%")
+                          ->orWhere('kec.nama_kec', 'LIKE', "%{$keyword}%")
+                          ->orWhere('kel.nama_kel', 'LIKE', "%{$keyword}%")
+                          ->orWhere('roles.name', 'LIKE', "%{$keyword}%");
+                    });
+                }
+            })
             ->make(true);
     }
 
@@ -77,7 +88,30 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
+            'id_kec' => 'required|exists:kecamatans,id',
+            'id_kel' => 'required|exists:kelurahans,id',
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        user::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'id_kec' => $request->id_kec,
+            'id_kel' => $request->id_kel,
+            'role_id' => $request->role_id,
+        ]);
+
+        return response()->json([
+        'status' => true,
+        'message' => 'User berhasil ditambahkan!'
+        ]);
     }
 
     /**
@@ -85,15 +119,17 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
+        $user = User::findOrFail($id);
+        return response()->json($user);
 
+    }
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
-        //
+        $user = User::findorFail($id);
+        return response()->json($user);
     }
 
     /**
@@ -101,14 +137,49 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+    $user = User::findOrFail($id);
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'username' => 'required|string|max:255|unique:users,username,' . $id,
+        'email' => 'required|email|max:255|unique:users,email,' . $id,
+        'password' => 'nullable|string|min:8',
+        'role_id' => 'required|exists:roles,id',
+    ]);
+
+    $data = [
+        'name' => $request->name,
+        'username' => $request->username,
+        'email' => $request->email,
+        'id_kec' => $request->id_kec,
+        'id_kel' => $request->id_kel,
+        'role_id' => $request->role_id,
+    ];
+
+    if ($request->filled('password')) {
+        $data['password'] = bcrypt($request->password);
+    }
+
+    $user->update($data);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'User berhasil diupdate!'
+    ]);
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
-    {
-        //
+    { 
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User berhasil dihapus!'
+        ]);
     }
 }

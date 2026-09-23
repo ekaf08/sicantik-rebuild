@@ -60,62 +60,11 @@
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
-                        <input type="text" data-kt-ecommerce-order-filter="search"
-                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Order">
+                        <input type="text" id="searchUser" class="form-control form-control-solid w-250px ps-12" placeholder="Cari User...">
                     </div>
                     <!--end::Search-->
                 </div>
                 <!--end::Card title-->
-                <!--begin::Card toolbar-->
-                <div class="card-toolbar flex-row-fluid justify-content-end gap-5" data-select2-id="select2-data-132-zee9">
-                    <!--begin::Flatpickr-->
-                    <div class="input-group w-250px">
-                        <input class="form-control form-control-solid rounded rounded-end-0 flatpickr-input"
-                            placeholder="Pick date range" id="kt_ecommerce_sales_flatpickr" type="hidden"><input
-                            class="form-control form-control-solid rounded rounded-end-0 input"
-                            placeholder="Pick date range" tabindex="0" type="text" readonly="readonly">
-                        <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
-                            <i class="ki-outline ki-cross fs-2"></i>
-                        </button>
-                    </div>
-                    <!--end::Flatpickr-->
-                    <div class="w-100 mw-150px" data-select2-id="select2-data-131-qy7q">
-                        <!--begin::Select2-->
-                        <select class="form-select form-select-solid select2-hidden-accessible" data-control="select2"
-                            data-hide-search="true" data-placeholder="Status" data-kt-ecommerce-order-filter="status"
-                            data-select2-id="select2-data-7-2xku" tabindex="-1" aria-hidden="true" data-kt-initialized="1">
-                            <option data-select2-id="select2-data-9-pn3y"></option>
-                            <option value="all" data-select2-id="select2-data-136-b6wt">All</option>
-                            <option value="Cancelled" data-select2-id="select2-data-137-3m7n">Cancelled</option>
-                            <option value="Completed" data-select2-id="select2-data-138-7q1x">Completed</option>
-                            <option value="Denied" data-select2-id="select2-data-139-y31l">Denied</option>
-                            <option value="Expired" data-select2-id="select2-data-140-qb1a">Expired</option>
-                            <option value="Failed" data-select2-id="select2-data-141-d6hx">Failed</option>
-                            <option value="Pending" data-select2-id="select2-data-142-ann2">Pending</option>
-                            <option value="Processing" data-select2-id="select2-data-143-ailo">Processing</option>
-                            <option value="Refunded" data-select2-id="select2-data-144-ag7n">Refunded</option>
-                            <option value="Delivered" data-select2-id="select2-data-145-wy7k">Delivered</option>
-                            <option value="Delivering" data-select2-id="select2-data-146-qliw">Delivering</option>
-                        </select><span
-                            class="select2 select2-container select2-container--bootstrap5 select2-container--below"
-                            dir="ltr" data-select2-id="select2-data-8-99j2" style="width: 100%;"><span
-                                class="selection"><span
-                                    class="select2-selection select2-selection--single form-select form-select-solid"
-                                    role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0"
-                                    aria-disabled="false" aria-labelledby="select2-j6xe-container"
-                                    aria-controls="select2-j6xe-container"><span class="select2-selection__rendered"
-                                        id="select2-j6xe-container" role="textbox" aria-readonly="true" title="Status"><span
-                                            class="select2-selection__placeholder">Status</span></span><span
-                                        class="select2-selection__arrow" role="presentation"><b
-                                            role="presentation"></b></span></span></span><span class="dropdown-wrapper"
-                                aria-hidden="true"></span></span>
-                        <!--end::Select2-->
-                    </div>
-                    <!--begin::Add product-->
-                    <a href="apps/ecommerce/catalog/add-product.html" class="btn btn-primary">Add Order</a>
-                    <!--end::Add product-->
-                </div>
-                <!--end::Card toolbar-->
             </div>
             <!--end::Card header-->
             <!--begin::Card body-->
@@ -148,12 +97,61 @@
         </div>
         <!--end::Products-->
     </div>
+
+    <div class="modal fade" id="kt_modal_add_users" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="form_user" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h2 class="modal-title">TAMBAH USER</h2>
+                        <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                            <i class="ki-outline ki-cross fs-1"></i>
+                        </div>
+                    </div>
+                    <div class="modal-body py-10 px-lg-17">
+                        <div class="mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Nama</label>
+                            <input type="text" name="name" class="form-control form-control-solid" placeholder="Masukkan nama">
+                        </div>
+                        <div class="mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Username</label>
+                            <input type="text" name="username" class="form-control form-control-solid" placeholder="Masukkan username">
+                        </div>
+                        <div class="mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Email</label>
+                            <input type="email" name="email" class="form-control form-control-solid" placeholder="Masukkan email">
+                        </div>
+                        <div class="mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Password</label>
+                            <input type="password" name="password" class="form-control form-control-solid" placeholder="Masukkan password">
+                        </div>
+                        <div class="mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Role</label>
+                            <select name="role_id" class="form-select form-select-solid">
+                                <option value="">Pilih Role</option>
+                                @foreach($role as $r)
+                                    <option value="{{ $r->id }}">{{ $r->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer flex-center">
+                        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        
 @endsection
 
 @section('js')
+    <script src="{{ asset('assets/js/custom/pages/master/users.js') }}"></script>
     <script>
         $(document).ready(function() {
-            $('#kt_table_user').DataTable({
+            var table = $('#kt_table_user').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -196,10 +194,98 @@
                     }
                 ],
                 drawCallback: function() {
-                    // Re-init KTMenu supaya dropdown action berfungsi setelah data di-render ulang
                     KTMenu.createInstances();
                 }
             });
+
+            $('#searchUser').on('keyup', function () {
+                table.search(this.value).draw();
+            });
+
+            // === handle submit form modal ===
+            $('#form_user').on('submit', function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function(res) {
+                        if (res.status) {
+                            $('#kt_modal_add_users').modal('hide');
+                            table.draw();
+                            alert(res.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            var msg = Object.values(errors).map(e => e[0]).join('\n');
+                            alert(msg);
+                        } else {
+                            alert('Terjadi kesalahan server');
+                        }
+                    }
+                });
+            });
+        });
+
+        $(document).on('click', '.btn-edit', function() {
+    var id = $(this).data('id');
+    
+    var url = "{{ route('user.show', ':id') }}".replace(':id', id);
+    var updateUrl = "{{ route('user.update', ':id') }}".replace(':id', id);
+
+    $('#kt_modal_add_users').modal('show');
+    $('#kt_modal_add_users .modal-title').text('EDIT USER');
+    $('#form_user')[0].reset();
+    
+    $('#form_user').attr('action', updateUrl); 
+    
+    if($('#form_user input[name=_method]').length === 0) {
+        $('#form_user').prepend('<input type="hidden" name="_method" value="PUT">');
+    }
+
+    $.get(url)
+        .done(function(response) {
+            $('#form_user input[name=name]').val(response.name);
+            $('#form_user input[name=username]').val(response.username);
+            $('#form_user input[name=email]').val(response.email);
+            $('#form_user select[name=role_id]').val(response.role_id).trigger('change');
+            $('#form_user select[name=id_kec]').val(response.id_kec).trigger('change');
+            $('#form_user select[name=id_kel]').val(response.id_kel).trigger('change');
+            $('#form_user input[name=password]').val('');
+        })
+        .fail(function() {
+            alert('Gagal mengambil data user.');
+        });
+});
+
+        // Ketika tombol Delete diklik
+        $(document).on('click', '.btn-delete', function() {
+            var id = $(this).data('id');
+            var url = "{{ url('master/user') }}/" + id; // Route untuk destroy/delete
+
+            if (confirm('Apakah Anda yakin ingin menghapus user ini?')) {
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        '_token': '{{ csrf_token() }}',
+                        '_method': 'DELETE'
+                    },
+                    success: function(res) {
+                        if (res.status) {
+                            $('#kt_table_user').DataTable().ajax.reload(null, false);
+                            alert(res.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Gagal menghapus data user.');
+                    }
+                });
+            }
         });
     </script>
+   
 @endsection
