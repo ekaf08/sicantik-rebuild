@@ -102,6 +102,43 @@
                 <!--end:Menu item Master-->
 
 
+                <!--begin:Menu item Master (Parent)-->
+<div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs(['menu.*', 'user.*']) ? 'here show' : '' }}">
+    <!--begin:Menu link-->
+    <span class="menu-link">
+        <span class="menu-icon">
+            <i class="ki-outline ki-folder fs-2"></i>
+        </span>
+        <span class="menu-title">Master</span>
+        <span class="menu-arrow"></span>
+    </span>
+    <!--end:Menu link-->
+    
+    <!--begin:Menu sub-->
+    <div class="menu-sub menu-sub-accordion">
+        <!-- Sub-menu User -->
+        <div class="menu-item">
+            <a class="menu-link {{ request()->routeIs('user.*') ? 'active' : '' }}" href="{{ route('user.index') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">User</span>
+            </a>
+        </div>
+        
+        <!-- Sub-menu Menu -->
+        <div class="menu-item">
+            <a class="menu-link {{ request()->routeIs('menu.*') ? 'active' : '' }}" href="{{ route('menu.index') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Menu</span>
+            </a>
+        </div>
+    </div>
+    <!--end:Menu sub-->
+</div>
+<!--end:Menu item Master-->
                 <!--begin:Menu item Inovasi (Parent)-->
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('inovasi.*') ? 'here show' : '' }}">
                     <!--begin:Menu link-->
@@ -113,7 +150,6 @@
                         <span class="menu-arrow"></span>
                     </span>
                     <!--end:Menu link-->
-
                     <!--begin:Menu sub-->
                     <div class="menu-sub menu-sub-accordion {{ request()->routeIs('inovasi.*') ? 'show' : '' }}">
                         <!--begin:Menu item Inovasi Global-->
