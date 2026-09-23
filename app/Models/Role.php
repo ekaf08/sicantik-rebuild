@@ -12,11 +12,5 @@ class Role extends Model
 
     protected $table = 'roles';
     protected $primaryKey = 'id';
-    protected $dates = ['deleted_at'];
     protected $guarded = [];
-
-    public function users()
-    {
-        return $this->hasMany(User::class);
-    }
 }
