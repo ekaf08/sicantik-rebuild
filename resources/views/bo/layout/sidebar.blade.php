@@ -1,13 +1,13 @@
 <div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true" data-kt-drawer-name="app-sidebar" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="250px" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
-    
+
     <!--begin::Header (Dibuat lebih ringkas tingginya) -->
     <div class="app-sidebar-header d-flex flex-stack d-none d-lg-flex pt-4 pb-2 px-3" id="kt_app_sidebar_header">
-        
+
         <!--begin::Logo & Teks-->
         <a href="{{ url('/dashboard') }}" class="app-sidebar-logo d-flex flex-column align-items-center text-center text-decoration-none mx-auto py-1">
             <!-- Gambar Logo (Ukuran disesuaikan agar pas) -->
             <img alt="Logo" src="{{ asset('img/png/logo-sicantik-pkk.png') }}" class="h-25px mb-1 app-sidebar-logo-default" />
-            
+
             <!-- Teks di Bawah Logo -->
             <div class="app-sidebar-text-wrapper">
                 <span class="fs-8 fw-bold text-dark theme-light-show d-block">Si Cantik Surabaya</span>
@@ -15,13 +15,13 @@
             </div>
         </a>
         <!--end::Logo-->
-        
+
         <!--begin::Sidebar toggle-->
         <div id="kt_app_sidebar_toggle" class="app-sidebar-toggle btn btn-sm btn-icon bg-light btn-color-gray-700 btn-active-color-primary rotate" data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body" data-kt-toggle-name="app-sidebar-minimize">
             <i class="ki-outline ki-text-align-right rotate-180 fs-1"></i>
         </div>
         <!--end::Sidebar toggle-->
-        
+
     </div>
     <!--end::Header-->
     <!--begin::Navs-->
@@ -66,7 +66,7 @@
                 <!--end:Menu item Dashboards-->
 
                 <!--begin:Menu item Master-->
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('user*') ? 'here show' : '' }}">
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('user*') || request()->routeIs('role*') || request()->routeIs('master.*') ? 'here show' : '' }}">
                     <!--begin:Menu link-->
                     <span class="menu-link">
                         <span class="menu-icon">
@@ -78,12 +78,22 @@
                     <!--end:Menu link-->
                     <!--begin:Menu sub-->
                     <div class="menu-sub menu-sub-accordion">
+                        <!-- Submenu User -->
                         <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('user.index') ? 'active' : '' }}" href="{{ route('user.index') }}">
+                            <a class="menu-link {{ request()->routeIs('user.index') || request()->routeIs('master.user*') ? 'active' : '' }}" href="{{ route('user.index') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
                                 <span class="menu-title">User</span>
+                            </a>
+                        </div>
+                        <!-- Submenu Role -->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('role*') || request()->routeIs('master.role*') ? 'active' : '' }}" href="{{ route('role.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Role</span>
                             </a>
                         </div>
                     </div>
@@ -110,7 +120,6 @@
                     <!--end:Menu sub-->
                 </div>
                 <!--end:Menu item Master-->
-
 
                 <!--begin:Menu item Inovasi (Parent)-->
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('inovasi.*') ? 'here show' : '' }}">
