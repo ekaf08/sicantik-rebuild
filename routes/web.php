@@ -29,7 +29,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
        Route::get('/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
 // Protected routes — hanya bisa diakses kalau SUDAH login
 // s
- Route::get('/mpasi', [MpasiController::class, 'mpasi'])->name('mpasi.mp_asi');
+Route::get('/mpasi', [MpasiController::class, 'mpasi'])->name('mpasi.mp_asi');
 
 Route::group([], function () {
 
@@ -40,6 +40,7 @@ Route::group([], function () {
     Route::get('master/user/data', [UserController::class, 'data'])->name('users.data');
     Route::resource('master/user', UserController::class)->except(['create', 'edit']);
     Route::post('/user', [UserController::class, 'store'])->name('user.store');
+    Route::delete('/user', [UserController::class, 'destroy'])->name('user.destroy');
 
     Route::get('master/permission/data', [PermissionController::class, 'data'])->name('permission.data');
     Route::resource('master/permission', PermissionController::class)->except(['create', 'edit']);
