@@ -66,7 +66,7 @@
                 <!--end:Menu item Dashboards-->
 
                 <!--begin:Menu item Master-->
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('user*') || request()->routeIs('role*') || request()->routeIs('master.*') ? 'here show' : '' }}">
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('user*') ? 'here show' : '' }}">
                     <!--begin:Menu link-->
                     <span class="menu-link">
                         <span class="menu-icon">
@@ -78,22 +78,12 @@
                     <!--end:Menu link-->
                     <!--begin:Menu sub-->
                     <div class="menu-sub menu-sub-accordion">
-                        <!-- Submenu User -->
                         <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('user.index') || request()->routeIs('master.user*') ? 'active' : '' }}" href="{{ route('user.index') }}">
+                            <a class="menu-link {{ request()->routeIs('user.index') ? 'active' : '' }}" href="{{ route('user.index') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
                                 <span class="menu-title">User</span>
-                            </a>
-                        </div>
-                        <!-- Submenu Role -->
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('role*') || request()->routeIs('master.role*') ? 'active' : '' }}" href="{{ route('role.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Role</span>
                             </a>
                         </div>
                     </div>
@@ -116,10 +106,19 @@
                                 <span class="menu-title">Menu</span>
                             </a>
                         </div>
+                                                <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('role*') || request()->routeIs('master.role*') ? 'active' : '' }}" href="{{ route('role.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Role</span>
+                            </a>
+                        </div>
                     </div>
                     <!--end:Menu sub-->
                 </div>
                 <!--end:Menu item Master-->
+
 
                 <!--begin:Menu item Inovasi (Parent)-->
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('inovasi.*') ? 'here show' : '' }}">
