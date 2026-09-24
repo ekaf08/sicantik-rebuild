@@ -93,8 +93,8 @@ class UserController extends Controller
             'username' => 'required|string|max:255|unique:users,username',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
-            'id_kec' => 'required|exists:kecamatans,id',
-            'id_kel' => 'required|exists:kelurahans,id',
+            'id_kec' => 'nullable|exists:kecamatans,id',
+            'id_kel' => 'nullable|exists:kelurahans,id',
             'role_id' => 'required|exists:roles,id',
         ]);
 
