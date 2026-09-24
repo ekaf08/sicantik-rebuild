@@ -2,7 +2,6 @@
 
 @section('content')
 <style>
-    /* Paksa teks utama, tabel, dan label menjadi hitam tegas */
     #view-inovasi-dashboard, 
     #view-inovasi-input,
     #modal-form-inovasi {
