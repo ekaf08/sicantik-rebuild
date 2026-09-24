@@ -63,6 +63,9 @@ Route::group([], function () {
     Route::get('/{slug}', [MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');
 });
 
+    // menu slug
+    Route::get('/{slug}', [App\Http\Controllers\Bo\MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');
+
 // Closure route
 Route::get('/dashboard-pkk', function () {
     return view('bo.pages.dasboard-pkk.index');
