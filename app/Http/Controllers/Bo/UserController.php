@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Bo;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Kecamatan;
+use App\Models\Kelurahan;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -16,9 +18,15 @@ class UserController extends Controller
     public function index()
     {
         $role = Role::all();
+        $kecamatan = Kecamatan::all(); // 1. Ambil data kecamatan'
+        $kelurahan = Kelurahan::all();
+
         $datas = [
             'role' => $role,
+            'kecamatan' => $kecamatan, // 2. Masukkan ke dalam array datas
+            'kelurahan' => $kelurahan,
         ];
+
         return view('bo.user.index', $datas);
     }
 
@@ -46,7 +54,7 @@ class UserController extends Controller
                         Actions
                         <i class="ki-outline ki-down fs-5 ms-1"></i>
                     </a>
-                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
+                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-6 w-200px py-6 text-start" data-kt-menu="true">
                         <div class="menu-item px-3">
                             <a href="javascript:void(0)" class="menu-link px-3 btn-view" data-id="' . $row->id . '">View</a>
                         </div>
@@ -55,6 +63,9 @@ class UserController extends Controller
                         </div>
                         <div class="menu-item px-3">
                             <a href="javascript:void(0)" class="menu-link px-3 text-danger btn-delete" data-id="' . $row->id . '">Delete</a>
+                        </div>
+                        <div class="menu-item px-3">
+                            <a href="javascript:void(0)" class="menu-link px-3 text-danger btn-reset" data-id="' . $row->id . '">Reset Password</a>
                         </div>
                     </div>
                 ';
@@ -93,8 +104,8 @@ class UserController extends Controller
             'username' => 'required|string|max:255|unique:users,username',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
-            'id_kec' => 'nullable|exists:kecamatans,id',
-            'id_kel' => 'nullable|exists:kelurahans,id',
+            'id_kec' => 'required|exists:m_kecamatan,id_kec',
+            'id_kel' => 'required|exists:m_kelurahan,id_kel',
             'role_id' => 'required|exists:roles,id',
         ]);
 
@@ -144,6 +155,8 @@ class UserController extends Controller
         'username' => 'required|string|max:255|unique:users,username,' . $id,
         'email' => 'required|email|max:255|unique:users,email,' . $id,
         'password' => 'nullable|string|min:8',
+        'id_kec' => 'required|exists:m_kecamatan,id_kec',
+        'id_kel' => 'required|exists:m_kelurahan,id_kel',
         'role_id' => 'required|exists:roles,id',
     ]);
 

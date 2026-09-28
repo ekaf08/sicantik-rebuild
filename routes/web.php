@@ -29,7 +29,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
        Route::get('/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
 // Protected routes — hanya bisa diakses kalau SUDAH login
 // s
-Route::get('/mpasi', [MpasiController::class, 'mpasi'])->name('mpasi.mp_asi');
+// Route::get('/mpasi', [MpasiController::class, 'mpasi'])->name('mpasi.mp_asi');
 
 Route::group([], function () {
 
@@ -39,8 +39,8 @@ Route::group([], function () {
     
     Route::get('master/user/data', [UserController::class, 'data'])->name('users.data');
     Route::resource('master/user', UserController::class)->except(['create', 'edit']);
-    Route::post('/user', [UserController::class, 'store'])->name('user.store');
-    Route::delete('/user', [UserController::class, 'destroy'])->name('user.destroy');
+    Route::get('/get-kecamatan/{id_kec}', [UserController::class, 'getkecamatan'])->name('get.kecamatan');
+    Route::get('/get-kelurahan/{id_kec}', [UserController::class, 'getKelurahan'])->name('get.kelurahan');
 
     Route::get('master/permission/data', [PermissionController::class, 'data'])->name('permission.data');
     Route::resource('master/permission', PermissionController::class)->except(['create', 'edit']);
@@ -51,7 +51,7 @@ Route::group([], function () {
     Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
 
     // menu slug
-    Route::get('/{slug}', [App\Http\Controllers\MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');
+    Route::get('/{slug}', [App\Http\Controllers\Bo\MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');
     });
 // Closure route
 Route::get('/dashboard-pkk', function () {

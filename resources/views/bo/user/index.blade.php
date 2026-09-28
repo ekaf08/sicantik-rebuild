@@ -99,7 +99,7 @@
     </div>
 
     <div class="modal fade" id="kt_modal_add_users" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <form id="form_user" method="POST">
                     @csrf
@@ -125,6 +125,27 @@
                         <div class="mb-7">
                             <label class="required fw-semibold fs-6 mb-2">Password</label>
                             <input type="password" name="password" class="form-control form-control-solid" placeholder="Masukkan password">
+                        </div>
+                        <!-- Pilih Kecamatan -->
+                        <div class="mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Kecamatan</label>
+                            <select name="id_kec" id="id_kec" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#kt_modal_add_users">
+                                <option value="">Pilih Kecamatan</option>
+                                @foreach($kecamatan as $kec)
+                                    <option value="{{ $kec->id_kec }}">{{ $kec->nama_kec }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Pilih Kelurahan -->
+                        <div class="mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Kelurahan</label>
+                            <select name="id_kel" id="id_kel" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#kt_modal_add_users">
+                                <option value="">Pilih Kelurahan</option>
+                                @foreach($kelurahan as $kel)
+                                    <option value="{{ $kel->id_kel }}">{{ $kel->nama_kel }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="mb-7">
                             <label class="required fw-semibold fs-6 mb-2">Role</label>
@@ -202,104 +223,107 @@
                 table.search(this.value).draw();
             });
 
+
             // === handle submit form modal ===
-            // === handle submit form modal ===
-$('#form_user').on('submit', function(e) {
-    e.preventDefault();
+    $('#form_user').on('submit', function(e) {
+        e.preventDefault();
 
-    $.ajax({
-        url: $(this).attr('action'),
-        method: 'POST',
-        data: $(this).serialize(),
-        success: function(res) {
-            if (res.status) {
-                $('#kt_modal_add_users').modal('hide');
-                table.draw();
-                Swal.fire('Berhasil!', res.message, 'success');
-            }
-        },
-        error: function(xhr) {
-            if (xhr.status === 422) {
-                var errors = xhr.responseJSON.errors;
-                var msg = Object.values(errors).map(e => e[0]).join('<br>');
-                Swal.fire({
-                    title: 'Gagal',
-                    html: msg,
-                    icon: 'error'
-                });
-            } else {
-                Swal.fire('Error', 'Terjadi kesalahan server', 'error');
-            }
-        }
-    });
-});
-        });
-
-        $(document).on('click', '.btn-edit', function() {
-    var id = $(this).data('id');
-    
-    var url = "{{ route('user.show', ':id') }}".replace(':id', id);
-    var updateUrl = "{{ route('user.update', ':id') }}".replace(':id', id);
-
-    $('#kt_modal_add_users').modal('show');
-    $('#kt_modal_add_users .modal-title').text('EDIT USER');
-    $('#form_user')[0].reset();
-    
-    $('#form_user').attr('action', updateUrl); 
-    
-    if($('#form_user input[name=_method]').length === 0) {
-        $('#form_user').prepend('<input type="hidden" name="_method" value="PUT">');
-    }
-
-    $.get(url)
-        .done(function(response) {
-            $('#form_user input[name=name]').val(response.name);
-            $('#form_user input[name=username]').val(response.username);
-            $('#form_user input[name=email]').val(response.email);
-            $('#form_user select[name=role_id]').val(response.role_id).trigger('change');
-            $('#form_user select[name=id_kec]').val(response.id_kec).trigger('change');
-            $('#form_user select[name=id_kel]').val(response.id_kel).trigger('change');
-            $('#form_user input[name=password]').val('');
-        })
-        .fail(function() {
-            alert('Gagal mengambil data user.');
-        });
-});
-
-        // Ketika tombol Delete diklik
-        $(document).on('click', '.btn-delete', function() {
-    var id = $(this).data('id');
-    var url = "{{ url('master/user') }}/" + id;
-
-    Swal.fire({
-        title: 'Yakin mau hapus?',
-        text: "User ini akan dihapus permanen.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, hapus!',
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#d33',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: url,
-                method: 'POST',
-                data: {
-                    '_token': '{{ csrf_token() }}',
-                    '_method': 'DELETE'
-                },
-                success: function(res) {
-                    $('#kt_table_user').DataTable().ajax.reload(null, false);
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(res) {
+                if (res.status) {
+                    $('#kt_modal_add_users').modal('hide');
+                    table.draw();
                     Swal.fire('Berhasil!', res.message, 'success');
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                    Swal.fire('Gagal', 'Gagal menghapus data user.', 'error');
                 }
-            });
-        }
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    var errors = xhr.responseJSON.errors;
+                    var msg = Object.values(errors).map(e => e[0]).join('<br>');
+                    Swal.fire({
+                        title: 'Gagal',
+                        html: msg,
+                        icon: 'error'
+                    });
+                } else {
+                    Swal.fire('Error', 'Terjadi kesalahan server', 'error');
+                }
+            }
+        });
     });
-});
+
+    
+            });
+
+            // edit modal //
+        $(document).on('click', '.btn-edit', function() {
+            var id = $(this).data('id');
+            
+            var url = "{{ route('user.show', ':id') }}".replace(':id', id);
+            var updateUrl = "{{ route('user.update', ':id') }}".replace(':id', id);
+
+            $('#kt_modal_add_users').modal('show');
+            $('#kt_modal_add_users .modal-title').text('EDIT USER');
+            $('#form_user')[0].reset();
+            
+            $('#form_user').attr('action', updateUrl); 
+            
+            if($('#form_user input[name=_method]').length === 0) {
+                $('#form_user').prepend('<input type="hidden" name="_method" value="PUT">');
+            }
+
+        $.get(url)
+            .done(function(response) {
+                $('#form_user input[name=name]').val(response.name);
+                $('#form_user input[name=username]').val(response.username);
+                $('#form_user input[name=email]').val(response.email);
+                $('#form_user select[name=role_id]').val(response.role_id).trigger('change');
+                $('#form_user select[name=id_kec]').val(response.id_kec).trigger('change');
+                $('#form_user select[name=id_kel]').val(response.id_kel).trigger('change');
+                $('#form_user input[name=password]').val('');
+            })
+            .fail(function() {
+                alert('Gagal mengambil data user.');
+            });
+    });
+
+            // tombol Delete diklik
+    $(document).on('click', '.btn-delete', function() {
+        var id = $(this).data('id');
+        var url = "{{ url('master/user') }}/" + id;
+
+        Swal.fire({
+            title: 'Yakin mau hapus?',
+            text: "User ini akan dihapus permanen.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#d33',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        '_token': '{{ csrf_token() }}',
+                        '_method': 'DELETE'
+                    },
+                    success: function(res) {
+                        $('#kt_table_user').DataTable().ajax.reload(null, false);
+                        Swal.fire('Berhasil!', res.message, 'success');
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                        Swal.fire('Gagal', 'Gagal menghapus data user.', 'error');
+                    }
+                });
+            }
+        });
+    });
     </script>
    
 @endsection
