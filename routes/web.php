@@ -47,10 +47,12 @@ Route::group([], function () {
     Route::resource('master/permission', PermissionController::class)->except(['create', 'edit']);
 
     // Master Menu
-    Route::get('master/menu', [MenuController::class, 'index'])->name('menu.index');
-    Route::post('master/menu', [MenuController::class, 'store'])->name('menu.store');
-    Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
-    Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
+        Route::get('master/menu', [MenuController::class, 'index'])->name('menu.index');
+        Route::get('master/menu/data', [MenuController::class, 'data'])->name('menu.data');
+        Route::post('master/menu', [MenuController::class, 'store'])->name('menu.store');
+        Route::get('master/menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
+        Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
+        Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
 
     // Master Role
     Route::get('master/role', [RoleController::class, 'index'])->name('role.index');
@@ -59,12 +61,9 @@ Route::group([], function () {
     Route::put('master/role/update/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::delete('master/role/destroy/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
 
-    // Menu slug (Harus ditaruh paling bawah di dalam group agar tidak mengganggu route spesifik)
     Route::get('/{slug}', [MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');
-});
 
-    // menu slug
-    Route::get('/{slug}', [App\Http\Controllers\Bo\MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');
+});
 
 // Closure route
 Route::get('/dashboard-pkk', function () {
