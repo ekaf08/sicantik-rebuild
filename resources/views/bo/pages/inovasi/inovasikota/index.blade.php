@@ -135,14 +135,14 @@
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body py-5 px-4">
 
-                    <!-- State 1: Placeholder Putihan Bersih Sesuai Teks Saja -->
+                    <!-- State 1: Placeholder Putihan Bersih -->
                     <div id="state-placeholder-empty" class="empty-detail-clean">
                         <p class="text-muted fw-semibold mb-0" style="font-size: 0.95rem;">
                             Silakan pilih inovasi untuk menampilkan detail
                         </p>
                     </div>
 
-                    <!-- State 2: Wadah Render Konten Terpisah (File Sejajar) -->
+                    <!-- State 2: Wadah Render Konten Terpisah -->
                     <div id="state-detail-content" class="d-none">
 
                         {{-- Pokja 1 --}}
@@ -191,12 +191,13 @@
         </div>
 
     </div>
-    <!--end::Content container-->
+    <!--end::Container Responsif Metronic-->
 </div>
+<!--end::Content-->
 
 <!-- Script Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Script Inovasi Kota sesuai folder Anda -->
+<!-- Script Inovasi Kota -->
 <script src="{{ asset('assets/js/custom/pages/inovasi/inovasi-kota.js') }}?v={{ time() }}"></script>
 @endsection

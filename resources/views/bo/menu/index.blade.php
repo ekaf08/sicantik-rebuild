@@ -1,233 +1,315 @@
 @extends('bo.layout.app')
 
 @section('content')
-<style>
-    .pagination {
-        margin-bottom: 0;
-    }
-    .pagination .page-item .page-link {
-        border-radius: 6px;
-        margin: 0 2px;
-        color: #6c757d;
-        border: 1px solid #dee2e6;
-        padding: 6px 12px;
-    }
-    .pagination .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-        color: #fff;
-        font-weight: bold;
-    }
-    .pagination .page-item .page-link:hover {
-        background-color: #e9ecef;
-        color: #212529;
-    }
-</style>
-
-<div class="container-fluid px-4 py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark">Master Menu</h2>
-        <button type="button" class="btn btn-primary px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#menuModal" onclick="openCreateModal()">
-            <i class="fas fa-plus me-2"></i> Menu Baru
-        </button>
-    </div>
-
-    <!-- Alert Sukses -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-    @if ($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
+<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch mb-10">
+    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+        <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+            <h1 class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bold fs-3 m-0">Master Menu</h1>
+            <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0">
+                <li class="breadcrumb-item text-muted">
+                    <a href="{{ route('dashboard') }}" class="text-muted text-hover-primary">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                </li>
+                <li class="breadcrumb-item text-muted">Master</li>
+                <li class="breadcrumb-item">
+                    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                </li>
+                <li class="breadcrumb-item text-muted">Menu</li>
             </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    @endif
+        <div class="d-flex align-items-center gap-2 gap-lg-3">
+            <button class="btn btn-flex btn-primary h-40px fs-7 fw-bold"
+                onclick="addForm(`{{ route('menu.store') }}`, 'TAMBAH MENU BARU')">
+                <i class="ki-outline ki-plus fs-2"></i>Menu Baru
+            </button>
+        </div>
+    </div>
+</div>
 
-    <!-- Card Tabel Utama -->
-    <div class="card shadow-sm border-0 p-4 rounded-4">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-3">
-            <div class="fs-6 text-secondary">
-                Show 
-                <select class="form-select form-select-sm d-inline-block w-auto">
-                    <option>10</option>
-                </select> entries
-            </div>
-            <form action="{{ route('menu.index') }}" method="GET" class="w-100 w-md-auto">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
-                    <input type="text" name="search" class="form-control" value="{{ $search ?? '' }}" placeholder="Cari menu..." onchange="this.form.submit()">
+<div id="kt_app_content_container" class="app-container container-fluid">
+    <div class="card card-flush">
+        <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+            <div class="card-title">
+                <div class="d-flex align-items-center position-relative my-1">
+                    <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
+                    <input type="text" id="search_menu"
+                        class="form-control form-control-solid w-250px ps-12" placeholder="Cari Menu...">
                 </div>
-            </form>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-hover align-middle fs-6">
-                <thead class="table-light text-uppercase fs-7">
-                    <tr>
-                        <th class="py-3">No.</th>
-                        <th class="py-3">Nama Menu</th>
-                        <th class="py-3">Parent</th>
-                        <th class="py-3">Status</th>
-                        <th class="py-3">Icon</th>
-                        <th class="py-3 text-end pe-4">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($menus as $index => $item)
-                    <tr>
-                        <td class="fw-semibold">{{ $menus->firstItem() + $index }}</td>
-                        <td>{{ $item->nama_menu }}</td>
-                        <td>{{ $item->parent ? $item->parent->nama_menu : '-' }}</td>
-                        <td>
-                            <span class="badge {{ $item->status_menu == 'Aktif' ? 'bg-success' : 'bg-secondary' }} px-3 py-2">
-                                {{ $item->status_menu }}
-                            </span>
-                        </td>
-                        <td><i class="{{ $item->icon }} fs-5"></i> <span class="ms-1 text-muted">{{ $item->icon }}</span></td>
-                        <td class="text-end pe-3">
-                            <div class="d-flex justify-content-end align-items-center gap-3">
-                                <button type="button" class="btn btn-link text-primary p-0"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#menuModal"
-                                    onclick="setupEditModal(this)"
-                                    data-id="{{ $item->id_menu }}"
-                                    data-nama="{{ $item->nama_menu }}"
-                                    data-parent="{{ $item->parent_id }}"
-                                    data-icon="{{ $item->icon }}"
-                                    data-url="{{ $item->url_menu }}"
-                                    data-status_menu="{{ $item->status_menu }}"
-                                    data-urutan="{{ $item->urutan }}">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <button type="button" class="btn btn-link text-danger p-0 text-decoration-none fs-6 fw-bold" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#deleteModal" 
-                                    onclick="document.getElementById('deleteForm').action = '{{ route('menu.destroy', $item->id_menu) }}'">
-                                    <i class="fas fa-trash me-1"></i> Hapus
-                                </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            @empty
-                                            <tr>
-                                                <td colspan="6" class="text-center text-muted py-5 fs-5">Belum ada data menu.</td>
-                                            </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
-
-        <!-- Bagian Bawah Footer (Pagination & Info) Sejajar Sesuai Referensi -->
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 pt-3 border-top gap-3">
-            <div class="text-muted fs-6">
-                Showing <span class="fw-bold text-dark">{{ $menus->firstItem() ?? 0 }}</span> to <span class="fw-bold text-dark">{{ $menus->lastItem() ?? 0 }}</span> of <span class="fw-bold text-dark">{{ $menus->total() }}</span> records
             </div>
-            <div class="pagination-container fs-6">
-                {{ $menus->onEachSide(1)->links('pagination::bootstrap-5') }}
+        </div>
+        <div class="card-body pt-0">
+            <div class="table-responsive">
+                <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable" id="kt_table_menu">
+                    <thead>
+                        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                            <th class="text-start w-10px pe-2">No</th>
+                            <th class="min-w-125px">Nama Menu</th>
+                            <th class="min-w-125px">Parent</th>
+                            <th class="min-w-100px">Status</th>
+                            <th class="min-w-100px">Icon</th>
+                            <th class="min-w-75px">Urutan</th>
+                            <th class="text-end min-w-100px">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="fw-semibold text-gray-600">
+                        {{-- DataTables AJAX akan mengisi baris tabel ini secara otomatis --}}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ================= MODAL FORM (TAMBAH & EDIT) ================= -->
-<div class="modal fade" id="menuModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content p-4 rounded-4 shadow">
-            <div class="modal-header border-0 pb-0">
-                <h3 class="fw-bold text-dark" id="modalTitle">Form Menu</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!--begin::Modal - Add/Edit Menu-->
+<div class="modal fade" id="modal-form" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-650px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="fw-bold modal-title">Modal Title</h2>
+                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                    <i class="ki-outline ki-cross fs-1"></i>
+                </div>
             </div>
-            <div class="modal-body pt-3">
-                <form id="menuForm" method="POST">
-                    @csrf
-                    <div id="methodField"></div>
-                    
-                    <div class="row mb-3 align-items-center">
-                        <label class="col-sm-3 fw-bold fs-6">Pilih Parent Menu :</label>
-                        <div class="col-sm-9">
-                            <select name="parent_id" id="parent_id" class="form-select form-select-lg fs-6">
+
+            <form id="form-menu" class="form" action="#" method="POST">
+                @csrf
+                <input type="hidden" id="form-method" value="POST">
+
+                <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                    <div class="d-flex flex-column scroll-y me-n7 pe-7 gap-4">
+
+                        <!-- Parent Menu -->
+                        <div class="fv-row">
+                            <label class="fw-semibold fs-6 mb-2">Pilih Parent Menu</label>
+                            <select name="parent_id" id="parent_id" class="form-select form-select-solid">
                                 <option value="">Pilih Menu Parent (Opsional)</option>
                                 @foreach($parentMenus as $parent)
                                     <option value="{{ $parent->id_menu }}">{{ $parent->nama_menu }}</option>
                                 @endforeach
                             </select>
                         </div>
-                    </div>
 
-                    <div class="row mb-3 align-items-center">
-                        <label class="col-sm-3 fw-bold fs-6">Nama Menu : <span class="text-danger">*</span></label>
-                        <div class="col-sm-9">
-                            <input type="text" id="nama_menu" name="nama_menu" class="form-control form-select-lg fs-6" placeholder="Contoh: Laporan Keuangan" required>
+                        <!-- Nama Menu -->
+                        <div class="fv-row">
+                            <label class="required fw-semibold fs-6 mb-2">Nama Menu</label>
+                            <input type="text" name="nama_menu" id="nama_menu" class="form-control form-control-solid" placeholder="Contoh: Laporan Keuangan" required />
+                            <div class="invalid-feedback" id="error-nama_menu"></div>
                         </div>
-                    </div>
 
-                    <div class="row mb-3 align-items-center">
-                        <label class="col-sm-3 fw-bold fs-6">Icon : <span class="text-danger">*</span></label>
-                        <div class="col-sm-9">
-                            <input type="text" id="icon" name="icon" class="form-control form-select-lg fs-6" placeholder="contoh: fas fa-users" required>
+                        <!-- Icon -->
+                        <div class="fv-row">
+                            <label class="required fw-semibold fs-6 mb-2">Icon</label>
+                            <input type="text" name="icon" id="icon" class="form-control form-control-solid" placeholder="Contoh: fas fa-users" required />
+                            <div class="invalid-feedback" id="error-icon"></div>
                         </div>
-                    </div>
 
-                    <div class="row mb-3 align-items-center">
-                        <label class="col-sm-3 fw-bold fs-6">Url Menu : <span class="text-danger">*</span></label>
-                        <div class="col-sm-9">
-                            <input type="text" id="url_menu" name="url_menu" class="form-control form-select-lg fs-6" placeholder="Otomatis terisi..." required>
+                        <!-- URL Menu -->
+                        <div class="fv-row">
+                            <label class="required fw-semibold fs-6 mb-2">Url Menu</label>
+                            <input type="text" name="url_menu" id="url_menu" class="form-control form-control-solid" placeholder="Contoh: master/menu" required />
+                            <div class="invalid-feedback" id="error-url_menu"></div>
                         </div>
-                    </div>
 
-                    <div class="row mb-3 align-items-center">
-                    <label class="col-sm-3 fw-bold fs-6">Status Menu : <span class="text-danger">*</span></label>
-                    <div class="col-sm-9">
-                        <select name="status_menu" id="status_menu" class="form-select form-select-lg fs-6" required>
-                            <option value="Aktif">Aktif</option>
-                            <option value="Non Aktif">Non Aktif</option>
-                        </select>
-                    </div>
-                </div>
-
-                    <div class="row mb-4 align-items-center">
-                        <label class="col-sm-3 fw-bold fs-6">Urutan Menu :</label>
-                        <div class="col-sm-4">
-                            <input type="number" id="urutan" name="urutan" class="form-control form-select-lg fs-6" value="0">
+                        <!-- Status Menu -->
+                        <div class="fv-row">
+                            <label class="required fw-semibold fs-6 mb-2">Status Menu</label>
+                            <select name="status_menu" id="status_menu" class="form-select form-select-solid" required>
+                                <option value="Aktif">Aktif</option>
+                                <option value="Non Aktif">Non Aktif</option>
+                            </select>
                         </div>
-                    </div>
 
-                    <div class="d-flex justify-content-end gap-2 pt-2">
-                        <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-success px-5 py-2 fw-bold">
-                            <i class="fas fa-save me-2"></i> SIMPAN
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-center p-4 rounded-4 shadow">
-            <h4 class="fw-bold mb-2 text-danger"><i class="fas fa-exclamation-triangle"></i> Apa Anda Yakin?</h4>
-            <p class="text-muted mb-4 fs-6">Data menu ini akan dihapus dari sistem.</p>
-            <form id="deleteForm" method="POST">
-                @csrf
-                @method('DELETE')
-                <div class="d-flex justify-content-center gap-2">
-                    <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger px-4 py-2 fw-bold">Ya, Hapus!</button>
+                        <!-- Urutan -->
+                        <div class="fv-row">
+                            <label class="fw-semibold fs-6 mb-2">Urutan Menu</label>
+                            <input type="number" name="urutan" id="urutan" class="form-control form-control-solid" value="0" />
+                        </div>
+
+                    </div> {{-- tutup d-flex flex-column --}}
+                </div> {{-- tutup modal-body --}}
+
+                <div class="modal-footer flex-center">
+                    <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save">
+                        <span class="indicator-label">Simpan</span>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+<!--end::Modal-->
 @endsection
 
-@push('scripts')
-<script src="{{ asset('js/pages/general/menu/menu.js') }}"></script>
-@endpush
+@section('js')
+<script>
+    var table;
+
+    $(document).ready(function() {
+        // 1. Inisialisasi DataTables AJAX langsung di Blade
+        table = $('#kt_table_menu').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('menu.data') }}",
+                type: "GET",
+                error: function(xhr, error, code) {
+                    console.log("DataTables Ajax Error: " + error);
+                }
+            },
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-start' },
+                { data: 'nama_menu', name: 'nama_menu' },
+                { data: 'parent_name', name: 'parent_name' },
+                { data: 'status_badge', name: 'status_menu' },
+                { data: 'icon_display', name: 'icon', orderable: false, searchable: false },
+                { data: 'urutan', name: 'urutan' },
+                { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' }
+            ],
+            drawCallback: function() {
+                if (typeof KTMenu !== 'undefined') {
+                    KTMenu.createInstances();
+                }
+            }
+        });
+
+        // 2. Live Search Input
+        $('#search_menu').on('keyup', function() {
+            table.search(this.value).draw();
+        });
+
+        // 3. Submit Form (Tambah & Edit via AJAX)
+        $('#form-menu').on('submit', function(e) {
+            e.preventDefault();
+            
+            $('.form-control, .form-select').removeClass('is-invalid');
+            $('.invalid-feedback').text('');
+
+            var url = $(this).attr('action');
+            var formMethod = $('#form-method').val();
+            var formData = new FormData(this);
+
+            if (formMethod === 'PUT') {
+                formData.append('_method', 'PUT');
+            }
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    $('#modal-form').modal('hide');
+                    table.ajax.reload();
+
+                    Swal.fire({
+                        text: response.message,
+                        icon: "success",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok",
+                        customClass: { confirmButton: "btn btn-primary" }
+                    });
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        $.each(errors, function(key, value) {
+                            $('#' + key).addClass('is-invalid');
+                            $('#error-' + key).text(value[0]);
+                        });
+                    } else {
+                        Swal.fire({
+                            text: "Terjadi kesalahan pada sistem.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok",
+                            customClass: { confirmButton: "btn btn-primary" }
+                        });
+                    }
+                }
+            });
+        });
+    });
+
+    // 4. Fungsi Global untuk Tombol
+    function addForm(url, title) {
+        $('#modal-form').modal('show');
+        $('.modal-title').text(title);
+        $('#form-menu')[0].reset();
+        $('#form-menu').attr('action', url);
+        $('#form-method').val('POST');
+
+        $('.form-control, .form-select').removeClass('is-invalid');
+        $('.invalid-feedback').text('');
+    }
+
+    function editForm(showUrl, updateUrl, title) {
+        $('#form-menu')[0].reset();
+        $('.form-control, .form-select').removeClass('is-invalid');
+        $('.invalid-feedback').text('');
+
+        $.get(showUrl, function(response) {
+            if (response.status === 'success') {
+                $('#modal-form').modal('show');
+                $('.modal-title').text(title);
+                $('#form-menu').attr('action', updateUrl);
+                $('#form-method').val('PUT');
+
+                $('#parent_id').val(response.data.parent_id);
+                $('#nama_menu').val(response.data.nama_menu);
+                $('#icon').val(response.data.icon);
+                $('#url_menu').val(response.data.url_menu);
+                $('#status_menu').val(response.data.status_menu);
+                $('#urutan').val(response.data.urutan);
+            }
+        }).fail(function() {
+            Swal.fire({ text: "Gagal mengambil data!", icon: "error" });
+        });
+    }
+
+    function deleteData(url) {
+        Swal.fire({
+            text: "Apakah kamu yakin ingin menghapus menu ini?",
+            icon: "warning",
+            showCancelButton: true,
+            buttonsStyling: false,
+            confirmButtonText: "Ya, Hapus!",
+            cancelButtonText: "Batal",
+            customClass: {
+                confirmButton: "btn btn-danger",
+                cancelButton: "btn btn-active-light"
+            }
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        '_method': 'DELETE',
+                        '_token': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        table.ajax.reload();
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok",
+                            customClass: { confirmButton: "btn btn-primary" }
+                        });
+                    },
+                    error: function() {
+                        Swal.fire({ text: "Gagal menghapus data!", icon: "error" });
+                    }
+                });
+            }
+        });
+    }
+</script>
+@endsection
