@@ -24,7 +24,6 @@
                         <thead>
                             <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
                                 <th class="w-50px">NO</th>
-                                <th>ID</th>
                                 <th>NAME</th>
                                 <th>GUARD NAME</th>
                                 <th>CREATED AT</th>
@@ -36,7 +35,6 @@
                                 <tr>
                                     <!-- Menyesuaikan nomor urut halaman pagination -->
                                     <td>{{ $roles->firstItem() + $key }}</td>
-                                    <td><code class="text-dark fw-bold bg-light px-2 py-1 rounded">{{ $item->id }}</code></td>
                                     <td><span class="badge badge-light-primary fw-bold fs-7">{{ $item->name }}</span></td>
                                     <td><span class="badge badge-light-info fw-bold fs-7">{{ $item->guard_name }}</span></td>
                                     <td>{{ $item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('Y-m-d H:i') : '-' }}</td>
@@ -44,7 +42,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center text-gray-500 py-5">
+                                    <td colspan="5" class="text-center text-gray-500 py-5">
                                         Belum ada data di tabel roles Navicat.
                                     </td>
                                 </tr>
