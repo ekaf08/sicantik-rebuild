@@ -48,20 +48,30 @@ class RoleController extends Controller
             ]);
 
             // B. Simpan daftar menu yang dicentang ke tabel 'menu_role'
-            if ($request->has('menus') && is_array($request->menus)) {
+            if ($request->filled('menus')) {
                 $insertMenuRole = [];
                 foreach ($request->menus as $menuId) {
                     $insertMenuRole[] = [
                         'role_id'    => $role->id,
-                        'id_menu'    => $menuId, // Disesuaikan menjadi 'id_menu' agar cocok dengan tabel m_menu
-                        'created_by' => Auth::id() ?? 1,
+                        'menu_id'    => $menuId,
+                        'created_by' => Auth::id(),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
                 }
-
-                // Simpan sekaligus ke tabel menu_role
                 DB::table('menu_role')->insert($insertMenuRole);
+            }
+
+            // C. Simpan daftar permission yang dicentang ke tabel 'role_has_permissions'
+            if ($request->filled('permissions')) {
+                $insertRolePermission = [];
+                foreach ($request->permissions as $permId) {
+                    $insertRolePermission[] = [
+                        'role_id'       => $role->id,
+                        'permission_id' => $permId,
+                    ];
+                }
+                DB::table('role_has_permissions')->insert($insertRolePermission);
             }
 
             DB::commit();
@@ -71,5 +81,118 @@ class RoleController extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Dipanggil lewat AJAX untuk mengisi modal edit.
+     */
+    public function edit(string $id)
+    {
+        $role = Role::findOrFail($id);
+
+        $selectedMenuIds = DB::table('menu_role')
+            ->where('role_id', $role->id)
+            ->whereNull('deleted_at')
+            ->pluck('menu_id');
+
+        $selectedPermissionIds = DB::table('role_has_permissions')
+            ->where('role_id', $role->id)
+            ->pluck('permission_id');
+
+        return response()->json([
+            'id'                  => $role->id,
+            'name'                => $role->name,
+            'selected_menus'      => $selectedMenuIds,
+            'selected_permissions'=> $selectedPermissionIds,
+        ]);
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $role = Role::findOrFail($id);
+
+        DB::beginTransaction();
+        try {
+            $role->update([
+                'name' => $request->name,
+            ]);
+
+            // --- Menu ---
+            $newMenuIds = array_map('intval', $request->menus ?? []);
+
+            DB::table('menu_role')
+                ->where('role_id', $role->id)
+                ->whereNull('deleted_at')
+                ->whereNotIn('menu_id', $newMenuIds)
+                ->update([
+                    'deleted_at' => now(),
+                    'deleted_by' => Auth::id(),
+                ]);
+
+            $existingMenuIds = DB::table('menu_role')
+                ->where('role_id', $role->id)
+                ->whereNull('deleted_at')
+                ->pluck('menu_id')
+                ->all();
+
+            $toInsertMenu = array_diff($newMenuIds, $existingMenuIds);
+            if (!empty($toInsertMenu)) {
+                $insertMenuRole = [];
+                foreach ($toInsertMenu as $menuId) {
+                    $insertMenuRole[] = [
+                        'role_id'    => $role->id,
+                        'menu_id'    => $menuId,
+                        'created_by' => Auth::id(),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                DB::table('menu_role')->insert($insertMenuRole);
+            }
+
+            // --- Permission ---
+            $newPermissionIds = array_map('intval', $request->permissions ?? []);
+
+            DB::table('role_has_permissions')
+                ->where('role_id', $role->id)
+                ->whereNotIn('permission_id', $newPermissionIds)
+                ->delete();
+
+            $existingPermissionIds = DB::table('role_has_permissions')
+                ->where('role_id', $role->id)
+                ->pluck('permission_id')
+                ->all();
+
+            $toInsertPermission = array_diff($newPermissionIds, $existingPermissionIds);
+            if (!empty($toInsertPermission)) {
+                $insertRolePermission = [];
+                foreach ($toInsertPermission as $permId) {
+                    $insertRolePermission[] = [
+                        'role_id'       => $role->id,
+                        'permission_id' => $permId,
+                    ];
+                }
+                DB::table('role_has_permissions')->insert($insertRolePermission);
+            }
+
+            DB::commit();
+            return redirect()->route('role.index')->with('success', 'Role berhasil diperbarui!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
+        }
+    }
+
+    public function destroy(string $id)
+    {
+        $role = Role::findOrFail($id);
+        $role->delete();
+
+        return redirect()->route('role.index')->with('success', 'Role berhasil dihapus!');
     }
 }

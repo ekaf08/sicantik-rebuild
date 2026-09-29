@@ -66,6 +66,7 @@ Route::group([], function () {
     Route::get('master/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('/master/role/create', [RoleController::class, 'create'])->name('role.create');
     Route::post('master/role/store', [RoleController::class, 'store'])->name('role.store');
+    Route::get('master/role/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
     Route::put('master/role/update/{id}', [RoleController::class, 'update'])->name('role.update');
 // Closure route
 Route::get('/dashboard-pkk', function () {
