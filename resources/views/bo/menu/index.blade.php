@@ -49,12 +49,10 @@
                             <th class="min-w-125px">Parent</th>
                             <th class="min-w-100px">Status</th>
                             <th class="min-w-100px">Icon</th>
-                            <th class="min-w-75px">Urutan</th>
                             <th class="text-end min-w-100px">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600">
-                        {{-- DataTables AJAX akan mengisi baris tabel ini secara otomatis --}}
                     </tbody>
                 </table>
             </div>
@@ -62,7 +60,6 @@
     </div>
 </div>
 
-<!--begin::Modal - Add/Edit Menu-->
 <div class="modal fade" id="modal-form" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered mw-650px">
         <div class="modal-content">
@@ -79,40 +76,35 @@
 
                 <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
                     <div class="d-flex flex-column scroll-y me-n7 pe-7 gap-4">
-
-                        <!-- Parent Menu -->
                         <div class="fv-row">
                             <label class="fw-semibold fs-6 mb-2">Pilih Parent Menu</label>
                             <select name="parent_id" id="parent_id" class="form-select form-select-solid">
                                 <option value="">Pilih Menu Parent (Opsional)</option>
-                                @foreach($parentMenus as $parent)
-                                    <option value="{{ $parent->id_menu }}">{{ $parent->nama_menu }}</option>
-                                @endforeach
+                            @foreach($parentMenus as $parent)
+                                <option value="{{ $parent->id_menu }}">{{ $parent->nama_menu }}</option>
+                            @endforeach
+                                    
                             </select>
                         </div>
 
-                        <!-- Nama Menu -->
                         <div class="fv-row">
                             <label class="required fw-semibold fs-6 mb-2">Nama Menu</label>
                             <input type="text" name="nama_menu" id="nama_menu" class="form-control form-control-solid" placeholder="Contoh: Laporan Keuangan" required />
                             <div class="invalid-feedback" id="error-nama_menu"></div>
                         </div>
 
-                        <!-- Icon -->
                         <div class="fv-row">
                             <label class="required fw-semibold fs-6 mb-2">Icon</label>
                             <input type="text" name="icon" id="icon" class="form-control form-control-solid" placeholder="Contoh: fas fa-users" required />
                             <div class="invalid-feedback" id="error-icon"></div>
                         </div>
 
-                        <!-- URL Menu -->
                         <div class="fv-row">
                             <label class="required fw-semibold fs-6 mb-2">Url Menu</label>
                             <input type="text" name="url_menu" id="url_menu" class="form-control form-control-solid" placeholder="Contoh: master/menu" required />
                             <div class="invalid-feedback" id="error-url_menu"></div>
                         </div>
 
-                        <!-- Status Menu -->
                         <div class="fv-row">
                             <label class="required fw-semibold fs-6 mb-2">Status Menu</label>
                             <select name="status_menu" id="status_menu" class="form-select form-select-solid" required>
@@ -121,14 +113,12 @@
                             </select>
                         </div>
 
-                        <!-- Urutan -->
                         <div class="fv-row">
                             <label class="fw-semibold fs-6 mb-2">Urutan Menu</label>
                             <input type="number" name="urutan" id="urutan" class="form-control form-control-solid" value="0" />
                         </div>
-
-                    </div> {{-- tutup d-flex flex-column --}}
-                </div> {{-- tutup modal-body --}}
+                    </div> 
+                </div> 
 
                 <div class="modal-footer flex-center">
                     <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Batal</button>
@@ -140,15 +130,12 @@
         </div>
     </div>
 </div>
-<!--end::Modal-->
 @endsection
 
 @section('js')
 <script>
     var table;
-
     $(document).ready(function() {
-        // 1. Inisialisasi DataTables AJAX langsung di Blade
         table = $('#kt_table_menu').DataTable({
             processing: true,
             serverSide: true,
@@ -165,7 +152,6 @@
                 { data: 'parent_name', name: 'parent_name' },
                 { data: 'status_badge', name: 'status_menu' },
                 { data: 'icon_display', name: 'icon', orderable: false, searchable: false },
-                { data: 'urutan', name: 'urutan' },
                 { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' }
             ],
             drawCallback: function() {
@@ -175,17 +161,14 @@
             }
         });
 
-        // 2. Live Search Input
         $('#search_menu').on('keyup', function() {
             table.search(this.value).draw();
         });
 
-        // 3. Submit Form (Tambah & Edit via AJAX)
         $('#form-menu').on('submit', function(e) {
             e.preventDefault();
             
-            $('.form-control, .form-select').removeClass('is-invalid');
-            $('.invalid-feedback').text('');
+            $('.form-control, .form-select').removeClass('is-invalid');$('.invalid-feedback').text('');
 
             var url = $(this).attr('action');
             var formMethod = $('#form-method').val();
@@ -237,28 +220,23 @@
         });
     });
 
-    // 4. Fungsi Global untuk Tombol
     function addForm(url, title) {
         $('#modal-form').modal('show');
-        $('.modal-title').text(title);
-        $('#form-menu')[0].reset();
+        $('.modal-title').text(title);$('#form-menu')[0].reset();
         $('#form-menu').attr('action', url);
         $('#form-method').val('POST');
 
-        $('.form-control, .form-select').removeClass('is-invalid');
-        $('.invalid-feedback').text('');
+        $('.form-control, .form-select').removeClass('is-invalid');$('.invalid-feedback').text('');
     }
 
     function editForm(showUrl, updateUrl, title) {
         $('#form-menu')[0].reset();
-        $('.form-control, .form-select').removeClass('is-invalid');
-        $('.invalid-feedback').text('');
+        $('.form-control, .form-select').removeClass('is-invalid');$('.invalid-feedback').text('');
 
         $.get(showUrl, function(response) {
             if (response.status === 'success') {
                 $('#modal-form').modal('show');
-                $('.modal-title').text(title);
-                $('#form-menu').attr('action', updateUrl);
+                $('.modal-title').text(title);$('#form-menu').attr('action', updateUrl);
                 $('#form-method').val('PUT');
 
                 $('#parent_id').val(response.data.parent_id);
@@ -273,7 +251,7 @@
         });
     }
 
-    function deleteData(url) {
+    function deleteData(url, encryptedId) {
         Swal.fire({
             text: "Apakah kamu yakin ingin menghapus menu ini?",
             icon: "warning",
@@ -286,30 +264,40 @@
                 cancelButton: "btn btn-active-light"
             }
         }).then(function(result) {
-            if (result.value) {
+            if (result.isConfirmed || result.value) { 
                 $.ajax({
                     url: url,
                     type: 'POST',
                     data: {
                         '_method': 'DELETE',
-                        '_token': $('meta[name="csrf-token"]').attr('content')
+                        '_token': $('meta[name="csrf-token"]').attr('content'),
+                        'id': encryptedId // ID terenkripsi dikirim aman lewat body data
                     },
                     success: function(response) {
-                        table.ajax.reload();
+                        if (typeof table !== 'undefined') {
+                            table.ajax.reload(null, false); 
+                        }
                         Swal.fire({
-                            text: response.message,
+                            text: response.message || "Menu berhasil dihapus!",
                             icon: "success",
                             buttonsStyling: false,
                             confirmButtonText: "Ok",
                             customClass: { confirmButton: "btn btn-primary" }
                         });
                     },
-                    error: function() {
-                        Swal.fire({ text: "Gagal menghapus data!", icon: "error" });
+                    error: function(xhr) {
+                        Swal.fire({ 
+                            text: "Gagal menghapus data!", 
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok",
+                            customClass: { confirmButton: "btn-primary" }
+                        });
                     }
                 });
             }
         });
     }
+
 </script>
-@endsection
+@endsection 

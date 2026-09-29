@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Menu extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $table = 'm_menu';
     
@@ -16,7 +15,6 @@ class Menu extends Model
     public $incrementing = true;
     protected $keyType = 'int';
 
-    // PERBAIKAN DI SINI: Gunakan $casts untuk Laravel versi baru
     protected $casts = [
         'deleted_at' => 'datetime',
     ];
