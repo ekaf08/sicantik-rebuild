@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -126,6 +127,36 @@ class UserController extends Controller
         return response()->json([
         'status' => true,
         'message' => 'User berhasil ditambahkan!'
+        ]);
+    }
+
+    public function getKelurahan(string $no_kec)
+    {
+        $kelurahan = Kelurahan::where('no_kec', $no_kec)->get();
+        return response()->json($kelurahan);
+    }
+
+    public function resetPassword(Request $request, string $id)
+    {
+        try {
+            $realId = Crypt::decryptString($id);
+        } catch (DecryptException $e) {
+            return response()->json(['message' => 'ID tidak valid'], 400);
+        }
+
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::findOrFail($realId);
+
+        $user->update([
+            'password' => bcrypt($request->password),
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Password berhasil direset!',
         ]);
     }
 
