@@ -9,6 +9,8 @@ use App\Models\Kecamatan;
 use App\Models\Kelurahan;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class UserController extends Controller
 {
@@ -49,6 +51,8 @@ class UserController extends Controller
                 return $row->nama_kel ?? '-';
             })
             ->addColumn('action', function ($row) {
+                $encryptedId = Crypt::encryptString($row->id);
+
                 return '
                     <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                         Actions
@@ -56,16 +60,16 @@ class UserController extends Controller
                     </a>
                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-6 w-200px py-6 text-start" data-kt-menu="true">
                         <div class="menu-item px-3">
-                            <a href="javascript:void(0)" class="menu-link px-3 btn-view" data-id="' . $row->id . '">View</a>
+                            <a href="javascript:void(0)" class="menu-link px-3 btn-view" data-id="' . $encryptedId . '">View</a>
                         </div>
                         <div class="menu-item px-3">
-                            <a href="javascript:void(0)" class="menu-link px-3 btn-edit" data-id="' . $row->id . '">Edit</a>
+                            <a href="javascript:void(0)" class="menu-link px-3 btn-edit" data-id="' . $encryptedId . '">Edit</a>
                         </div>
                         <div class="menu-item px-3">
-                            <a href="javascript:void(0)" class="menu-link px-3 text-danger btn-delete" data-id="' . $row->id . '">Delete</a>
+                            <a href="javascript:void(0)" class="menu-link px-3 text-danger btn-delete" data-id="' . $encryptedId . '">Delete</a>
                         </div>
                         <div class="menu-item px-3">
-                            <a href="javascript:void(0)" class="menu-link px-3 text-danger btn-reset" data-id="' . $row->id . '">Reset Password</a>
+                            <a href="javascript:void(0)" class="menu-link px-3 text-danger btn-reset" data-id="' . $encryptedId . '">Reset Password</a>
                         </div>
                     </div>
                 ';
@@ -130,9 +134,14 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::findOrFail($id);
-        return response()->json($user);
+        try {
+        $realId = Crypt::decryptString($id);
+        } catch (DecryptException $e) {
+            return response()->json(['message' => 'ID tidak valid'], 400);
+        }
 
+        $user = User::findOrFail($realId);
+        return response()->json($user);
     }
     /**
      * Show the form for editing the specified resource.
@@ -148,37 +157,42 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-    $user = User::findOrFail($id);
+        try {
+        $realId = Crypt::decryptString($id);
+        } catch (DecryptException $e) {
+            return response()->json(['message' => 'ID tidak valid'], 400);
+        }
+        $user = User::findOrFail($realId);
 
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'username' => 'required|string|max:255|unique:users,username,' . $id,
-        'email' => 'required|email|max:255|unique:users,email,' . $id,
-        'password' => 'nullable|string|min:8',
-        'id_kec' => 'required|exists:m_kecamatan,id_kec',
-        'id_kel' => 'required|exists:m_kelurahan,id_kel',
-        'role_id' => 'required|exists:roles,id',
-    ]);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,' . $realId,
+            'email' => 'required|email|max:255|unique:users,email,' . $realId,
+            'password' => 'nullable|string|min:8',
+            'id_kec' => 'required|exists:m_kecamatan,id_kec',
+            'id_kel' => 'required|exists:m_kelurahan,id_kel',
+            'role_id' => 'required|exists:roles,id',
+        ]);
 
-    $data = [
-        'name' => $request->name,
-        'username' => $request->username,
-        'email' => $request->email,
-        'id_kec' => $request->id_kec,
-        'id_kel' => $request->id_kel,
-        'role_id' => $request->role_id,
-    ];
+        $data = [
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+            'id_kec' => $request->id_kec,
+            'id_kel' => $request->id_kel,
+            'role_id' => $request->role_id,
+        ];
 
-    if ($request->filled('password')) {
-        $data['password'] = bcrypt($request->password);
-    }
+        if ($request->filled('password')) {
+            $data['password'] = bcrypt($request->password);
+        }
 
-    $user->update($data);
+        $user->update($data);
 
-    return response()->json([
-        'status' => true,
-        'message' => 'User berhasil diupdate!'
-    ]);
+        return response()->json([
+            'status' => true,
+            'message' => 'User berhasil diupdate!'
+        ]);
 
     }
 
@@ -187,7 +201,13 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     { 
-        $user = User::findOrFail($id);
+        try {
+        $realId = Crypt::decryptString($id);
+        } catch (DecryptException $e) {
+            return response()->json(['message' => 'ID tidak valid'], 400);
+        }
+
+        $user = User::findOrFail($realId);
         $user->delete();
 
         return response()->json([
