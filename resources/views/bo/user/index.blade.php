@@ -141,10 +141,7 @@
                         <div class="mb-7">
                             <label class="required fw-semibold fs-6 mb-2">Kelurahan</label>
                             <select name="id_kel" id="id_kel" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#kt_modal_add_users">
-                                <option value="">Pilih Kelurahan</option>
-                                @foreach($kelurahan as $kel)
-                                    <option value="{{ $kel->id_kel }}">{{ $kel->nama_kel }}</option>
-                                @endforeach
+                                <option value="">Pilih Kecamatan dulu</option>
                             </select>
                         </div>
                         <div class="mb-7">
@@ -165,6 +162,36 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="kt_modal_reset_password" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="form_reset_password" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h2 class="modal-title">RESET PASSWORD</h2>
+                        <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                            <i class="ki-outline ki-cross fs-1"></i>
+                        </div>
+                    </div>
+                    <div class="modal-body py-10 px-lg-17">
+                        <div class="mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Password Baru</label>
+                            <input type="password" name="password" id="reset_password_input" class="form-control form-control-solid" placeholder="Masukkan password baru" minlength="8">
+                        </div>
+                        <div class="mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Konfirmasi Password</label>
+                            <input type="password" name="password_confirmation" class="form-control form-control-solid" placeholder="Ulangi password baru" minlength="8">
+                        </div>
+                    </div>
+                    <div class="modal-footer flex-center">
+                        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Reset Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
         
 @endsection
 
@@ -179,40 +206,14 @@
                     url: "{{ route('users.data') }}",
                     type: "GET"
                 },
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-start'
-                    },
-                    {
-                        data: 'name',
-                        name: 'users.name'
-                    },
-                    {
-                        data: 'username',
-                        name: 'users.username'
-                    },
-                    {
-                        data: 'nama_kec',
-                        name: 'kec.nama_kec'
-                    },
-                    {
-                        data: 'nama_kel',
-                        name: 'kel.nama_kel'
-                    },
-                    {
-                        data: 'role',
-                        name: 'roles.name'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-end'
-                    }
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-start' },
+                    { data: 'name', name: 'users.name' },
+                    { data: 'username', name: 'users.username' },
+                    { data: 'nama_kec', name: 'kec.nama_kec' },
+                    { data: 'nama_kel', name: 'kel.nama_kel' },
+                    { data: 'role', name: 'roles.name' },
+                    { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' }
                 ],
                 drawCallback: function() {
                     KTMenu.createInstances();
@@ -223,107 +224,179 @@
                 table.search(this.value).draw();
             });
 
-
             // === handle submit form modal ===
-    $('#form_user').on('submit', function(e) {
-        e.preventDefault();
+            $('#form_user').on('submit', function(e) {
+                e.preventDefault();
 
-        $.ajax({
-            url: $(this).attr('action'),
-            method: 'POST',
-            data: $(this).serialize(),
-            success: function(res) {
-                if (res.status) {
-                    $('#kt_modal_add_users').modal('hide');
-                    table.draw();
-                    Swal.fire('Berhasil!', res.message, 'success');
-                }
-            },
-            error: function(xhr) {
-                if (xhr.status === 422) {
-                    var errors = xhr.responseJSON.errors;
-                    var msg = Object.values(errors).map(e => e[0]).join('<br>');
-                    Swal.fire({
-                        title: 'Gagal',
-                        html: msg,
-                        icon: 'error'
-                    });
-                } else {
-                    Swal.fire('Error', 'Terjadi kesalahan server', 'error');
-                }
-            }
-        });
-    });
-
-    
-            });
-
-            // edit modal //
-        $(document).on('click', '.btn-edit', function() {
-            var id = $(this).data('id');
-            
-            var url = "{{ route('user.show', ':id') }}".replace(':id', id);
-            var updateUrl = "{{ route('user.update', ':id') }}".replace(':id', id);
-
-            $('#kt_modal_add_users').modal('show');
-            $('#kt_modal_add_users .modal-title').text('EDIT USER');
-            $('#form_user')[0].reset();
-            
-            $('#form_user').attr('action', updateUrl); 
-            
-            if($('#form_user input[name=_method]').length === 0) {
-                $('#form_user').prepend('<input type="hidden" name="_method" value="PUT">');
-            }
-
-        $.get(url)
-            .done(function(response) {
-                $('#form_user input[name=name]').val(response.name);
-                $('#form_user input[name=username]').val(response.username);
-                $('#form_user input[name=email]').val(response.email);
-                $('#form_user select[name=role_id]').val(response.role_id).trigger('change');
-                $('#form_user select[name=id_kec]').val(response.id_kec).trigger('change');
-                $('#form_user select[name=id_kel]').val(response.id_kel).trigger('change');
-                $('#form_user input[name=password]').val('');
-            })
-            .fail(function() {
-                alert('Gagal mengambil data user.');
-            });
-    });
-
-            // tombol Delete diklik
-    $(document).on('click', '.btn-delete', function() {
-        var id = $(this).data('id');
-        var url = "{{ url('master/user') }}/" + id;
-
-        Swal.fire({
-            title: 'Yakin mau hapus?',
-            text: "User ini akan dihapus permanen.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal',
-            confirmButtonColor: '#d33',
-        }).then((result) => {
-            if (result.isConfirmed) {
                 $.ajax({
-                    url: url,
+                    url: $(this).attr('action'),
                     method: 'POST',
-                    data: {
-                        '_token': '{{ csrf_token() }}',
-                        '_method': 'DELETE'
-                    },
+                    data: $(this).serialize(),
                     success: function(res) {
-                        $('#kt_table_user').DataTable().ajax.reload(null, false);
-                        Swal.fire('Berhasil!', res.message, 'success');
+                        if (res.status) {
+                            $('#kt_modal_add_users').modal('hide');
+                            table.ajax.reload(null, false);
+                            Swal.fire('Berhasil!', res.message, 'success');
+                        }
                     },
                     error: function(xhr) {
-                        console.log(xhr.responseText);
-                        Swal.fire('Gagal', 'Gagal menghapus data user.', 'error');
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            var msg = Object.values(errors).map(e => e[0]).join('<br>');
+                            Swal.fire({ title: 'Gagal', html: msg, icon: 'error' });
+                        } else {
+                            Swal.fire('Error', 'Terjadi kesalahan server', 'error');
+                        }
                     }
                 });
-            }
-        });
-    });
+            });
+
+            // === kecamatan berubah -> load kelurahan ===
+            $('#id_kec').on('change', function() {
+                var id_kec = $(this).val();
+                var $kel = $('#id_kel');
+
+                $kel.empty().append('<option value="">Memuat...</option>').trigger('change');
+
+                if (!id_kec) {
+                    $kel.empty().append('<option value="">Pilih Kecamatan dulu</option>').trigger('change');
+                    return;
+                }
+
+                $.get("{{ url('get-kelurahan') }}/" + id_kec)
+                    .done(function(response) {
+                        $kel.empty().append('<option value="">Pilih Kelurahan</option>');
+                        $.each(response, function(i, kel) {
+                            $kel.append('<option value="' + kel.id_kel + '">' + kel.nama_kel + '</option>');
+                        });
+                        $kel.trigger('change');
+                    })
+                    .fail(function() {
+                        $kel.empty().append('<option value="">Gagal memuat kelurahan</option>').trigger('change');
+                    });
+            });
+
+            // === edit modal ===
+            $(document).on('click', '.btn-edit', function() {
+                var id = $(this).data('id');
+
+                var url = "{{ route('user.show', ':id') }}".replace(':id', id);
+                var updateUrl = "{{ route('user.update', ':id') }}".replace(':id', id);
+
+                $('#kt_modal_add_users').modal('show');
+                $('#kt_modal_add_users .modal-title').text('EDIT USER');
+                $('#form_user')[0].reset();
+
+                $('#form_user').attr('action', updateUrl);
+
+                if ($('#form_user input[name=_method]').length === 0) {
+                    $('#form_user').prepend('<input type="hidden" name="_method" value="PUT">');
+                }
+
+                $.get(url)
+                    .done(function(response) {
+                        $('#form_user input[name=name]').val(response.name);
+                        $('#form_user input[name=username]').val(response.username);
+                        $('#form_user input[name=email]').val(response.email);
+                        $('#form_user select[name=role_id]').val(response.role_id).trigger('change');
+                        $('#form_user input[name=password]').val('');
+
+                        $('#id_kec').val(response.id_kec).trigger('change');
+
+                        $.get("{{ url('get-kelurahan') }}/" + response.id_kec)
+                            .done(function(kelurahanList) {
+                                var $kel = $('#id_kel');
+                                $kel.empty().append('<option value="">Pilih Kelurahan</option>');
+                                $.each(kelurahanList, function(i, kel) {
+                                    $kel.append('<option value="' + kel.id_kel + '">' + kel.nama_kel + '</option>');
+                                });
+                                $kel.val(response.id_kel).trigger('change');
+                            });
+                    })
+                    .fail(function() {
+                        Swal.fire('Gagal', 'Gagal mengambil data user.', 'error');
+                    });
+            });
+
+            // === tombol Delete diklik ===
+            $(document).on('click', '.btn-delete', function() {
+                var id = $(this).data('id');
+                var url = "{{ url('master/user') }}/" + id;
+
+                Swal.fire({
+                    title: 'Yakin mau hapus?',
+                    text: "User ini akan dihapus permanen.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#d33',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            method: 'POST',
+                            data: {
+                                '_token': '{{ csrf_token() }}',
+                                '_method': 'DELETE'
+                            },
+                            success: function(res) {
+                                $('#kt_table_user').DataTable().ajax.reload(null, false);
+                                Swal.fire('Berhasil!', res.message, 'success');
+                            },
+                            error: function(xhr) {
+                                console.log(xhr.responseText);
+                                Swal.fire('Gagal', 'Gagal menghapus data user.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // === tombol Reset Password diklik -> buka modal ===
+            $(document).on('click', '.btn-reset', function() {
+                var id = $(this).data('id');
+                var url = "{{ url('master/user') }}/" + id + "/reset-password";
+
+                $('#form_reset_password')[0].reset();
+                $('#form_reset_password').attr('action', url);
+                $('#kt_modal_reset_password').modal('show');
+            });
+
+            // === submit form reset password ===
+            $('#form_reset_password').on('submit', function(e) {
+                e.preventDefault();
+
+                var newPassword = $('#reset_password_input').val();
+                var confirmPassword = $('input[name=password_confirmation]').val();
+
+                if (newPassword !== confirmPassword) {
+                    Swal.fire('Gagal', 'Password dan konfirmasi tidak sama.', 'error');
+                    return;
+                }
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function(res) {
+                        if (res.status) {
+                            $('#kt_modal_reset_password').modal('hide');
+                            Swal.fire('Berhasil!', res.message, 'success');
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            var msg = Object.values(errors).map(e => e[0]).join('<br>');
+                            Swal.fire({ title: 'Gagal', html: msg, icon: 'error' });
+                        } else {
+                            Swal.fire('Error', 'Terjadi kesalahan server', 'error');
+                        }
+                    }
+                });
+            });
+
+        }); // <-- SATU-SATUNYA penutup document.ready, di paling akhir
     </script>
-   
 @endsection
