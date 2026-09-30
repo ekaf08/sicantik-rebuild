@@ -12,6 +12,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -173,6 +174,50 @@ class UserController extends Controller
 
         $user = User::findOrFail($realId);
         return response()->json($user);
+    }
+
+    public function viewDetail(string $id)
+    {
+        try {
+            $realId = Crypt::decryptString($id);
+        } catch (DecryptException $e) {
+            return response()->json(['message' => 'ID tidak valid'], 400);
+        }
+
+        $user = User::with('role')->findOrFail($realId);
+
+        $menus = collect();
+        $permissions = collect();
+
+        if ($user->role_id) {
+            $menus = DB::table('menu_role')
+                ->join('m_menu', 'm_menu.id_menu', '=', 'menu_role.menu_id')
+                ->where('menu_role.role_id', $user->role_id)
+                ->whereNull('menu_role.deleted_at')
+                ->whereNull('m_menu.deleted_at')
+                ->orderBy('m_menu.urutan')
+                ->select('m_menu.id_menu', 'm_menu.nama_menu', 'm_menu.icon')
+                ->get();
+
+            $permissions = DB::table('role_has_permissions')
+                ->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->where('role_has_permissions.role_id', $user->role_id)
+                ->pluck('permissions.name');
+        }
+
+        $kecamatan = Kecamatan::where('id_kec', $user->id_kec)->value('nama_kec');
+        $kelurahan = Kelurahan::where('id_kel', $user->id_kel)->value('nama_kel');
+
+        return response()->json([
+            'name' => $user->name,
+            'username' => $user->username,
+            'email' => $user->email,
+            'role_name' => $user->role->name ?? '-',
+            'kecamatan' => $kecamatan ?? '-',
+            'kelurahan' => $kelurahan ?? '-',
+            'menus' => $menus,
+            'permissions' => $permissions,
+        ]);
     }
     /**
      * Show the form for editing the specified resource.

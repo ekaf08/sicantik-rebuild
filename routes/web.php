@@ -41,6 +41,7 @@ Route::group([], function () {
     Route::get('master/user/data', [UserController::class, 'data'])->name('users.data');
     Route::resource('master/user', UserController::class)->except(['create', 'edit']);
     Route::post('master/user/{id}/reset-password', [UserController::class, 'resetPassword'])->name('user.reset-password');
+    Route::get('master/user/{id}/detail', [UserController::class, 'viewDetail'])->name('user.detail');
     Route::get('/get-kecamatan/{id_kec}', [UserController::class, 'getkecamatan'])->name('get.kecamatan');
     Route::get('/get-kelurahan/{id_kec}', [UserController::class, 'getKelurahan'])->name('get.kelurahan');
 

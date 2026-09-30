@@ -192,6 +192,70 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="kt_modal_view_user" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg text-gray-700">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">DETAIL USER</h2>
+                    <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                        <i class="ki-outline ki-cross fs-1"></i>
+                    </div>
+                </div>
+                <div class="modal-body py-10 px-lg-17">
+
+                    <div class="row mb-7">
+                        <div class="col-6">
+                            <label class="fw-bold text-muted fs-7">Nama</label>
+                            <div id="view_name" class="fs-6"></div>
+                        </div>
+                        <div class="col-6">
+                            <label class="fw-bold text-muted fs-7">Username</label>
+                            <div id="view_username" class="fs-6"></div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-7">
+                        <div class="col-6">
+                            <label class="fw-bold text-muted fs-7">Email</label>
+                            <div id="view_email" class="fs-6"></div>
+                        </div>
+                        <div class="col-6">
+                            <label class="fw-bold text-muted fs-7">Role</label>
+                            <div id="view_role" class="fs-6"></div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-7">
+                        <div class="col-6">
+                            <label class="fw-bold text-muted fs-7">Kecamatan</label>
+                            <div id="view_kecamatan" class="fs-6"></div>
+                        </div>
+                        <div class="col-6">
+                            <label class="fw-bold text-muted fs-7">Kelurahan</label>
+                            <div id="view_kelurahan" class="fs-6"></div>
+                        </div>
+                    </div>
+
+                    <div class="separator my-7"></div>
+
+                    <div class="mb-7">
+                        <label class="fw-bold text-muted fs-7 mb-3">Menu yang diakses (via Role)</label>
+                        <div id="view_menus" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <div class="mb-7">
+                        <label class="fw-bold text-muted fs-7 mb-3">Permission khusus (via Role)</label>
+                        <div id="view_permissions" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+
+                </div>
+                <div class="modal-footer flex-center">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
         
 @endsection
 
@@ -395,6 +459,55 @@
                         }
                     }
                 });
+            });
+
+            // === tombol View diklik ===
+            $(document).on('click', '.btn-view', function() {
+                var id = $(this).data('id');
+                var url = "{{ url('master/user') }}/" + id + "/detail";
+
+                $('#view_name, #view_username, #view_email, #view_role, #view_kecamatan, #view_kelurahan').text('Memuat...');
+                $('#view_menus, #view_permissions').html('');
+
+                $('#kt_modal_view_user').modal('show');
+
+                $.get(url)
+                    .done(function(response) {
+                        $('#view_name').text(response.name);
+                        $('#view_username').text(response.username);
+                        $('#view_email').text(response.email);
+                        $('#view_role').text(response.role_name);
+                        $('#view_kecamatan').text(response.kecamatan);
+                        $('#view_kelurahan').text(response.kelurahan);
+
+                        var $menus = $('#view_menus');
+                        $menus.empty();
+                        if (response.menus.length === 0) {
+                            $menus.append('<span class="text-muted">Tidak ada menu</span>');
+                        } else {
+                            $.each(response.menus, function(i, menu) {
+                                $('<span class="badge badge-light-primary fs-7"></span>')
+                                    .text(menu.nama_menu) // pakai .text() biar aman dari XSS
+                                    .appendTo($menus);
+                            });
+                        }
+
+                        var $perms = $('#view_permissions');
+                        $perms.empty();
+                        if (response.permissions.length === 0) {
+                            $perms.append('<span class="text-muted">Tidak ada permission khusus</span>');
+                        } else {
+                            $.each(response.permissions, function(i, permName) {
+                                $('<span class="badge badge-light-warning fs-7"></span>')
+                                    .text(permName) // pakai .text() biar aman dari XSS
+                                    .appendTo($perms);
+                            });
+                        }
+                    })
+                    .fail(function() {
+                        $('#kt_modal_view_user').modal('hide');
+                        Swal.fire('Gagal', 'Gagal mengambil detail user.', 'error');
+                    });
             });
 
         }); // <-- SATU-SATUNYA penutup document.ready, di paling akhir
