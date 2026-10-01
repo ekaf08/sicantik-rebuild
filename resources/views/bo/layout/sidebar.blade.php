@@ -139,6 +139,44 @@
                 </div>
                 <!--end:Menu item Master-->
 
+                <!--begin:Menu Laporan-->
+                <div data-kt-menu-trigger="click"
+                    class="menu-item menu-accordion {{ request()->routeIs('laporan-kegiatan*') || request()->routeIs('laporan-tahunan*') ? 'here show' : '' }}">
+                    <!--begin:Menu link-->
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-home-2 fs-2"></i>
+                        </span>
+                        <span class="menu-title">Laporan</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+                    <!--end:Menu link-->
+                    <!--begin:Menu sub-->
+                    <div class="menu-sub menu-sub-accordion">
+                        <!-- Submenu: User -->
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('laporan-kegiatan.index') || request()->routeIs('laporan-kegiatan.index') ? 'active' : '' }}"
+                                href="{{ route('laporan-kegiatan.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Laporan Kegiatan</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('laporan-tahunan.index') || request()->routeIs('laporan-tahunan.index') ? 'active' : '' }}"
+                                href="{{ route('laporan-tahunan.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Laporan Tahunan</span>
+                            </a>
+                        </div>
+                    </div>
+                    <!--end:Menu sub-->
+                </div>
+                <!--end:Menu item Laporan-->
+
                 <!--begin:Menu item Inovasi (Parent)-->
                 <div data-kt-menu-trigger="click"
                     class="menu-item menu-accordion {{ request()->routeIs('inovasi.*') ? 'here show' : '' }}">

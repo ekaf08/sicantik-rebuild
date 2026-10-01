@@ -9,6 +9,8 @@ use App\Http\Controllers\Bo\PermissionController;
 use App\Http\Controllers\Bo\MenuController;
 use App\Http\Controllers\Bo\RoleController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Bo\LaporanKegiatanController;
+use App\Http\Controllers\Bo\LaporanTahunanController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -33,10 +35,6 @@ Route::get('/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.k
 //Route::get('/mpasi', [MpasiController::class, 'mpasi'])->name('mpasi.mp_asi');
 
 Route::group([], function () {
-
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
     // Master User
     Route::get('master/user/data', [UserController::class, 'data'])->name('users.data');
     Route::resource('master/user', UserController::class)->except(['create', 'edit']);
@@ -49,13 +47,9 @@ Route::group([], function () {
     Route::get('master/permission/data', [PermissionController::class, 'data'])->name('permission.data');
     Route::resource('master/permission', PermissionController::class)->except(['create', 'edit']);
 
-    // Master Menu
-        Route::get('master/menu', [MenuController::class, 'index'])->name('menu.index');
-        Route::get('master/menu/data', [MenuController::class, 'data'])->name('menu.data');
-        Route::post('master/menu', [MenuController::class, 'store'])->name('menu.store');
-        Route::get('master/menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
-        Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
-        Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
+    Route::get('laporan/kegiatan', [RoleController::class, 'laporanKegiatan'])->name('laporan.kegiatan');
+    Route::get('laporan/tahunan', [RoleController::class, 'laporanTahunan'])->name('laporan.tahunan');
+
         // Master Menu
     Route::get('master/menu', [MenuController::class, 'index'])->name('menu.index');
     Route::get('master/menu/data', [MenuController::class, 'data'])->name('menu.data');
@@ -70,6 +64,11 @@ Route::group([], function () {
     Route::get('master/role/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
     Route::put('master/role/update/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::delete('master/role/destroy/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
+
+    // Laporan Kegiatan
+    Route::get('laporan-kegiatan', [LaporanKegiatanController::class, 'index'])->name('laporan-kegiatan.index');
+    // Laporan Tahunan
+    Route::get('laporan-tahunan', [LaporanTahunanController::class, 'index'])->name('laporan-tahunan.index');
 // Closure route
 Route::get('/dashboard-pkk', function () {
     return view('bo.pages.dasboard-pkk.index');
@@ -78,3 +77,4 @@ Route::get('/dashboard-pkk', function () {
 Route::get('/{slug}', [MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');
 
 });
+
