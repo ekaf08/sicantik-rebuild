@@ -7,7 +7,6 @@
     <div id="kt_app_content_container" class="app-container container-fluid">
 
         <style>
-            /* 1. Banner Tosca Elegan */
             .banner-inovasi-kota {
                 background: linear-gradient(135deg, #0b5e57 0%, #0d6e66 50%, #084943 100%) !important;
                 position: relative;
@@ -20,7 +19,6 @@
                 align-items: center;
             }
 
-            /* Pola Grid Titik-titik Halus */
             .banner-inovasi-kota::before {
                 content: '';
                 position: absolute;
@@ -83,7 +81,7 @@
 
         <div class="d-flex flex-column gap-5 w-100 py-2">
 
-            <!-- 1. Header Banner Inovasi Kota -->
+            <!-- Header Banner Inovasi Kota -->
             <div class="card banner-inovasi-kota mb-2">
                 <svg class="banner-siluet-kota" viewBox="0 0 450 180" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                     <path d="M280 180 L310 40 L315 40 L345 180 Z" fill="#2dd4bf" />
@@ -105,7 +103,7 @@
                 </div>
             </div>
 
-            <!-- 2. Filter Dropdown Pokja & Inovasi -->
+            <!-- Filter Dropdown Pokja & Inovasi -->
             <div class="card border-0 shadow-sm rounded-4 mb-5">
                 <div class="card-body p-5">
                     <div class="row g-4">
@@ -131,18 +129,15 @@
                 </div>
             </div>
 
-            <!-- 3. Area Konten Detail Inovasi -->
+            <!--Area Konten Detail Inovasi -->
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body py-5 px-4">
 
-                    <!-- State 1: Placeholder Putihan Bersih -->
                     <div id="state-placeholder-empty" class="empty-detail-clean">
                         <p class="text-muted fw-semibold mb-0" style="font-size: 0.95rem;">
                             Silakan pilih inovasi untuk menampilkan detail
                         </p>
                     </div>
-
-                    <!-- State 2: Wadah Render Konten Terpisah -->
                     <div id="state-detail-content" class="d-none">
 
                         {{-- Pokja 1 --}}
@@ -191,13 +186,16 @@
         </div>
 
     </div>
-    <!--end::Container Responsif Metronic-->
 </div>
 <!--end::Content-->
 
 <!-- Script Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <!-- Script Inovasi Kota -->
 <script src="{{ asset('assets/js/custom/pages/inovasi/inovasi-kota.js') }}?v={{ time() }}"></script>
 @endsection
+
+

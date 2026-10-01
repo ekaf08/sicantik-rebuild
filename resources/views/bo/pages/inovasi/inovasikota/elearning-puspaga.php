@@ -1,4 +1,3 @@
-<!-- STYLE KHUSUS E-LEARNING PAAREDI (SESUAI GAMBAR 1 - 5) -->
 <style>
     .elearning-card-main {
         background: #ffffff;
@@ -168,9 +167,6 @@
     </div>
 </div>
 
-<!-- ========================================================================= -->
-<!-- MODAL LEVEL 2: DETAIL PESERTA (GAMBAR 4 & 5) -->
-<!-- ========================================================================= -->
 <div class="modal fade" id="modalElearningPeserta" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content rounded-4 border-0 shadow-lg">
