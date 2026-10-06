@@ -4,37 +4,32 @@ use App\Http\Controllers\Bo\AuthController;
 use App\Http\Controllers\Bo\DashboardController;
 use App\Http\Controllers\Bo\InovasiController;
 use App\Http\Controllers\Bo\UserController;
-use App\Http\Controllers\Bo\MpasiController;
 use App\Http\Controllers\Bo\PermissionController;
 use App\Http\Controllers\Bo\MenuController;
 use App\Http\Controllers\Bo\RoleController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Bo\LaporanKegiatanController;
 use App\Http\Controllers\Bo\LaporanTahunanController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::get('/', fn () => redirect()->route('login'));
 
-// Guest routes — hanya bisa diakses kalau BELUM login
+// Hanya untuk yang BELUM login
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'index'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/refresh_captcha', [AuthController::class, 'refresh_captcha'])->name('refresh_captcha');
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->name('dashboard');
+// Hanya untuk yang SUDAH login
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/inovasi/global', [InovasiController::class, 'global'])->name('inovasi.global');
-Route::get('/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard-pkk', fn () => view('bo.pages.dasboard-pkk.index'))->name('dashboard.pkk');
 
-// Protected routes — hanya bisa diakses kalau SUDAH login
-// Route::get('/mpasi', [MpasiController::class, 'mpasi'])->name('mpasi.mp_asi');
-//Route::get('/mpasi', [MpasiController::class, 'mpasi'])->name('mpasi.mp_asi');
+    Route::get('/inovasi/global', [InovasiController::class, 'global'])->name('inovasi.global');
+    Route::get('/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
 
-Route::group([], function () {
     // Master User
     Route::get('master/user/data', [UserController::class, 'data'])->name('users.data');
     Route::resource('master/user', UserController::class)->except(['create', 'edit']);
@@ -47,34 +42,35 @@ Route::group([], function () {
     Route::get('master/permission/data', [PermissionController::class, 'data'])->name('permission.data');
     Route::resource('master/permission', PermissionController::class)->except(['create', 'edit']);
 
-    Route::get('laporan/kegiatan', [RoleController::class, 'laporanKegiatan'])->name('laporan.kegiatan');
-    Route::get('laporan/tahunan', [RoleController::class, 'laporanTahunan'])->name('laporan.tahunan');
-
-        // Master Menu
+    // Master Menu
     Route::get('master/menu', [MenuController::class, 'index'])->name('menu.index');
     Route::get('master/menu/data', [MenuController::class, 'data'])->name('menu.data');
     Route::post('master/menu', [MenuController::class, 'store'])->name('menu.store');
     Route::get('master/menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
     Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
-    Route::delete('master/menu/delete', [MenuController::class, 'destroy'])->name('menu.destroy');
+    Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
+
     // Master Role
     Route::get('master/role', [RoleController::class, 'index'])->name('role.index');
-    Route::get('/master/role/create', [RoleController::class, 'create'])->name('role.create');
+    Route::get('master/role/create', [RoleController::class, 'create'])->name('role.create');
     Route::post('master/role/store', [RoleController::class, 'store'])->name('role.store');
     Route::get('master/role/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
     Route::put('master/role/update/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::delete('master/role/destroy/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
 
-    // Laporan Kegiatan
+    // Laporan
+    Route::get('laporan/kegiatan', [RoleController::class, 'laporanKegiatan'])->name('laporan.kegiatan');
+    Route::get('laporan/tahunan', [RoleController::class, 'laporanTahunan'])->name('laporan.tahunan');
+
     Route::get('laporan-kegiatan', [LaporanKegiatanController::class, 'index'])->name('laporan-kegiatan.index');
-    // Laporan Tahunan
+    Route::post('laporan-kegiatan', [LaporanKegiatanController::class, 'store'])->name('laporan-kegiatan.store');
+    Route::get('laporan-kegiatan/sub/{kegiatan}', [LaporanKegiatanController::class, 'subKegiatan'])->name('laporan-kegiatan.sub');
+    Route::get('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'show'])->name('laporan-kegiatan.show');
+    Route::put('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'update'])->name('laporan-kegiatan.update');
+    Route::delete('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'destroy'])->name('laporan-kegiatan.destroy');
+
     Route::get('laporan-tahunan', [LaporanTahunanController::class, 'index'])->name('laporan-tahunan.index');
-// Closure route
-Route::get('/dashboard-pkk', function () {
-    return view('bo.pages.dasboard-pkk.index');
-})->middleware(['auth'])->name('dashboard.pkk');
 
-Route::get('/{slug}', [MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');
-
+    // CATCH-ALL: harus paling bawah
+    Route::get('/{slug}', [MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');
 });
-
