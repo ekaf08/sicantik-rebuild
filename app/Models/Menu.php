@@ -30,7 +30,9 @@ class Menu extends Model
     // Relasi children
     public function children()
     {
-        return $this->hasMany(Menu::class, 'parent_id', 'id_menu');
+        return $this->hasMany(Menu::class, 'parent_id', 'id_menu')
+                    ->whereIn('status_menu', ['1', 'Aktif'])
+                    ->orderBy('urutan');
     }
 
     // Relasi roles
