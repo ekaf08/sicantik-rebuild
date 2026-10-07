@@ -3,7 +3,6 @@
 @section('content')
 <!--begin::Content-->
 <div id="kt_app_content" class="app-content flex-column-fluid">
-    <!--begin::Content container-->
     <div id="kt_app_content_container" class="app-container container-fluid">
 
         <style>
@@ -32,7 +31,6 @@
                 z-index: 1;
             }
 
-            /* Siluet Grafis Kota & Landmark di Sudut Kanan Bawah */
             .banner-siluet-kota {
                 position: absolute;
                 right: 0;
@@ -44,37 +42,10 @@
                 z-index: 1;
             }
 
-            /* Form Filter Dropdown */
-            .form-select-custom {
-                background-color: #ffffff !important;
-                border: 1.5px solid #e2e8f0 !important;
-                border-radius: 0.85rem !important;
-                padding: 0.75rem 1.15rem !important;
-                font-size: 0.9rem !important;
-                font-weight: 600 !important;
-                color: #0f172a !important;
-                transition: all 0.2s ease-in-out;
-            }
-
-            .form-select-custom:focus {
-                border-color: #0d9488 !important;
-                box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.15) !important;
-                outline: none;
-            }
-
-            .label-filter-custom {
-                font-size: 0.85rem;
-                font-weight: 700;
-                color: #1e293b;
-                margin-bottom: 0.5rem;
-                display: block;
-            }
-
-            /* Card Placeholder Putihan Bersih */
             .empty-detail-clean {
                 max-width: 420px;
                 margin: 0 auto;
-                padding: 1rem;
+                padding: 2.5rem 1rem;
                 text-align: center;
             }
         </style>
@@ -129,7 +100,7 @@
                 </div>
             </div>
 
-            <!--Area Konten Detail Inovasi -->
+            <!-- Area Konten Detail Inovasi -->
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body py-5 px-4">
 
@@ -138,6 +109,7 @@
                             Silakan pilih inovasi untuk menampilkan detail
                         </p>
                     </div>
+
                     <div id="state-detail-content" class="d-none">
 
                         {{-- Pokja 1 --}}
@@ -172,10 +144,10 @@
                             @includeIf('bo.pages.inovasi.inovasikota.pendampingan-bumil')
                         </div>
                         <div id="content-kampung-asi" class="inovasi-item-view d-none">
-                            @includeIf('bo.pages.inovasi.inovasikota.kampung-asi')
+                            @include('bo.pages.inovasi.inovasikota.kampung-asi')
                         </div>
                         <div id="content-surabaya-emas" class="inovasi-item-view d-none">
-                            @includeIf('bo.pages.inovasi.inovasikota.surabaya-emas')
+                            @include('bo.pages.inovasi.inovasikota.surabaya-emas')
                         </div>
 
                     </div>
@@ -192,10 +164,6 @@
 <!-- Script Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <!-- Script Inovasi Kota -->
 <script src="{{ asset('assets/js/custom/pages/inovasi/inovasi-kota.js') }}?v={{ time() }}"></script>
 @endsection
-
-
