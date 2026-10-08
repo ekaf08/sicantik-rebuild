@@ -129,10 +129,6 @@
             <div><small>Total Kegiatan</small><strong>248</strong><span class="up">↑ 12%</span><small>dibanding bulan lalu</small></div></div>
         <div class="pkk-stat s2"><div class="ic"><i class="ki-outline ki-calendar-tick fs-2x"></i></div>
             <div><small>Kegiatan Bulan Ini</small><strong>87</strong><span class="up">↑ 18%</span><small>dibanding bulan lalu</small></div></div>
-        <div class="pkk-stat s3"><div class="ic"><i class="ki-outline ki-people fs-2x"></i></div>
-            <div><small>Pokja Aktif</small><strong>4</strong><small>dari 4 Pokja</small></div></div>
-        <div class="pkk-stat s4"><div class="ic"><i class="ki-outline ki-geolocation fs-2x"></i></div>
-            <div><small>Kelurahan/Kecamatan Terlapor</small><strong>31 / 31</strong><small>100% dari wilayah</small></div></div>
     </section>
  
     {{-- Grafik (masih contoh) --}}
@@ -144,18 +140,6 @@
         <div class="pkk-panel">
             <div class="pkk-title">Tren Kegiatan Bulanan</div>
             <div class="pkk-chart"><canvas id="chartTren"></canvas></div>
-        </div>
-        <div class="pkk-panel">
-            <div class="pkk-title">
-                Status Pelaporan per Wilayah
-                <select style="font-size:11px;border:1px solid var(--line);border-radius:6px;padding:3px 6px"><option>Kecamatan</option><option>Kelurahan</option></select>
-            </div>
-            @foreach ([['Asemrowo',100,'5/5'],['Benowo',100,'4/4'],['Tandes',92,'11/12'],['Sukomanunggal',78,'7/9'],['Wiyung',61,'5/8']] as [$nama,$persen,$ket])
-                <div class="pkk-prog">
-                    <div class="h"><span>{{ $nama }}</span><span><b>{{ $persen }}%</b> <span class="text-muted">{{ $ket }}</span></span></div>
-                    <div class="bar"><i class="{{ $persen < 80 ? 'mid' : '' }}" style="width:{{ $persen }}%"></i></div>
-                </div>
-            @endforeach
         </div>
     </section>
  
