@@ -260,8 +260,18 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('assets/js/custom/pages/master/users.js') }}"></script>
     <script>
+
+        function addForm(url, title) {
+            $('#kt_modal_add_users .modal-title').text(title);
+            $('#form_user')[0].reset();
+            $('#form_user').attr('action', url);
+            $('#form_user input[name=_method]').remove();
+            $('#id_kec').val('').trigger('change');
+            $('#id_kel').empty().append('<option value="">Pilih Kecamatan dulu</option>').trigger('change');
+            $('#kt_modal_add_users').modal('show');
+        }
+
         $(document).ready(function() {
             var table = $('#kt_table_user').DataTable({
                 processing: true,
