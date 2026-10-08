@@ -9,7 +9,7 @@
                 <select id="select-role" class="form-select form-select-solid w-300px">
                     <option value="">-- Pilih Role --</option>
                     @foreach($roles as $role)
-                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                        <option value="{{ Crypt::encryptString($role->id) }}">{{ $role->name }}</option>
                     @endforeach
                 </select>
                 <button type="button" id="btn-reload" class="btn btn-light btn-active-light-primary">
@@ -30,7 +30,6 @@
 </div>
 
 <style>
-/* Custom Styling Badge Checkbox ala Metronic */
 .perm-badge-check {
     display: none;
 }
@@ -77,6 +76,10 @@ $(document).ready(function () {
         else alert(msg);
     }
 
+    function esc(str) {
+    return $('<div>').text(str ?? '').html();
+    }
+
     function loadPermissions() {
         let roleId = $('#select-role').val();
         if (!roleId) {
@@ -116,7 +119,7 @@ $(document).ready(function () {
                 html += `
                 <div class="card mb-5 shadow-sm">
                     <div class="card-header bg-light">
-                        <h6 class="card-title fw-bold m-0">${menu.nama_menu}</h6>
+                        <h6 class="card-title fw-bold m-0">${esc(menu.nama_menu)}</h6>
                     </div>
                     <div class="card-body">`;
                 menu.children.forEach(function (child) {
@@ -134,48 +137,54 @@ $(document).ready(function () {
         $('#permission-container').html(html);
     }
 
-    function buildMenuRow(menu, permissions) {
-        let menuId = menu.id_menu;
-        let perm = permissions[menuId] || {};
+  function buildMenuRow(menu, permissions) {
+    let menuId = parseInt(menu.id_menu, 10);
+    let enc    = esc(menu.enc_id);
+    let perm   = permissions[menuId] || {};
 
-        let isTable  = perm.table  ? 'checked' : '';
-        let isCreate = perm.create ? 'checked' : '';
-        let isUpdate = perm.update ? 'checked' : '';
-        let isDelete = perm.delete ? 'checked' : '';
-        let isAll    = (perm.table && perm.create && perm.update && perm.delete) ? 'checked' : '';
+    let isTable  = perm.table  ? 'checked' : '';
+    let isCreate = perm.create ? 'checked' : '';
+    let isUpdate = perm.update ? 'checked' : '';
+    let isDelete = perm.delete ? 'checked' : '';
+    let isAll    = (perm.table && perm.create && perm.update && perm.delete) ? 'checked' : '';
 
-        return `
-        <div class="py-3 border-bottom">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <h6 class="fw-bold mb-1">${menu.nama_menu}</h6>
-                    <span class="text-muted fs-7">${menu.url_menu || '-'}</span>
-                </div>
-                <div class="form-check form-check-custom form-check-solid">
-                    <input class="form-check-input check-all" type="checkbox" data-menu-id="${menuId}" ${isAll} id="all_${menuId}">
-                    <label class="form-check-label fw-bold" for="all_${menuId}">ALL</label>
-                </div>
+    return `
+    <div class="py-3 border-bottom">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h6 class="fw-bold mb-1">${esc(menu.nama_menu)}</h6>
+                <span class="text-muted fs-7">${esc(menu.url_menu || '-')}</span>
             </div>
-            <div class="d-flex flex-wrap gap-2">
-                <div>
-                    <input type="checkbox" class="perm-badge-check perm-item" id="tbl_${menuId}" data-menu-id="${menuId}" data-field="table" ${isTable}>
-                    <label class="perm-badge-label" for="tbl_${menuId}">Lihat</label>
-                </div>
-                <div>
-                    <input type="checkbox" class="perm-badge-check perm-item" id="crt_${menuId}" data-menu-id="${menuId}" data-field="create" ${isCreate}>
-                    <label class="perm-badge-label" for="crt_${menuId}">Tambah</label>
-                </div>
-                <div>
-                    <input type="checkbox" class="perm-badge-check perm-item" id="upd_${menuId}" data-menu-id="${menuId}" data-field="update" ${isUpdate}>
-                    <label class="perm-badge-label" for="upd_${menuId}">Ubah</label>
-                </div>
-                <div>
-                    <input type="checkbox" class="perm-badge-check perm-item" id="del_${menuId}" data-menu-id="${menuId}" data-field="delete" ${isDelete}>
-                    <label class="perm-badge-label" for="del_${menuId}">Hapus</label>
-                </div>
+            <div class="form-check form-check-custom form-check-solid">
+                <input class="form-check-input check-all" type="checkbox"
+                       data-menu-id="${menuId}" data-enc="${enc}" ${isAll} id="all_${menuId}">
+                <label class="form-check-label fw-bold" for="all_${menuId}">ALL</label>
             </div>
-        </div>`;
-    }
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <div>
+                <input type="checkbox" class="perm-badge-check perm-item" id="tbl_${menuId}"
+                       data-menu-id="${menuId}" data-enc="${enc}" data-field="table" ${isTable}>
+                <label class="perm-badge-label" for="tbl_${menuId}">Lihat</label>
+            </div>
+            <div>
+                <input type="checkbox" class="perm-badge-check perm-item" id="crt_${menuId}"
+                       data-menu-id="${menuId}" data-enc="${enc}" data-field="create" ${isCreate}>
+                <label class="perm-badge-label" for="crt_${menuId}">Tambah</label>
+            </div>
+            <div>
+                <input type="checkbox" class="perm-badge-check perm-item" id="upd_${menuId}"
+                       data-menu-id="${menuId}" data-enc="${enc}" data-field="update" ${isUpdate}>
+                <label class="perm-badge-label" for="upd_${menuId}">Ubah</label>
+            </div>
+            <div>
+                <input type="checkbox" class="perm-badge-check perm-item" id="del_${menuId}"
+                       data-menu-id="${menuId}" data-enc="${enc}" data-field="delete" ${isDelete}>
+                <label class="perm-badge-label" for="del_${menuId}">Hapus</label>
+            </div>
+        </div>
+    </div>`;
+}
 
     $(document).on('change', '.perm-item', function () {
         let roleId = $('#select-role').val();
@@ -190,14 +199,29 @@ $(document).ready(function () {
         updatePermissionAjax(roleId, menuId, field, value);
     });
 
+    $(document).on('change', '.perm-item', function () {
+        let roleId = $('#select-role').val();
+        let menuId = $(this).data('menu-id');
+        let enc    = $(this).attr('data-enc');
+        let field  = $(this).data('field');
+        let value  = $(this).is(':checked') ? 1 : 0;
+
+        let total   = $(`.perm-item[data-menu-id="${menuId}"]`).length;
+        let checked = $(`.perm-item[data-menu-id="${menuId}"]:checked`).length;
+        $(`#all_${menuId}`).prop('checked', total === checked);
+
+        updatePermissionAjax(roleId, enc, field, value);
+    });
+
     $(document).on('change', '.check-all', function () {
         let roleId    = $('#select-role').val();
         let menuId    = $(this).data('menu-id');
+        let enc       = $(this).attr('data-enc');
         let isChecked = $(this).is(':checked');
 
         $(`#tbl_${menuId}, #crt_${menuId}, #upd_${menuId}, #del_${menuId}`).prop('checked', isChecked);
 
-        updatePermissionAjax(roleId, menuId, 'all', isChecked ? 1 : 0);
+        updatePermissionAjax(roleId, enc, 'all', isChecked ? 1 : 0);
     });
 
     function updatePermissionAjax(roleId, menuId, field, value) {
