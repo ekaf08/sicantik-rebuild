@@ -417,6 +417,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (window.Swal) { Swal.fire({ text: msg, icon: type, confirmButtonText: 'OK' }); }
         else { alert(msg); }
     }
+
+    // setara htmlspecialchars: ubah < > & " ' menjadi teks biasa
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
  
     /* ---------- Notulen: blok nama + file muncul kalau "Ada" ---------- */
     function toggleNotulen() {
@@ -611,18 +618,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (res.status !== 'success') { return notif(res.message, 'error'); }
                     var d = res.data;
                     var html = '<div style="text-align:left;font-size:13px;line-height:1.8">'
-                        + '<b>Tanggal:</b> ' + row.tanggal_fmt + ' ' + (d.jam || '') + '<br>'
-                        + '<b>Pokja:</b> ' + (d.pokja || '-') + '<br>'
+                        + '<b>Tanggal:</b> ' + row.tanggal_fmt + ' ' + esc(d.jam) + '<br>'
+                        + '<b>Pokja:</b> ' + esc(d.pokja || '-') + '<br>'
                         + '<b>Jenis:</b> ' + row.jenis + ' / ' + row.sub + '<br>'
                         + '<b>Tempat:</b> ' + row.tempat + '<br>'
-                        + '<b>Notulen:</b> ' + (d.notulen ? (d.nama_notulen || 'Ada') : '-') + '<br>'
-                        + '<b>Deskripsi:</b> ' + (d.deskripsi || '-') + '<br>';
-                    if (d.file_notulen_url)  { html += '<a href="' + d.file_notulen_url + '" target="_blank">Lihat file notulen</a><br>'; }
-                    if (d.file_absensi_url)  { html += '<a href="' + d.file_absensi_url + '" target="_blank">Lihat file absensi</a><br>'; }
-                    if (d.file_undangan_url) { html += '<a href="' + d.file_undangan_url + '" target="_blank">Lihat file undangan</a><br>'; }
+                        + '<b>Notulen:</b> ' + (d.notulen ? esc(d.nama_notulen || 'Ada') : '-') + '<br>'
+                        + '<b>Deskripsi:</b> ' + esc(d.deskripsi || '-') + '<br>';
+                    if (d.file_notulen_url)  { html += '<a href="' + esc(d.file_notulen_url) + '" target="_blank">Lihat file notulen</a><br>'; }
+                    if (d.file_absensi_url)  { html += '<a href="' + esc(d.file_absensi_url) + '" target="_blank">Lihat file absensi</a><br>'; }
+                    if (d.file_undangan_url) { html += '<a href="' + esc(d.file_undangan_url) + '" target="_blank">Lihat file undangan</a><br>'; }
                     [1, 2, 3].forEach(function (n) {
                         if (d['foto_' + n + '_url']) {
-                            html += '<img src="' + d['foto_' + n + '_url'] + '" style="width:100%;margin-top:8px;border-radius:6px">';
+                            html += '<img src="' + esc(d['foto_' + n + '_url']) + '" style="width:100%;margin-top:8px;border-radius:6px">';
                         }
                     });
                     html += '</div>';

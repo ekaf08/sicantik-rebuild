@@ -49,19 +49,19 @@ class LaporanKegiatanController extends Controller
                     
                     // Tombol File Notulen
                     if ($r->file_notulen) {
-                        $urlNotulen = e(asset($r->file_notulen));
+                        $urlNotulen = $this->esc(asset($r->file_notulen));
                         $html .= '<button type="button" class="btn btn-sm" style="background-color: #7765d8; color: white;" onclick="bukaViewerFile(\'' . $urlNotulen . '\')">File Notulen</button>';
                     }
                     
                     // Tombol File Absen
                     if ($r->file_absen) {
-                        $urlAbsen = e(asset($r->file_absen));
+                        $urlAbsen = $this->esc(asset($r->file_absen));
                         $html .= '<button type="button" class="btn btn-sm" style="background-color: #f6993f; color: white;" onclick="bukaViewerFile(\'' . $urlAbsen . '\')">File Absen</button>';
                     }
                     
                     // Tombol File Undangan
                     if ($r->file_undangan) {
-                        $urlUndangan = e(asset($r->file_undangan));
+                        $urlUndangan = $this->esc(asset($r->file_undangan));
                         $html .= '<button type="button" class="btn btn-sm" style="background-color: #e53e3e; color: white;" onclick="bukaViewerFile(\'' . $urlUndangan . '\')">File Undangan</button>';
                     }
 
@@ -78,7 +78,7 @@ class LaporanKegiatanController extends Controller
                     $listFoto = [$r->laporan_kegiatan_foto, $r->laporan_kegiatan_foto_2, $r->laporan_kegiatan_foto_3];
                     foreach ($listFoto as $f) {
                         if ($f) {
-                            $urlFoto = e(asset($f));
+                            $urlFoto = $this->esc(asset($f));
                             $html .= '<div class="pkk-foto-wrapper mb-1" onclick="bukaViewerFoto(\'' . $urlFoto . '\')" title="Klik untuk memperbesar foto">'
                                 .  '<img class="thumb-img" src="' . $urlFoto . '">'
                                 .  '<div class="overlay-eye"><i class="ki-outline ki-eye fs-2"></i></div>'
@@ -97,8 +97,8 @@ class LaporanKegiatanController extends Controller
                 ->addColumn('oleh', fn ($r) => $r->nama_pembuat ?: '-')
                 ->addColumn('action', function ($r) {
                     $enc  = Crypt::encryptString($r->laporan_kegiatan_id);
-                    $show = e(route('laporan-kegiatan.show', $enc));
-                    $del  = e(route('laporan-kegiatan.destroy', $enc));
+                    $show = $this->esc(route('laporan-kegiatan.show', $enc));
+                    $del  = $this->esc(route('laporan-kegiatan.destroy', $enc));
                     return '<div style="white-space:nowrap">'
                         . '<button type="button" class="abtn view btn-lihat" data-show="' . $show . '">Lihat</button> '
                         . '<button type="button" class="abtn edit btn-edit" data-show="' . $show . '">Edit</button> '
@@ -430,6 +430,12 @@ private function tulisXlsx(string $sheetPath, string $zipPath): void
     $zip->addFile($sheetPath, 'xl/worksheets/sheet1.xml');
     $zip->close();
 }
+
+    // htmlspecialchars: ubah < > & " ' menjadi teks biasa
+    private function esc($v): string
+    {
+        return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
+    }
  
     private function find(string $encryptedId)
     {
@@ -461,7 +467,14 @@ private function tulisXlsx(string $sheetPath, string $zipPath): void
  
     private function simpanFile($file, $dir): string
     {
-        $nama = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        // hanya ekstensi yang diizinkan, selain itu ditolak
+        $ext  = strtolower($file->getClientOriginalExtension());
+        $aman = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+        if (!in_array($ext, $aman, true)) {
+            abort(422, 'Tipe file tidak diizinkan.');
+        }
+
+        $nama = time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
         $file->move(public_path($dir), $nama);
         return $dir . '/' . $nama;
     }
