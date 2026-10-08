@@ -64,7 +64,7 @@ Route::middleware('auth')->group(function () {
         Route::get('master/menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
         Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
         Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
-
+ 
     // Master Role
     Route::get('master/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('master/role/create', [RoleController::class, 'create'])->name('role.create');
@@ -79,13 +79,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('laporan-kegiatan', [LaporanKegiatanController::class, 'index'])->name('laporan-kegiatan.index');
     Route::post('laporan-kegiatan', [LaporanKegiatanController::class, 'store'])->name('laporan-kegiatan.store');
+    Route::get('laporan-kegiatan/wilayah/kecamatan', [LaporanKegiatanController::class, 'kecamatan'])->name('laporan-kegiatan.kecamatan');
+    Route::get('laporan-kegiatan/wilayah/kelurahan/{kec}', [LaporanKegiatanController::class, 'kelurahan'])->name('laporan-kegiatan.kelurahan');
+    Route::get('laporan-kegiatan/export', [LaporanKegiatanController::class, 'export'])->name('laporan-kegiatan.export');
     Route::get('laporan-kegiatan/sub/{kegiatan}', [LaporanKegiatanController::class, 'subKegiatan'])->name('laporan-kegiatan.sub');
     Route::get('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'show'])->name('laporan-kegiatan.show');
     Route::put('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'update'])->name('laporan-kegiatan.update');
     Route::delete('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'destroy'])->name('laporan-kegiatan.destroy');
-    Route::get('laporan-kegiatan/export', [LaporanKegiatanController::class, 'export'])->name('laporan-kegiatan.export');
-    Route::get('laporan-kegiatan/wilayah/kecamatan', [LaporanKegiatanController::class, 'kecamatan'])->name('laporan-kegiatan.kecamatan');
-    Route::get('laporan-kegiatan/wilayah/kelurahan/{kec}', [LaporanKegiatanController::class, 'kelurahan'])->name('laporan-kegiatan.kelurahan');
 
     Route::get('laporan-tahunan', [LaporanTahunanController::class, 'index'])->name('laporan-tahunan.index');
 

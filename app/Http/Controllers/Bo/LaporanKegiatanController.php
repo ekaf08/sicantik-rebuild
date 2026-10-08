@@ -116,39 +116,67 @@ class LaporanKegiatanController extends Controller
         return view('bo.pages.laporan.laporan-kegiatan.index', compact('kegiatan'));
     }
  
-    // Export ke CSV (bisa dibuka di Excel), mengikuti filter yang sedang aktif
+    // Export ke Excel (.xlsx), mengikuti filter yang sedang aktif
     public function export(Request $request)
     {
         $query = $this->baseQuery($request);
         if ($s = $request->q) {
             $this->terapkanCari($query, $s);
         }
- 
-        $nama = 'laporan-kegiatan-' . now()->format('Ymd-His') . '.csv';
- 
-        return response()->streamDownload(function () use ($query) {
-            $out = fopen('php://output', 'w');
-            fwrite($out, "\xEF\xBB\xBF");
-            fputcsv($out, ['No', 'Tanggal', 'Jam', 'Jenis Kegiatan', 'Kegiatan', 'Tempat', 'Deskripsi', 'Keterangan', 'Nama Notulen', 'Jumlah File'], ';');
- 
-            $i = 0;
-            foreach ($query->cursor() as $r) {
-                $jmlFile = collect([$r->file_absen, $r->file_undangan, $r->file_notulen])->filter()->count();
-                fputcsv($out, array_map([$this, 'csvAman'], [
-                    ++$i,
-                    Carbon::parse($r->laporan_kegiatan_tanggal)->format('d-m-Y'),
-                    $r->laporan_kegiatan_jam ? substr($r->laporan_kegiatan_jam, 0, 5) : '',
-                    $r->kegiatan_nama,
-                    $r->sub_kegiatan_nama,
-                    $r->laporan_kegiatan_tampat,
-                    $r->laporan_kegiatan_deskripsi,
-                    $this->labelPokja($r->laporan_kegiatan_sub),
-                    $r->nama_notulen,
-                    $jmlFile,
-                ]), ';');
-            }
-            fclose($out);
-        }, $nama, ['Content-Type' => 'text/csv; charset=UTF-8']);
+
+        $judul = [
+            'TGL LAPORAN KEGIATAN', 'TGL DIBUAT', 'DIBUAT OLEH', 'LAPORAN KEGIATAN TAMPAT',
+            'LAPORAN KEGIATAN DESKRIPSI', 'KETERANGAN', 'LAPORAN KEGIATAN FOTO',
+            'LAPORAN KEGIATAN ID', 'NAMA KEGIATAN', 'NAMA SUB KEGIATAN',
+        ];
+
+        $tmpSheet = tempnam(sys_get_temp_dir(), 'sheet');
+        $tmpXlsx  = tempnam(sys_get_temp_dir(), 'xlsx');
+
+        $h = fopen($tmpSheet, 'w');
+        fwrite($h, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            . '<cols>'
+            . '<col min="1" max="2" width="20" customWidth="1"/>'
+            . '<col min="3" max="3" width="34" customWidth="1"/>'
+            . '<col min="4" max="4" width="30" customWidth="1"/>'
+            . '<col min="5" max="5" width="60" customWidth="1"/>'
+            . '<col min="6" max="6" width="14" customWidth="1"/>'
+            . '<col min="7" max="7" width="60" customWidth="1"/>'
+            . '<col min="8" max="8" width="14" customWidth="1"/>'
+            . '<col min="9" max="10" width="26" customWidth="1"/>'
+            . '</cols><sheetData>');
+        fwrite($h, $this->xlsxBaris(1, $judul, true));
+
+        $n = 1;
+        foreach ($query->cursor() as $r) {
+            $p    = $this->pokjaNum($r->laporan_kegiatan_sub);
+            $foto = $r->laporan_kegiatan_foto ?: ($r->laporan_kegiatan_foto_2 ?: $r->laporan_kegiatan_foto_3);
+
+            fwrite($h, $this->xlsxBaris(++$n, [
+                Carbon::parse($r->laporan_kegiatan_tanggal)->format('Y-m-d'),
+                $r->created_at ? Carbon::parse($r->created_at)->format('Y-m-d H:i:s') : '',
+                $r->nama_pembuat,
+                $r->laporan_kegiatan_tampat,
+                $r->laporan_kegiatan_deskripsi,
+                $p === '5' ? 'sekretaris' : ($p ? 'pokja' . $p : ''),
+                $foto ? asset($foto) : '',
+                (int) $r->laporan_kegiatan_id,
+                $r->kegiatan_nama,
+                $r->sub_kegiatan_nama,
+            ]));
+        }
+        fwrite($h, '</sheetData></worksheet>');
+        fclose($h);
+
+        $this->tulisXlsx($tmpSheet, $tmpXlsx);
+        @unlink($tmpSheet);
+
+        return response()->download(
+            $tmpXlsx,
+            'Data Laporan Kegiatan - Kominfo Kota Surabaya - ' . now()->format('d M Y') . '.xlsx',
+            ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+        )->deleteFileAfterSend(true);
     }
  
     // Dropdown sub kegiatan.
@@ -291,7 +319,7 @@ class LaporanKegiatanController extends Controller
                 'l.laporan_kegiatan_id', 'l.laporan_kegiatan_tanggal', 'l.laporan_kegiatan_tampat',
                 'l.laporan_kegiatan_deskripsi', 'l.laporan_kegiatan_foto', 'l.laporan_kegiatan_foto_2',
                 'l.laporan_kegiatan_foto_3', 'l.laporan_kegiatan_jam', 'l.file_absen', 'l.file_undangan',
-                'l.file_notulen', 'l.nama_notulen', 'l.laporan_kegiatan_sub', 'l.created_by',
+                'l.file_notulen', 'l.nama_notulen', 'l.laporan_kegiatan_sub', 'l.created_by', 'l.created_at',
                 'k.kegiatan_nama', 's.sub_kegiatan_nama',
                 'u.name as nama_pembuat'
             ])
@@ -332,6 +360,76 @@ class LaporanKegiatanController extends Controller
         }
         return $v;
     }
+
+    // Satu baris Excel (sel teks memakai inlineStr, angka memakai nilai asli)
+private function xlsxBaris(int $row, array $cells, bool $tebal = false): string
+{
+    $kol = range('A', 'Z');
+    $s   = $tebal ? ' s="1"' : '';
+    $x   = '<row r="' . $row . '">';
+
+    foreach ($cells as $i => $v) {
+        $ref = $kol[$i] . $row;
+        if (is_int($v) || is_float($v)) {
+            $x .= '<c r="' . $ref . '"' . $s . '><v>' . $v . '</v></c>';
+        } else {
+            $t = preg_replace('/[^\x09\x0A\x0D\x20-\x{D7FF}\x{E000}-\x{FFFD}]/u', '', (string) $v);
+            $x .= '<c r="' . $ref . '"' . $s . ' t="inlineStr"><is><t xml:space="preserve">'
+                . htmlspecialchars((string) $t, ENT_XML1 | ENT_QUOTES, 'UTF-8')
+                . '</t></is></c>';
+        }
+    }
+
+    return $x . '</row>';
+}
+
+// Bungkus sheet menjadi file .xlsx (zip berisi XML)
+private function tulisXlsx(string $sheetPath, string $zipPath): void
+{
+    $zip = new \ZipArchive();
+    if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+        abort(500, 'Gagal membuat file Excel.');
+    }
+
+    $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+
+    $zip->addFromString('[Content_Types].xml', $xml
+        . '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        . '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        . '<Default Extension="xml" ContentType="application/xml"/>'
+        . '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+        . '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+        . '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+        . '</Types>');
+
+    $zip->addFromString('_rels/.rels', $xml
+        . '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        . '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+        . '</Relationships>');
+
+    $zip->addFromString('xl/workbook.xml', $xml
+        . '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+        . '<sheets><sheet name="Laporan Kegiatan" sheetId="1" r:id="rId1"/></sheets></workbook>');
+
+    $zip->addFromString('xl/_rels/workbook.xml.rels', $xml
+        . '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        . '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'
+        . '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+        . '</Relationships>');
+
+    $zip->addFromString('xl/styles.xml', $xml
+        . '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+        . '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>'
+        . '<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>'
+        . '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'
+        . '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+        . '<cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+        . '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs>'
+        . '</styleSheet>');
+
+    $zip->addFile($sheetPath, 'xl/worksheets/sheet1.xml');
+    $zip->close();
+}
  
     private function find(string $encryptedId)
     {
