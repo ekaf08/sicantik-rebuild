@@ -48,6 +48,7 @@
                             <th class="min-w-125px">Nama Menu</th>
                             <th class="min-w-125px">Parent</th>
                             <th class="min-w-100px">Status</th>
+                            <th class="min-w-70px">Urutan</th> <!-- Diganti menjadi Urutan -->
                             <th class="min-w-100px">Icon</th>
                             <th class="text-end min-w-100px">Aksi</th>
                         </tr>
@@ -79,12 +80,11 @@
                         <div class="fv-row">
                             <label class="fw-semibold fs-6 mb-2">Pilih Parent Menu</label>
                             <select name="parent_id" id="parent_id" class="form-select form-select-solid">
-                                <option value="">Pilih Menu Parent (Opsional)</option>
+                            <option value="">Pilih Menu Parent (Opsional)</option>
                             @foreach($parentMenus as $parent)
                                 <option value="{{ $parent->id_menu }}">{{ $parent->nama_menu }}</option>
                             @endforeach
-                                    
-                            </select>
+                        </select>
                         </div>
 
                         <div class="fv-row">
@@ -151,6 +151,7 @@
                 { data: 'nama_menu', name: 'nama_menu' },
                 { data: 'parent_name', name: 'parent_name' },
                 { data: 'status_badge', name: 'status_menu' },
+                { data: 'urutan_display', name: 'urutan' }, // Pemetaan diganti ke urutan_display
                 { data: 'icon_display', name: 'icon', orderable: false, searchable: false },
                 { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' }
             ],
@@ -271,7 +272,7 @@
                     data: {
                         '_method': 'DELETE',
                         '_token': $('meta[name="csrf-token"]').attr('content'),
-                        'id': encryptedId // ID terenkripsi dikirim aman lewat body data
+                        'id': encryptedId // Pastikan variabel ini terkirim dengan benar
                     },
                     success: function(response) {
                         if (typeof table !== 'undefined') {
@@ -298,6 +299,5 @@
             }
         });
     }
-
 </script>
-@endsection 
+@endsection

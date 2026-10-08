@@ -10,16 +10,15 @@ use Illuminate\Support\Facades\Crypt;
 
 class MenuController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
     {
         $parentMenus = Menu::whereNull('parent_id')->orWhere('parent_id', 0)->get();
         return view('bo.menu.index', compact('parentMenus'));
     }
-
     public function data(Request $request)
     {
         $search = $request->input('search.value');
-        $menus = Menu::with('parent')
+        $menus = Menu::with(['parent', 'creator']) // Memuat relasi parent dan creator
             ->when($search, function ($query, $search) {
                 return $query->where('nama_menu', 'ilike', '%' . $search . '%');
             })
@@ -30,6 +29,12 @@ class MenuController extends Controller
             ->addColumn('parent_name', function($row){
                 return $row->parent ? $row->parent->nama_menu : '-';
             })
+            ->addColumn('created_by_name', function($row){
+                return $row->creator ? $row->creator->name : '-';
+            })
+            ->addColumn('urutan_display', function($row){
+                return '<span class="badge bg-light text-dark fw-bold px-3 py-2">' . $row->urutan . '</span>';
+            })
             ->addColumn('status_badge', function($row){
                 $isAktif = ($row->status_menu == 1 || $row->status_menu == 'Aktif');
                 $text = $isAktif ? 'Aktif' : 'Non Aktif';
@@ -37,8 +42,15 @@ class MenuController extends Controller
                 return '<span class="badge ' . $class . ' px-3 py-2">' . $text . '</span>';
             })
             ->addColumn('icon_display', function($row){
-                return '<i class="' . $row->icon . ' fs-5 me-2"></i> <span class="text-muted">' . $row->icon . '</span>';
+                return '
+                    <div class="d-flex align-items-center text-nowrap">
+                        <i class="' . $row->icon . ' fs-2 me-2 text-gray-700"></i>
+                        <span class="text-muted fs-7">' . $row->icon . '</span>
+                    </div>
+                ';
             })
+            
+            
             ->addColumn('action', function($row){
                 $encryptedId = Crypt::encryptString($row->id_menu);
 
@@ -57,7 +69,7 @@ class MenuController extends Controller
                     </div>
                 ';
             })
-            ->rawColumns(['status_badge', 'icon_display', 'action'])
+            ->rawColumns(['urutan_display', 'status_badge', 'icon_display', 'action'])
             ->make(true);
     }
 
@@ -133,33 +145,34 @@ class MenuController extends Controller
         ]);
     }
 
-    public function destroy($encryptedId)
+     public function destroy($encryptedId)
     {
         try {
             $id = Crypt::decryptString($encryptedId);
             
             $menu = Menu::where('id_menu', $id)->firstOrFail();
-            $menu->delete(); // Otomatis terhapus di database
+            $menu->delete();
             
             return response()->json([
                 'status' => 'success', 
-                'message' => 'Menu berhasil dihapus dari database!'
+                'message' => 'Menu berhasil dihapus!'
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error', 
-                'message' => 'Gagal mendekripsi ID atau data tidak ditemukan!'
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
             ], 400);
         }
     }
+
     public function handleDynamicPage($slug)
-{
-    $menu = Menu::where('url_menu', $slug)->first();
+    {
+        $menu = Menu::where('url_menu', $slug)->first();
 
-    if (!$menu) {
-        abort(404); 
+        if (!$menu) {
+            abort(404); 
+        }
+
+        return view('bo.halaman-dinamis', compact('menu'));
     }
-
-    return view('bo.halaman-dinamis', compact('menu'));
-}
 }

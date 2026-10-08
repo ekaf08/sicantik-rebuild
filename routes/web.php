@@ -48,7 +48,6 @@ Route::group([], function () {
     Route::post('master/permission/access', [PermissionController::class, 'updateAccess'])->name('permission.access');
     Route::resource('master/permission', PermissionController::class)->except(['create', 'edit']);
 
-<<<<<<< Updated upstream
     Route::get('laporan/kegiatan', [RoleController::class, 'laporanKegiatan'])->name('laporan.kegiatan');
     Route::get('laporan/tahunan', [RoleController::class, 'laporanTahunan'])->name('laporan.tahunan');
 
@@ -58,16 +57,7 @@ Route::group([], function () {
     Route::post('master/menu', [MenuController::class, 'store'])->name('menu.store');
     Route::get('master/menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
     Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
-    Route::delete('master/menu/delete', [MenuController::class, 'destroy'])->name('menu.destroy');
-=======
-    // Master Menu
-        Route::get('master/menu', [MenuController::class, 'index'])->name('menu.index');
-        Route::get('master/menu/data', [MenuController::class, 'data'])->name('menu.data');
-        Route::post('master/menu', [MenuController::class, 'store'])->name('menu.store');
-        Route::get('master/menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
-        Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
-        Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
->>>>>>> Stashed changes
+    Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
     // Master Role
     Route::get('master/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('/master/role/create', [RoleController::class, 'create'])->name('role.create');
