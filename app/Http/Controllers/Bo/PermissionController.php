@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Menu;
 use App\Models\Role;
 use App\Models\RoleMenuPermission;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 
 class PermissionController extends Controller
@@ -16,13 +18,22 @@ class PermissionController extends Controller
         return view('bo.permission.index', compact('roles'));
     }
 
+    private function decryptId(?string $value): int
+    {
+        try {
+            return (int) Crypt::decryptString($value ?? '');
+        } catch (DecryptException $e) {
+            abort(422, 'Parameter tidak valid');
+        }
+    }
+
     public function getPermissions(Request $request)
     {
-        $request->validate([
-            'role_id' => 'required|integer',
-        ]);
+        $request->validate ([
+            'role_id' => 'required|string']
+        );
 
-        $roleId = $request->role_id;
+        $roleId = $this->decryptId($request->role_id);
 
         $menus = Menu::with('children')
               ->where(function ($q) {
@@ -46,12 +57,15 @@ class PermissionController extends Controller
     public function updateAccess(Request $request)
     {
         $data = $request->validate([
-            'role_id' => 'required|integer',
-            'menu_id' => 'required|integer',
+            'role_id' => 'required|string',
+            'menu_id' => 'required|string',
             'field'   => 'required|in:table,create,update,delete,all',
             'value'   => 'required|in:0,1',
         ]);
 
+        $data['role_id'] = $this->decryptId($data['role_id']);
+        $data['menu_id'] = $this->decryptId($data['menu_id']);
+        
         $value = (bool) $data['value'];
 
         $perm = RoleMenuPermission::firstOrNew([
