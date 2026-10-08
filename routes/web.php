@@ -43,10 +43,8 @@ Route::middleware('auth')->group(function () {
     Route::post('master/permission/access', [PermissionController::class, 'updateAccess'])->name('permission.access');
     Route::resource('master/permission', PermissionController::class)->except(['create', 'edit']);
 
-<<<<<<< HEAD
-=======
     // Master Menu
->>>>>>> 27f9d0b5d9795b6e63b7c7df2a1b33bbf4d8e82f
+
     Route::get('laporan/kegiatan', [RoleController::class, 'laporanKegiatan'])->name('laporan.kegiatan');
     Route::get('laporan/tahunan', [RoleController::class, 'laporanTahunan'])->name('laporan.tahunan');
 
@@ -54,10 +52,10 @@ Route::middleware('auth')->group(function () {
     Route::get('master/menu/data', [MenuController::class, 'data'])->name('menu.data');
     Route::post('master/menu', [MenuController::class, 'store'])->name('menu.store');
     Route::get('master/menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
-<<<<<<< HEAD
+
     Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
     Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
-=======
+
     Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update'); 
     Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
 
@@ -72,7 +70,6 @@ Route::middleware('auth')->group(function () {
         Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
         Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
  
->>>>>>> 27f9d0b5d9795b6e63b7c7df2a1b33bbf4d8e82f
     // Master Role
     Route::get('master/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('master/role/create', [RoleController::class, 'create'])->name('role.create');
