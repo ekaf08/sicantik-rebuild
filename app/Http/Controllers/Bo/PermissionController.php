@@ -2,94 +2,79 @@
 
 namespace App\Http\Controllers\Bo;
 
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\Controller;
+use App\Models\Menu;
+use App\Models\Role;
+use App\Models\RoleMenuPermission;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Permission; 
-use Yajra\DataTables\Facades\DataTables; 
 
 class PermissionController extends Controller
 {
     public function index()
     {
-        return view('bo.permission.index');
+        $roles = Role::orderBy('name', 'asc')->get();
+        return view('bo.permission.index', compact('roles'));
     }
 
-    public function data()
+    public function getPermissions(Request $request)
     {
-        $query = Permission::query();
-
-        return DataTables::of($query)
-            ->addIndexColumn()
-            ->addColumn('action', function ($row) {
-                $btn = '<button onclick="editForm(`' . route('permission.show', $row->id) . '`, `' . route('permission.update', $row->id) . '`, `EDIT PERMISSION`)" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"><i class="ki-outline ki-pencil fs-2"></i></button>';
-                $btn .= '<button onclick="deleteData(`' . route('permission.destroy', $row->id) . '`)" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"><i class="ki-outline ki-trash fs-2"></i></button>';
-                return $btn;
-            })
-            ->rawColumns(['action'])
-            ->make(true);
-    }
-
-    public function store(Request $request) {
         $request->validate([
-            'name' => 'required|string|max:255|unique:permissions,name',
-        ], [
-            'name.required' => 'Nama permission wajib diisi.',
-            'name.unique'   => 'Nama permission sudah ada di database.',
+            'role_id' => 'required|integer',
         ]);
 
-        // Simpan via Spatie Model
-        Permission::create([
-            'name'       => $request->name,
-            'guard_name' => 'web',
-        ]);
+        $roleId = $request->role_id;
+
+        $menus = Menu::with('children')
+              ->where(function ($q) {
+              $q->whereNull('parent_id')->orWhere('parent_id', 0);
+        })
+        ->whereIn('status_menu', ['1', 'Aktif'])
+        ->orderBy('urutan')
+        ->get();
+        
+        $permissions = RoleMenuPermission::where('role_id', $roleId)
+            ->get()
+            ->keyBy('menu_id');
 
         return response()->json([
-            'status'  => 'success',
-            'message' => 'Permission berhasil ditambahkan!',
+            'success'     => true,
+            'menus'       => $menus,
+            'permissions' => $permissions,
         ]);
     }
 
-    public function show($id)
+    public function updateAccess(Request $request)
     {
-        $permission = Permission::findOrFail($id);
+        $data = $request->validate([
+            'role_id' => 'required|integer',
+            'menu_id' => 'required|integer',
+            'field'   => 'required|in:table,create,update,delete,all',
+            'value'   => 'required|in:0,1',
+        ]);
+
+        $value = (bool) $data['value'];
+
+        $perm = RoleMenuPermission::firstOrNew([
+            'role_id' => $data['role_id'],
+            'menu_id' => $data['menu_id'],
+        ]);
+
+        if ($data['field'] === 'all') {
+            $perm->table  = $value;
+            $perm->create = $value;
+            $perm->update = $value;
+            $perm->delete = $value;
+        } else {
+            $perm->{$data['field']} = $value;
+        }
+
+        $perm->can_access = $perm->table || $perm->create || $perm->update || $perm->delete;
+        $perm->save();
 
         return response()->json([
-            'status' => 'success',
-            'data'   => $permission,
+            'success' => true,
+            'message' => 'Hak akses berhasil diperbarui',
+            'data'    => $perm
         ]);
     }
-
-    public function update(Request $request,$id)
-    {
-        $permission = Permission::findOrFail($id);
-
-        // Validasi unik (abaikan id yang sedang di-edit)
-        $request->validate([
-            'name' => 'required|string|max:255|unique:permissions,name,' . $id,
-        ], [
-            'name.required' => 'Nama permission wajib diisi.',
-            'name.unique'   => 'Nama permission sudah dipakai.',
-        ]);
-
-        $permission->update([
-            'name' => $request->name,
-        ]);
-
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Permission berhasil diperbarui!',
-        ]);
-    }
-
-    public function destroy($id)
-    {
-        $permission = Permission::findOrFail($id);$permission->delete();
-
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Permission berhasil dihapus!',
-        ]);
-    }
-
 }
