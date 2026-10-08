@@ -125,6 +125,7 @@
                         <div class="mb-7">
                             <label class="required fw-semibold fs-6 mb-2">Password</label>
                             <input type="password" name="password" class="form-control form-control-solid" placeholder="Masukkan password">
+                            <div class="text-muted fs-7 mt-1">Minimal 8 karakter, mengandung huruf besar, huruf kecil, angka, dan simbol (contoh: Pkk@2026!).</div>
                         </div>
                         <!-- Pilih Kecamatan -->
                         <div class="mb-7">
@@ -178,6 +179,7 @@
                         <div class="mb-7">
                             <label class="required fw-semibold fs-6 mb-2">Password Baru</label>
                             <input type="password" name="password" id="reset_password_input" class="form-control form-control-solid" placeholder="Masukkan password baru" minlength="8">
+                            <div class="text-muted fs-7 mt-1">Minimal 8 karakter, mengandung huruf besar, huruf kecil, angka, dan simbol.</div>
                         </div>
                         <div class="mb-7">
                             <label class="required fw-semibold fs-6 mb-2">Konfirmasi Password</label>
@@ -273,6 +275,40 @@
         }
 
         $(document).ready(function() {
+
+            var cacheKel = {};   // daftar kelurahan per kecamatan, supaya pemanggilan kedua langsung muncul
+
+            // Muat kelurahan sesuai kecamatan. Mengembalikan promise supaya bisa disambung (gantian).
+            function muatKelurahan(idKec, idKelTerpilih) {
+                var $kel = $('#id_kel');
+
+                if (!idKec) {
+                    $kel.empty().append('<option value="">Pilih Kecamatan dulu</option>').trigger('change.select2');
+                    return $.Deferred().resolve().promise();
+                }
+
+                var isi = function (list) {
+                    if ($('#id_kec').val() != idKec) { return; }   // kecamatan sudah diganti selagi menunggu
+                    $kel.empty().append('<option value="">Pilih Kelurahan</option>');
+                    $.each(list, function (i, kel) {
+                        $kel.append($('<option>').val(kel.id_kel).text(kel.nama_kel));
+                    });
+                    $kel.val(idKelTerpilih || '').trigger('change.select2');
+                };
+
+                if (cacheKel[idKec]) {
+                    isi(cacheKel[idKec]);
+                    return $.Deferred().resolve().promise();
+                }
+
+                $kel.empty().append('<option value="">Memuat...</option>').trigger('change.select2');
+
+                return $.get("{{ url('get-kelurahan') }}/" + idKec)
+                    .done(function (list) { cacheKel[idKec] = list; isi(list); })
+                    .fail(function () {
+                        $kel.empty().append('<option value="">Gagal memuat kelurahan</option>').trigger('change.select2');
+                    });
+            }
             var table = $('#kt_table_user').DataTable({
                 processing: true,
                 serverSide: true,
@@ -326,28 +362,9 @@
             });
 
             // === kecamatan berubah -> load kelurahan ===
+            // === kecamatan berubah -> load kelurahan ===
             $('#id_kec').on('change', function() {
-                var id_kec = $(this).val();
-                var $kel = $('#id_kel');
-
-                $kel.empty().append('<option value="">Memuat...</option>').trigger('change');
-
-                if (!id_kec) {
-                    $kel.empty().append('<option value="">Pilih Kecamatan dulu</option>').trigger('change');
-                    return;
-                }
-
-                $.get("{{ url('get-kelurahan') }}/" + id_kec)
-                    .done(function(response) {
-                        $kel.empty().append('<option value="">Pilih Kelurahan</option>');
-                        $.each(response, function(i, kel) {
-                            $kel.append('<option value="' + kel.id_kel + '">' + kel.nama_kel + '</option>');
-                        });
-                        $kel.trigger('change');
-                    })
-                    .fail(function() {
-                        $kel.empty().append('<option value="">Gagal memuat kelurahan</option>').trigger('change');
-                    });
+                muatKelurahan($(this).val());
             });
 
             // === edit modal ===
@@ -357,7 +374,6 @@
                 var url = "{{ route('user.show', ':id') }}".replace(':id', id);
                 var updateUrl = "{{ route('user.update', ':id') }}".replace(':id', id);
 
-                $('#kt_modal_add_users').modal('show');
                 $('#kt_modal_add_users .modal-title').text('EDIT USER');
                 $('#form_user')[0].reset();
 
@@ -375,17 +391,12 @@
                         $('#form_user select[name=role_id]').val(response.role_id).trigger('change');
                         $('#form_user input[name=password]').val('');
 
-                        $('#id_kec').val(response.id_kec).trigger('change');
+                        $('#id_kec').val(response.id_kec).trigger('change.select2');
 
-                        $.get("{{ url('get-kelurahan') }}/" + response.id_kec)
-                            .done(function(kelurahanList) {
-                                var $kel = $('#id_kel');
-                                $kel.empty().append('<option value="">Pilih Kelurahan</option>');
-                                $.each(kelurahanList, function(i, kel) {
-                                    $kel.append('<option value="' + kel.id_kel + '">' + kel.nama_kel + '</option>');
-                                });
-                                $kel.val(response.id_kel).trigger('change');
-                            });
+                        muatKelurahan(response.id_kec, response.id_kel).always(function () {
+                            $('#kt_modal_add_users').modal('show');
+                        });
+
                     })
                     .fail(function() {
                         Swal.fire('Gagal', 'Gagal mengambil data user.', 'error');
