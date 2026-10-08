@@ -83,6 +83,9 @@ Route::middleware('auth')->group(function () {
     Route::get('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'show'])->name('laporan-kegiatan.show');
     Route::put('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'update'])->name('laporan-kegiatan.update');
     Route::delete('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'destroy'])->name('laporan-kegiatan.destroy');
+    Route::get('laporan-kegiatan/export', [LaporanKegiatanController::class, 'export'])->name('laporan-kegiatan.export');
+    Route::get('laporan-kegiatan/wilayah/kecamatan', [LaporanKegiatanController::class, 'kecamatan'])->name('laporan-kegiatan.kecamatan');
+    Route::get('laporan-kegiatan/wilayah/kelurahan/{kec}', [LaporanKegiatanController::class, 'kelurahan'])->name('laporan-kegiatan.kelurahan');
 
     Route::get('laporan-tahunan', [LaporanTahunanController::class, 'index'])->name('laporan-tahunan.index');
 

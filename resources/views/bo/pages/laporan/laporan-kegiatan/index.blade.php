@@ -1,23 +1,23 @@
 @extends('bo.layout.app')
-
+ 
 @section('content')
 <style>
     .pkk { --teal:#2fa88f; --teal-dark:#286b83; --teal-deep:#205d73; --ink:#183b49; --muted:#6d8189; --line:#dce9ec; --green:#3fae5f; --purple:#7765d8; --blue:#4a90e2; }
     .pkk, .pkk * { box-sizing: border-box; }
     .pkk { color: var(--ink); }
-
+ 
     /* Hero */
     .pkk-hero { position:relative; overflow:hidden; border-radius:16px; padding:26px 30px; min-height:112px;
         background:linear-gradient(100deg,#dff3e6,#eaf7f1 55%,#d3ece7); }
     .pkk-hero h1 { margin:0 0 6px; font-size:28px; font-weight:800; color:var(--teal-deep); }
     .pkk-hero p { margin:0; color:#54737c; font-size:14px; }
-
+ 
     /* Filter */
     .pkk-filters { display:flex; flex-wrap:wrap; gap:10px; margin:16px 0; }
     .pkk-sel { position:relative; }
     .pkk-sel i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--teal); pointer-events:none; }
     .pkk-filters select { height:42px; padding:0 14px 0 38px; min-width:160px; border:1px solid var(--line); border-radius:9px; background:#fff; color:#46616b; }
-
+ 
     /* Statistik */
     .pkk-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
     .pkk-stat { display:flex; gap:14px; align-items:center; padding:18px; border-radius:14px; border:1px solid var(--line); }
@@ -29,7 +29,7 @@
     .pkk-stat small { color:var(--muted); font-size:12px; display:block; }
     .pkk-stat strong { font-size:26px; line-height:1.2; }
     .pkk-stat .up { font-size:11px; color:var(--green); margin-left:6px; }
-
+ 
     /* Panel & grafik */
     .pkk-panel { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; }
     .pkk-grid { display:grid; grid-template-columns:1fr 1.3fr 1fr; gap:14px; margin-top:14px; }
@@ -40,7 +40,7 @@
     .pkk-prog .bar { height:8px; background:#edf3f4; border-radius:99px; overflow:hidden; }
     .pkk-prog .bar i { display:block; height:100%; border-radius:99px; background:var(--green); }
     .pkk-prog .bar i.mid { background:var(--blue); }
-
+ 
     /* Tabel */
     .pkk-table-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px; }
     .pkk-table-head h2 { font-size:17px; margin:0; }
@@ -61,24 +61,54 @@
     .pkk .abtn.del  { color:#d94d6c; border-color:#f4c3cf; }
     .pkk .pkk-foot { margin-top:14px; font-size:12px; color:var(--muted); }
     .pkk .pagination { margin:0; }
-
+ 
     /* Preview foto di modal */
     .pkk-prev { width:100%; max-width:260px; background:#fff; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.15); padding:8px; }
     .pkk-prev img { width:100%; height:190px; object-fit:contain; display:block; }
-
+ 
     @media (max-width:1200px) { .pkk-stats { grid-template-columns:repeat(2,1fr); } .pkk-grid { grid-template-columns:1fr 1fr; } .pkk-grid > :last-child { grid-column:1/-1; } }
     @media (max-width:700px)  { .pkk-stats, .pkk-grid { grid-template-columns:1fr; } }
+
+    /* Efek hover untuk foto thumbnail di tabel */
+    .pkk-foto-wrapper {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        overflow: hidden;
+        border-radius: 6px;
+    }
+    .pkk-foto-wrapper img {
+        display: block;
+        transition: filter 0.2s ease;
+    }
+    .pkk-foto-wrapper .overlay-eye {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 16px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    .pkk-foto-wrapper:hover .overlay-eye {
+        opacity: 1;
+    }
+    .pkk-foto-wrapper:hover img {
+        filter: brightness(0.8);
+    }
 </style>
-
+ 
 <div class="pkk" id="pkk">
-
+ 
     {{-- Hero --}}
     <section class="pkk-hero">
         <h1>Pelaporan Kegiatan PKK</h1>
         <p>Bersama dalam data, untuk keluarga yang lebih sejahtera</p>
         <p style="color: red;">Saya masih mengerjakan Data Tabel, Sabar ya, Makasih</p>
     </section>
-
+ 
     {{-- Filter (masih contoh) --}}
     <div class="pkk-filters">
         <div class="pkk-sel"><i class="ki-outline ki-geolocation fs-3"></i>
@@ -92,7 +122,7 @@
         <div class="pkk-sel"><i class="ki-outline ki-people fs-3"></i>
             <select><option>Semua</option><option>Pokja 1</option><option>Pokja 2</option><option>Pokja 3</option><option>Pokja 4</option><option value="5">Sekretaris</option></select></div>
     </div>
-
+ 
     {{-- Statistik (masih contoh) --}}
     <section class="pkk-stats">
         <div class="pkk-stat s1"><div class="ic"><i class="ki-outline ki-calendar-8 fs-2x"></i></div>
@@ -104,7 +134,7 @@
         <div class="pkk-stat s4"><div class="ic"><i class="ki-outline ki-geolocation fs-2x"></i></div>
             <div><small>Kelurahan/Kecamatan Terlapor</small><strong>31 / 31</strong><small>100% dari wilayah</small></div></div>
     </section>
-
+ 
     {{-- Grafik (masih contoh) --}}
     <section class="pkk-grid">
         <div class="pkk-panel">
@@ -128,28 +158,32 @@
             @endforeach
         </div>
     </section>
-
+ 
     {{-- Tabel (data dari database) --}}
     <section class="pkk-panel" style="margin-top:14px">
         <div class="pkk-table-head">
             <h2>Data Laporan Kegiatan</h2>
-            <button type="button" id="btnTambah" class="pkk-btn-main" data-bs-toggle="modal" data-bs-target="#modalTambah">＋ Tambah Laporan Kegiatan</button>
         </div>
-
+ 
         <div class="pkk-tools">
+            <button type="button" id="btnTambah" class="pkk-btn-main" data-bs-toggle="modal" data-bs-target="#modalTambah">＋ Tambah Laporan Kegiatan</button>
             <input type="text" id="cariLaporan" class="grow" placeholder="Cari kegiatan, tempat, atau nama...">
-            <select id="fJenis">
-                <option value="">Jenis Kegiatan: Semua</option>
-                @foreach ($kegiatan as $k)
-                    <option value="{{ $k->kegiatan_id }}">{{ $k->kegiatan_nama }}</option>
-                @endforeach
-            </select>
-            <select id="fSub">
-                <option value="">Kegiatan: Semua</option>
-            </select>
+            <select id="fKec"><option value="">Pilih Kecamatan</option></select>
+            <select id="fKel" disabled><option value="">Pilih Kelurahan</option></select>
+            
             <input type="month" id="fBulan">
-        </div>
 
+            <select id="fPokja">
+                <option value="">Semua</option>
+                <option value="1">Pokja 1</option>
+                <option value="2">Pokja 2</option>
+                <option value="3">Pokja 3</option>
+                <option value="4">Pokja 4</option>
+                <option value="5">Sekretaris</option>
+            </select>
+            <button type="button" id="btnExport" class="pkk-btn-main">Export</button>
+        </div>
+ 
         <div class="pkk-wrap">
             <table id="tblLaporan">
                 <thead>
@@ -161,7 +195,7 @@
             </table>
         </div>
     </section>
-
+ 
     {{-- Modal: Tambah / Edit --}}
     <div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
@@ -174,13 +208,13 @@
                             <i class="ki-outline ki-cross fs-1"></i>
                         </button>
                     </div>
-
+ 
                     <div class="modal-body" style="overflow-y:auto">
                         <div class="mb-6">
                             <label class="form-label required">Tanggal Kegiatan</label>
                             <input type="date" name="tanggal" class="form-control form-control-solid" required>
                         </div>
-
+ 
                         <div class="mb-6">
                             <label class="form-label required">Pokja</label>
                             <select name="pokja" id="selPokja" class="form-select form-select-solid" required>
@@ -192,7 +226,7 @@
                                 <option value="5">Sekretaris</option>
                             </select>
                         </div>
-
+ 
                         <div class="mb-6">
                             <label class="form-label required">Jenis Kegiatan</label>
                             <select name="kegiatan_id" id="selKegiatan" class="form-select form-select-solid" required>
@@ -202,24 +236,24 @@
                                 @endforeach
                             </select>
                         </div>
-
+ 
                         <div class="mb-6">
-                            <label class="form-label required">Jenis Sub Kegiatan</label>
+                            <label class="form-label">Jenis Sub Kegiatan</label>
                             <select name="sub_kegiatan_id" id="selSub" class="form-select form-select-solid" required disabled>
                                 <option value="">Pilih Pokja dan Jenis Kegiatan terlebih dahulu</option>
                             </select>
                         </div>
-
+ 
                         <div class="mb-6">
-                            <label class="form-label required">Tempat Kegiatan</label>
-                            <input type="text" name="tempat" class="form-control form-control-solid" required>
+                            <label class="form-label">Tempat Kegiatan</label>
+                            <input type="text" name="tempat" class="form-control form-control-solid" required disabled>
                         </div>
-
+ 
                         <div class="mb-6">
-                            <label class="form-label required">Jam Kegiatan</label>
-                            <input type="time" name="jam" class="form-control form-control-solid" required>
+                            <label class="form-label">Jam Kegiatan</label>
+                            <input type="time" name="jam" class="form-control form-control-solid" required disabled>
                         </div>
-
+ 
                         <div class="mb-6">
                             <label class="form-label">Apakah Ada Notulen ?</label>
                             <select name="notulen" id="selNotulen" class="form-select form-select-solid">
@@ -228,11 +262,11 @@
                                 <option value="0">Tidak Ada</option>
                             </select>
                         </div>
-
+ 
                         {{-- Muncul hanya kalau notulen = Ada --}}
                         <div id="blkNotulen" class="d-none">
                             <div class="mb-6">
-                                <label class="form-label required">Nama Notulen</label>
+                                <label class="form-label">Nama Notulen</label>
                                 <input type="text" name="nama_notulen" id="inpNamaNotulen" class="form-control form-control-solid">
                             </div>
                             <div class="mb-6">
@@ -241,18 +275,18 @@
                                 <div class="text-danger fs-8 mt-2">File harus di bawah 2MB.</div>
                             </div>
                         </div>
-
+ 
                         <div class="mb-6">
                             <label class="form-label">File Absensi</label>
                             <input type="file" name="file_absensi" class="form-control form-control-solid pkk-file" accept=".jpg,.jpeg,.pdf">
                             <div class="text-danger fs-8 mt-2">File harus di bawah 2MB dan berformat jpg atau pdf.</div>
                         </div>
-
+ 
                         <div class="mb-6">
                             <label class="form-label">Deskripsi</label>
                             <textarea name="deskripsi" class="form-control form-control-solid" rows="5"></textarea>
                         </div>
-
+ 
                         {{-- Preview Foto Kegiatan --}}
                         <div class="mb-6">
                             <label class="form-label">Preview Foto Kegiatan</label>
@@ -263,7 +297,7 @@
                                 </div>
                             @endforeach
                         </div>
-
+ 
                         {{-- Upload Foto Kegiatan --}}
                         @foreach ([1, 2, 3] as $n)
                             <div class="mb-6">
@@ -272,14 +306,14 @@
                                 <div class="text-danger fs-8 mt-2">File harus di bawah 2MB dan berformat jpg, png atau jpeg.</div>
                             </div>
                         @endforeach
-
+ 
                         <div class="mb-2">
                             <label class="form-label">File Undangan</label>
                             <input type="file" name="file_undangan" class="form-control form-control-solid pkk-file" accept=".jpg,.jpeg,.png,.pdf">
                             <div class="text-danger fs-8 mt-2">File harus di bawah 2MB. Dan dilarang upload foto selfie</div>
                         </div>
                     </div>
-
+ 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -288,16 +322,73 @@
             </div>
         </div>
     </div>
-</div>
 
+    <!-- Modal Viewer File -->
+    <div class="modal fade" id="modalViewFile" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Detail File</h3>
+                    <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Tutup">
+                        <i class="ki-outline ki-cross fs-1"></i>
+                    </button>
+                </div>
+                <div class="modal-body text-center" style="height: 500px; padding: 0;">
+                    <!-- Elemen untuk menampilkan file PDF/Gambar -->
+                    <iframe id="iframeViewer" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Viewer Foto (Panjang ke bawah seperti referensi) -->
+    <div class="modal fade" id="modalViewFoto" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Detail Gambar</h3>
+                    <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Tutup">
+                        <i class="ki-outline ki-cross fs-1"></i>
+                    </button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <img id="imgViewer" src="" alt="Detail Foto" style="width: 100%; height: auto; border-radius: 8px; object-fit: contain;">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
 
+function bukaViewerFile(urlFile) {
+    var iframe = document.getElementById('iframeViewer');
+    iframe.src = urlFile;
+    var modalFile = new bootstrap.Modal(document.getElementById('modalViewFile'));
+    modalFile.show();
+}
+
+// Fungsi khusus untuk membuka modal foto (gambar memanjang ke bawah)
+function bukaViewerFoto(urlFoto) {
+    var img = document.getElementById('imgViewer');
+    img.src = urlFoto;
+    var modalFoto = new bootstrap.Modal(document.getElementById('modalViewFoto'));
+    modalFoto.show();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+ 
     var CSRF      = '{{ csrf_token() }}';
     var STORE_URL = "{{ route('laporan-kegiatan.store') }}";
     var SUB_URL   = "{{ url('laporan-kegiatan/sub') }}";
-
+ 
     var form        = document.getElementById('formTambah');
     var modalEl     = document.getElementById('modalTambah');
     var modal       = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -306,15 +397,27 @@ document.addEventListener('DOMContentLoaded', function () {
     var selSub      = document.getElementById('selSub');
     var selNotulen  = document.getElementById('selNotulen');
     var blkNotulen  = document.getElementById('blkNotulen');
-    var fJenis      = document.getElementById('fJenis');
-    var fSub        = document.getElementById('fSub');
+    var fKec        = document.getElementById('fKec');
+    var fKel        = document.getElementById('fKel');
+    var fBulan      = document.getElementById('fBulan');
+    var fPokja      = document.getElementById('fPokja');
+    var EXPORT_URL  = "{{ route('laporan-kegiatan.export') }}";
     var updateUrl   = null;   // null = mode tambah, berisi URL = mode edit
 
+    /* ---------- Bersihkan iframe saat modal ditutup ---------- */
+    document.getElementById('modalViewFile').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('iframeViewer').src = '';
+    });
+
+    document.getElementById('modalViewFoto').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('imgViewer').src = '';
+    });
+ 
     function notif(msg, type) {
         if (window.Swal) { Swal.fire({ text: msg, icon: type, confirmButtonText: 'OK' }); }
         else { alert(msg); }
     }
-
+ 
     /* ---------- Notulen: blok nama + file muncul kalau "Ada" ---------- */
     function toggleNotulen() {
         var ada = selNotulen.value === '1';
@@ -322,13 +425,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('inpNamaNotulen').required = ada;
     }
     selNotulen.addEventListener('change', toggleNotulen);
-
+ 
     /* ---------- Sub kegiatan di FORM mengikuti Pokja + Jenis Kegiatan ---------- */
     function resetSub() {
         selSub.innerHTML = '<option value="">Pilih Pokja dan Jenis Kegiatan terlebih dahulu</option>';
         selSub.disabled = true;
     }
-
+ 
     function loadSub(kegiatanId, pokja, terpilih) {
         if (!kegiatanId || !pokja) { resetSub(); return Promise.resolve(); }
         selSub.disabled = true;
@@ -348,18 +451,31 @@ document.addEventListener('DOMContentLoaded', function () {
     function refreshSub() { loadSub(selKegiatan.value, selPokja.value); }
     selPokja.addEventListener('change', refreshSub);
     selKegiatan.addEventListener('change', refreshSub);
+ 
+    /* ---------- Filter wilayah: Kecamatan lalu Kelurahan ---------- */
+    var WILAYAH_URL = "{{ url('laporan-kegiatan/wilayah') }}";
 
-    /* ---------- Filter "Kegiatan" di atas tabel: selalu aktif ---------- */
-    function isiFilterSub(jenisId) {
-        fSub.innerHTML = '<option value="">Kegiatan: Semua</option>';
-        return fetch(SUB_URL + '/' + (jenisId || 'semua'), { headers: { 'Accept': 'application/json' } })
-            .then(function (r) { return r.json(); })
-            .then(function (list) {
-                list.forEach(function (s) { fSub.add(new Option(s.sub_kegiatan_nama, s.sub_kegiatan_id)); });
-            });
-    }
-    isiFilterSub('');
+    fetch(WILAYAH_URL + '/kecamatan', { headers: { 'Accept': 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (list) {
+            list.forEach(function (k) { fKec.add(new Option(k.nama_kec, k.id_kec)); });
+        });
 
+    fKec.addEventListener('change', function () {
+        fKel.innerHTML = '<option value="">Pilih Kelurahan</option>';
+        fKel.disabled = true;
+        if (this.value) {
+            fetch(WILAYAH_URL + '/kelurahan/' + this.value, { headers: { 'Accept': 'application/json' } })
+                .then(function (r) { return r.json(); })
+                .then(function (list) {
+                    list.forEach(function (k) { fKel.add(new Option(k.nama_kel, k.id_kel)); });
+                    fKel.disabled = false;
+                });
+        }
+        tabel.draw();
+    });
+    
+ 
     /* ---------- Validasi ukuran file 2MB ---------- */
     document.querySelectorAll('.pkk-file').forEach(function (inp) {
         inp.addEventListener('change', function () {
@@ -369,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-
+ 
     /* ---------- Preview foto ---------- */
     var defaults = {};
     document.querySelectorAll('.pkk-foto').forEach(function (inp) {
@@ -381,11 +497,11 @@ document.addEventListener('DOMContentLoaded', function () {
             img.src = f ? URL.createObjectURL(f) : defaults[this.dataset.target];
         });
     });
-
+ 
     function resetPreview() {
         Object.keys(defaults).forEach(function (id) { document.getElementById(id).src = defaults[id]; });
     }
-
+ 
     /* ---------- DataTable ---------- */
     var tabel = $('#tblLaporan').DataTable({
         processing: true,
@@ -395,9 +511,10 @@ document.addEventListener('DOMContentLoaded', function () {
         ajax: {
             url: "{{ route('laporan-kegiatan.index') }}",
             data: function (d) {
-                d.jenis = fJenis.value;
-                d.sub   = fSub.value;
-                d.bulan = document.getElementById('fBulan').value;
+                d.kecamatan = fKec.value;
+                d.kelurahan = fKel.value;
+                d.bulan     = fBulan.value;
+                d.pokja     = fPokja.value;
             }
         },
         columns: [
@@ -421,27 +538,35 @@ document.addEventListener('DOMContentLoaded', function () {
             paginate: { previous: '‹', next: '›' }
         }
     });
-
+ 
     var timer;
     document.getElementById('cariLaporan').addEventListener('keyup', function () {
         var v = this.value;
         clearTimeout(timer);
         timer = setTimeout(function () { tabel.search(v).draw(); }, 350);
     });
-
-    fJenis.addEventListener('change', function () {
-        isiFilterSub(this.value).then(function () { tabel.draw(); });
+ 
+    [fKel, fBulan, fPokja].forEach(function (el) {
+        el.addEventListener('change', function () { tabel.draw(); });
     });
-    fSub.addEventListener('change', function () { tabel.draw(); });
-    document.getElementById('fBulan').addEventListener('change', function () { tabel.draw(); });
-
+ 
+    // Export mengikuti filter yang sedang aktif
+    document.getElementById('btnExport').addEventListener('click', function () {
+        var p = new URLSearchParams({
+            kecamatan: fKec.value, kelurahan: fKel.value, bulan: fBulan.value,
+            pokja: fPokja.value,
+            q: document.getElementById('cariLaporan').value
+        });
+        window.location = EXPORT_URL + '?' + p.toString();
+    });
+ 
     /* ---------- Tombol Tambah ---------- */
     document.getElementById('btnTambah').addEventListener('click', function () {
         updateUrl = null;
         modalEl.querySelector('.modal-title').textContent = 'Tambah Data Kegiatan';
         toggleNotulen();
     });
-
+ 
     /* ---------- Isi form untuk Edit ---------- */
     function isiForm(d) {
         form.tanggal.value = d.tanggal;
@@ -458,11 +583,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         return loadSub(d.kegiatan_id, d.pokja, d.sub_kegiatan_id);
     }
-
+ 
     /* ---------- Tombol di tabel ---------- */
     document.getElementById('tblLaporan').addEventListener('click', function (e) {
         var b;
-
+ 
         // EDIT
         if ((b = e.target.closest('.btn-edit'))) {
             fetch(b.dataset.show, { headers: { 'Accept': 'application/json' } })
@@ -476,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     isiForm(res.data).then(function () { modal.show(); });
                 });
         }
-
+ 
         // LIHAT
         if ((b = e.target.closest('.btn-lihat'))) {
             var row = tabel.row($(b).closest('tr')).data();
@@ -505,7 +630,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     else { alert(row.sub + ' - ' + row.tempat); }
                 });
         }
-
+ 
         // HAPUS
         if ((b = e.target.closest('.btn-hapus'))) {
             var hapus = function () {
@@ -525,17 +650,17 @@ document.addEventListener('DOMContentLoaded', function () {
             } else if (confirm('Hapus laporan ini?')) { hapus(); }
         }
     });
-
+ 
     /* ---------- Simpan (tambah / edit) ---------- */
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         var fd  = new FormData(form);
         var url = STORE_URL;
         if (updateUrl) { fd.append('_method', 'PUT'); url = updateUrl; }
-
+ 
         var btn = form.querySelector('[type=submit]');
         btn.disabled = true;
-
+ 
         fetch(url, { method: 'POST', body: fd, headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } })
             .then(function (r) {
                 return r.text().then(function (t) {
@@ -570,7 +695,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 notif('Terjadi kesalahan: ' + err.message, 'error');
             });
     });
-
+ 
     /* ---------- Reset saat modal ditutup ---------- */
     modalEl.addEventListener('hidden.bs.modal', function () {
         form.reset();
@@ -579,10 +704,10 @@ document.addEventListener('DOMContentLoaded', function () {
         resetPreview();
         toggleNotulen();
     });
-
+ 
     /* ---------- Grafik (data contoh) ---------- */
     if (typeof Chart === 'undefined') { return; }
-
+ 
     new Chart(document.getElementById('chartPokja'), {
         type: 'bar',
         data: {
@@ -591,7 +716,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#eef3f4' } }, x: { grid: { display: false } } } }
     });
-
+ 
     new Chart(document.getElementById('chartTren'), {
         type: 'line',
         data: {
