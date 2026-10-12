@@ -5,11 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Illuminate\Support\Facades\Crypt;
 
 class Menu extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $appends = ['enc_id'];
+
+    public function getEncIdAttribute(): string
+    {
+        return Crypt::encryptString((string) $this->id_menu);
+    }
 
     protected $table = 'm_menu';
     

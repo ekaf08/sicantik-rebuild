@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Menu;
 use App\Models\Role;
 use App\Models\RoleMenuPermission;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
@@ -29,20 +30,27 @@ class PermissionController extends Controller
 
     public function getPermissions(Request $request)
     {
-        $request->validate ([
-            'role_id' => 'required|string']
-        );
+        $request->validate(['role_id' => 'required|string']);
 
         $roleId = $this->decryptId($request->role_id);
 
-        $menus = Menu::with('children')
-              ->where(function ($q) {
-              $q->whereNull('parent_id')->orWhere('parent_id', 0);
-        })
-        ->whereIn('status_menu', ['1', 'Aktif'])
-        ->orderBy('urutan')
-        ->get();
-        
+        $assignedIds = DB::table('menu_role')
+            ->where('role_id', $roleId)
+            ->whereNull('deleted_at')
+            ->pluck('menu_id')
+            ->all();
+
+       $menus = Menu::with(['children' => fn ($q) => $q->whereIn('id_menu', $assignedIds)])
+            ->where(fn ($q) => $q->whereNull('parent_id')->orWhere('parent_id', 0))
+            ->whereIn('status_menu', ['1', 'Aktif'])
+            ->where(function ($q) use ($assignedIds) {
+                $q->whereIn('id_menu', $assignedIds)
+                ->orWhereHas('children', fn ($c) => $c->whereIn('id_menu', $assignedIds));
+            })
+            ->orderBy('urutan')
+            ->orderBy('id_menu')   // urutan 2 dipakai Master dan Data Umum
+            ->get()
+            ->each(fn ($m) => $m->parent_assigned = in_array($m->id_menu, $assignedIds));
         $permissions = RoleMenuPermission::where('role_id', $roleId)
             ->get()
             ->keyBy('menu_id');
@@ -66,6 +74,16 @@ class PermissionController extends Controller
         $data['role_id'] = $this->decryptId($data['role_id']);
         $data['menu_id'] = $this->decryptId($data['menu_id']);
         
+        $isAssigned = DB::table('menu_role')
+            ->where('role_id', $data['role_id'])
+            ->where('menu_id', $data['menu_id'])
+            ->whereNull('deleted_at')
+            ->exists();
+
+        if (!$isAssigned) {
+            abort(422, 'Menu ini belum di-assign ke role tersebut');
+        }
+
         $value = (bool) $data['value'];
 
         $perm = RoleMenuPermission::firstOrNew([
