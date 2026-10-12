@@ -52,7 +52,6 @@
                 </div>
                 <!--end::Heading-->
 
-                <!--begin:Menu item Dashboards-->
                 <!--begin:Menu item Dashboard-->
                 <div class="menu-item">
                     <a class="menu-link {{ request()->routeIs('dashboard*') ? 'active' : '' }}" href="{{ route('dashboard') }}">
@@ -63,109 +62,84 @@
                     </a>
                 </div>
                 <!--end:Menu item Dashboard-->
-                <!--end:Menu item Dashboards-->
 
                 <!--begin:Menu item Master (User, Role, Permission, Menu)-->
                 <div data-kt-menu-trigger="click"
                     class="menu-item menu-accordion {{ request()->routeIs('user*') || request()->routeIs('role*') || request()->routeIs('permission*') || request()->routeIs('menu*') || request()->routeIs('master.*') ? 'here show' : '' }}">
-                    <!--begin:Menu link-->
                     <span class="menu-link">
                         <span class="menu-icon">
-                            <i class="ki-outline ki-home-2 fs-2"></i>
+                            <!-- Diubah dari ki-home-2 menjadi ki-profile-user / ki-setting-2 agar sesuai Master -->
+                            <i class="ki-outline ki-user-edit fs-2"></i>
                         </span>
                         <span class="menu-title">Master</span>
                         <span class="menu-arrow"></span>
                     </span>
-                    <!--end:Menu link-->
-                    <!--begin:Menu sub-->
                     <div class="menu-sub menu-sub-accordion">
-                        <!-- Submenu: User -->
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('user*') || request()->routeIs('master.user*') ? 'active' : '' }}"
                                 href="{{ route('user.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
+                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                 <span class="menu-title">User</span>
                             </a>
                         </div>
-                        <!-- Submenu: Role -->
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('role*') || request()->routeIs('master.role*') ? 'active' : '' }}"
                                 href="{{ route('role.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
+                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                 <span class="menu-title">Role</span>
                             </a>
                         </div>
-                        <!-- Submenu: Permission -->
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('permission*') ? 'active' : '' }}"
                                 href="{{ route('permission.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
+                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                 <span class="menu-title">Permission</span>
                             </a>
                         </div>
-                        <!-- Submenu: Menu -->
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('menu*') ? 'active' : '' }}"
                                 href="{{ Route::has('menu.index') ? route('menu.index') : '#' }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
+                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                 <span class="menu-title">Menu</span>
                             </a>
                         </div>
                     </div>
-                    <!--end:Menu sub-->
                 </div>
                 <!--end:Menu item Master-->
 
                 <!--begin:Menu Laporan-->
                 <div data-kt-menu-trigger="click"
                     class="menu-item menu-accordion {{ request()->routeIs('laporan-kegiatan*') || request()->routeIs('laporan-tahunan*') ? 'here show' : '' }}">
-                    <!--begin:Menu link-->
                     <span class="menu-link">
                         <span class="menu-icon">
-                            <i class="ki-outline ki-home-2 fs-2"></i>
+                            <!-- Diubah dari ki-home-2 menjadi ki-document / ki-chart-line untuk Laporan -->
+                            <i class="ki-outline ki-document fs-2"></i>
                         </span>
                         <span class="menu-title">Laporan</span>
                         <span class="menu-arrow"></span>
                     </span>
-                    <!--end:Menu link-->
-                    <!--begin:Menu sub-->
                     <div class="menu-sub menu-sub-accordion">
-                        <!-- Submenu: User -->
                         <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('laporan-kegiatan.index') || request()->routeIs('laporan-kegiatan.index') ? 'active' : '' }}"
+                            <a class="menu-link {{ request()->routeIs('laporan-kegiatan.index') ? 'active' : '' }}"
                                 href="{{ route('laporan-kegiatan.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
+                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                 <span class="menu-title">Laporan Kegiatan</span>
                             </a>
                         </div>
                         <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('laporan-tahunan.index') || request()->routeIs('laporan-tahunan.index') ? 'active' : '' }}"
+                            <a class="menu-link {{ request()->routeIs('laporan-tahunan.index') ? 'active' : '' }}"
                                 href="{{ route('laporan-tahunan.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
+                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                 <span class="menu-title">Laporan Tahunan</span>
                             </a>
                         </div>
                     </div>
-                    <!--end:Menu sub-->
                 </div>
                 <!--end:Menu item Laporan-->
 
                 <!--begin:Menu item Inovasi (Parent)-->
                 <div data-kt-menu-trigger="click"
                     class="menu-item menu-accordion {{ request()->routeIs('inovasi.*') ? 'here show' : '' }}">
-                    <!--begin:Menu link-->
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="ki-outline ki-gift fs-2"></i>
@@ -173,40 +147,27 @@
                         <span class="menu-title">Inovasi</span>
                         <span class="menu-arrow"></span>
                     </span>
-                    <!--end:Menu link-->
-                    <!--begin:Menu sub-->
                     <div class="menu-sub menu-sub-accordion {{ request()->routeIs('inovasi.*') ? 'show' : '' }}">
-                        <!--begin:Menu item Inovasi Global-->
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('inovasi.global') ? 'active' : '' }}"
                                 href="{{ route('inovasi.global') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
+                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                 <span class="menu-title">Inovasi Global</span>
                             </a>
                         </div>
-                        <!--end:Menu item Inovasi Global-->
-
-                        <!--begin:Menu item Inovasi Kota-->
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('inovasi.kota') ? 'active' : '' }}"
                                 href="{{ route('inovasi.kota') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
+                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                 <span class="menu-title">Inovasi Kota</span>
                             </a>
                         </div>
-                        <!--end:Menu item Inovasi Kota-->
                     </div>
-                    <!--end:Menu sub-->
                 </div>
                 <!--end:Menu item Inovasi (Parent)-->
 
                 <!--begin:Menu item Help-->
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-                    <!--begin:Menu link-->
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="ki-outline ki-briefcase fs-2"></i>
@@ -214,20 +175,15 @@
                         <span class="menu-title">Help</span>
                         <span class="menu-arrow"></span>
                     </span>
-                    <!--end:Menu link-->
-                    <!--begin:Menu sub-->
                     <div class="menu-sub menu-sub-accordion">
                         <div class="menu-item">
                             <a class="menu-link" href="https://preview.keenthemes.com/html/metronic/docs"
                                 target="_blank">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
+                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                 <span class="menu-title">Si Cantik Surabaya</span>
                             </a>
                         </div>
                     </div>
-                    <!--end:Menu sub-->
                 </div>
                 <!--end:Menu item Help-->
 
