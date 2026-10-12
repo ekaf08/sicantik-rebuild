@@ -173,6 +173,6 @@ class MenuController extends Controller
             abort(404); 
         }
 
-        return view('bo.halaman-dinamis', compact('menu'));
+        return view('bo.menu.halaman-dinamis', compact('menu'));
     }
 }

@@ -1,3 +1,15 @@
+@php
+    use App\Support\Access;
+    $canUser       = Access::can('/master/user');
+    $canRole       = Access::can('/master/role');
+    $canPermission = Access::can('/master/permission');
+    $canMenu       = Access::can('/master/menu');
+    $canDashPkk    = Access::can('dashboard-pkk');
+    $canLapKeg     = Access::can('laporan-kegiatan');
+
+    $showMaster = $canUser || $canRole || $canPermission || $canMenu;
+@endphp
+
 <div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true" data-kt-drawer-name="app-sidebar"
     data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="250px"
     data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
@@ -52,9 +64,9 @@
                 </div>
                 <!--end::Heading-->
 
-                <!--begin:Menu item Dashboard-->
+                <!--begin:Menu item Dashboard (tidak ada di m_menu, terbuka untuk semua user)-->
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('dashboard*') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                    <a class="menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                         <span class="menu-icon">
                             <i class="ki-outline ki-home-2 fs-2"></i>
                         </span>
@@ -63,18 +75,20 @@
                 </div>
                 <!--end:Menu item Dashboard-->
 
+
                 <!--begin:Menu item Master (User, Role, Permission, Menu)-->
+                @if($showMaster)
                 <div data-kt-menu-trigger="click"
                     class="menu-item menu-accordion {{ request()->routeIs('user*') || request()->routeIs('role*') || request()->routeIs('permission*') || request()->routeIs('menu*') || request()->routeIs('master.*') ? 'here show' : '' }}">
                     <span class="menu-link">
                         <span class="menu-icon">
-                            <!-- Diubah dari ki-home-2 menjadi ki-profile-user / ki-setting-2 agar sesuai Master -->
                             <i class="ki-outline ki-user-edit fs-2"></i>
                         </span>
                         <span class="menu-title">Master</span>
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion">
+                        @if($canUser)
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('user*') || request()->routeIs('master.user*') ? 'active' : '' }}"
                                 href="{{ route('user.index') }}">
@@ -82,6 +96,8 @@
                                 <span class="menu-title">User</span>
                             </a>
                         </div>
+                        @endif
+                        @if($canRole)
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('role*') || request()->routeIs('master.role*') ? 'active' : '' }}"
                                 href="{{ route('role.index') }}">
@@ -89,6 +105,8 @@
                                 <span class="menu-title">Role</span>
                             </a>
                         </div>
+                        @endif
+                        @if($canPermission)
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('permission*') ? 'active' : '' }}"
                                 href="{{ route('permission.index') }}">
@@ -96,6 +114,8 @@
                                 <span class="menu-title">Permission</span>
                             </a>
                         </div>
+                        @endif
+                        @if($canMenu)
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('menu*') ? 'active' : '' }}"
                                 href="{{ Route::has('menu.index') ? route('menu.index') : '#' }}">
@@ -103,22 +123,26 @@
                                 <span class="menu-title">Menu</span>
                             </a>
                         </div>
+                        @endif
                     </div>
                 </div>
+                @endif
                 <!--end:Menu item Master-->
 
                 <!--begin:Menu Laporan-->
+                {{-- Laporan Tahunan belum terdaftar di m_menu, jadi tetap terbuka untuk semua user.
+                     Grup ini selalu tampil karena Laporan Tahunan di dalamnya. --}}
                 <div data-kt-menu-trigger="click"
                     class="menu-item menu-accordion {{ request()->routeIs('laporan-kegiatan*') || request()->routeIs('laporan-tahunan*') ? 'here show' : '' }}">
                     <span class="menu-link">
                         <span class="menu-icon">
-                            <!-- Diubah dari ki-home-2 menjadi ki-document / ki-chart-line untuk Laporan -->
                             <i class="ki-outline ki-document fs-2"></i>
                         </span>
                         <span class="menu-title">Laporan</span>
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion">
+                        @if($canLapKeg)
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('laporan-kegiatan.index') ? 'active' : '' }}"
                                 href="{{ route('laporan-kegiatan.index') }}">
@@ -126,6 +150,7 @@
                                 <span class="menu-title">Laporan Kegiatan</span>
                             </a>
                         </div>
+                        @endif
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('laporan-tahunan.index') ? 'active' : '' }}"
                                 href="{{ route('laporan-tahunan.index') }}">
@@ -137,7 +162,7 @@
                 </div>
                 <!--end:Menu item Laporan-->
 
-                <!--begin:Menu item Inovasi (Parent)-->
+                <!--begin:Menu item Inovasi (Parent, tidak ada di m_menu, terbuka untuk semua user)-->
                 <div data-kt-menu-trigger="click"
                     class="menu-item menu-accordion {{ request()->routeIs('inovasi.*') ? 'here show' : '' }}">
                     <span class="menu-link">

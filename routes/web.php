@@ -25,7 +25,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard-pkk', fn () => view('bo.pages.dasboard-pkk.index'))->name('dashboard.pkk');
 
     Route::get('/inovasi/global', [InovasiController::class, 'global'])->name('inovasi.global');
     Route::get('/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
