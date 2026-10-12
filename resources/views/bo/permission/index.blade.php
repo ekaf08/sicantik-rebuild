@@ -69,11 +69,36 @@ $(document).ready(function () {
     });
 
     function notifyError(xhr, fallback) {
-        let msg = (xhr.responseJSON && xhr.responseJSON.message)
-            ? xhr.responseJSON.message
-            : fallback + ' (' + xhr.status + ')';
-        if (typeof toastr !== 'undefined') toastr.error(msg);
-        else alert(msg);
+        let msg = fallback + ' (' + xhr.status + ')';
+
+        if (xhr.responseJSON) {
+            if (xhr.responseJSON.errors) {
+                msg = Object.values(xhr.responseJSON.errors).flat().map(esc).join('<br>');
+            } else if (xhr.responseJSON.message) {
+                msg = esc(xhr.responseJSON.message);
+            }
+        }
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Terjadi Kesalahan',
+            html: msg,
+            confirmButtonText: 'OK',
+            buttonsStyling: false,
+            customClass: { confirmButton: 'btn btn-primary' }
+        });
+    }
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
+    });
+
+    function notifySuccess(msg) {
+        Toast.fire({ icon: 'success', title: msg });
     }
 
     function esc(str) {
@@ -103,39 +128,42 @@ $(document).ready(function () {
         });
     }
 
-    function renderCards(menus, permissions) {
-        let html = '';
+  function renderCards(menus, permissions) {
+    let html = '';
 
-        if (!menus || menus.length === 0) {
-            $('#permission-container').html(`
-                <div class="card shadow-sm">
-                    <div class="card-body text-center text-muted">Data menu tidak ditemukan.</div>
-                </div>`);
-            return;
-        }
-
-        menus.forEach(function (menu) {
-            if (menu.children && menu.children.length > 0) {
-                html += `
-                <div class="card mb-5 shadow-sm">
-                    <div class="card-header bg-light">
-                        <h6 class="card-title fw-bold m-0">${esc(menu.nama_menu)}</h6>
-                    </div>
-                    <div class="card-body">`;
-                menu.children.forEach(function (child) {
-                    html += buildMenuRow(child, permissions);
-                });
-                html += `</div></div>`;
-            } else {
-                html += `
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-body">${buildMenuRow(menu, permissions)}</div>
-                </div>`;
-            }
-        });
-
-        $('#permission-container').html(html);
+    if (!menus || menus.length === 0) {
+        $('#permission-container').html(`
+            <div class="card shadow-sm">
+                <div class="card-body text-center text-muted">Role ini belum memiliki menu. Atur di submenu Role.</div>
+            </div>`);
+        return;
     }
+
+    menus.forEach(function (menu) {
+        if (menu.children && menu.children.length > 0) {
+            html += `
+            <div class="card mb-5 shadow-sm">
+                <div class="card-header bg-light">
+                    <h6 class="card-title fw-bold m-0">${esc(menu.nama_menu)}</h6>
+                </div>
+                <div class="card-body">`;
+            if (menu.parent_assigned) {
+                html += buildMenuRow(menu, permissions);
+            }
+            menu.children.forEach(function (child) {
+                html += buildMenuRow(child, permissions);
+            });
+            html += `</div></div>`;
+        } else {
+            html += `
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">${buildMenuRow(menu, permissions)}</div>
+            </div>`;
+        }
+    });
+
+    $('#permission-container').html(html);
+}
 
   function buildMenuRow(menu, permissions) {
     let menuId = parseInt(menu.id_menu, 10);
@@ -184,20 +212,7 @@ $(document).ready(function () {
             </div>
         </div>
     </div>`;
-}
-
-    $(document).on('change', '.perm-item', function () {
-        let roleId = $('#select-role').val();
-        let menuId = $(this).data('menu-id');
-        let field  = $(this).data('field');
-        let value  = $(this).is(':checked') ? 1 : 0;
-
-        let total   = $(`.perm-item[data-menu-id="${menuId}"]`).length;
-        let checked = $(`.perm-item[data-menu-id="${menuId}"]:checked`).length;
-        $(`#all_${menuId}`).prop('checked', total === checked);
-
-        updatePermissionAjax(roleId, menuId, field, value);
-    });
+};
 
     $(document).on('change', '.perm-item', function () {
         let roleId = $('#select-role').val();
@@ -236,11 +251,12 @@ $(document).ready(function () {
                 value: value
             },
             success: function (res) {
-                if (typeof toastr !== 'undefined') toastr.success(res.message);
+                notifySuccess(res.message);
             },
             error: function (xhr) {
                 notifyError(xhr, 'Gagal menyimpan');
-            }
+                loadPermissions(); // reset the checkboxes to what's actually saved
+            },
         });
     }
 
