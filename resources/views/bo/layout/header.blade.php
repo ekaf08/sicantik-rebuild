@@ -64,6 +64,7 @@
 
                     <!--begin::Sign Out-->
                     <div class="menu-item px-5">
+                        <!-- Ubah tag a agar langsung men-submit form logout secara standar -->
                         <a href="#" class="menu-link px-5 text-danger" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="ki-outline ki-exit-right fs-5 me-2 text-danger"></i> Sign Out
                         </a>
@@ -138,3 +139,32 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+    document.getElementById('btn-logout').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        let form = document.getElementById('logout-form');
+        let formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status && data.redirect) {
+                window.location.href = data.redirect; // Akan otomatis mengarah ke route('login')
+            } else {
+                window.location.href = '/login';
+            }
+        })
+        .catch(error => {
+            window.location.href = '/login';
+        });
+    });
+</script>
+@endpush
