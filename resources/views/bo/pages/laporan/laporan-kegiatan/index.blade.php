@@ -117,7 +117,7 @@
     {{-- Filter statistik & grafik --}}
     <div class="pkk-filters">
         <div class="pkk-sel"><i class="ki-outline ki-geolocation fs-3"></i>
-            <select id="stKec"><option value="">Kota Surabaya</option></select></div>
+            <select id="stKec"><option value="">Semua Kecamatan</option></select></div>
         <div class="pkk-sel"><i class="ki-outline ki-map fs-3"></i>
             <select id="stKel" disabled><option value="">Semua Kelurahan</option></select></div>
         <div class="pkk-sel"><i class="ki-outline ki-calendar fs-3"></i>
@@ -263,19 +263,19 @@
  
                         <div class="mb-6">
                             <label class="form-label">Jenis Sub Kegiatan</label>
-                            <select name="sub_kegiatan_id" id="selSub" class="form-select form-select-solid" required disabled>
+                            <select name="sub_kegiatan_id" id="selSub" class="form-select form-select-solid" required>
                                 <option value="">Pilih Pokja dan Jenis Kegiatan terlebih dahulu</option>
                             </select>
                         </div>
  
                         <div class="mb-6">
                             <label class="form-label">Tempat Kegiatan</label>
-                            <input type="text" name="tempat" class="form-control form-control-solid" required disabled>
+                            <input type="text" name="tempat" class="form-control form-control-solid">
                         </div>
  
                         <div class="mb-6">
                             <label class="form-label">Jam Kegiatan</label>
-                            <input type="time" name="jam" class="form-control form-control-solid" required disabled>
+                            <input type="time" name="jam" class="form-control form-control-solid">
                         </div>
  
                         <div class="mb-6">
