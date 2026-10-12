@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function () {
     Route::get('laporan-kegiatan/wilayah/kecamatan', [LaporanKegiatanController::class, 'kecamatan'])->name('laporan-kegiatan.kecamatan');
     Route::get('laporan-kegiatan/wilayah/kelurahan/{kec}', [LaporanKegiatanController::class, 'kelurahan'])->name('laporan-kegiatan.kelurahan');
     Route::get('laporan-kegiatan/export', [LaporanKegiatanController::class, 'export'])->name('laporan-kegiatan.export');
+    Route::get('laporan-kegiatan/statistik', [LaporanKegiatanController::class, 'statistik'])->name('laporan-kegiatan.statistik');
     Route::get('laporan-kegiatan/sub/{kegiatan}', [LaporanKegiatanController::class, 'subKegiatan'])->name('laporan-kegiatan.sub');
     Route::get('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'show'])->name('laporan-kegiatan.show');
     Route::put('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'update'])->name('laporan-kegiatan.update');

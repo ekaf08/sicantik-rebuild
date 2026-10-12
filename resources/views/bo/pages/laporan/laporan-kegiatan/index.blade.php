@@ -29,10 +29,15 @@
     .pkk-stat small { color:var(--muted); font-size:12px; display:block; }
     .pkk-stat strong { font-size:26px; line-height:1.2; }
     .pkk-stat .up { font-size:11px; color:var(--green); margin-left:6px; }
+    .pkk-stat .down { font-size:11px; color:#d94d6c; margin-left:6px; }
  
     /* Panel & grafik */
-    .pkk-panel { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; }
-    .pkk-grid { display:grid; grid-template-columns:1fr 1.3fr 1fr; gap:14px; margin-top:14px; }
+    
+    /* Panel & grafik */
+.pkk-panel { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; height: 100%; }
+.pkk-grid { display:grid; grid-template-columns: 320px 1fr 1fr; gap:14px; margin-top:14px; align-items: stretch; }
+.pkk-stat-col { display:flex; flex-direction:column; gap:14px; }
+.pkk-stat-col .pkk-stat { flex:1; margin: 0; }   /* dua card sama tinggi, mengisi tinggi baris */   /* dua card sama tinggi, mengisi tinggi baris */
     .pkk-title { font-weight:700; font-size:14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; }
     .pkk-chart { position:relative; height:210px; }
     .pkk-prog { margin:13px 0; }
@@ -109,38 +114,73 @@
         <p style="color: red;">Saya masih mengerjakan Data Tabel, Sabar ya, Makasih</p>
     </section>
  
-    {{-- Filter (masih contoh) --}}
+    {{-- Filter statistik & grafik --}}
     <div class="pkk-filters">
         <div class="pkk-sel"><i class="ki-outline ki-geolocation fs-3"></i>
-            <select><option>Kota Surabaya</option><option>Kecamatan</option></select></div>
+            <select id="stKec"><option value="">Kota Surabaya</option></select></div>
         <div class="pkk-sel"><i class="ki-outline ki-map fs-3"></i>
-            <select><option>Kelurahan</option><option>Wiyung</option></select></div>
+            <select id="stKel" disabled><option value="">Semua Kelurahan</option></select></div>
         <div class="pkk-sel"><i class="ki-outline ki-calendar fs-3"></i>
-            <select><option>Tahun 2026</option><option>Tahun 2025</option></select></div>
+            <select id="stThn">
+                <option value="">Semua Tahun</option>
+                @for ($y = now()->year; $y >= 2023; $y--)
+                    <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>Tahun {{ $y }}</option>
+                @endfor
+            </select></div>
         <div class="pkk-sel"><i class="ki-outline ki-calendar-8 fs-3"></i>
-            <select><option>Bulan September</option><option>Semua Bulan</option></select></div>
+            <select id="stBln">
+                <option value="">Semua Bulan</option>
+                @foreach (['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'] as $i => $b)
+                    <option value="{{ $i + 1 }}">Bulan {{ $b }}</option>
+                @endforeach
+            </select></div>
         <div class="pkk-sel"><i class="ki-outline ki-people fs-3"></i>
-            <select><option>Semua</option><option>Pokja 1</option><option>Pokja 2</option><option>Pokja 3</option><option>Pokja 4</option><option value="5">Sekretaris</option></select></div>
+            <select id="stPokja">
+                <option value="">Semua Pokja</option>
+                <option value="1">Pokja 1</option>
+                <option value="2">Pokja 2</option>
+                <option value="3">Pokja 3</option>
+                <option value="4">Pokja 4</option>
+                <option value="5">Sekretaris</option>
+            </select></div>
     </div>
  
-    {{-- Statistik (masih contoh) --}}
-    <section class="pkk-stats">
-        <div class="pkk-stat s1"><div class="ic"><i class="ki-outline ki-calendar-8 fs-2x"></i></div>
-            <div><small>Total Kegiatan</small><strong>248</strong><span class="up">↑ 12%</span><small>dibanding bulan lalu</small></div></div>
-        <div class="pkk-stat s2"><div class="ic"><i class="ki-outline ki-calendar-tick fs-2x"></i></div>
-            <div><small>Kegiatan Bulan Ini</small><strong>87</strong><span class="up">↑ 18%</span><small>dibanding bulan lalu</small></div></div>
-    </section>
- 
-    {{-- Grafik (masih contoh) --}}
+    {{-- Statistik + Grafik --}}
     <section class="pkk-grid">
+
+        {{-- Kolom 1: 2 Card Statistik Ditumpuk Vertikal --}}
+        <div class="pkk-stat-col">
+            <div class="pkk-stat s2">
+                <div class="ic"><i class="ki-outline ki-calendar-tick fs-2x"></i></div>
+                <div>
+                    <small id="stBlnLabel">Kegiatan Bulan Ini</small>
+                    <strong id="stBlnNilai">0</strong><span id="stBlnPct" class="up"></span>
+                    <small>dibanding bulan lalu</small>
+                </div>
+            </div>
+
+            <div class="pkk-stat s1">
+                <div class="ic"><i class="ki-outline ki-calendar-8 fs-2x"></i></div>
+                <div>
+                    <small>Total Kegiatan</small>
+                    <strong id="stTotal">0</strong><span id="stTotalPct" class="up"></span>
+                    <small id="stTotalBanding"></small>
+                </div>
+            </div>
+        </div>
+
+        {{-- Kolom 2: Chart per Pokja --}}
         <div class="pkk-panel">
             <div class="pkk-title">Kegiatan per Pokja</div>
             <div class="pkk-chart"><canvas id="chartPokja"></canvas></div>
         </div>
+
+        {{-- Kolom 3: Tren Kegiatan Bulanan --}}
         <div class="pkk-panel">
             <div class="pkk-title">Tren Kegiatan Bulanan</div>
             <div class="pkk-chart"><canvas id="chartTren"></canvas></div>
         </div>
+
     </section>
  
     {{-- Tabel (data dari database) --}}
@@ -696,28 +736,109 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleNotulen();
     });
  
+    /* ---------- Statistik & grafik: mengikuti 5 filter paling atas ---------- */
+    var stKec   = document.getElementById('stKec');
+    var stKel   = document.getElementById('stKel');
+    var stThn   = document.getElementById('stThn');
+    var stBln   = document.getElementById('stBln');
+    var stPokja = document.getElementById('stPokja');
+    var STAT_URL = "{{ route('laporan-kegiatan.statistik') }}";
+    var cPokja = null, cTren = null;   // diisi saat grafik dibuat di bawah
+    var WARNA_POKJA = ['#3fae5f', '#7765d8', '#4a90e2', '#2fc4b2', '#f6993f'];
+    var NAMA_BLN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+    fetch(WILAYAH_URL + '/kecamatan', { headers: { 'Accept': 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (list) {
+            list.forEach(function (k) { stKec.add(new Option(k.nama_kec, k.id_kec)); });
+        });
+
+    stKec.addEventListener('change', function () {
+        stKel.innerHTML = '<option value="">Semua Kelurahan</option>';
+        stKel.disabled = true;
+        if (this.value) {
+            fetch(WILAYAH_URL + '/kelurahan/' + this.value, { headers: { 'Accept': 'application/json' } })
+                .then(function (r) { return r.json(); })
+                .then(function (list) {
+                    list.forEach(function (k) { stKel.add(new Option(k.nama_kel, k.id_kel)); });
+                    stKel.disabled = false;
+                });
+        }
+        muatStatistik();
+    });
+
+    [stKel, stThn, stBln, stPokja].forEach(function (el) {
+        el.addEventListener('change', muatStatistik);
+    });
+
+    function tampilPersen(id, persen) {
+        var el = document.getElementById(id);
+        if (persen === null || persen === undefined) { el.className = 'up'; el.textContent = ''; return; }
+        var naik = persen >= 0;
+        el.className = naik ? 'up' : 'down';
+        el.textContent = (naik ? '↑ ' : '↓ ') + Math.abs(persen) + '%';
+    }
+
+    function muatStatistik() {
+        var p = new URLSearchParams({
+            kecamatan: stKec.value, kelurahan: stKel.value,
+            tahun: stThn.value, bulan: stBln.value, pokja: stPokja.value
+        });
+
+        fetch(STAT_URL + '?' + p.toString(), { headers: { 'Accept': 'application/json' } })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                document.getElementById('stTotal').textContent = d.total.nilai;
+                tampilPersen('stTotalPct', d.total.persen);
+                document.getElementById('stTotalBanding').textContent = d.total.banding ? 'dibanding ' + d.total.banding : '';
+
+                document.getElementById('stBlnNilai').textContent = d.bulan_ini.nilai;
+                tampilPersen('stBlnPct', d.bulan_ini.persen);
+                document.getElementById('stBlnLabel').textContent = 'Kegiatan Bulan ' + NAMA_BLN[d.bulan_ini.bulan - 1] + ' ' + d.bulan_ini.tahun;
+
+                if (cPokja) {
+                    cPokja.data.datasets[0].data = d.per_pokja;
+                    cPokja.data.datasets[0].backgroundColor = WARNA_POKJA.map(function (w, i) {
+                        return (!stPokja.value || stPokja.value == (i + 1)) ? w : '#d5dde0';
+                    });
+                    cPokja.update();
+                }
+
+                if (cTren) {
+                    cTren.data.datasets[0].label = String(d.tren.tahun);
+                    cTren.data.datasets[0].data  = d.tren.ini;
+                    cTren.data.datasets[1].label = String(d.tren.lalu);
+                    cTren.data.datasets[1].data  = d.tren.sebelumnya;
+                    cTren.update();
+                }
+            })
+            .catch(function (err) { console.error('Statistik gagal dimuat:', err); });
+    }
+
+    muatStatistik();
+
     /* ---------- Grafik (data contoh) ---------- */
     if (typeof Chart === 'undefined') { return; }
- 
-    new Chart(document.getElementById('chartPokja'), {
+
+    cPokja = new Chart(document.getElementById('chartPokja'), {
         type: 'bar',
         data: {
-            labels: ['Pokja 1', 'Pokja 2', 'Pokja 3', 'Pokja 4'],
-            datasets: [{ data: [62, 48, 36, 22], backgroundColor: ['#3fae5f', '#7765d8', '#4a90e2', '#2fc4b2'], borderRadius: 6, maxBarThickness: 44 }]
+            labels: ['Pokja 1', 'Pokja 2', 'Pokja 3', 'Pokja 4', 'Sekretaris'],
+            datasets: [{ data: [0, 0, 0, 0, 0], backgroundColor: WARNA_POKJA, borderRadius: 6, maxBarThickness: 44 }]
         },
-        options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#eef3f4' } }, x: { grid: { display: false } } } }
+        options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#eef3f4' } }, x: { grid: { display: false } } } }
     });
- 
-    new Chart(document.getElementById('chartTren'), {
+
+    cTren = new Chart(document.getElementById('chartTren'), {
         type: 'line',
         data: {
             labels: ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],
             datasets: [
-                { label: '2026', data: [28,38,34,42,36,46,44,52,62,null,null,null], borderColor: '#3fae5f', backgroundColor: 'rgba(63,174,95,.12)', fill: true, tension: .3, pointRadius: 3 },
-                { label: '2025', data: [20,24,22,28,26,30,28,34,36,40,42,46], borderColor: '#b7a9ec', tension: .3, pointRadius: 3 }
+                { label: '', data: [], borderColor: '#3fae5f', backgroundColor: 'rgba(63,174,95,.12)', fill: true, tension: .3, pointRadius: 3 },
+                { label: '', data: [], borderColor: '#b7a9ec', tension: .3, pointRadius: 3 }
             ]
         },
-        options: { maintainAspectRatio: false, plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 8, usePointStyle: true } } }, scales: { y: { beginAtZero: true, grid: { color: '#eef3f4' } }, x: { grid: { display: false } } } }
+        options: { maintainAspectRatio: false, plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 8, usePointStyle: true } } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#eef3f4' } }, x: { grid: { display: false } } } }
     });
 });
 </script>
