@@ -304,6 +304,117 @@ class LaporanKegiatanController extends Controller
  
         return response()->json(['status' => 'success', 'message' => 'Laporan kegiatan berhasil dihapus!']);
     }
+
+    // Data kartu statistik + grafik, mengikuti filter paling atas halaman
+    public function statistik(Request $request)
+    {
+        $f = [
+            'kec'   => $request->kecamatan,
+            'kel'   => $request->kelurahan,
+            'pokja' => $request->pokja,
+        ];
+
+        $tahun = (int) $request->tahun;
+        $tahun = ($tahun >= 2000 && $tahun <= 2100) ? $tahun : null;
+        $bulan = (int) $request->bulan;
+        $bulan = ($bulan >= 1 && $bulan <= 12) ? $bulan : null;
+
+        $now = now();
+
+        // Kartu "Kegiatan Bulan Ini" (bulan terpilih, atau bulan berjalan)
+        $ref  = Carbon::create($tahun ?: (int) $now->year, $bulan ?: (int) $now->month, 1);
+        $prev = $ref->copy()->subMonth();
+        $bulanIni  = $this->hitung($f, $ref->year, $ref->month);
+        $bulanLalu = $this->hitung($f, $prev->year, $prev->month);
+
+        // Kartu "Total Kegiatan" (mengikuti tahun dan bulan kalau dipilih)
+        $total = $this->hitung($f, $tahun, $bulan);
+        $totalBanding = null;
+        $labelBanding = null;
+        if ($bulan) {
+            if ($tahun) {
+                $p = Carbon::create($tahun, $bulan, 1)->subMonth();
+                $totalBanding = $this->hitung($f, $p->year, $p->month);
+            } else {
+                $totalBanding = $this->hitung($f, null, $bulan === 1 ? 12 : $bulan - 1);
+            }
+            $labelBanding = 'bulan lalu';
+        } elseif ($tahun) {
+            $totalBanding = $this->hitung($f, $tahun - 1, null);
+            $labelBanding = 'tahun lalu';
+        }
+
+        // Grafik per Pokja (abaikan filter pokja supaya semua batang tampil)
+        $q = $this->qStat($f, false);
+        if ($tahun) { $q->whereYear('l.laporan_kegiatan_tanggal', $tahun); }
+        if ($bulan) { $q->whereMonth('l.laporan_kegiatan_tanggal', $bulan); }
+        $rows = $q->selectRaw("UPPER(REPLACE(l.laporan_kegiatan_sub, ' ', '')) as kode, COUNT(*) as jml")
+            ->groupByRaw("UPPER(REPLACE(l.laporan_kegiatan_sub, ' ', ''))")
+            ->get();
+
+        $perPokja = ['1' => 0, '2' => 0, '3' => 0, '4' => 0, '5' => 0];
+        foreach ($rows as $r) {
+            $p = $this->pokjaNum($r->kode);
+            if ($p && isset($perPokja[$p])) { $perPokja[$p] += (int) $r->jml; }
+        }
+
+        // Grafik tren bulanan: tahun terpilih vs tahun sebelumnya
+        $thn = $tahun ?: (int) $now->year;
+        $rowsTren = $this->qStat($f)
+            ->whereBetween('l.laporan_kegiatan_tanggal', [($thn - 1) . '-01-01', $thn . '-12-31'])
+            ->selectRaw('CAST(EXTRACT(YEAR FROM l.laporan_kegiatan_tanggal) AS INTEGER) as y, CAST(EXTRACT(MONTH FROM l.laporan_kegiatan_tanggal) AS INTEGER) as m, COUNT(*) as jml')
+            ->groupByRaw('1, 2')
+            ->get();
+
+        $ini = array_fill(1, 12, 0);
+        $lalu = array_fill(1, 12, 0);
+        foreach ($rowsTren as $r) {
+            if ((int) $r->y === $thn) { $ini[(int) $r->m] = (int) $r->jml; }
+            else                      { $lalu[(int) $r->m] = (int) $r->jml; }
+        }
+        $ini = array_values($ini);
+        if ($thn === (int) $now->year) {
+            for ($i = (int) $now->month; $i < 12; $i++) { $ini[$i] = null; }   // bulan yang belum terjadi
+        }
+
+        return response()->json([
+            'total'     => ['nilai' => $total, 'persen' => $this->persen($total, $totalBanding), 'banding' => $labelBanding],
+            'bulan_ini' => ['nilai' => $bulanIni, 'persen' => $this->persen($bulanIni, $bulanLalu), 'bulan' => $ref->month, 'tahun' => $ref->year],
+            'per_pokja' => array_values($perPokja),
+            'tren'      => ['tahun' => $thn, 'lalu' => $thn - 1, 'ini' => $ini, 'sebelumnya' => array_values($lalu)],
+        ]);
+    }
+
+    // Query dasar statistik: laporan aktif + filter wilayah (+ pokja)
+    private function qStat(array $f, bool $pakaiPokja = true)
+    {
+        $q = DB::table(self::T . ' as l')
+            ->leftJoin('users as u', 'u.id', '=', 'l.created_by')
+            ->whereNull('l.deleted_at');
+
+        if ($f['kec']) { $q->where('u.id_kec', $f['kec']); }
+        if ($f['kel']) { $q->where('u.id_kel', $f['kel']); }
+        if ($pakaiPokja && in_array((string) $f['pokja'], ['1', '2', '3', '4', '5'], true)) {
+            $kode = (string) $f['pokja'] === '5' ? 'SEKRETARIS' : 'POKJA' . $f['pokja'];
+            $q->whereRaw("UPPER(REPLACE(l.laporan_kegiatan_sub, ' ', '')) = ?", [$kode]);
+        }
+        return $q;
+    }
+
+    private function hitung(array $f, ?int $tahun, ?int $bulan): int
+    {
+        $q = $this->qStat($f);
+        if ($tahun) { $q->whereYear('l.laporan_kegiatan_tanggal', $tahun); }
+        if ($bulan) { $q->whereMonth('l.laporan_kegiatan_tanggal', $bulan); }
+        return (int) $q->count();
+    }
+
+    private function persen(int $sekarang, ?int $lalu): ?float
+    {
+        if ($lalu === null) { return null; }
+        if ($lalu === 0)    { return $sekarang > 0 ? 100.0 : 0.0; }
+        return round((($sekarang - $lalu) / $lalu) * 100, 1);
+    }
  
     /* ---------- helper ---------- */
  
