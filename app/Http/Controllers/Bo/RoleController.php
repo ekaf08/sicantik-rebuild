@@ -12,13 +12,8 @@ class RoleController extends Controller
 {
     public function index()
     {
-        // 1. Ambil data roles (menggunakan primary key 'id' standar tabel roles)
         $roles = Role::orderBy('id', 'asc')->paginate(10);
-
-        // 2. Ambil data menu dari tabel m_menu diurutkan berdasarkan id_menu
         $menus = DB::table('m_menu')->orderBy('id_menu', 'asc')->get();
-
-        // 3. Ambil data permissions
         $permissions = DB::table('permissions')->get();
 
         return view('bo.role.index', compact('roles', 'menus', 'permissions'));
@@ -34,20 +29,17 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi input
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
 
         DB::beginTransaction();
         try {
-            // A. Simpan data ke tabel 'roles'
             $role = Role::create([
                 'name'       => $request->name,
                 'guard_name' => 'web',
             ]);
 
-            // B. Simpan daftar menu yang dicentang ke tabel 'menu_role'
             if ($request->filled('menus')) {
                 $insertMenuRole = [];
                 foreach ($request->menus as $menuId) {
@@ -62,7 +54,6 @@ class RoleController extends Controller
                 DB::table('menu_role')->insert($insertMenuRole);
             }
 
-            // C. Simpan daftar permission yang dicentang ke tabel 'role_has_permissions'
             if ($request->filled('permissions')) {
                 $insertRolePermission = [];
                 foreach ($request->permissions as $permId) {
@@ -88,7 +79,8 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
-        $role = Role::findOrFail($id);
+        $realId = Role::decId($id);
+        $role = Role::findOrFail($realId);
 
         $selectedMenuIds = DB::table('menu_role')
             ->where('role_id', $role->id)
@@ -100,10 +92,10 @@ class RoleController extends Controller
             ->pluck('permission_id');
 
         return response()->json([
-            'id'                  => $role->id,
-            'name'                => $role->name,
-            'selected_menus'      => $selectedMenuIds,
-            'selected_permissions'=> $selectedPermissionIds,
+            'id'                   => $role->enc_id,
+            'name'                 => $role->name,
+            'selected_menus'       => $selectedMenuIds,
+            'selected_permissions' => $selectedPermissionIds,
         ]);
     }
 
@@ -113,7 +105,8 @@ class RoleController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $role = Role::findOrFail($id);
+        $realId = Role::decId($id);
+        $role = Role::findOrFail($realId);
 
         DB::beginTransaction();
         try {
@@ -190,7 +183,8 @@ class RoleController extends Controller
 
     public function destroy(string $id)
     {
-        $role = Role::findOrFail($id);
+        $realId = Role::decId($id);
+        $role = Role::findOrFail($realId);
         $role->delete();
 
         return redirect()->route('role.index')->with('success', 'Role berhasil dihapus!');
