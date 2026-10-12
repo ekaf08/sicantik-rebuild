@@ -69,7 +69,6 @@ Route::middleware('auth')->group(function () {
         Route::get('master/menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
         Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
         Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
-
     // Master Role
     Route::get('master/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('master/role/create', [RoleController::class, 'create'])->name('role.create');
