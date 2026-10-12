@@ -53,31 +53,16 @@
                 <!--end::Heading-->
 
                 <!--begin:Menu item Dashboards-->
-                <div data-kt-menu-trigger="click"
-                    class="menu-item menu-accordion {{ request()->routeIs('dashboard*') ? 'here show' : '' }}">
-                    <!--begin:Menu link-->
-                    <span class="menu-link">
+                <!--begin:Menu item Dashboard-->
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('dashboard*') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                         <span class="menu-icon">
                             <i class="ki-outline ki-home-2 fs-2"></i>
                         </span>
                         <span class="menu-title">Dashboards</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <!--end:Menu link-->
-                    <!--begin:Menu sub-->
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                                href="{{ route('dashboard') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Default</span>
-                            </a>
-                        </div>
-                    </div>
-                    <!--end:Menu sub-->
+                    </a>
                 </div>
+                <!--end:Menu item Dashboard-->
                 <!--end:Menu item Dashboards-->
 
                 <!--begin:Menu item Master (User, Role, Permission, Menu)-->
