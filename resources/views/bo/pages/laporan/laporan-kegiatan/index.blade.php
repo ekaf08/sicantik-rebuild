@@ -111,7 +111,6 @@
     <section class="pkk-hero">
         <h1>Pelaporan Kegiatan PKK</h1>
         <p>Bersama dalam data, untuk keluarga yang lebih sejahtera</p>
-        <p style="color: red;">Saya masih mengerjakan Data Tabel, Sabar ya, Makasih</p>
     </section>
  
     {{-- Filter statistik & grafik --}}
