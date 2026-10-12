@@ -107,25 +107,7 @@
                         <input type="text" name="name" class="form-control form-control-solid" placeholder="Masukkan nama role..." required />
                     </div>
 
-                    <!-- Permission -->
-                    <div class="mb-8">
-                        <label class="form-label fw-bold required">Permission</label>
-                        <input type="text" class="form-control mb-4" placeholder="Cari ..." />
-                        <div class="row g-3">
-                            @forelse($permissions as $perm)
-                                <div class="col-md-6">
-                                    <div class="form-check form-check-custom form-check-solid">
-                                        <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $perm->id }}" id="perm_{{ $perm->id }}" />
-                                        <label class="form-check-label text-gray-700 fw-semibold" for="perm_{{ $perm->id }}">
-                                            {{ $perm->name }}
-                                        </label>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="col-12 text-gray-500 fs-7">Belum ada data permission.</div>
-                            @endforelse
-                        </div>
-                    </div>
+
 
                     <!-- Menu By Role (Dynamic dari Database Navicat m_menu) -->
                     <div class="mb-10">
@@ -184,26 +166,7 @@
                         <input type="text" name="name" id="edit_name" class="form-control form-control-solid" placeholder="Masukkan nama role..." required />
                     </div>
 
-                    <!-- Permission -->
-                    <div class="mb-8">
-                        <label class="form-label fw-bold required">Permission</label>
-                        <input type="text" class="form-control mb-4" placeholder="Cari ..." />
-                        <div class="row g-3">
-                            @forelse($permissions as $perm)
-                                <div class="col-md-6">
-                                    <div class="form-check form-check-custom form-check-solid">
-                                        <input class="form-check-input edit-permission-checkbox" type="checkbox"
-                                            name="permissions[]" value="{{ $perm->id }}" id="edit_perm_{{ $perm->id }}" />
-                                        <label class="form-check-label text-gray-700 fw-semibold" for="edit_perm_{{ $perm->id }}">
-                                            {{ $perm->name }}
-                                        </label>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="col-12 text-gray-500 fs-7">Belum ada data permission.</div>
-                            @endforelse
-                        </div>
-                    </div>
+                   
 
                     <!-- Menu By Role -->
                     <div class="mb-10">
