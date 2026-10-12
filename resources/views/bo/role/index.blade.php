@@ -42,12 +42,12 @@
                                     <td>{{ $item->updated_at ? \Carbon\Carbon::parse($item->updated_at)->format('Y-m-d H:i') : '-' }}</td>
                                     <td class="text-end">
                                         <button type="button" class="btn btn-sm btn-light-primary btn-edit-role me-2"
-                                            data-id="{{ $item->id }}">
+                                            data-id="{{ $item->enc_id }}">
                                             <i class="ki-duotone ki-pencil fs-4"><span class="path1"></span><span class="path2"></span></i>
                                             Edit
                                         </button>
 
-                                        <form action="{{ route('role.destroy', $item->id) }}" method="POST" class="d-inline form-delete-role"
+                                        <form action="{{ route('role.destroy', $item->enc_id) }}" method="POST" class="d-inline form-delete-role"
                                             data-name="{{ $item->name }}">
                                             @csrf
                                             @method('DELETE')
@@ -254,8 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.edit-menu-checkbox').forEach(cb => cb.checked = false);
             document.querySelectorAll('.edit-permission-checkbox').forEach(cb => cb.checked = false);
 
-            fetch(editUrlTemplate.replace(':id', id))
-                .then(res => {
+                fetch(editUrlTemplate.replace(':id', encodeURIComponent(id)))                .then(res => {
                     if (!res.ok) throw new Error('Gagal mengambil data');
                     return res.json();
                 })
@@ -270,8 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         cb.checked = data.selected_permissions.includes(parseInt(cb.value));
                     });
 
-                    document.getElementById('form-edit-role').action = updateUrlTemplate.replace(':id', id);
-
+                    document.getElementById('form-edit-role').action = updateUrlTemplate.replace(':id', encodeURIComponent(id));
                     new bootstrap.Modal(document.getElementById('kt_modal_edit_role')).show();
                 })
                 .catch(() => {

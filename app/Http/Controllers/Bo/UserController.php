@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -107,15 +108,26 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username',
-            'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8',
+            'username' => ['required', 'string', 'max:255', Rule::unique('users', 'username')],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
+            // Password minimal 8 karakter, harus ada huruf besar, huruf kecil, angka, dan simbol
+            'password' => [
+                'required', 
+                'string', 
+                'min:8', 
+                'regex:/[a-z]/',    // harus ada huruf kecil
+                'regex:/[A-Z]/',   // harus ada huruf besar
+                'regex:/[0-9]/',    // harus ada angka
+                'regex:/[@$!%*#?&]/', // harus ada simbol
+            ],
             'id_kec' => 'required|exists:m_kecamatan,id_kec',
             'id_kel' => 'required|exists:m_kelurahan,id_kel',
             'role_id' => 'required|exists:roles,id',
+        ], [
+            'password.regex' => 'Password harus mengandung setidaknya satu huruf besar, satu huruf kecil, satu angka, dan satu simbol karakter khusus.'
         ]);
 
-        user::create([
+        User::create([
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
@@ -126,15 +138,16 @@ class UserController extends Controller
         ]);
 
         return response()->json([
-        'status' => true,
-        'message' => 'User berhasil ditambahkan!'
+            'status' => true,
+            'message' => 'User berhasil ditambahkan!'
         ]);
     }
 
     public function getKelurahan(string $no_kec)
     {
-        $kelurahan = Kelurahan::where('no_kec', $no_kec)->get();
-        return response()->json($kelurahan);
+        return response()->json(
+            Kelurahan::where('no_kec', $no_kec)->orderBy('nama_kel')->get(['id_kel', 'nama_kel'])
+        );
     }
 
     public function resetPassword(Request $request, string $id)
@@ -146,7 +159,18 @@ class UserController extends Controller
         }
 
         $request->validate([
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required', 
+                'string', 
+                'min:8', 
+                'confirmed', 
+                'regex:/[a-z]/', 
+                'regex:/[A-Z]/', 
+                'regex:/[0-9]/', 
+                'regex:/[@$!%*#?&]/'
+            ],
+        ], [
+            'password.regex' => 'Password baru harus mengandung setidaknya satu huruf besar, satu huruf kecil, satu angka, dan satu simbol karakter khusus.'
         ]);
 
         $user = User::findOrFail($realId);
@@ -242,12 +266,22 @@ class UserController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username,' . $realId,
-            'email' => 'required|email|max:255|unique:users,email,' . $realId,
-            'password' => 'nullable|string|min:8',
+            'username' => ['required', 'string', 'max:255', Rule::unique('users', 'username')->ignore($realId)],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($realId)],
+            'password' => [
+                'nullable', 
+                'string', 
+                'min:8', 
+                'regex:/[a-z]/', 
+                'regex:/[A-Z]/', 
+                'regex:/[0-9]/', 
+                'regex:/[@$!%*#?&]/'
+            ],
             'id_kec' => 'required|exists:m_kecamatan,id_kec',
             'id_kel' => 'required|exists:m_kelurahan,id_kel',
             'role_id' => 'required|exists:roles,id',
+        ], [
+            'password.regex' => 'Password harus mengandung setidaknya satu huruf besar, satu huruf kecil, satu angka, dan satu simbol karakter khusus.'
         ]);
 
         $data = [
