@@ -162,6 +162,17 @@
                 </div>
                 <!--end:Menu item Laporan-->
 
+                <!--begin:Menu item MPASI-->
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('mpasi.*') ? 'active' : '' }}" href="{{ route('mpasi.mp_asi') }}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-heart fs-2"></i>
+                        </span>
+                        <span class="menu-title">Data MPASI</span>
+                    </a>
+                </div>
+                <!--end:Menu item MPASI-->
+
                 <!--begin:Menu item Inovasi (Parent, tidak ada di m_menu, terbuka untuk semua user)-->
                 <div data-kt-menu-trigger="click"
                     class="menu-item menu-accordion {{ request()->routeIs('inovasi.*') ? 'here show' : '' }}">

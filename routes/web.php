@@ -7,6 +7,7 @@ use App\Http\Controllers\Bo\UserController;
 use App\Http\Controllers\Bo\PermissionController;
 use App\Http\Controllers\Bo\MenuController;
 use App\Http\Controllers\Bo\RoleController;
+use App\Http\Controllers\Bo\MpasiController;
 use App\Http\Controllers\Bo\LaporanKegiatanController;
 use App\Http\Controllers\Bo\LaporanTahunanController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    //Mpasi
+    Route::get('/mpasi', [MpasiController::class, 'mpasi'])->name('mpasi.mp_asi');
+    // Route::post('/mpasi', [MpasiController::class, 'store'])->name('mpasi.store');
+    // Route::put('/mpasi/{id}', [MpasiController::class, 'update'])->name('mpasi.update');
+    // Route::delete('/mpasi/{id}', [MpasiController::class, 'destroy'])->name('mpasi.destroy');
 
     Route::get('/inovasi/global', [InovasiController::class, 'global'])->name('inovasi.global');
     Route::get('/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');

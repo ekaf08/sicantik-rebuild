@@ -1,10 +1,14 @@
 <?php
+
 namespace App\Support;
 
 use Illuminate\Support\Facades\DB;
 
-class Access {
-    public const SUPERADMIN_ROLE_ID = 1;
+class Access
+{
+    protected const BYPASS_ROLE_IDS = [1];
+
+    protected const BYPASS_USER_IDS = [2];
 
     protected static ?array $cache = null;
 
@@ -13,14 +17,15 @@ class Access {
         self::$cache = null;
     }
 
-     public static function can(string $url, string $field = 'table'): bool
+    public static function can(string $url, string $field = 'table'): bool
     {
         $user = auth()->user();
         if (!$user) {
             return false;
         }
 
-        if ($user->role_id == 1) {
+        if (in_array((int) $user->id, self::BYPASS_USER_IDS, true)
+            || in_array((int) $user->role_id, self::BYPASS_ROLE_IDS, true)) {
             return true;
         }
 
@@ -48,4 +53,3 @@ class Access {
         return self::$cache['/' . trim($url, '/')][$field] ?? false;
     }
 }
-?>
