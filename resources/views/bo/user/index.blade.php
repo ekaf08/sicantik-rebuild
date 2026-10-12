@@ -330,8 +330,14 @@
                 }
             });
 
-            $('#searchUser').on('keyup', function () {
-                table.search(this.value).draw();
+            var searchTimer;
+            $('#searchUser').off('keyup search').on('keyup search', function () {
+                var value = this.value;
+                clearTimeout(searchTimer);
+                
+                searchTimer = setTimeout(function () {
+                    table.search(value).draw();
+                }, 500); // Jeda 500ms agar lebih aman
             });
 
             // === handle submit form modal ===

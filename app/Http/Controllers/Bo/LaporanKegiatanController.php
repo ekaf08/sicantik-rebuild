@@ -29,16 +29,18 @@ class LaporanKegiatanController extends Controller
     {
         if ($request->ajax()) {
             return DataTables::of($this->baseQuery($request))
-                ->addIndexColumn()
+                ->addIndexColumn('DT_RowIndex')
                 ->filter(function ($q) use ($request) {
                     if ($s = $request->input('search.value')) {
                         $q->where(function ($w) use ($s) {
                             $w->where('l.laporan_kegiatan_tampat', 'ilike', "%$s%")
                               ->orWhere('l.laporan_kegiatan_deskripsi', 'ilike', "%$s%")
-                              ->orWhere('s.sub_kegiatan_nama', 'ilike', "%$s%");
+                              ->orWhere('s.sub_kegiatan_nama', 'ilike', "%$s%")
+                              ->orWhere('k.kegiatan_nama', 'ilike', "%$s%");
                         });
                     }
                 })
+
                 ->addColumn('tanggal_fmt', fn ($r) => Carbon::parse($r->laporan_kegiatan_tanggal)->format('d-m-Y'))
                 ->addColumn('jenis', fn ($r) => $r->kegiatan_nama ?: '-')
                 ->addColumn('sub', fn ($r) => $r->sub_kegiatan_nama ?: '-')
@@ -453,7 +455,8 @@ class LaporanKegiatanController extends Controller
         $q->where(function ($w) use ($s) {
             $w->where('l.laporan_kegiatan_tampat', 'ilike', "%$s%")
               ->orWhere('l.laporan_kegiatan_deskripsi', 'ilike', "%$s%")
-              ->orWhere('s.sub_kegiatan_nama', 'ilike', "%$s%");
+              ->orWhere('s.sub_kegiatan_nama', 'ilike', "%$s%")
+              ->orWhere('k.kegiatan_nama', 'ilike', "%$s%"); // <-- Tambahan ini
         });
     }
  
