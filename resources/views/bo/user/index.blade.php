@@ -276,9 +276,10 @@
 
         $(document).ready(function() {
 
-            var cacheKel = {};   // daftar kelurahan per kecamatan, supaya pemanggilan kedua langsung muncul
+            // Semua kelurahan dibawa dari server sekali saat halaman dibuka, jadi tidak ada request lagi
+            var DATA_KEL = @json($kelurahan);
 
-            // Muat kelurahan sesuai kecamatan. Mengembalikan promise supaya bisa disambung (gantian).
+            // dropdown kelurahan sesuai kecamatan
             function muatKelurahan(idKec, idKelTerpilih) {
                 var $kel = $('#id_kel');
 
@@ -287,28 +288,19 @@
                     return $.Deferred().resolve().promise();
                 }
 
-                var isi = function (list) {
-                    if ($('#id_kec').val() != idKec) { return; }   // kecamatan sudah diganti selagi menunggu
-                    $kel.empty().append('<option value="">Pilih Kelurahan</option>');
-                    $.each(list, function (i, kel) {
-                        $kel.append($('<option>').val(kel.id_kel).text(kel.nama_kel));
-                    });
-                    $kel.val(idKelTerpilih || '').trigger('change.select2');
-                };
+                var list = DATA_KEL
+                    .filter(function (k) { return String(k.no_kec) === String(idKec); })
+                    .sort(function (a, b) { return String(a.nama_kel).localeCompare(String(b.nama_kel)); });
 
-                if (cacheKel[idKec]) {
-                    isi(cacheKel[idKec]);
-                    return $.Deferred().resolve().promise();
-                }
+                $kel.empty().append('<option value="">Pilih Kelurahan</option>');
+                $.each(list, function (i, kel) {
+                    $kel.append($('<option>').val(kel.id_kel).text(kel.nama_kel));
+                });
+                $kel.val(idKelTerpilih || '').trigger('change.select2');
 
-                $kel.empty().append('<option value="">Memuat...</option>').trigger('change.select2');
-
-                return $.get("{{ url('get-kelurahan') }}/" + idKec)
-                    .done(function (list) { cacheKel[idKec] = list; isi(list); })
-                    .fail(function () {
-                        $kel.empty().append('<option value="">Gagal memuat kelurahan</option>').trigger('change.select2');
-                    });
+                return $.Deferred().resolve().promise();
             }
+                
             var table = $('#kt_table_user').DataTable({
                 processing: true,
                 serverSide: true,

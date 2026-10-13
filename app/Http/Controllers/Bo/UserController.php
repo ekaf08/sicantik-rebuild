@@ -24,7 +24,10 @@ class UserController extends Controller
     {
         $role = Role::all();
         $kecamatan = Kecamatan::all(); // 1. Ambil data kecamatan'
-        $kelurahan = Kelurahan::all();
+        // hanya kelurahan milik kecamatan yang tampil di dropdown, dan hanya 3 kolom
+        $kelurahan = Kelurahan::whereIn('no_kec', $kecamatan->pluck('id_kec')->map(fn ($v) => (string) $v)->all())
+            ->select('id_kel', 'nama_kel', 'no_kec')
+            ->get();
 
         $datas = [
             'role' => $role,
