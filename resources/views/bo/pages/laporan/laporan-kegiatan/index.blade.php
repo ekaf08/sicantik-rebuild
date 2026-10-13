@@ -2,14 +2,14 @@
  
 @section('content')
 <style>
-    .pkk { --teal:#2fa88f; --teal-dark:#286b83; --teal-deep:#205d73; --ink:#183b49; --muted:#6d8189; --line:#dce9ec; --green:#3fae5f; --purple:#7765d8; --blue:#4a90e2; }
+    .pkk { --teal:#2fa88f; --teal-dark:#286b83; --teal-deep:#205d73; --ink:#183b49; --muted:#6d8189; --line:#dce9ec; --green:#3fae5f; --purple:#7765d8; --blue:#4a90e2; --toska-cerah:#3FAAB2; --toska-gelap: #2A6B7C; --toska-sedang: #4EA8B0}
     .pkk, .pkk * { box-sizing: border-box; }
     .pkk { color: var(--ink); }
  
     /* Hero */
     .pkk-hero { position:relative; overflow:hidden; border-radius:16px; padding:26px 30px; min-height:112px;
         background:linear-gradient(100deg,#dff3e6,#eaf7f1 55%,#d3ece7); }
-    .pkk-hero h1 { margin:0 0 6px; font-size:28px; font-weight:800; color:var(--teal-deep); }
+    .pkk-hero h1 { margin:0 0 6px; font-size:28px; font-weight:800; color:var(--toska-cerah); }
     .pkk-hero p { margin:0; color:#54737c; font-size:14px; }
  
     /* Filter */
@@ -49,7 +49,7 @@
     /* Tabel */
     .pkk-table-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px; }
     .pkk-table-head h2 { font-size:17px; margin:0; }
-    .pkk-btn-main { background:var(--green); color:#fff; border:0; border-radius:9px; padding:11px 18px; font-weight:700; }
+    .pkk-btn-main { background:var(--toska-cerah); color:#fff; border:0; border-radius:9px; padding:11px 18px; font-weight:700; }
     .pkk-btn-main:hover { filter:brightness(.95); }
     .pkk-tools { display:flex; flex-wrap:wrap; gap:9px; margin-bottom:14px; }
     .pkk-tools input, .pkk-tools select { height:40px; padding:0 12px; border:1px solid var(--line); border-radius:9px; background:#fff; }
@@ -61,8 +61,8 @@
     .pkk tr:hover td { background:#fafefd; }
     .pkk .thumb-img { width:64px; height:44px; object-fit:cover; border-radius:6px; display:block; }
     .pkk .abtn { padding:6px 11px; border-radius:7px; font-size:11px; border:1px solid transparent; background:#fff; }
-    .pkk .abtn.view { background:var(--green); color:#fff; }
-    .pkk .abtn.edit { color:#6655bd; border-color:#cfc6f5; }
+    .pkk .abtn.view { background:var(--toska-cerah); color:#fff; }
+    .pkk .abtn.edit { color:var(--green); border-color:#82e795; }
     .pkk .abtn.del  { color:#d94d6c; border-color:#f4c3cf; }
     .pkk .pkk-foot { margin-top:14px; font-size:12px; color:var(--muted); }
     .pkk .pagination { margin:0; }

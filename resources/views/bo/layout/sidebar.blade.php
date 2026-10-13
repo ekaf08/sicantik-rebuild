@@ -10,6 +10,14 @@
     $showMaster = $canUser || $canRole || $canPermission || $canMenu;
 @endphp
 
+<!-- Style Kustom: Mengubah background menu .active (baik submenu maupun menu utama/root) menjadi #3FAAB2 -->
+<style>
+    /* Mengubah background menu utama & submenu yang aktif menjadi #3FAAB2 */
+    .app-sidebar-menu-custom .menu-link.active {
+        background-color: #3FAAB2 !important;
+    }
+</style>
+
 <div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true" data-kt-drawer-name="app-sidebar"
     data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="250px"
     data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
@@ -53,7 +61,7 @@
 
             <!--begin::Sidebar menu-->
             <div id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false"
-                class="app-sidebar-menu-primary menu menu-column menu-rounded menu-sub-indention menu-state-bullet-primary">
+                class="app-sidebar-menu-primary menu menu-column menu-rounded menu-sub-indention menu-state-bullet-primary app-sidebar-menu-custom">
 
                 <!--begin::Heading-->
                 <div class="menu-item mb-2">
@@ -64,7 +72,7 @@
                 </div>
                 <!--end::Heading-->
 
-                <!--begin:Menu item Dashboard (tidak ada di m_menu, terbuka untuk semua user)-->
+                <!--begin:Menu item Dashboard-->
                 <div class="menu-item">
                     <a class="menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                         <span class="menu-icon">
@@ -75,8 +83,7 @@
                 </div>
                 <!--end:Menu item Dashboard-->
 
-
-                <!--begin:Menu item Master (User, Role, Permission, Menu)-->
+                <!--begin:Menu item Master-->
                 @if($showMaster)
                 <div data-kt-menu-trigger="click"
                     class="menu-item menu-accordion {{ request()->routeIs('user*') || request()->routeIs('role*') || request()->routeIs('permission*') || request()->routeIs('menu*') || request()->routeIs('master.*') ? 'here show' : '' }}">
@@ -130,8 +137,6 @@
                 <!--end:Menu item Master-->
 
                 <!--begin:Menu Laporan-->
-                {{-- Laporan Tahunan belum terdaftar di m_menu, jadi tetap terbuka untuk semua user.
-                     Grup ini selalu tampil karena Laporan Tahunan di dalamnya. --}}
                 <div data-kt-menu-trigger="click"
                     class="menu-item menu-accordion {{ request()->routeIs('laporan-kegiatan*') || request()->routeIs('laporan-tahunan*') ? 'here show' : '' }}">
                     <span class="menu-link">
@@ -173,7 +178,7 @@
                 </div>
                 <!--end:Menu item MPASI-->
 
-                <!--begin:Menu item Inovasi (Parent, tidak ada di m_menu, terbuka untuk semua user)-->
+                <!--begin:Menu item Inovasi-->
                 <div data-kt-menu-trigger="click"
                     class="menu-item menu-accordion {{ request()->routeIs('inovasi.*') ? 'here show' : '' }}">
                     <span class="menu-link">
@@ -200,7 +205,7 @@
                         </div>
                     </div>
                 </div>
-                <!--end:Menu item Inovasi (Parent)-->
+                <!--end:Menu item Inovasi-->
 
                 <!--begin:Menu item Help-->
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
