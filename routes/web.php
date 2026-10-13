@@ -38,8 +38,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/inovasi-global/get-data', [InovasiController::class, 'getGlobalData'])->name('inovasi.global.getData');
     Route::post('/inovasi-global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
-    Route::delete('/inovasi-global/delete/{id}', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
-
+    Route::delete('/inovasi-global/destroy/{id}', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
     // Master User
     Route::get('master/user/data', [UserController::class, 'data'])->name('users.data');
     Route::resource('master/user', UserController::class)->except(['create', 'edit']);
