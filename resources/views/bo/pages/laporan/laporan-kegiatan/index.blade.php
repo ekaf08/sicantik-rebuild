@@ -25,7 +25,7 @@
     .pkk-stat.s3 { background:#e9f2fc; } .pkk-stat.s4 { background:#e6f6f2; }
     .pkk-stat .ic { width:46px; height:46px; border-radius:50%; display:grid; place-items:center; font-size:22px; color:#fff; flex:none; }
     .pkk-stat .ic i { color:#fff; line-height:1; }
-    .s1 .ic { background:var(--green); } .s2 .ic { background:var(--purple); } .s3 .ic { background:var(--blue); } .s4 .ic { background:var(--teal); }
+    .s1 .ic { background:var(--toska-cerah); } .s2 .ic { background:var(--purple); } .s3 .ic { background:var(--blue); } .s4 .ic { background:var(--teal); }
     .pkk-stat small { color:var(--muted); font-size:12px; display:block; }
     .pkk-stat strong { font-size:26px; line-height:1.2; }
     .pkk-stat .up { font-size:11px; color:var(--green); margin-left:6px; }
@@ -43,7 +43,7 @@
     .pkk-prog { margin:13px 0; }
     .pkk-prog .h { display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; }
     .pkk-prog .bar { height:8px; background:#edf3f4; border-radius:99px; overflow:hidden; }
-    .pkk-prog .bar i { display:block; height:100%; border-radius:99px; background:var(--green); }
+    .pkk-prog .bar i { display:block; height:100%; border-radius:99px; background:var(--toska-cerah); }
     .pkk-prog .bar i.mid { background:var(--blue); }
  
     /* Tabel */
@@ -54,6 +54,20 @@
     .pkk-tools { display:flex; flex-wrap:wrap; gap:9px; margin-bottom:14px; }
     .pkk-tools input, .pkk-tools select { height:40px; padding:0 12px; border:1px solid var(--line); border-radius:9px; background:#fff; }
     .pkk-tools .grow { flex:1; min-width:220px; }
+    /* Filter: ganti garis hitam saat diklik dengan abu lembut */
+    .pkk-tools select, .pkk-tools input, .pkk-filters select {
+        outline: none;
+        transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .pkk-tools select:hover, .pkk-tools input:hover, .pkk-filters select:hover {
+        border-color: #b8c7cc;
+    }
+    .pkk-tools select:focus, .pkk-tools input:focus, .pkk-filters select:focus,
+    .pkk-tools select:focus-visible, .pkk-tools input:focus-visible, .pkk-filters select:focus-visible {
+        outline: none;
+        border-color: #9db1b8;
+        box-shadow: 0 0 0 3px rgba(157, 177, 184, .28);
+    }
     .pkk-wrap { overflow-x:auto; }
     .pkk table { width:100%; border-collapse:collapse; font-size:12px; }
     .pkk th { background:#eef7f4; color:#48636d; text-align:left; padding:11px 9px; white-space:nowrap; }
@@ -833,7 +847,7 @@ document.addEventListener('DOMContentLoaded', function () {
         data: {
             labels: ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],
             datasets: [
-                { label: '', data: [], borderColor: '#3fae5f', backgroundColor: 'rgba(63,174,95,.12)', fill: true, tension: .3, pointRadius: 3 },
+                { label: '', data: [], borderColor: '#3FAAB2', backgroundColor: 'rgba(63,174,95,.12)', fill: true, tension: .3, pointRadius: 3 },
                 { label: '', data: [], borderColor: '#b7a9ec', tension: .3, pointRadius: 3 }
             ]
         },
