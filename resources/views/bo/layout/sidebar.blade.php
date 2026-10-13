@@ -169,7 +169,7 @@
 
                 <!--begin:Menu item MPASI-->
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('mpasi.*') ? 'active' : '' }}" href="{{ route('mpasi.mp_asi') }}">
+                    <a class="menu-link {{ request()->routeIs('mpasi.*') ? 'active' : '' }}" href="{{ route('mpasi.index') }}">
                         <span class="menu-icon">
                             <i class="ki-outline ki-heart fs-2"></i>
                         </span>
