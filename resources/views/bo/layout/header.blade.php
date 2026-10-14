@@ -9,7 +9,7 @@
             </div>
             <!--begin::Logo image-->
             <a href="index.html">
-                <img alt="Logo" src="{{ asset('assets/media/logos/demo38-small.svg') }}" class="h-30px" />
+                <img alt="Logo" src="{{ asset('img/png/logo-sicantik.png') }}" class="h-50px" />
             </a>
             <!--end::Logo image-->
         </div>
