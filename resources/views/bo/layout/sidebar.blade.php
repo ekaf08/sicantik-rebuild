@@ -12,9 +12,63 @@
 
 <!-- Style Kustom: Mengubah background menu .active (baik submenu maupun menu utama/root) menjadi #3FAAB2 -->
 <style>
-    /* Mengubah background menu utama & submenu yang aktif menjadi #3FAAB2 */
+    /* Menu aktif */
     .app-sidebar-menu-custom .menu-link.active {
         background-color: #3FAAB2 !important;
+    }
+
+    /* Logo icon: default disembunyikan (saat sidebar lebar) */
+    .app-sidebar-logo-minimize {
+        display: none;
+        height: 48px !important;
+        width: auto;
+        object-fit: contain;
+    }
+
+    /* ===== Saat sidebar mengecil ===== */
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar-logo-default,
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar-text-wrapper {
+        display: none !important;
+    }
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar-logo-minimize {
+        display: block;
+    }
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar-logo {
+        cursor: pointer;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar-header {
+        justify-content: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    /* Toggle disembunyikan (logo yang jadi tombolnya) */
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar-toggle {
+        display: none !important;
+    }
+
+    /* ===== Saat di-hover (melebar sementara): samakan dengan sidebar lebar ===== */
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar:hover .app-sidebar-logo-default,
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar:hover .app-sidebar-text-wrapper {
+        display: block !important;
+    }
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar:hover .app-sidebar-logo-minimize {
+        display: none !important;
+    }
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar:hover .app-sidebar-header {
+        justify-content: space-between !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar:hover .app-sidebar-logo {
+        margin: 0 auto !important;
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.25rem !important;
+    }
+    [data-kt-app-sidebar-minimize="on"] .app-sidebar:hover .app-sidebar-toggle {
+        display: flex !important;
+        position: static !important;
     }
 </style>
 
@@ -28,14 +82,17 @@
         <!--begin::Logo & Teks-->
         <a href="{{ url('/dashboard') }}"
             class="app-sidebar-logo d-flex flex-column align-items-center text-center text-decoration-none mx-auto py-1">
-            <!-- Gambar Logo (Ukuran disesuaikan agar pas) -->
+
+            <!-- Logo penuh (saat sidebar lebar) -->
             <img alt="Logo" src="{{ asset('img/png/logo-sicantik-pkk.png') }}"
                 class="h-25px mb-1 app-sidebar-logo-default" />
 
-            <!-- Teks di Bawah Logo -->
+            <!-- Logo icon saja (saat sidebar mengecil) -->
+            <img alt="Logo" src="{{ asset('img/png/logo-sicantik.png') }}"
+                class="app-sidebar-logo-minimize" />
+
             <div class="app-sidebar-text-wrapper">
                 <span class="fs-8 fw-bold text-dark theme-light-show d-block">Si Cantik Surabaya</span>
-                <span class="fs-8 fw-bold text-white theme-dark-show d-block">Si Cantik Surabaya</span>
             </div>
         </a>
         <!--end::Logo & Teks-->
@@ -234,3 +291,22 @@
     </div>
     <!--end::Navs-->
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const logo = document.querySelector('.app-sidebar-logo');
+    const toggle = document.getElementById('kt_app_sidebar_toggle');
+
+    if (!logo || !toggle) return;
+
+    logo.addEventListener('click', function (e) {
+        const isMinimized = document.body.getAttribute('data-kt-app-sidebar-minimize') === 'on';
+
+        // Saat mengecil: logo berfungsi sebagai tombol untuk melebarkan sidebar
+        if (isMinimized) {
+            e.preventDefault();
+            toggle.click();
+        }
+        // Saat melebar: logo tetap link ke dashboard seperti biasa
+    });
+});
+</script>
