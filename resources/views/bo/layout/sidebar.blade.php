@@ -274,6 +274,16 @@
                     </a>
                 </div>
                 <!--end:Menu item Penghargaan-->
+                <!--begin:Menu item Kebijakan SK-->
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('kebijakan.*') ? 'active' : '' }}" href="{{ route('kebijakan.index') }}">
+                        <span class="menu-icon">
+                        <i class="ki-solid ki-shield-tick fs-2"></i>
+                    </span>
+                    <span class="menu-title">Kebijakan</span>
+                    </a>
+                </div>
+                <!--end:Menu item Kebijakan SK-->
 
                 <!--begin:Menu item Help-->
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">

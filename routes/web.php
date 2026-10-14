@@ -8,6 +8,7 @@ use App\Http\Controllers\Bo\PermissionController;
 use App\Http\Controllers\Bo\MenuController;
 use App\Http\Controllers\Bo\RoleController;
 use App\Http\Controllers\Bo\MpasiController;
+use App\Http\Controllers\Bo\KebijakanController;
 use App\Http\Controllers\Bo\LaporanKegiatanController;
 use App\Http\Controllers\Bo\LaporanTahunanController;
 use App\Http\Controllers\Bo\PenghargaanController;
@@ -44,6 +45,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/inovasi-global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
     Route::delete('/inovasi-global/destroy/{id}', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
 
+    //Kebijakan SK 
+    Route::get('/kebijakan', [KebijakanController::class, 'index'])->name('kebijakan.index');
+    Route::get('/kebijakan-data', [KebijakanController::class, 'getData'])->name('kebijakan.data');
+    Route::post('/kebijakan-store', [KebijakanController::class, 'store'])->name('kebijakan.store');
+    Route::get('/kebijakan-show/{id}', [KebijakanController::class, 'show'])->name('kebijakan.show');
+    Route::post('/kebijakan-update/{id}', [KebijakanController::class, 'update'])->name('kebijakan.update');
+    Route::delete('/kebijakan-destroy/{id}', [KebijakanController::class, 'destroy'])->name('kebijakan.destroy');
     // Master User
     Route::get('master/user/data', [UserController::class, 'data'])->name('users.data');
     Route::resource('master/user', UserController::class)->except(['create', 'edit']);
