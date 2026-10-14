@@ -10,7 +10,9 @@ use App\Http\Controllers\Bo\RoleController;
 use App\Http\Controllers\Bo\MpasiController;
 use App\Http\Controllers\Bo\LaporanKegiatanController;
 use App\Http\Controllers\Bo\LaporanTahunanController;
+use App\Http\Controllers\Bo\PenghargaanController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -30,16 +32,18 @@ Route::middleware('auth')->group(function () {
     //Mpasi
     Route::get('/mpasi', [MpasiController::class, 'index'])->name('mpasi.index');
     Route::post('/mpasi', [MpasiController::class, 'store'])->name('mpasi.store');
-    Route::get('/mpasi/{id}', [MpasiController::class, 'show'])->name('mpasi.show');    
+    Route::get('/mpasi/{id}', [MpasiController::class, 'show'])->name('mpasi.show');
     Route::put('/mpasi/{id}', [MpasiController::class, 'update'])->name('mpasi.update');
     Route::delete('/mpasi/{id}', [MpasiController::class, 'destroy'])->name('mpasi.destroy');
 
+    // Inovasi
     Route::get('/inovasi/global', [InovasiController::class, 'global'])->name('inovasi.global');
-    Route::get('/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
+    Route::match(['get', 'post'], '/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
 
     Route::get('/inovasi-global/get-data', [InovasiController::class, 'getGlobalData'])->name('inovasi.global.getData');
     Route::post('/inovasi-global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
     Route::delete('/inovasi-global/destroy/{id}', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
+
     // Master User
     Route::get('master/user/data', [UserController::class, 'data'])->name('users.data');
     Route::resource('master/user', UserController::class)->except(['create', 'edit']);
@@ -53,18 +57,14 @@ Route::middleware('auth')->group(function () {
     Route::post('master/permission/access', [PermissionController::class, 'updateAccess'])->name('permission.access');
     Route::resource('master/permission', PermissionController::class)->except(['create', 'edit']);
 
-    Route::get('laporan/kegiatan', [RoleController::class, 'laporanKegiatan'])->name('laporan.kegiatan');
-    Route::get('laporan/tahunan', [RoleController::class, 'laporanTahunan'])->name('laporan.tahunan');
-
     // Master Menu
-        Route::get('master/menu', [MenuController::class, 'index'])->name('menu.index');
-        Route::get('master/menu/data', [MenuController::class, 'data'])->name('menu.data');
-        Route::post('master/menu', [MenuController::class, 'store'])->name('menu.store');
-        Route::get('master/menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
-        Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
-        Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
+    Route::get('master/menu', [MenuController::class, 'index'])->name('menu.index');
+    Route::get('master/menu/data', [MenuController::class, 'data'])->name('menu.data');
+    Route::post('master/menu', [MenuController::class, 'store'])->name('menu.store');
+    Route::get('master/menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
     Route::put('master/menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
     Route::delete('master/menu/delete/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
+
     // Master Role
     Route::get('master/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('master/role/create', [RoleController::class, 'create'])->name('role.create');
@@ -89,6 +89,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'destroy'])->name('laporan-kegiatan.destroy');
 
     Route::get('laporan-tahunan', [LaporanTahunanController::class, 'index'])->name('laporan-tahunan.index');
+
+    // Penghargaan
+        Route::get('/penghargaan', [PenghargaanController::class, 'index'])->name('penghargaan.index');
+        Route::post('/penghargaan/store', [PenghargaanController::class, 'store'])->name('penghargaan.store');
+        Route::put('/penghargaan/update/{id}', [PenghargaanController::class, 'update'])->name('penghargaan.update');
+        Route::delete('/penghargaan/delete/{id}', [PenghargaanController::class, 'destroy'])->name('penghargaan.destroy');
 
     // CATCH-ALL: harus paling bawah
     Route::get('/{slug}', [MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');

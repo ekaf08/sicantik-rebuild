@@ -264,6 +264,17 @@
                 </div>
                 <!--end:Menu item Inovasi-->
 
+                <!--begin:Menu item Penghargaan-->
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('penghargaan.*') ? 'active' : '' }}" href="{{ Route::has('penghargaan.index') ? route('penghargaan.index') : '#' }}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-medal-star fs-2"></i>
+                        </span>
+                        <span class="menu-title">Penghargaan</span>
+                    </a>
+                </div>
+                <!--end:Menu item Penghargaan-->
+
                 <!--begin:Menu item Help-->
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                     <span class="menu-link">
