@@ -1,4 +1,35 @@
 @extends('bo.layout.app')
+<style>
+    /* Styling khusus untuk tombol toska kustom */
+    .btn-toska {
+        background-color: #3FAAB2 !important;
+        border-color: #3FAAB2 !important;
+        color: #ffffff !important;
+    }
+    .btn-toska:hover {
+        background-color: #35959c !important; /* Warna sedikit lebih gelap saat di-hover */
+        border-color: #35959c !important;
+        color: #ffffff !important;
+    }
+    .btn-toska i {
+        color: #ffffff !important;
+    }
+    /* Mengubah warna background pagination yang aktif menjadi toska */
+    .pagination .page-item.active .page-link {
+        background-color: #3FAAB2 !important;
+        border-color: #3FAAB2 !important;
+        color: #ffffff !important;
+    }
+
+    /* Mengubah warna tombol scroll-to-top bawaan Metronic (#kt_scrolltop) */
+    #kt_scrolltop {
+        background-color: #3FAAB2 !important;
+        color: #ffffff !important;
+    }
+    #kt_scrolltop:hover {
+        background-color: #35959c !important;
+    }
+</style>
 @section('content')
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch mb-10">
         <!--begin::Toolbar wrapper-->
@@ -40,9 +71,10 @@
                 {{-- <a href="#"
                     class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold"
                     data-bs-toggle="modal" data-bs-target="#kt_modal_view_users">Add User</a> --}}
-                <button class="btn btn-flex btn-primary h-40px fs-7 fw-bold" d
-                    onclick="addForm(`{{ route('user.store') }}`, 'TAMBAH USER' )"><i
-                        class="ki-outline ki-plus fs-2"></i>Tambah User</button>
+                <button class="btn btn-flex btn-toska h-40px fs-7 fw-bold" 
+                    onclick="addForm(`{{ route('user.store') }}`, 'TAMBAH USER' )">
+                    <i class="ki-outline ki-plus fs-2"></i>Tambah User
+                </button>
             </div>
             <!--end::Actions-->
         </div>

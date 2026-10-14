@@ -47,6 +47,14 @@
         .dataTables_wrapper table[id^="kt_table_"] td {
             text-align: center !important;
         }
+        /* --- Kustomisasi Warna Toska untuk Nav Tabs --- */
+        .nav-tabs .nav-link.active, 
+        .nav-tabs .nav-link:hover {
+            color: #3FAAB2 !important;
+        }
+        .nav-line-tabs .nav-item .nav-link.active::after {
+            background-color: #3FAAB2 !important;
+        }
     </style>
 @endpush
 @section('content')

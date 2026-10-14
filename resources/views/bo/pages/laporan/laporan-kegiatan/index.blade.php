@@ -6,11 +6,49 @@
     .pkk, .pkk * { box-sizing: border-box; }
     .pkk { color: var(--ink); }
  
-    /* Hero */
-    .pkk-hero { position:relative; overflow:hidden; border-radius:16px; padding:26px 30px; min-height:112px;
-        background:linear-gradient(100deg,#dff3e6,#eaf7f1 55%,#d3ece7); }
-    .pkk-hero h1 { margin:0 0 6px; font-size:28px; font-weight:800; color:var(--toska-cerah); }
-    .pkk-hero p { margin:0; color:#54737c; font-size:14px; }
+    /* Hero / Header Pelaporan PKK */
+    .pkk-hero {
+        position:relative; isolation:isolate; display:flex; align-items:center;
+        min-height:124px; padding:22px 28px; margin-bottom:0;
+        overflow:hidden; border-radius:16px;
+        border:1px solid rgba(75,190,190,.16);
+        background:linear-gradient(105deg,#e8fbf7 0%,#effcf9 48%,#d8f7f4 100%);
+        box-shadow:0 5px 18px rgba(45,157,164,.07);
+    }
+    .pkk-hero::before {
+        content:""; position:absolute; z-index:-1; width:260px; height:260px;
+        right:20%; top:-175px; border-radius:50%;
+        background:rgba(113,225,218,.13);
+    }
+    .pkk-hero::after {
+        content:""; position:absolute; z-index:-1; width:300px; height:190px;
+        right:-70px; bottom:-125px; border-radius:50%;
+        background:rgba(76,202,211,.22);
+    }
+    .pkk-hero-icon {
+        width:68px; height:68px; flex:0 0 68px; display:grid; place-items:center;
+        margin-right:22px; border-radius:20px;
+        color:#078c9a; background:rgba(255,255,255,.68);
+        border:1px solid rgba(46,174,184,.18);
+        box-shadow:0 5px 14px rgba(31,148,158,.08);
+    }
+    .pkk-hero-divider { width:2px; height:62px; flex:0 0 2px; margin-right:24px; background:#83d9d7; }
+    .pkk-hero-copy { position:relative; z-index:2; min-width:0; }
+    .pkk-hero h1 { margin:0 0 7px; font-size:27px; line-height:1.2; font-weight:800; letter-spacing:-.45px; color:#087e91; }
+    .pkk-hero p { margin:0; color:#587e89; font-size:14px; line-height:1.5; }
+    .pkk-hero-art { position:absolute; z-index:1; right:22px; bottom:-2px; width:230px; height:118px; opacity:.92; pointer-events:none; }
+    .pkk-hero-dots { position:absolute; right:22px; top:15px; width:48px; height:34px; opacity:.55;
+        background-image:radial-gradient(#fff 2px,transparent 2.5px); background-size:12px 12px; }
+    @media (max-width:700px) {
+        .pkk-hero { min-height:108px; padding:18px 16px; border-radius:13px; }
+        .pkk-hero-icon { width:48px; height:48px; flex-basis:48px; margin-right:12px; border-radius:14px; }
+        .pkk-hero-icon svg { width:30px; height:30px; }
+        .pkk-hero-divider { height:48px; margin-right:13px; }
+        .pkk-hero h1 { font-size:19px; letter-spacing:-.2px; }
+        .pkk-hero p { max-width:270px; font-size:12px; }
+        .pkk-hero-art { right:-52px; width:150px; opacity:.34; }
+        .pkk-hero-dots { right:10px; }
+    }
  
     /* Filter */
     .pkk-filters { display:flex; flex-wrap:wrap; gap:10px; margin:16px 0; }
@@ -117,14 +155,62 @@
     .pkk-foto-wrapper:hover img {
         filter: brightness(0.8);
     }
+
+        /* Mengubah warna background pagination yang aktif menjadi toska */
+    .pagination .page-item.active .page-link {
+        background-color: #3FAAB2 !important;
+        border-color: #3FAAB2 !important;
+        color: #ffffff !important;
+    }
+
+    /* Mengubah warna tombol scroll-to-top bawaan Metronic (#kt_scrolltop) */
+    #kt_scrolltop {
+        background-color: #3FAAB2 !important;
+        color: #ffffff !important;
+    }
+    #kt_scrolltop:hover {
+        background-color: #35959c !important;
+    }
 </style>
  
 <div class="pkk" id="pkk">
  
-    {{-- Hero --}}
+    {{-- Hero / Header Pelaporan PKK --}}
     <section class="pkk-hero">
-        <h1>Pelaporan Kegiatan PKK</h1>
-        <p>Bersama dalam data, untuk keluarga yang lebih sejahtera</p>
+        <div class="pkk-hero-icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13 5.5H28L37 14.5V31.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M28 6V15H37" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13 5.5H10.5C8.8 5.5 7.5 6.8 7.5 8.5V38.5C7.5 40.2 8.8 41.5 10.5 41.5H24" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+                <path d="M14 21H27M14 27H23" stroke="#46BFC1" stroke-width="2.6" stroke-linecap="round"/>
+                <circle cx="31.5" cy="29.5" r="5.3" fill="#8AE0D7" stroke="#078C9A" stroke-width="2"/>
+                <path d="M23.5 40C23.5 35.9 27 33 31.5 33C36 33 39.5 35.9 39.5 40V42H23.5V40Z" fill="#54C9C1" stroke="#078C9A" stroke-width="2" stroke-linejoin="round"/>
+                <circle cx="39" cy="32" r="4" fill="#B1EEE4" stroke="#078C9A" stroke-width="1.8"/>
+                <path d="M36.5 42V40.5C36.5 38.3 38.1 36.5 40.3 36.5C42.5 36.5 44 38.3 44 40.5V42H36.5Z" fill="#8AE0D7" stroke="#078C9A" stroke-width="1.8" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="pkk-hero-divider" aria-hidden="true"></div>
+        <div class="pkk-hero-copy">
+            <h1>Pelaporan Kegiatan PKK</h1>
+            <p>Bersama dalam data, untuk keluarga yang lebih sejahtera.</p>
+        </div>
+        <div class="pkk-hero-dots" aria-hidden="true"></div>
+        <svg class="pkk-hero-art" viewBox="0 0 250 130" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M74 124V48L126 10L178 48V124" stroke="#50C7C8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M60 52L126 4L192 52" stroke="#50C7C8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M157 28V13H170V38" fill="#7BDDD9"/>
+            <path d="M121 56C114 46 101 51 105 62C108 68 121 76 121 76C121 76 135 68 138 62C142 51 128 46 121 56Z" fill="#8AE3DD" opacity=".85"/>
+            <circle cx="104" cy="72" r="11" fill="#75D0E3"/>
+            <path d="M87 111V98C87 86 94 81 104 81C114 81 121 86 121 98V124H87V111Z" fill="#70D3E4"/>
+            <circle cx="129" cy="65" r="13" fill="#4DBDCB"/>
+            <path d="M109 108V92C109 79 117 76 129 76C141 76 149 79 149 92V124H109V108Z" fill="#4DBDCB"/>
+            <circle cx="154" cy="73" r="10" fill="#91E1D8"/>
+            <path d="M139 108V98C139 87 145 83 154 83C163 83 169 87 169 98V124H139V108Z" fill="#91E1D8"/>
+            <path d="M28 125C34 106 43 95 57 89M40 111L30 94M45 103L57 101M196 124C199 104 209 87 223 76M208 99L197 88M213 91L226 91" stroke="#27B9B5" stroke-width="4" stroke-linecap="round"/>
+            <path d="M25 125C15 111 12 100 15 88C28 94 35 106 35 119M45 125C44 111 49 101 61 96C65 109 59 119 51 125M202 125C198 110 201 99 211 91C218 103 215 116 209 125M220 111C219 99 225 89 237 85C239 99 232 108 225 113" fill="#6CD7CB" opacity=".9"/>
+            <circle cx="205" cy="37" r="4" fill="#7DDDD7"/>
+            <circle cx="218" cy="52" r="3" fill="#A2E9E2"/>
+        </svg>
     </section>
  
     {{-- Filter statistik & grafik --}}
