@@ -3,15 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Mpasi extends Model
 {
+    use SoftDeletes;
+    
     protected $table = 't_mpasi';
 
     protected $primaryKey = 'id_mpasi';
 
     protected $fillable = [
-        'judul', 'kategori_usia', 'deskripsi', 'bahan', 'langkah', 'mpasi_foto', 'url_video'
+        'judul', 'kategori_usia', 'deskripsi', 'bahan', 'langkah', 'mpasi_foto', 'url_video', 'created_by',
     ];   
 
     protected $appends = ['embed_video_url'];
@@ -44,6 +47,11 @@ class Mpasi extends Model
             '9-11_bulan'  => '9 - 11 Bulan',
             '12-23_bulan' => '12 - 23 Bulan',
         ];
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
 }

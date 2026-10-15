@@ -16,9 +16,11 @@
                     Catat dan bagikan panduan resep makanan pendamping ASI yang lezat dan mudah dibuat.
                 </p>
 
-                <button type="button" class="btn btn-primary fw-bold px-6 py-3 rounded-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambah">
-                    <i class="ki-outline ki-plus fs-2 me-1"></i> Tambah Resep MPASI
-                </button>
+                @if(\App\Support\Access::can('mpasi', 'create'))
+                    <button type="button" class="btn btn-primary fw-bold px-6 py-3" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                        <i class="ki-outline ki-plus fs-2 me-1"></i> Tambah Resep MPASI
+                    </button>
+                @endif
             </div>
 
             <div class="d-none d-lg-block me-5 opacity-75">
@@ -86,7 +88,9 @@
                         <th class="min-w-150px">Kategori Usia</th>
                         <th class="min-w-300px">Deskripsi / Bahan</th>
                         <th class="min-w-150px">Dibuat Oleh</th>
-                        <th class="min-w-100px text-center rounded-end pe-4">Aksi</th>
+                        @if(\App\Support\Access::can('mpasi', 'update') || \App\Support\Access::can('mpasi', 'delete'))
+                            <th class="min-w-100px text-center rounded-end">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <!--end::Table head-->
@@ -145,22 +149,31 @@
                             </td>
                             <td>
                                 <span class="text-gray-900 fw-bold d-block fs-7 text-uppercase">
-                                    {{ $item->dibuat_oleh ?? ($item->user->name ?? 'SEKRETARIS PKK KOTA SURABAYA') }}
+                                    {{ $item->creator->name ?? 'Kominfo Kota Surabaya' }}
                                 </span>
                             </td>
-                            <td class="text-center pe-4">
-                                <button type="button" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit" 
-                                        data-id="{{ $item->id_mpasi }}" title="Edit">
-                                    <i class="ki-outline ki-pencil fs-2"></i>
-                                </button>
-                                <form action="{{ route('mpasi.destroy', $item->id_mpasi) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm btn-delete" title="Hapus">
-                                        <i class="ki-outline ki-trash fs-2"></i>
-                                    </button>
-                                </form>
-                            </td>
+                            @if(\App\Support\Access::can('mpasi', 'update') || \App\Support\Access::can('mpasi', 'delete'))
+                                <td class="text-center">
+                                    {{-- Tombol Edit --}}
+                                    @if(\App\Support\Access::can('mpasi', 'update'))
+                                        <button type="button" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit" 
+                                                data-id="{{ $item->id_mpasi }}" title="Edit">
+                                            <i class="ki-outline ki-pencil fs-2"></i>
+                                        </button>
+                                    @endif
+
+                                    {{-- Tombol Delete --}}
+                                    @if(\App\Support\Access::can('mpasi', 'delete'))
+                                        <form action="{{ route('mpasi.destroy', $item->id_mpasi) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm btn-delete" title="Hapus">
+                                                <i class="ki-outline ki-trash fs-2"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
