@@ -33,9 +33,9 @@ Route::middleware('auth')->group(function () {
     //Mpasi
     Route::get('/mpasi', [MpasiController::class, 'index'])->name('mpasi.index');
     Route::post('/mpasi', [MpasiController::class, 'store'])->name('mpasi.store');
-    Route::get('/mpasi/{id}', [MpasiController::class, 'show'])->name('mpasi.show');
-    Route::put('/mpasi/{id}', [MpasiController::class, 'update'])->name('mpasi.update');
-    Route::delete('/mpasi/{id}', [MpasiController::class, 'destroy'])->name('mpasi.destroy');
+    Route::get('/mpasi/{id}', [MpasiController::class, 'show'])->name('mpasi.show')->whereUuid('id');
+    Route::put('/mpasi/{id}', [MpasiController::class, 'update'])->name('mpasi.update')->whereUuid('id');
+    Route::delete('/mpasi/{id}', [MpasiController::class, 'destroy'])->name('mpasi.destroy')->whereUuid('id');
 
     // Inovasi
     Route::get('/inovasi/global', [InovasiController::class, 'global'])->name('inovasi.global');
@@ -83,8 +83,8 @@ Route::middleware('auth')->group(function () {
 
     // Laporan
     Route::get('laporan/kegiatan', [RoleController::class, 'laporanKegiatan'])->name('laporan.kegiatan');
-    Route::get('laporan/tahunan', [RoleController::class, 'laporanTahunan'])->name('laporan.tahunan');
-
+    Route::get('laporan/tahunan', [LaporanTahunanController::class, 'index'])->name('laporan.tahunan');
+    
     Route::get('laporan-kegiatan', [LaporanKegiatanController::class, 'index'])->name('laporan-kegiatan.index');
     Route::post('laporan-kegiatan', [LaporanKegiatanController::class, 'store'])->name('laporan-kegiatan.store');
     Route::get('laporan-kegiatan/wilayah/kecamatan', [LaporanKegiatanController::class, 'kecamatan'])->name('laporan-kegiatan.kecamatan');
@@ -96,7 +96,10 @@ Route::middleware('auth')->group(function () {
     Route::put('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'update'])->name('laporan-kegiatan.update');
     Route::delete('laporan-kegiatan/{id}', [LaporanKegiatanController::class, 'destroy'])->name('laporan-kegiatan.destroy');
 
-    Route::get('laporan-tahunan', [LaporanTahunanController::class, 'index'])->name('laporan-tahunan.index');
+    Route::get('/laporan-tahunan', [LaporanTahunanController::class, 'index'])->name('laporan-tahunan.index');
+    Route::post('/laporan-tahunan', [LaporanTahunanController::class, 'store'])->name('laporan-tahunan.store');
+    Route::put('/laporan-tahunan/{id}', [LaporanTahunanController::class, 'update'])->name('laporan-tahunan.update');
+    Route::delete('/laporan-tahunan/{id}', [LaporanTahunanController::class, 'destroy'])->name('laporan-tahunan.destroy');
 
     // Penghargaan
         Route::get('/penghargaan', [PenghargaanController::class, 'index'])->name('penghargaan.index');
