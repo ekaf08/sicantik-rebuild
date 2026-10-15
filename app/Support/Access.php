@@ -6,9 +6,8 @@ use Illuminate\Support\Facades\DB;
 
 class Access
 {
-    protected const BYPASS_ROLE_IDS = [1];
-
-    protected const BYPASS_USER_IDS = [2];
+    protected const BYPASS_ROLE_IDS = [1]; // ID Super Admin
+    protected const BYPASS_USER_IDS = [2]; // Bypass khusus User ID 2 (Super User tanpa role)
 
     protected static ?array $cache = null;
 
@@ -30,22 +29,21 @@ class Access
         }
 
         if (self::$cache === null) {
-            self::$cache = DB::table('role_menu_permissions as p')
-                ->join('menu_role as mr', function ($j) {
-                    $j->on('mr.menu_id', '=', 'p.menu_id')
-                      ->on('mr.role_id', '=', 'p.role_id');
+            self::$cache = DB::table('menu_role as mr')
+                ->join('m_menu as m', 'm.id_menu', '=', 'mr.menu_id')
+                ->leftJoin('role_menu_permissions as p', function ($j) use ($user) {
+                    $j->on('p.menu_id', '=', 'mr.menu_id')
+                      ->where('p.role_id', '=', $user->role_id);
                 })
-                ->join('m_menu as m', 'm.id_menu', '=', 'p.menu_id')
-                ->where('p.role_id', $user->role_id)
-                ->whereNull('p.deleted_at')
+                ->where('mr.role_id', $user->role_id)
                 ->whereNull('mr.deleted_at')
                 ->whereNull('m.deleted_at')
                 ->get(['m.url_menu', 'p.table', 'p.create', 'p.update', 'p.delete'])
                 ->mapWithKeys(fn ($r) => ['/' . trim($r->url_menu, '/') => [
-                    'table'  => (bool) $r->table,
-                    'create' => (bool) $r->create,
-                    'update' => (bool) $r->update,
-                    'delete' => (bool) $r->delete,
+                    'table'  => $r->table !== null ? (bool) $r->table : true,
+                    'create' => (bool) ($r->create ?? false),
+                    'update' => (bool) ($r->update ?? false),
+                    'delete' => (bool) ($r->delete ?? false),
                 ]])
                 ->all();
         }

@@ -10,14 +10,11 @@
     $showMaster = $canUser || $canRole || $canPermission || $canMenu;
 @endphp
 
-<!-- Style Kustom: Mengubah background menu .active (baik submenu maupun menu utama/root) menjadi #3FAAB2 -->
 <style>
-    /* Menu aktif */
     .app-sidebar-menu-custom .menu-link.active {
         background-color: #3FAAB2 !important;
     }
 
-    /* Logo icon: default disembunyikan (saat sidebar lebar) */
     .app-sidebar-logo-minimize {
         display: none;
         height: 48px !important;
@@ -25,7 +22,6 @@
         object-fit: contain;
     }
 
-    /* ===== Saat sidebar mengecil ===== */
     [data-kt-app-sidebar-minimize="on"] .app-sidebar-logo-default,
     [data-kt-app-sidebar-minimize="on"] .app-sidebar-text-wrapper {
         display: none !important;
@@ -43,12 +39,10 @@
         padding-left: 0 !important;
         padding-right: 0 !important;
     }
-    /* Toggle disembunyikan (logo yang jadi tombolnya) */
     [data-kt-app-sidebar-minimize="on"] .app-sidebar-toggle {
         display: none !important;
     }
 
-    /* ===== Saat di-hover (melebar sementara): samakan dengan sidebar lebar ===== */
     [data-kt-app-sidebar-minimize="on"] .app-sidebar:hover .app-sidebar-logo-default,
     [data-kt-app-sidebar-minimize="on"] .app-sidebar:hover .app-sidebar-text-wrapper {
         display: block !important;

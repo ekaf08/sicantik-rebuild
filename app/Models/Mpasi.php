@@ -14,10 +14,11 @@ class Mpasi extends Model
     protected $primaryKey = 'id_mpasi';
 
     protected $fillable = [
-        'judul', 'kategori_usia', 'deskripsi', 'bahan', 'langkah', 'mpasi_foto', 'url_video', 'created_by',
+        'uuid','judul', 'kategori_usia', 'deskripsi', 'bahan', 'langkah', 'mpasi_foto', 'url_video', 'created_by',
     ];   
 
-    protected $appends = ['embed_video_url'];
+    protected $hidden = ['id_mpasi'];
+    protected $appends = ['embed_video_url', 'foto_url'];
 
     public function getEmbedVideoUrlAttribute()
     {
@@ -40,6 +41,11 @@ class Mpasi extends Model
         return $url;
     }
 
+    public function getFotoUrlAttribute()
+    {
+        return $this->mpasi_foto ? asset('storage/' . $this->mpasi_foto) : null;
+    }
+
     public static function listKategoriUsia()
     {
         return [
@@ -52,6 +58,13 @@ class Mpasi extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($m) {
+            $m->uuid ??= (string) \Illuminate\Support\Str::uuid();
+        });
     }
 
 }

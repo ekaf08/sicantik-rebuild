@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Bo\AuthController;
+use App\Http\Middleware\CheckMenuPermission; 
 use App\Http\Controllers\Bo\DashboardController;
 use App\Http\Controllers\Bo\InovasiController;
 use App\Http\Controllers\Bo\UserController;
@@ -25,7 +26,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Hanya untuk yang SUDAH login
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

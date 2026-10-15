@@ -17,7 +17,9 @@ class CheckMenuPermission
 
         $path = '/' . trim($request->path(), '/');
 
-        $menuUrl = Menu::whereNotNull('url_menu')->pluck('url_menu')
+        $menuUrl = Menu::whereNotNull('url_menu')
+            ->where('url_menu', '!=', '')
+            ->pluck('url_menu')
             ->map(fn ($u) => '/' . trim($u, '/'))
             ->filter(fn ($u) => $u !== '/' && ($path === $u || str_starts_with($path, $u . '/')))
             ->sortByDesc(fn ($u) => strlen($u))
@@ -35,9 +37,7 @@ class CheckMenuPermission
         };
 
         if (!Access::can($menuUrl, $field)) {
-           if (!Access::can($menuUrl, $field)) {
-                abort(403, "Ditolak: menu {$menuUrl}, aksi {$field}, role {$request->user()->role_id}");
-            }
+            abort(403, "Akses ditolak: Anda tidak memiliki izin untuk aksi {$field} di menu {$menuUrl}.");
         }
 
         return $next($request);

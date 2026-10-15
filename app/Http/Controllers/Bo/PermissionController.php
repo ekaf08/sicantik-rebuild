@@ -74,6 +74,18 @@ class PermissionController extends Controller
         $data['role_id'] = $this->decryptId($data['role_id']);
         $data['menu_id'] = $this->decryptId($data['menu_id']);
         
+        $perm = RoleMenuPermission::firstOrNew([
+        'role_id' => $data['role_id'],
+        'menu_id' => $data['menu_id'],
+        ]);
+
+        if (!$perm->exists) {
+            $perm->table  = true; // Karena sudah di-assign di menu_role
+            $perm->create = false;
+            $perm->update = false;
+            $perm->delete = false;
+        }
+
         $isAssigned = DB::table('menu_role')
             ->where('role_id', $data['role_id'])
             ->where('menu_id', $data['menu_id'])

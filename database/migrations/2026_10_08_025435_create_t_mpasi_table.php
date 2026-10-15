@@ -18,10 +18,10 @@ return new class extends Migration
             $table->text('deskripsi')->nullable();
             $table->text('bahan');
             $table->text('langkah');
-            $table->string('mpasi_foto')->nullable;
-            $table->string('url_video')->nullable;
+            $table->text('mpasi_foto')->nullable;
+            $table->text('url_video')->nullable;
             $table->timestamps();
-            
+            $table->integer('created_by');
         });
     }
 
