@@ -199,7 +199,7 @@ class LaporanKegiatanController extends Controller
     public function store(Request $request)
     {
         $request->validate(array_merge($this->rules(), [
-            // laporan hanya boleh dibuat H sampai H+7
+            // laporan hanya boleh dibuat H-7 sampai hari ini
             'tanggal' => 'required|date|before_or_equal:today|after_or_equal:' . now()->subDays(7)->toDateString(),
         ]));
  
@@ -259,8 +259,14 @@ class LaporanKegiatanController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Data tidak valid!'], 404);
         }
  
-        $request->validate($this->rules());
- 
+        // edit disamakan dengan tambah: tanggal hanya boleh H-7 sampai hari ini
+        $request->validate(array_merge($this->rules(), [
+            'tanggal' => 'required|date|before_or_equal:today|after_or_equal:' . now()->subDays(7)->toDateString(),
+        ]), [
+            'tanggal.before_or_equal' => 'Tanggal kegiatan tidak boleh melewati hari ini.',
+            'tanggal.after_or_equal'  => 'Tanggal kegiatan hanya boleh sampai 7 hari ke belakang (H-7).',
+        ]);
+
         $data = $this->mapData($request);
         $data['updated_at'] = now();
         $data['updated_by'] = Auth::id();
@@ -583,7 +589,7 @@ private function tulisXlsx(string $sheetPath, string $zipPath): void
     {
         // hanya ekstensi yang diizinkan, selain itu ditolak
         $ext  = strtolower($file->getClientOriginalExtension());
-        $aman = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+        $aman = ['jpg', 'jpeg', 'png', 'pdf'];
         if (!in_array($ext, $aman, true)) {
             abort(422, 'Tipe file tidak diizinkan.');
         }
@@ -628,8 +634,8 @@ private function tulisXlsx(string $sheetPath, string $zipPath): void
             'notulen'         => 'nullable|in:0,1',
             'nama_notulen'    => 'nullable|required_if:notulen,1|string|max:255',
             'deskripsi'       => 'nullable|string',
-            'file_notulen'    => 'nullable|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
-            'file_absensi'    => 'nullable|mimes:jpg,jpeg,pdf|max:2048',
+            'file_notulen'    => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
+            'file_absensi'    => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
             'foto_1'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'foto_2'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'foto_3'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',

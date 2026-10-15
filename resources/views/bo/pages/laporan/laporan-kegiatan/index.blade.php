@@ -394,15 +394,15 @@
                             </div>
                             <div class="mb-6">
                                 <label class="form-label">File Notulen</label>
-                                <input type="file" name="file_notulen" class="form-control form-control-solid pkk-file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
-                                <div class="text-danger fs-8 mt-2">File harus di bawah 2MB.</div>
+                                <input type="file" name="file_notulen" class="form-control form-control-solid pkk-file" accept=".jpg,.jpeg,.png,.pdf">
+                                <div class="text-danger fs-8 mt-2">File harus di bawah 2MB dan berformat jpg, png, atau pdf.</div>
                             </div>
                         </div>
  
                         <div class="mb-6">
                             <label class="form-label">File Absensi</label>
-                            <input type="file" name="file_absensi" class="form-control form-control-solid pkk-file" accept=".jpg,.jpeg,.pdf">
-                            <div class="text-danger fs-8 mt-2">File harus di bawah 2MB dan berformat jpg atau pdf.</div>
+                            <input type="file" name="file_absensi" class="form-control form-control-solid pkk-file" accept=".jpg,.jpeg,.png, .pdf">
+                            <div class="text-danger fs-8 mt-2">File harus di bawah 2MB dan berformat jpg, png, atau pdf.</div>
                         </div>
  
                         <div class="mb-6">
@@ -609,7 +609,21 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ---------- Validasi ukuran file 2MB ---------- */
     document.querySelectorAll('.pkk-file').forEach(function (inp) {
         inp.addEventListener('change', function () {
-            if (this.files[0] && this.files[0].size > 2 * 1024 * 1024) {
+            var f = this.files[0];
+            if (!f) { return; }
+
+            // cek ekstensi sesuai atribut accept (accept saja bisa dilewati lewat "All files")
+            var boleh = (this.getAttribute('accept') || '').split(',')
+                .map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean);
+            var ext = '.' + f.name.split('.').pop().toLowerCase();
+            if (boleh.length && boleh.indexOf(ext) === -1) {
+                alert('Format file tidak diizinkan. Gunakan: ' + boleh.join(', ').replace(/\./g, ''));
+                this.value = '';
+                if (this.dataset.target) { var im = document.getElementById(this.dataset.target); if (im && defaults[this.dataset.target]) { im.src = defaults[this.dataset.target]; } }
+                return;
+            }
+
+            if (f.size > 2 * 1024 * 1024) {
                 alert('Ukuran file melebihi 2MB.');
                 this.value = '';
             }
@@ -690,12 +704,27 @@ document.addEventListener('DOMContentLoaded', function () {
         window.location = EXPORT_URL + '?' + p.toString();
     });
  
+    /* ---------- Batas tanggal: H-7 sampai hari ini ---------- */
+    function batasTanggal() {
+        var fmt = function (d) {
+            var m = d.getMonth() + 1, dd = d.getDate();
+            return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (dd < 10 ? '0' : '') + dd;
+        };
+        var hariIni = new Date();
+        var h7 = new Date();
+        h7.setDate(h7.getDate() - 7);
+
+        form.tanggal.max = fmt(hariIni);
+        form.tanggal.min = fmt(h7);
+    }
+
     /* ---------- Tombol Tambah ---------- */
-    document.getElementById('btnTambah').addEventListener('click', function () {
-        updateUrl = null;
-        modalEl.querySelector('.modal-title').textContent = 'Tambah Data Kegiatan';
-        toggleNotulen();
-    });
+      document.getElementById('btnTambah').addEventListener('click', function () {
+      updateUrl = null;
+      modalEl.querySelector('.modal-title').textContent = 'Tambah Data Kegiatan';
+      batasTanggal();
+      toggleNotulen();
+  });
  
     /* ---------- Isi form untuk Edit ---------- */
     function isiForm(d) {
@@ -728,6 +757,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     resetPreview();
                     updateUrl = res.update_url;
                     modalEl.querySelector('.modal-title').textContent = 'Edit Data Kegiatan';
+                    batasTanggal();
                     isiForm(res.data).then(function () { modal.show(); });
                 });
         }
@@ -772,6 +802,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(function (res) {
                         notif(res.message, res.status === 'success' ? 'success' : 'error');
                         tabel.ajax.reload(null, false);
+                        muatStatistik();
                     });
             };
             if (window.Swal) {
@@ -810,9 +841,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(function (res) {
                 btn.disabled = false;
                 if (res.ok) {
-                    modal.hide();
-                    tabel.ajax.reload(null, false);
-                    notif(res.j.message, 'success');
+                modal.hide();
+                tabel.ajax.reload(null, false);
+                muatStatistik();
+                notif(res.j.message, 'success');
                 } else if (res.status === 422 && res.j.errors) {
                     notif(Object.values(res.j.errors).flat().join('\n'), 'error');
                 } else {
@@ -884,7 +916,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tahun: stThn.value, bulan: stBln.value, pokja: stPokja.value
         });
 
-        fetch(STAT_URL + '?' + p.toString(), { headers: { 'Accept': 'application/json' } })
+        fetch(STAT_URL + '?' + p.toString(), { cache: 'no-store', headers: { 'Accept': 'application/json' } })
             .then(function (r) { return r.json(); })
             .then(function (d) {
                 document.getElementById('stTotal').textContent = d.total.nilai;

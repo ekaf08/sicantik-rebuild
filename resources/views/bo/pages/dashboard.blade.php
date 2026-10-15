@@ -27,7 +27,7 @@
             background-color: #fce4f0 !important;
         }
         .agregat-trigger {
-        cursor: pointer !important;
+            cursor: pointer !important;
         }
         .agregat-trigger:hover {
             opacity: 0.8;
@@ -35,24 +35,42 @@
         tr.text-gray td {
             color: var(--bs-gray-600) !important;
         }
+
         /* Memaksa isi th dan td pada tabel tersebut agar rata tengah */
         /* Otomatis menargetkan semua ID yang diawali dengan "kt_table_" */
-        table[id^="kt_table_"] th, 
+        table[id^="kt_table_"] th,
         table[id^="kt_table_"] td {
             text-align: center !important;
             vertical-align: middle !important;
         }
 
-        .dataTables_wrapper table[id^="kt_table_"] th, 
+        .dataTables_wrapper table[id^="kt_table_"] th,
         .dataTables_wrapper table[id^="kt_table_"] td {
             text-align: center !important;
         }
+
         /* --- Kustomisasi Warna Toska untuk Nav Tabs --- */
-        .nav-tabs .nav-link.active, 
-        .nav-tabs .nav-link:hover {
+
+        /* Warna teks (active & hover) */
+        .nav-tabs .nav-link.active,
+        .nav-tabs .nav-link:hover,
+        .nav-tabs .nav-link.text-active-primary.active,
+        .nav-tabs .nav-link.text-active-primary:hover,
+        .nav-line-tabs .nav-item .nav-link.active,
+        .nav-line-tabs .nav-item .nav-link:hover:not(.disabled) {
             color: #3FAAB2 !important;
         }
-        .nav-line-tabs .nav-item .nav-link.active::after {
+
+        /* Garis bawah versi border */
+        .nav-line-tabs .nav-item .nav-link.active,
+        .nav-line-tabs .nav-item .nav-link:hover:not(.disabled) {
+            border-bottom-color: #3FAAB2 !important;
+        }
+
+        /* Garis bawah versi pseudo-element ::after */
+        .nav-line-tabs .nav-item .nav-link.active::after,
+        .nav-line-tabs .nav-item .nav-link:hover:not(.disabled)::after,
+        .nav-line-tabs .nav-item.show .nav-link::after {
             background-color: #3FAAB2 !important;
         }
     </style>
