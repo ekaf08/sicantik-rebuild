@@ -252,6 +252,7 @@ $(document).ready(function () {
             },
             success: function (res) {
                 notifySuccess(res.message);
+                loadPermissions();
             },
             error: function (xhr) {
                 notifyError(xhr, 'Gagal menyimpan');

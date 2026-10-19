@@ -1,23 +1,13 @@
 @php
-    use App\Support\Access;
-    $canUser       = Access::can('/master/user');
-    $canRole       = Access::can('/master/role');
-    $canPermission = Access::can('/master/permission');
-    $canMenu       = Access::can('/master/menu');
-    $canDashPkk    = Access::can('dashboard-pkk');
-    $canLapKeg     = Access::can('laporan-kegiatan');
-
-    $showMaster = $canUser || $canRole || $canPermission || $canMenu;
+    $sidebarMenus = App\Support\Access::getSidebarMenus();
 @endphp
 
-<!-- Style Kustom: Mengubah background menu .active (baik submenu maupun menu utama/root) menjadi #3FAAB2 -->
+<!-- Style Kustom -->
 <style>
-    /* Menu aktif */
     .app-sidebar-menu-custom .menu-link.active {
         background-color: #3FAAB2 !important;
     }
 
-    /* Logo icon: default disembunyikan (saat sidebar lebar) */
     .app-sidebar-logo-minimize {
         display: none;
         height: 48px !important;
@@ -25,7 +15,6 @@
         object-fit: contain;
     }
 
-    /* ===== Saat sidebar mengecil ===== */
     [data-kt-app-sidebar-minimize="on"] .app-sidebar-logo-default,
     [data-kt-app-sidebar-minimize="on"] .app-sidebar-text-wrapper {
         display: none !important;
@@ -43,12 +32,10 @@
         padding-left: 0 !important;
         padding-right: 0 !important;
     }
-    /* Toggle disembunyikan (logo yang jadi tombolnya) */
     [data-kt-app-sidebar-minimize="on"] .app-sidebar-toggle {
         display: none !important;
     }
 
-    /* ===== Saat di-hover (melebar sementara): samakan dengan sidebar lebar ===== */
     [data-kt-app-sidebar-minimize="on"] .app-sidebar:hover .app-sidebar-logo-default,
     [data-kt-app-sidebar-minimize="on"] .app-sidebar:hover .app-sidebar-text-wrapper {
         display: block !important;
@@ -76,7 +63,7 @@
     data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="250px"
     data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
 
-    <!--begin::Header (Dibuat lebih ringkas tingginya) -->
+    <!--begin::Header-->
     <div class="app-sidebar-header d-flex flex-stack d-none d-lg-flex pt-4 pb-2 px-3" id="kt_app_sidebar_header">
 
         <!--begin::Logo & Teks-->
@@ -123,13 +110,11 @@
                 <!--begin::Heading-->
                 <div class="menu-item mb-2">
                     <div class="menu-heading text-uppercase fs-7 fw-bold">Menu</div>
-                    <!--begin::Separator-->
                     <div class="app-sidebar-separator separator"></div>
-                    <!--end::Separator-->
                 </div>
                 <!--end::Heading-->
 
-                <!--begin:Menu item Dashboard-->
+                <!--begin:Dashboard (Statis untuk semua user)-->
                 <div class="menu-item">
                     <a class="menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                         <span class="menu-icon">
@@ -138,154 +123,72 @@
                         <span class="menu-title">Dashboards</span>
                     </a>
                 </div>
-                <!--end:Menu item Dashboard-->
+                <!--end:Dashboard-->
 
-                <!--begin:Menu item Master-->
-                @if($showMaster)
-                <div data-kt-menu-trigger="click"
-                    class="menu-item menu-accordion {{ request()->routeIs('user*') || request()->routeIs('role*') || request()->routeIs('permission*') || request()->routeIs('menu*') || request()->routeIs('master.*') ? 'here show' : '' }}">
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <i class="ki-outline ki-user-edit fs-2"></i>
-                        </span>
-                        <span class="menu-title">Master</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <div class="menu-sub menu-sub-accordion">
-                        @if($canUser)
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('user*') || request()->routeIs('master.user*') ? 'active' : '' }}"
-                                href="{{ route('user.index') }}">
-                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">User</span>
-                            </a>
-                        </div>
-                        @endif
-                        @if($canRole)
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('role*') || request()->routeIs('master.role*') ? 'active' : '' }}"
-                                href="{{ route('role.index') }}">
-                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">Role</span>
-                            </a>
-                        </div>
-                        @endif
-                        @if($canPermission)
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('permission*') ? 'active' : '' }}"
-                                href="{{ route('permission.index') }}">
-                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">Permission</span>
-                            </a>
-                        </div>
-                        @endif
-                        @if($canMenu)
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('menu*') ? 'active' : '' }}"
-                                href="{{ Route::has('menu.index') ? route('menu.index') : '#' }}">
-                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">Menu</span>
-                            </a>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-                @endif
-                <!--end:Menu item Master-->
+                <!--begin:Menu Dinamis dari Database m_menu-->
+                @foreach($sidebarMenus as $menu)
+                    @php
+                        $hasChildren = $menu->children->isNotEmpty();
+                        $cleanUrl    = trim($menu->url_menu ?? '', '/');
+                        $menuUrl     = $cleanUrl ? url('/' . $cleanUrl) : '#';
 
-                <!--begin:Menu Laporan-->
-                <div data-kt-menu-trigger="click"
-                    class="menu-item menu-accordion {{ request()->routeIs('laporan-kegiatan*') || request()->routeIs('laporan-tahunan*') ? 'here show' : '' }}">
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <i class="ki-outline ki-document fs-2"></i>
-                        </span>
-                        <span class="menu-title">Laporan</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <div class="menu-sub menu-sub-accordion">
-                        @if($canLapKeg)
+                        // Cek status aktif menu parent & child
+                        $isParentActive = false;
+                        if ($hasChildren) {
+                            foreach ($menu->children as $child) {
+                                $childClean = trim($child->url_menu ?? '', '/');
+                                if ($childClean && request()->is($childClean . '*')) {
+                                    $isParentActive = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            $isParentActive = $cleanUrl && request()->is($cleanUrl . '*');
+                        }
+                    @endphp
+
+                    @if($hasChildren)
+                        <!-- Parent Accordion Dropdown -->
+                        <div data-kt-menu-trigger="click"
+                            class="menu-item menu-accordion {{ $isParentActive ? 'here show' : '' }}">
+                            <span class="menu-link">
+                                <span class="menu-icon">
+                                    <i class="{{ $menu->icon ?: 'ki-outline ki-element-11' }} fs-2"></i>
+                                </span>
+                                <span class="menu-title">{{ $menu->nama_menu }}</span>
+                                <span class="menu-arrow"></span>
+                            </span>
+                            <div class="menu-sub menu-sub-accordion {{ $isParentActive ? 'show' : '' }}">
+                                @foreach($menu->children as $child)
+                                    @php
+                                        $childCleanUrl = trim($child->url_menu ?? '', '/');
+                                        $childUrl      = $childCleanUrl ? url('/' . $childCleanUrl) : '#';
+                                        $isChildActive = $childCleanUrl && request()->is($childCleanUrl . '*');
+                                    @endphp
+                                    <div class="menu-item">
+                                        <a class="menu-link {{ $isChildActive ? 'active' : '' }}" href="{{ $childUrl }}">
+                                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                            <span class="menu-title">{{ $child->nama_menu }}</span>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <!-- Menu Tunggal (Tanpa Sub-menu) -->
                         <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('laporan-kegiatan.index') ? 'active' : '' }}"
-                                href="{{ route('laporan-kegiatan.index') }}">
-                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">Laporan Kegiatan</span>
+                            <a class="menu-link {{ $isParentActive ? 'active' : '' }}" href="{{ $menuUrl }}">
+                                <span class="menu-icon">
+                                    <i class="{{ $menu->icon ?: 'ki-outline ki-element-11' }} fs-2"></i>
+                                </span>
+                                <span class="menu-title">{{ $menu->nama_menu }}</span>
                             </a>
                         </div>
-                        @endif
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('laporan-tahunan.index') ? 'active' : '' }}"
-                                href="{{ route('laporan-tahunan.index') }}">
-                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">Laporan Tahunan</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!--end:Menu item Laporan-->
+                    @endif
+                @endforeach
+                <!--end:Menu Dinamis-->
 
-                <!--begin:Menu item MPASI-->
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('mpasi.*') ? 'active' : '' }}" href="{{ route('mpasi.index') }}">
-                        <span class="menu-icon">
-                            <i class="ki-outline ki-heart fs-2"></i>
-                        </span>
-                        <span class="menu-title">Data MPASI</span>
-                    </a>
-                </div>
-                <!--end:Menu item MPASI-->
-
-                <!--begin:Menu item Inovasi-->
-                <div data-kt-menu-trigger="click"
-                    class="menu-item menu-accordion {{ request()->routeIs('inovasi.*') ? 'here show' : '' }}">
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <i class="ki-outline ki-gift fs-2"></i>
-                        </span>
-                        <span class="menu-title">Inovasi</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <div class="menu-sub menu-sub-accordion {{ request()->routeIs('inovasi.*') ? 'show' : '' }}">
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('inovasi.global') ? 'active' : '' }}"
-                                href="{{ route('inovasi.global') }}">
-                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">Inovasi Global</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('inovasi.kota') ? 'active' : '' }}"
-                                href="{{ route('inovasi.kota') }}">
-                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">Inovasi Kota</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!--end:Menu item Inovasi-->
-
-                <!--begin:Menu item Penghargaan-->
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('penghargaan.*') ? 'active' : '' }}" href="{{ Route::has('penghargaan.index') ? route('penghargaan.index') : '#' }}">
-                        <span class="menu-icon">
-                            <i class="ki-outline ki-medal-star fs-2"></i>
-                        </span>
-                        <span class="menu-title">Penghargaan</span>
-                    </a>
-                </div>
-                <!--end:Menu item Penghargaan-->
-                <!--begin:Menu item Kebijakan SK-->
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('kebijakan.*') ? 'active' : '' }}" href="{{ route('kebijakan.index') }}">
-                        <span class="menu-icon">
-                        <i class="ki-solid ki-shield-tick fs-2"></i>
-                    </span>
-                    <span class="menu-title">Kebijakan</span>
-                    </a>
-                </div>
-                <!--end:Menu item Kebijakan SK-->
-
-                <!--begin:Menu item Help-->
+                <!--begin:Menu Help-->
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
@@ -296,15 +199,14 @@
                     </span>
                     <div class="menu-sub menu-sub-accordion">
                         <div class="menu-item">
-                            <a class="menu-link" href="https://preview.keenthemes.com/html/metronic/docs"
-                                target="_blank">
+                            <a class="menu-link" href="https://preview.keenthemes.com/html/metronic/docs" target="_blank">
                                 <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                 <span class="menu-title">Si Cantik Surabaya</span>
                             </a>
                         </div>
                     </div>
                 </div>
-                <!--end:Menu item Help-->
+                <!--end:Menu Help-->
 
             </div>
             <!--end::Sidebar menu-->
@@ -312,6 +214,7 @@
     </div>
     <!--end::Navs-->
 </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const logo = document.querySelector('.app-sidebar-logo');
@@ -322,12 +225,10 @@ document.addEventListener('DOMContentLoaded', function () {
     logo.addEventListener('click', function (e) {
         const isMinimized = document.body.getAttribute('data-kt-app-sidebar-minimize') === 'on';
 
-        // Saat mengecil: logo berfungsi sebagai tombol untuk melebarkan sidebar
         if (isMinimized) {
             e.preventDefault();
             toggle.click();
         }
-        // Saat melebar: logo tetap link ke dashboard seperti biasa
     });
 });
 </script>

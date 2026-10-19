@@ -2,6 +2,13 @@
 
 @section('content')
 
+@php
+    $fallbackImg = 'https://images.unsplash.com/photo-1547592180-85f173990554?w=100';
+    $canUpdate   = \App\Support\Access::can('mpasi', 'update');
+    $canDelete   = \App\Support\Access::can('mpasi', 'delete');
+    $showAksi    = $canUpdate || $canDelete;
+@endphp
+
 <!--begin::Card Banner Header-->
 <div class="card border-0 mb-5 mb-xl-8 overflow-hidden rounded-4 position-relative" style="background: linear-gradient(135deg, #fff5f8 0%, #fff8dd 100%);">
     <div class="card-body p-8 p-lg-10">
@@ -29,23 +36,14 @@
         </div>
     </div>
 </div>
+<!--end::Card Banner Header-->
 
 <!--begin::Main Card Data Table-->
 <div class="card mb-5 mb-xl-8">
-    
+
     <!--begin::Card Header / Toolbar-->
     <div class="card-header border-0 pt-6">
-        <div class="card-title">
-            <div class="d-flex align-items-center gap-2">
-                <span class="text-gray-600 fs-7 fw-semibold">Show</span>
-                <select class="form-select form-select-sm form-select-solid w-75px me-2" data-control="select2" data-hide-search="true">
-                    <option value="10" selected>10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                </select>
-                <span class="text-gray-600 fs-7 fw-semibold">entries</span>
-            </div>
-        </div>
+        <div class="card-title"></div>
         <div class="card-toolbar">
             <div class="d-flex align-items-center gap-2 gap-lg-3">
                 <!-- Filter Usia -->
@@ -69,13 +67,6 @@
     <!--begin::Card Body-->
     <div class="card-body py-3">
 
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-5" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
         <!--begin::Table container-->
         <div class="table-responsive">
             <!--begin::Table-->
@@ -87,8 +78,8 @@
                         <th class="min-w-250px">Judul & Gambar</th>
                         <th class="min-w-150px">Kategori Usia</th>
                         <th class="min-w-300px">Deskripsi / Bahan</th>
-                        <th class="min-w-150px">Dibuat Oleh</th>
-                        @if(\App\Support\Access::can('mpasi', 'update') || \App\Support\Access::can('mpasi', 'delete'))
+                        <th class="min-w-150px {{ $showAksi ? '' : 'rounded-end' }}">Dibuat Oleh</th>
+                        @if($showAksi)
                             <th class="min-w-100px text-center rounded-end">Aksi</th>
                         @endif
                     </tr>
@@ -97,7 +88,7 @@
 
                 <!--begin::Table body-->
                 <tbody>
-                    @forelse($dataMpasi as $index =>$item)
+                    @forelse($dataMpasi as $index => $item)
                         <tr>
                             <td class="ps-4">
                                 <span class="text-gray-800 fw-bold fs-6">{{ $index + 1 }}</span>
@@ -105,22 +96,22 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     @php
-                                        $imgSrc = $item->mpasi_foto ? asset('storage/' . $item->mpasi_foto) : 'https://images.unsplash.com/photo-1547592180-85f173990554?w=100';
+                                        $imgSrc = $item->mpasi_foto ? asset('storage/' . $item->mpasi_foto) : $fallbackImg;
                                     @endphp
-                                    <div class="symbol me-5 overflow-hidden rounded-3 border border-gray-200 cursor-pointer flex-shrink-0"
-                                        style="width: 100px; height: 100px; min-width: 100px;"
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#imagePreviewModal"
-                                        onclick="openImageModal('{{ $imgSrc }}', '{{ addslashes($item->judul) }}')">
-                                        <img src="{{ $imgSrc }}" class="object-fit-cover w-100 h-100" alt="{{ $item->judul }}" />
+                                    <div class="symbol me-5 overflow-hidden rounded-3 border border-gray-200 cursor-pointer flex-shrink-0 btn-preview-img"
+                                         style="width: 100px; height: 100px; min-width: 100px;"
+                                         data-src="{{ $imgSrc }}"
+                                         data-title="{{ $item->judul }}">
+                                        <img src="{{ $imgSrc }}" class="object-fit-cover w-100 h-100" alt="{{ $item->judul }}"
+                                             onerror="this.onerror=null;this.src='{{ $fallbackImg }}';" />
                                     </div>
                                     <div class="d-flex justify-content-start flex-column">
                                         <a href="javascript:void(0)" class="text-gray-900 fw-bold text-hover-primary mb-1 fs-6">{{ $item->judul }}</a>
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="text-muted fw-semibold fs-7">Resep MPASI</span>
                                             @if($item->url_video)
-                                                <button type="button" class="btn btn-link p-0 text-danger fs-8 fw-bold btn-play-video" 
-                                                        data-embed="{{ $item->embed_video_url }}" 
+                                                <button type="button" class="btn btn-link p-0 text-danger fs-8 fw-bold btn-play-video"
+                                                        data-embed="{{ $item->embed_video_url }}"
                                                         data-title="{{ $item->judul }}">
                                                     <i class="ki-outline ki-youtube fs-5 text-danger me-1"></i> Video
                                                 </button>
@@ -132,10 +123,10 @@
                             <td>
                                 @php
                                     $badgeClass = match($item->kategori_usia) {
-                                        '6-8_bulan' => 'badge-light-warning',
-                                        '9-11_bulan' => 'badge-light-info',
+                                        '6-8_bulan'   => 'badge-light-warning',
+                                        '9-11_bulan'  => 'badge-light-info',
                                         '12-23_bulan' => 'badge-light-primary',
-                                        default => 'badge-light-secondary'
+                                        default       => 'badge-light-secondary'
                                     };
                                 @endphp
                                 <span class="badge {{ $badgeClass }} fs-7 fw-bold">
@@ -152,19 +143,21 @@
                                     {{ $item->creator->name ?? 'Kominfo Kota Surabaya' }}
                                 </span>
                             </td>
-                            @if(\App\Support\Access::can('mpasi', 'update') || \App\Support\Access::can('mpasi', 'delete'))
+                            @if($showAksi)
                                 <td class="text-center">
                                     {{-- Tombol Edit --}}
-                                    @if(\App\Support\Access::can('mpasi', 'update'))
-                                        <button type="button" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit" 
-                                                data-id="{{ $item->id_mpasi }}" title="Edit">
+                                    @if($canUpdate)
+                                        <button type="button" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-edit"
+                                                data-show-url="{{ route('mpasi.show', $item->uuid) }}"
+                                                data-update-url="{{ route('mpasi.update', $item->uuid) }}"
+                                                title="Edit">
                                             <i class="ki-outline ki-pencil fs-2"></i>
                                         </button>
                                     @endif
 
                                     {{-- Tombol Delete --}}
-                                    @if(\App\Support\Access::can('mpasi', 'delete'))
-                                        <form action="{{ route('mpasi.destroy', $item->id_mpasi) }}" method="POST" class="d-inline">
+                                    @if($canDelete)
+                                        <form action="{{ route('mpasi.destroy', $item->uuid) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm btn-delete" title="Hapus">
@@ -177,7 +170,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-10 text-muted fs-6">
+                            <td colspan="{{ $showAksi ? 6 : 5 }}" class="text-center py-10 text-muted fs-6">
                                 Belum ada data resep MPASI. Klik tombol <strong>+ Tambah Resep MPASI</strong> untuk menambahkan data baru.
                             </td>
                         </tr>
@@ -190,10 +183,16 @@
         <!--end::Table container-->
 
         <!--begin::Pagination Footer-->
-        <div class="d-flex flex-stack flex-wrap pt-10">
-            <div class="fs-6 fw-semibold text-gray-700">
-                Menampilkan {{ $dataMpasi->count() }} data
+        <div class="d-flex flex-stack flex-wrap pt-8 gap-4">
+            <div class="d-flex align-items-center gap-3">
+                <select id="pageSize" class="form-select form-select-sm form-select-solid w-75px">
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                </select>
+                <span id="pageInfo" class="fs-6 fw-semibold text-gray-700"></span>
             </div>
+            <ul id="pagination" class="pagination mb-0"></ul>
         </div>
         <!--end::Pagination Footer-->
 
@@ -222,7 +221,7 @@
                             <label class="form-label fw-semibold">Kategori Usia</label>
                             <select name="kategori_usia" class="form-select form-select-solid" required>
                                 <option value="">-- Pilih Usia --</option>
-                                @foreach($listKategori as $key =>$label)
+                                @foreach($listKategori as $key => $label)
                                     <option value="{{ $key }}">{{ $label }}</option>
                                 @endforeach
                             </select>
@@ -280,7 +279,7 @@
                             <label class="form-label fw-semibold">Kategori Usia</label>
                             <select id="edit_kategori_usia" name="kategori_usia" class="form-select form-select-solid" required>
                                 <option value="">-- Pilih Usia --</option>
-                                @foreach($listKategori as $key =>$label)
+                                @foreach($listKategori as $key => $label)
                                     <option value="{{ $key }}">{{ $label }}</option>
                                 @endforeach
                             </select>
@@ -327,7 +326,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center p-6">
-                <img id="imageModalSrc" src="" class="img-fluid rounded-3 shadow-sm max-h-500px object-fit-contain" alt="Preview" />
+                <img id="imageModalSrc" src="" class="img-fluid rounded-3 shadow-sm max-h-500px object-fit-contain" alt="Preview"
+                     onerror="this.onerror=null;this.src='{{ $fallbackImg }}';" />
             </div>
         </div>
     </div>
@@ -356,16 +356,55 @@
 
 @section('js')
 <script>
-    function openImageModal(imageSrc, title) {
-        $('#imageModalSrc').attr('src', imageSrc);
-        $('#imageModalTitle').text(title);
-    }
+$(document).ready(function () {
 
-    $(document).ready(function () {
+    const FALLBACK_IMG = @json($fallbackImg);
+
+    const showModal = (id) =>
+        bootstrap.Modal.getOrCreateInstance(document.getElementById(id)).show();
+
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: @json(session('success')),
+            timer: 2500,
+            showConfirmButton: false
+        });
+    @endif
+
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: @json(session('error')),
+            confirmButtonText: 'OK'
+        });
+    @endif
+
+    @if($errors->any())
+        @php
+            $errHtml = '<ul class="text-start mb-0">'
+                . collect($errors->all())->map(fn ($e) => '<li>' . e($e) . '</li>')->implode('')
+                . '</ul>';
+        @endphp
+        Swal.fire({
+            icon: 'error',
+            title: 'Data belum valid',
+            html: @json($errHtml),
+            confirmButtonText: 'OK'
+        });
+    @endif
+
+    $(document).on('click', '.btn-preview-img', function () {
+        $('#imageModalSrc').attr('src', $(this).data('src'));
+        $('#imageModalTitle').text($(this).data('title'));
+        showModal('imagePreviewModal');
+    });
 
     $(document).on('click', '.btn-play-video', function () {
         let embedUrl = $(this).data('embed');
-        let title = $(this).data('title');
+        let title    = $(this).data('title');
 
         if (!embedUrl) {
             Swal.fire('Informasi', 'Link video tidak valid atau belum diisi.', 'warning');
@@ -374,51 +413,53 @@
 
         $('#modalVideoTitle').text(title);
         $('#iframeVideo').attr('src', embedUrl);
-        $('#modalVideo').modal('show');
+        showModal('modalVideo');
     });
 
     $('#modalVideo').on('hidden.bs.modal', function () {
         $('#iframeVideo').attr('src', '');
     });
 
-
     $(document).on('click', '.btn-edit', function () {
-        let id = $(this).data('id');
-        let updateUrl = `/mpasi/${id}`;
+        let showUrl   = $(this).data('show-url');
+        let updateUrl = $(this).data('update-url');
 
         $('#formEditMpasi').attr('action', updateUrl);
+        $('#formEditMpasi input[type=file]').val('');
 
         $.ajax({
-            url: updateUrl,
+            url: showUrl,
             type: 'GET',
             dataType: 'json',
             success: function (response) {
-                if (response.status === 'success') {
-                    let data = response.data;
+                if (response.status !== 'success') return;
 
-                    $('#edit_judul').val(data.judul);
-                    $('#edit_kategori_usia').val(data.kategori_usia);
-                    $('#edit_deskripsi').val(data.deskripsi);
-                    $('#edit_bahan').val(data.bahan);
-                    $('#edit_langkah').val(data.langkah);
-                    $('#edit_url_video').val(data.url_video);
+                let data = response.data;
 
-                    if (data.mpasi_foto) {
-                        $('#previewGambarLama').html(`
-                            <div class="mt-2">
-                                <small class="text-muted d-block mb-1">Foto saat ini:</small>
-                                <img src="/storage/${data.mpasi_foto}" class="rounded h-60px object-fit-cover border">
-                            </div>
-                        `);
-                    } else {
-                        $('#previewGambarLama').empty();
-                    }
+                $('#edit_judul').val(data.judul);
+                $('#edit_kategori_usia').val(data.kategori_usia);
+                $('#edit_deskripsi').val(data.deskripsi);
+                $('#edit_bahan').val(data.bahan);
+                $('#edit_langkah').val(data.langkah);
+                $('#edit_url_video').val(data.url_video);
 
-                    $('#modalEdit').modal('show');
+                if (data.mpasi_foto) {
+                    $('#previewGambarLama').html(`
+                        <div class="mt-2">
+                            <small class="text-muted d-block mb-1">Foto saat ini:</small>
+                            <img src="/storage/${data.mpasi_foto}" class="rounded h-60px object-fit-cover border"
+                                 onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">
+                        </div>
+                    `);
+                } else {
+                    $('#previewGambarLama').empty();
                 }
+
+                showModal('modalEdit');
             },
-            error: function () {
-                Swal.fire('Error', 'Gagal mengambil data MPASI', 'error');
+            error: function (xhr) {
+                console.log(xhr.status, xhr.responseText);
+                Swal.fire('Error', 'Gagal mengambil data MPASI (' + xhr.status + ')', 'error');
             }
         });
     });
@@ -429,7 +470,7 @@
 
         Swal.fire({
             title: 'Apakah Anda yakin?',
-            text: "Data menu MPASI ini akan dihapus!",
+            text: 'Data menu MPASI ini akan dihapus!',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#f1416c',
@@ -443,46 +484,93 @@
         });
     });
 
-    $('#searchInput').on('keyup', function () {
-        let value = $(this).val().toLowerCase().trim();
+    let allRows = $('.table tbody tr').filter(function () {
+        return $(this).find('td').length > 1;  
+    }).toArray();
 
-        $('tbody tr').each(function () {
-            // Abaikan baris kosong/empty state
-            if ($(this).find('td').length <= 1) return;
+    let filtered    = allRows.slice();
+    let pageSize    = 10;
+    let currentPage = 1;
 
-            let rowText = $(this).text().toLowerCase();
-            if (rowText.indexOf(value) > -1) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
+    function applyTableFilter(resetPage = true) {
+        let q    = $('#searchInput').val().toLowerCase().trim();
+        let usia = $('#filterUsia').val().toLowerCase().trim();
+
+        filtered = allRows.filter(function (tr) {
+            let text = $(tr).text().toLowerCase();
+            return (q === '' || text.includes(q)) && (usia === '' || text.includes(usia));
         });
-    });
 
-    function applyTableFilter() {
-    let searchText = $('#searchInput').val().toLowerCase().trim();
-    let selectedUsia = $('#filterUsia').val().toLowerCase().trim();
-
-    $('tbody tr').each(function () {
-        if ($(this).find('td').length <= 1) return;
-
-            let rowText = $(this).text().toLowerCase();
-
-            let matchSearch = searchText === '' || rowText.indexOf(searchText) > -1;
-            let matchUsia = selectedUsia === '' || rowText.indexOf(selectedUsia) > -1;
-
-            if (matchSearch && matchUsia) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
+        if (resetPage) currentPage = 1;
+        renderTable();
     }
 
-    $('#searchInput').on('keyup', applyTableFilter);
-    $('#filterUsia').on('change', applyTableFilter);
-    
+    function renderTable() {
+        let total      = filtered.length;
+        let totalPages = Math.max(1, Math.ceil(total / pageSize));
+        currentPage    = Math.min(currentPage, totalPages);
 
+        let start = (currentPage - 1) * pageSize;
+        let end   = Math.min(start + pageSize, total);
+
+        $(allRows).hide();
+        filtered.slice(start, end).forEach(function (tr, i) {
+            $(tr).show().find('td:first span').text(start + i + 1);   
+        });
+
+        $('#pageInfo').text(total === 0
+            ? 'Tidak ada data'
+            : `Showing ${start + 1} to ${end} of ${total} records`);
+
+        renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+        let $ul = $('#pagination').empty();
+
+        const item = (page, label, cls = '') =>
+            `<li class="page-item ${cls}"><a href="#" class="page-link" data-page="${page}">${label}</a></li>`;
+
+        $ul.append(item(currentPage - 1, '<i class="ki-outline ki-left fs-5"></i>',
+            currentPage === 1 ? 'previous disabled' : 'previous'));
+
+        // 1 ... (cur-1) cur (cur+1) ... last
+        let pages = [];
+        for (let p = 1; p <= totalPages; p++) {
+            if (p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1) pages.push(p);
+            else if (pages[pages.length - 1] !== '...') pages.push('...');
+        }
+
+        pages.forEach(function (p) {
+            if (p === '...') {
+                $ul.append(item(currentPage, '...', 'disabled'));
+            } else {
+                $ul.append(item(p, p, p === currentPage ? 'active' : ''));
+            }
+        });
+
+        $ul.append(item(currentPage + 1, '<i class="ki-outline ki-right fs-5"></i>',
+            currentPage === totalPages ? 'next disabled' : 'next'));
+    }
+
+    $(document).on('click', '#pagination .page-link', function (e) {
+        e.preventDefault();
+        let $li = $(this).closest('li');
+        if ($li.hasClass('disabled') || $li.hasClass('active')) return;
+
+        currentPage = parseInt($(this).data('page'));
+        renderTable();
+    });
+
+    $('#pageSize').on('change', function () {
+        pageSize = parseInt($(this).val());
+        applyTableFilter();
+    });
+
+    $('#searchInput').on('keyup', () => applyTableFilter());
+    $('#filterUsia').on('change', () => applyTableFilter());
+
+    applyTableFilter();   
 });
 </script>
 @endsection

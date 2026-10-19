@@ -60,12 +60,16 @@ class MpasiController extends Controller
 
     public function show($id)
     {
-        $mpasi = Mpasi::findOrFail($id);
+        if (!Access::can('mpasi', 'update')) {
+        return response()->json(['status' => 'error', 'message' => 'Akses ditolak'], 403);
+        }
+
+        $mpasi = Mpasi::where('uuid', $id)->firstOrFail();
 
         return response()->json([
             'status'    => 'success',
             'data'      => $mpasi,
-            'embed_url' => $mpasi->embed_video_url ?? null,
+            'embed_url' => $mpasi->embed_video_url,
         ]);
     }
 
@@ -78,7 +82,7 @@ class MpasiController extends Controller
             ], 403);
         }
 
-        $mpasi = Mpasi::findOrFail($id);
+        $mpasi = Mpasi::where('uuid', $id)->firstOrFail();
 
         $request->validate([
             'judul'         => 'required|string|max:255',
@@ -116,7 +120,7 @@ class MpasiController extends Controller
         if (!Access::can('mpasi', 'delete')) {
             abort(403, 'Anda tidak memiliki hak akses untuk menghapus resep.');
         }
-        $mpasi = Mpasi::findOrFail($id);
+        $mpasi = Mpasi::where('uuid', $id)->firstOrFail();
 
         if ($mpasi->mpasi_foto && Storage::disk('public')->exists($mpasi->mpasi_foto)) {
             Storage::disk('public')->delete($mpasi->mpasi_foto);

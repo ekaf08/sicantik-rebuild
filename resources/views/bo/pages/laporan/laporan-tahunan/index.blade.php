@@ -2,6 +2,11 @@
 
 @section('content')
 
+<style>
+    /* Preview PDF (viewer bawaan browser) */
+    .file-frame { width:100%; height:420px; border:0; border-radius:14px; background:#3c3c3c; display:block; }
+</style>
+
 @if(session('success'))
     <div class="alert alert-success d-flex align-items-center p-4 mb-5">
         <i class="ki-outline ki-check-circle fs-2x text-success me-3"></i>
@@ -189,10 +194,7 @@
                 </div> -->
             </div>
 
-            <div class="text-muted fs-7 mt-3">
-                Menampilkan <span class="fw-bold text-gray-800">{{ $dataLaporan->count() }}</span> data
-                @if($filterAktif) sesuai filter @endif
-            </div>
+            
         </form>
 
         <div class="table-responsive">
@@ -276,6 +278,11 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="text-muted fs-7 mt-3">
+                Menampilkan <span class="fw-bold text-gray-800">{{ $dataLaporan->count() }}</span> data
+                @if($filterAktif) sesuai filter @endif
+            </div>
     </div>
 </div>
 
@@ -406,23 +413,50 @@
         toggleJenis();
 
         $(document).on('change', '.input-file-laporan', function () {
-            const file = this.files[0];
+            let file = this.files[0];
 
             if (file && file.size > MAX_SIZE) {
                 alert('Ukuran file maksimal 2MB. File "' + file.name + '" terlalu besar.');
                 $(this).val('');
+                file = null;
+            }
+
+            const $scope  = $(this).closest('.tab-pane, #sectionMemoriPj, #editSectionMemoriPj');
+            const $status = $scope.find('.file-status'); // hanya ada di modal edit
+
+            if ($status.length) {
+                // EDIT: preview langsung diganti file baru, batal pilih = balik ke file lama
+                if (file) {
+                    $status.empty().append(
+                        $('<div class="file-preview"></div>')
+                            .append($('<iframe class="file-frame"></iframe>').attr('src', URL.createObjectURL(file)))
+                    );
+                } else {
+                    renderStatus($status, $status.data('url'));
+                }
+            } else {
+                // TAMBAH: preview muncul di bawah input
+                let $new = $scope.find('.new-file-preview');
+                if (!$new.length) {
+                    $new = $('<div class="new-file-preview mt-4"></div>').insertAfter($(this));
+                }
+                $new.empty();
+                if (file) {
+                    $new.append($('<iframe class="file-frame"></iframe>').attr('src', URL.createObjectURL(file)));
+                }
             }
 
             const $pane = $(this).closest('.tab-pane');
             if ($pane.length) {
                 const $check = $('a[href="#' + $pane.attr('id') + '"] .tab-check');
-                const sudahAda = $pane.find('.file-status a').length > 0;
-                $check.toggleClass('d-none', !(this.files.length || sudahAda));
+                const sudahAda = $pane.find('.file-status .file-preview').length > 0;
+                $check.toggleClass('d-none', !(file || sudahAda));
             }
         });
 
         function resetTabs(formSelector, tabsSelector) {
             $(formSelector)[0].reset();
+            $(formSelector).find('.new-file-preview').remove();
             const firstTab = document.querySelector(tabsSelector + ' .nav-link');
             if (firstTab) {
                 new bootstrap.Tab(firstTab).show();
@@ -436,13 +470,11 @@
         });
 
         function renderStatus($box, url) {
-            $box.empty();
+            $box.empty().data('url', url || null);
             if (url) {
                 $box.append(
-                    $('<div class="d-flex align-items-center bg-light-success rounded p-4"></div>')
-                        .append('<i class="ki-outline ki-file fs-2 text-success me-3"></i>')
-                        .append('<span class="fw-semibold text-gray-800 me-3">File sudah diunggah.</span>')
-                        .append($('<a target="_blank" rel="noopener" class="fw-bold">Lihat file</a>').attr('href', url))
+                    $('<div class="file-preview"></div>')
+                        .append($('<iframe class="file-frame" loading="lazy"></iframe>').attr('src', url))
                 );
             } else {
                 $box.append(
@@ -477,7 +509,7 @@
             });
 
             $('#editSectionLaporanTahunan .tab-pane').each(function () {
-                const hasFile = $(this).find('.file-status a').length > 0;
+                const hasFile = $(this).find('.file-status .file-preview').length > 0;
                 $(this).find('.form-text').text(
                     hasFile
                         ? 'Pilih file baru hanya jika ingin mengganti file yang sekarang. Kosongkan jika tidak diubah.'

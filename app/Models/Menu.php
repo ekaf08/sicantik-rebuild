@@ -53,6 +53,7 @@ class Menu extends Model
     // Relasi roles
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'role_menu', 'id_menu', 'id_menu');
+        return $this->belongsToMany(Role::class, 'menu_role', 'menu_id', 'role_id')
+                    ->wherePivotNull('deleted_at');
     }
 }

@@ -41,15 +41,14 @@ class MenuController extends Controller
                 $class = $isAktif ? 'bg-success' : 'bg-secondary';
                 return '<span class="badge ' . $class . ' px-3 py-2">' . $text . '</span>';
             })
-            ->addColumn('icon_display', function($row){
-                return '
-                    <div class="d-flex align-items-center text-nowrap">
-                        <i class="' . $row->icon . ' fs-2 me-2 text-gray-700"></i>
-                        <span class="text-muted fs-7">' . $row->icon . '</span>
-                    </div>
-                ';
+            ->addColumn('icon_display', function ($row) {
+                $icon = e($row->icon);
+                return '<div class="d-flex align-items-center text-nowrap">
+                            <i class="' . $icon . ' fs-2 me-2 text-gray-700"></i>
+                            <span class="text-muted fs-7">' . $icon . '</span>
+                        </div>';
             })
-            
+                        
             
             ->addColumn('action', function($row){
                 $encryptedId = Crypt::encryptString($row->id_menu);

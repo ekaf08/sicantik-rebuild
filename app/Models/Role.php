@@ -29,4 +29,10 @@ class Role extends Model
             abort(404);
         }
     }
+
+    public function menus()
+    {
+        return $this->belongsToMany(Menu::class, 'menu_role', 'role_id', 'menu_id')
+                    ->wherePivotNull('deleted_at');
+    }
 }
