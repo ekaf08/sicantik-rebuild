@@ -40,7 +40,11 @@ class PermissionController extends Controller
             ->pluck('menu_id')
             ->all();
 
-       $menus = Menu::with(['children' => fn ($q) => $q->whereIn('id_menu', $assignedIds)])
+        $menus = Menu::with(['children' => function ($q) use ($assignedIds) {
+            $q->whereIn('status_menu', ['1', 'Aktif'])
+            ->whereIn('id_menu', $assignedIds)
+            ->orderBy('urutan')->orderBy('id_menu');
+            }])
             ->where(fn ($q) => $q->whereNull('parent_id')->orWhere('parent_id', 0))
             ->whereIn('status_menu', ['1', 'Aktif'])
             ->where(function ($q) use ($assignedIds) {
@@ -48,13 +52,23 @@ class PermissionController extends Controller
                 ->orWhereHas('children', fn ($c) => $c->whereIn('id_menu', $assignedIds));
             })
             ->orderBy('urutan')
-            ->orderBy('id_menu')   // urutan 2 dipakai Master dan Data Umum
+            ->orderBy('id_menu')
             ->get()
-            ->each(fn ($m) => $m->parent_assigned = in_array($m->id_menu, $assignedIds));
+            ->each(function ($m) use ($assignedIds) {
+                $m->parent_assigned = in_array($m->id_menu, $assignedIds);
+            });
         $permissions = RoleMenuPermission::where('role_id', $roleId)
             ->get()
             ->keyBy('menu_id');
 
+        foreach ($assignedIds as $id) {
+            if (!$permissions->has($id)) {
+                $permissions->put($id, new RoleMenuPermission([
+                    'role_id' => $roleId, 'menu_id' => $id,
+                    'table' => true, 'create' => false, 'update' => false, 'delete' => false,
+                ]));
+            }
+        }
         return response()->json([
             'success'     => true,
             'menus'       => $menus,
@@ -73,18 +87,6 @@ class PermissionController extends Controller
 
         $data['role_id'] = $this->decryptId($data['role_id']);
         $data['menu_id'] = $this->decryptId($data['menu_id']);
-        
-        $perm = RoleMenuPermission::firstOrNew([
-        'role_id' => $data['role_id'],
-        'menu_id' => $data['menu_id'],
-        ]);
-
-        if (!$perm->exists) {
-            $perm->table  = true; // Karena sudah di-assign di menu_role
-            $perm->create = false;
-            $perm->update = false;
-            $perm->delete = false;
-        }
 
         $isAssigned = DB::table('menu_role')
             ->where('role_id', $data['role_id'])
@@ -103,14 +105,27 @@ class PermissionController extends Controller
             'menu_id' => $data['menu_id'],
         ]);
 
+        // baris baru: menu yang sudah di-assign dianggap boleh dilihat
+        if (!$perm->exists) {
+            $perm->table  = true;
+            $perm->create = false;
+            $perm->update = false;
+            $perm->delete = false;
+        }
+
         if ($data['field'] === 'all') {
-            $perm->table  = $value;
-            $perm->create = $value;
-            $perm->update = $value;
-            $perm->delete = $value;
+            $perm->table = $perm->create = $perm->update = $perm->delete = $value;
         } else {
             $perm->{$data['field']} = $value;
+
+            if ($data['field'] === 'table' && !$value) {
+                $perm->create = $perm->update = $perm->delete = false;
+            } elseif ($data['field'] !== 'table' && $value) {
+                $perm->table = true;
+            }
         }
+
+$perm->can_access = $perm->table;
 
         $perm->can_access = $perm->table || $perm->create || $perm->update || $perm->delete;
         $perm->save();
@@ -118,7 +133,7 @@ class PermissionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Hak akses berhasil diperbarui',
-            'data'    => $perm
+            'data'    => $perm,
         ]);
     }
 }

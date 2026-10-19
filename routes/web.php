@@ -42,21 +42,35 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/inovasi/global', [InovasiController::class, 'global'])->name('inovasi.global');
     Route::match(['get', 'post'], '/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
 
-    Route::get('/inovasi-global/get-data', [InovasiController::class, 'getGlobalData'])->name('inovasi.global.getData');
-    Route::post('/inovasi-global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
-    Route::delete('/inovasi-global/destroy/{id}', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
+    // Route::get('/inovasi-global/get-data', [InovasiController::class, 'getGlobalData'])->name('inovasi.global.getData');
+    // Route::post('/inovasi-global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
+    // Route::delete('/inovasi-global/destroy/{id}', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
 
+    Route::get('/inovasi/global/get-data', [InovasiController::class, 'getGlobalData'])->name('inovasi.global.getData');
+    Route::post('/inovasi/global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
+    Route::delete('/inovasi/global/destroy/{id}', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
+    
     //Kebijakan SK 
     Route::get('/kebijakan', [KebijakanController::class, 'index'])->name('kebijakan.index');
-    Route::get('/kebijakan-data', [KebijakanController::class, 'getData'])->name('kebijakan.data');
-    Route::post('/kebijakan-store', [KebijakanController::class, 'store'])->name('kebijakan.store');
-    Route::get('/kebijakan-show/{id}', [KebijakanController::class, 'show'])->name('kebijakan.show');
-    Route::post('/kebijakan-update/{id}', [KebijakanController::class, 'update'])->name('kebijakan.update');
-    Route::delete('/kebijakan-destroy/{id}', [KebijakanController::class, 'destroy'])->name('kebijakan.destroy');
+    Route::get('//kebijakan/data', [KebijakanController::class, 'getData'])->name('kebijakan.data');
+    Route::post('/kebijakan/store', [KebijakanController::class, 'store'])->name('kebijakan.store');
+    Route::get('/kebijakan/show/{id}', [KebijakanController::class, 'show'])->name('kebijakan.show');
+    Route::post('/kebijakan/update/{id}', [KebijakanController::class, 'update'])->name('kebijakan.update');
+    Route::delete('/kebijakan/destroy/{id}', [KebijakanController::class, 'destroy'])->name('kebijakan.destroy');
+
     // Master User
     Route::get('master/user/data', [UserController::class, 'data'])->name('users.data');
-    Route::resource('master/user', UserController::class)->except(['create', 'edit']);
+    Route::get('master/user/data', [UserController::class, 'data'])->name('users.data');
+    Route::get('master/user', [UserController::class, 'index'])->name('user.index');
+    Route::get('master/user/create', [UserController::class, 'create'])->name('user.create');
+    Route::post('master/user', [UserController::class, 'store'])->name('user.store');
+    Route::get('master/user/{id}', [UserController::class, 'show'])->name('user.show');
+    Route::get('master/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::put('master/user/{id}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('master/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::post('master/user/{id}/reset-password', [UserController::class, 'resetPassword'])->name('user.reset-password');
+    Route::get('master/user/{id}/detail', [UserController::class, 'viewDetail'])->name('user.detail');
+    Route::resource('master/permission', PermissionController::class)->only(['index']);
     Route::get('master/user/{id}/detail', [UserController::class, 'viewDetail'])->name('user.detail');
     Route::get('/get-kecamatan/{id_kec}', [UserController::class, 'getkecamatan'])->name('get.kecamatan');
     Route::get('/get-kelurahan/{id_kec}', [UserController::class, 'getKelurahan'])->name('get.kelurahan');
@@ -64,7 +78,6 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     // Master Permission
     Route::get('master/permission/data', [PermissionController::class, 'getPermissions'])->name('permission.data');
     Route::post('master/permission/access', [PermissionController::class, 'updateAccess'])->name('permission.access');
-    Route::resource('master/permission', PermissionController::class)->except(['create', 'edit']);
 
     // Master Menu
     Route::get('master/menu', [MenuController::class, 'index'])->name('menu.index');

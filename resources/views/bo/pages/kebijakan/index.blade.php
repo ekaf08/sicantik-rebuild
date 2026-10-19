@@ -305,9 +305,12 @@
     const ROUTES_KEBIJAKAN = {
         data: "{{ route('kebijakan.data') }}",
         store: "{{ route('kebijakan.store') }}",
-        show: "{{ url('kebijakan-show') }}",
-        update: "{{ url('kebijakan-update') }}",
-        destroy: "{{ url('kebijakan-destroy') }}",
+        // show: "{{ url('kebijakan-show') }}",
+        // update: "{{ url('kebijakan-update') }}",
+        // destroy: "{{ url('kebijakan-destroy') }}",
+        show: "{{ url('kebijakan/show') }}",
+        update: "{{ url('kebijakan/update') }}",
+        destroy: "{{ url('kebijakan/destroy') }}",
         csrfToken: "{{ csrf_token() }}",
         uploadBaseUrl: "{{ asset('uploads/file-surat-keputusan') }}"
     };
