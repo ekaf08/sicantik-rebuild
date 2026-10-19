@@ -388,7 +388,7 @@
                             <option value="Semua">Semua kecamatan</option>
                             @if(isset($kecamatan) && is_iterable($kecamatan))
                                 @foreach($kecamatan as $kec)
-                                    <option value="{{ $kec->id_kec }}">{{ $kec->nama_kec }}</option>
+                                    <option value="{{ $kec->nama_kec }}">{{ $kec->nama_kec }}</option>
                                 @endforeach
                             @endif
                         </select>
@@ -397,11 +397,6 @@
                         <label class="form-label small fw-bold text-dark text-uppercase mb-1">Kelurahan</label>
                         <select id="dash-filter-kelurahan" class="form-select bg-white border-light-subtle rounded-3 small fw-semibold text-dark">
                             <option value="Semua">Semua kelurahan</option>
-                            @if(isset($kelurahan) && is_iterable($kelurahan))
-                                @foreach($kelurahan as $kel)
-                                    <option value="{{ $kel->id_kel }}">{{ $kel->nama_kel }}</option>
-                                @endforeach
-                            @endif
                         </select>
                     </div>
                     <div class="col-12 col-md-4">
@@ -521,18 +516,13 @@
                         <option value="Semua">SEMUA KECAMATAN</option>
                         @if(isset($kecamatan) && is_iterable($kecamatan))
                             @foreach($kecamatan as $kec)
-                                <option value="{{ $kec->id_kec }}">{{ strtoupper($kec->nama_kec) }}</option>
+                                <option value="{{ $kec->nama_kec }}">{{ strtoupper($kec->nama_kec) }}</option>
                             @endforeach
                         @endif
                     </select>
 
                     <select id="table-filter-kelurahan" class="form-select filter-select-compact">
                         <option value="Semua">Pilih Kelurahan</option>
-                        @if(isset($kelurahan) && is_iterable($kelurahan))
-                            @foreach($kelurahan as $kel)
-                                <option value="{{ $kel->id_kel }}">{{ $kel->nama_kel }}</option>
-                            @endforeach
-                        @endif
                     </select>
 
                     <select id="table-filter-periode" class="form-select filter-select-compact">
@@ -628,11 +618,11 @@
                     <div class="col-12 col-sm-6">
                         <label class="form-label small fw-bold text-dark mb-1">Pokja <span class="text-danger">*</span></label>
                         <select id="form-input-pokja" name="pokja" class="form-control-modern w-100 fw-semibold text-dark" required>
-                            <option value="">-- Pilih Pokja --</option>
+                            <option value="" selected>-- Pilih Pokja --</option>
                             <option value="Sekretaris">Sekretaris</option>
                             <option value="POKJA 1">POKJA 1</option>
                             <option value="POKJA 2">POKJA 2</option>
-                            <option value="POKJA 3" selected>POKJA 3</option>
+                            <option value="POKJA 3">POKJA 3</option>
                             <option value="POKJA 4">POKJA 4</option>
                         </select>
                     </div>
@@ -645,14 +635,14 @@
                             <option value="">-- Pilih Kecamatan --</option>
                             @if(isset($kecamatan) && is_iterable($kecamatan))
                                 @foreach($kecamatan as $kec)
-                                    <option value="{{ $kec->id_kec }}">{{ $kec->nama_kec }}</option>
+                                    <option value="{{ $kec->ref }}">{{ $kec->nama_kec }}</option>
                                 @endforeach
                             @endif
                         </select>
                     </div>
                     <div class="col-12 col-sm-6">
                         <label class="form-label small fw-bold text-dark mb-1">Dibuat Oleh <span class="text-danger">*</span></label>
-                        <input type="text" id="form-input-dibuat" name="dibuat_oleh" placeholder="Nama kader / pengurus" class="form-control-modern w-100 text-dark" required />
+                        <input type="text" id="form-input-dibuat" name="dibuat_oleh" value="{{ Auth::user()->name ?? 'Kader PKK' }}" placeholder="Nama kader / pengurus" class="form-control-modern w-100 text-dark" readonly required />
                     </div>
                 </div>
 
@@ -706,7 +696,7 @@
                 <div class="p-3 rounded-3 bg-light border border-light-subtle">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="small fw-bold text-dark mb-0"><i class="fa-solid fa-file-pdf text-danger me-1"></i> Dokumen Proposal / Juknis</span>
-                        <span class="badge bg-danger-subtle text-danger small fw-bold" style="font-size: 0.68rem;">PDF (Maks. 3 MB)</span>
+                        <span class="badge bg-danger-subtle text-danger small fw-bold" style="font-size: 0.68rem;">PDF (Maks. 2 MB)</span>
                     </div>
 
                     <div class="flex-column gap-2 d-flex">
@@ -769,7 +759,6 @@
     </div>
 </div>
 
-<!-- MODAL PREVIEW MEDIA -->
 <div class="modal fade" id="modal-preview-media" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content modal-content-modern bg-white">
@@ -797,6 +786,7 @@
 
 <script>
     const BASE_ASSET_URL = "{{ url('/') }}";
+    const MASTER_KELURAHAN_NAMES = @json(isset($kelurahan) ? collect($kelurahan)->pluck('nama_kel')->filter()->values() : []);
     let inovasiData = [];
     let currentFoto1 = '';
     let currentFoto2 = '';
@@ -855,6 +845,35 @@
         bootstrap.Modal.getOrCreateInstance(modalEl).show();
     }
 
+    function syncKelurahanFilter(kecId, kelId, defaultText) {
+        const kecEl = document.getElementById(kecId);
+        const kelEl = document.getElementById(kelId);
+        if (!kecEl || !kelEl) return;
+
+        const selKec = String(kecEl.value || 'Semua').trim().toLowerCase();
+        const names = new Set();
+
+        inovasiData.forEach(i => {
+            const kel = String(i.kelurahan || '').trim();
+            if (!kel || kel === '-') return;
+            if (selKec === 'semua' || String(i.kecamatan).trim().toLowerCase() === selKec) {
+                names.add(kel);
+            }
+        });
+
+        if (selKec === 'semua' || names.size === 0) {
+            MASTER_KELURAHAN_NAMES.forEach(n => {
+                const kel = String(n || '').trim();
+                if (kel) names.add(kel);
+            });
+        }
+
+        const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+        kelEl.innerHTML = `<option value="Semua">${defaultText}</option>` +
+            [...names].sort().map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+        kelEl.value = 'Semua';
+    }
+
     function fetchDataFromServer() {
         const tbody = document.getElementById('innovation-table-body');
         if (tbody) {
@@ -880,13 +899,11 @@
         .then(res => {
             if (res.status === 'success' && Array.isArray(res.data)) {
                 inovasiData = res.data.map(item => ({
-                    id: item.id,
+                    id: item.ref,
                     tanggal: item.tanggal_entry || '',
                     nama: item.nama_inovasi || '',
-                    kecamatan: item.nama_kec || item.id_kec || '-',
-                    kelurahan: item.nama_kel || item.id_kel || '-',
-                    id_kec: item.id_kec,
-                    id_kel: item.id_kel,
+                    kecamatan: item.nama_kec || '-',
+                    kelurahan: item.nama_kel || '-',
                     deskripsi: item.deskripsi_inovasi || '',
                     file: item.file_dokumen ? item.file_dokumen.split('/').pop() : '',
                     pdfUrl: formatAssetUrl(item.file_dokumen),
@@ -900,6 +917,8 @@
             } else {
                 inovasiData = [];
             }
+            syncKelurahanFilter('dash-filter-kecamatan', 'dash-filter-kelurahan', 'Semua kelurahan');
+            syncKelurahanFilter('table-filter-kecamatan', 'table-filter-kelurahan', 'Pilih Kelurahan');
             updateDashboardCounters();
             renderCustomTable();
         })
@@ -1010,14 +1029,12 @@
             const idKelVal  = (item.id_kel || '').toString().toLowerCase();
 
             // Match Pencarian (Multi-field)
-            const matchSearch = (q === '') || 
-                                namaVal.includes(q) || 
-                                deskVal.includes(q) || 
-                                ketVal.includes(q) || 
-                                userVal.includes(q) ||
-                                kecVal.includes(q) ||
-                                kelVal.includes(q) ||
-                                periodeVal.includes(q);
+            const tglVal    = (item.tanggal || '').toString().toLowerCase();
+            const pokjaVal  = (item.pokja || '').toString().toLowerCase();
+            const haystack  = [namaVal, deskVal, ketVal, userVal, kecVal, kelVal, periodeVal, tglVal, pokjaVal]
+                                .join(' ')
+                                .replace(/\s+/g, ' ');
+            const matchSearch = (q === '') || q.split(/\s+/).every(word => haystack.includes(word));
 
             // Match Dropdown Filter
             const matchKec = (filterKec === 'semua') || (idKecVal === filterKec) || (kecVal === filterKec);
@@ -1239,7 +1256,11 @@
         document.getElementById('modal-form-title').innerText = 'Edit Data Inovasi';
         document.getElementById('form-input-tanggal').value = toInputDateFormat(item.tanggal);
         document.getElementById('form-input-pokja').value = item.pokja || 'POKJA 3';
-        document.getElementById('form-input-kecamatan').value = item.id_kec || item.kecamatan;
+        const kecEl = document.getElementById('form-input-kecamatan');
+        kecEl.value = '';
+        [...kecEl.options].forEach(o => {
+            if (o.text.trim().toLowerCase() === String(item.kecamatan).trim().toLowerCase()) kecEl.value = o.value;
+        });
         document.getElementById('form-input-dibuat').value = item.dibuatOleh;
         document.getElementById('form-input-nama').value = item.nama;
         document.getElementById('form-input-deskripsi').value = item.deskripsi;
@@ -1434,6 +1455,25 @@
     document.addEventListener('change', function (e) {
         const allowedImageTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
 
+        if (e.target.id === 'dash-filter-kecamatan') {
+            syncKelurahanFilter('dash-filter-kecamatan', 'dash-filter-kelurahan', 'Semua kelurahan');
+            updateDashboardCounters();
+            return;
+        }
+        if (e.target.id === 'table-filter-kecamatan') {
+            syncKelurahanFilter('table-filter-kecamatan', 'table-filter-kelurahan', 'Pilih Kelurahan');
+            renderCustomTable(true);
+            return;
+        }
+        if (['dash-filter-kelurahan', 'dash-filter-periode'].includes(e.target.id)) {
+            updateDashboardCounters();
+            return;
+        }
+        if (['table-filter-kelurahan', 'table-filter-periode', 'entries-per-page'].includes(e.target.id)) {
+            renderCustomTable(true);
+            return;
+        }
+
         if (e.target.id === 'file-foto-1') {
             const file = e.target.files[0];
             if (file) {
@@ -1510,7 +1550,7 @@
             clearTimeout(searchDebounceTimer);
             searchDebounceTimer = setTimeout(() => {
                 renderCustomTable(true);
-            }, 250);
+            }, 120);
         }
     });
 
@@ -1519,7 +1559,13 @@
             clearTimeout(searchDebounceTimer);
             searchDebounceTimer = setTimeout(() => {
                 renderCustomTable(true);
-            }, 250);
+            }, 120);
+        }
+    });
+
+    document.addEventListener('search', function (e) {
+        if (e.target.id === 'search-inovasi-input') {
+            renderCustomTable(true);
         }
     });
 

@@ -41,10 +41,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/inovasi/global', [InovasiController::class, 'global'])->name('inovasi.global');
     Route::match(['get', 'post'], '/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
 
-    Route::get('/inovasi-global/get-data', [InovasiController::class, 'getGlobalData'])->name('inovasi.global.getData');
-    Route::post('/inovasi-global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
-    Route::delete('/inovasi-global/destroy/{id}', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
-
+    Route::get('/inovasi/global/get-data', [InovasiController::class, 'getData'])->name('inovasi.global.getData');
+    Route::post('/inovasi/global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
+    Route::delete('/inovasi/global/destroy', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
+    
     //Kebijakan SK 
     Route::get('/kebijakan', [KebijakanController::class, 'index'])->name('kebijakan.index');
     Route::get('/kebijakan-data', [KebijakanController::class, 'getData'])->name('kebijakan.data');
@@ -108,5 +108,5 @@ Route::middleware('auth')->group(function () {
         Route::delete('/penghargaan/delete/{id}', [PenghargaanController::class, 'destroy'])->name('penghargaan.destroy');
 
     // CATCH-ALL: harus paling bawah
-    Route::get('/{slug}', [MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');
+    Route::get('/{slug}', [MenuController::class, 'handleDynamicPage']) ->where('slug', '.*')->name('menu.dynamic');
 });
