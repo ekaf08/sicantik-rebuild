@@ -399,5 +399,3 @@
         </div>
     </div>
 <!--end::Modal Detail Khusus Bkb-->
-
-No	Nik	Nama Kader	Role	Jenis Kelamin	Kelurahan	Kecamatan

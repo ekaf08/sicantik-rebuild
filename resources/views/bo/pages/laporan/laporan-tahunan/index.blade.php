@@ -194,10 +194,7 @@
                 </div> -->
             </div>
 
-            <div class="text-muted fs-7 mt-3">
-                Menampilkan <span class="fw-bold text-gray-800">{{ $dataLaporan->count() }}</span> data
-                @if($filterAktif) sesuai filter @endif
-            </div>
+            
         </form>
 
         <div class="table-responsive">
@@ -281,6 +278,11 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="text-muted fs-7 mt-3">
+                Menampilkan <span class="fw-bold text-gray-800">{{ $dataLaporan->count() }}</span> data
+                @if($filterAktif) sesuai filter @endif
+            </div>
     </div>
 </div>
 
