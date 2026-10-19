@@ -59,6 +59,15 @@
         background-color: rgba(13, 148, 136, 0.08);
         transform: scale(1.02);
     }
+
+    /* Preview foto & checkbox organik */
+    .pd-photo-box {
+        border: 1px solid #e4e6ef; border-radius: .75rem; background: #f8f9fb;
+        display: flex; align-items: center; justify-content: center; overflow: hidden; height: 150px;
+    }
+    .pd-photo-box img { width: 100%; height: 100%; object-fit: cover; }
+    .pd-checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .5rem .75rem; }
+    .pd-checkbox-item { display: flex; align-items: center; gap: .5rem; font-size: .85rem; font-weight: 600; color: #4b5675; cursor: pointer; }
 </style>
 
 <!-- Banner Deskripsi Inovasi Pisang Danor -->
@@ -127,65 +136,61 @@
                 </div>
             </div>
 
-            <!-- Tabel Data Pisang BSI -->
+
+            <!-- Tabel Data (Anorganik / Organik) -->
             <div class="border-top pt-6">
+                <input type="hidden" id="pd-csrf-token" value="{{ csrf_token() }}">
+
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-5">
                     <div>
                         <h3 class="fw-bolder text-gray-900 fs-3 m-0" id="title-tabel-danor">Data Pisang BSI (Anorganik)</h3>
                         <span class="text-gray-500 fs-8 fw-semibold" id="subtitle-tabel-danor">Menampilkan daftar data pengolahan sampah anorganik</span>
                     </div>
 
-                    <button type="button" class="btn fw-bold fs-7 px-5 text-white rounded-3 shadow-sm" style="background-color: #22c55e !important;" data-bs-toggle="modal" data-bs-target="#modal_tambah_danor">
+                    <button type="button" class="btn fw-bold fs-7 px-5 text-white rounded-3 shadow-sm" style="background-color: #22c55e !important;" onclick="openTambahDanor()">
                         <i class="ki-outline ki-plus fs-3 text-white me-1"></i> Tambah Data
                     </button>
                 </div>
 
-                <!-- Filter Dropdown -->
+                <!-- Filter -->
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-5">
                     <div class="d-flex align-items-center gap-2">
                         <span class="text-gray-600 fs-7 fw-semibold">Tampilkan</span>
-                        <select class="form-select form-select-solid w-75px fs-7 fw-bold">
+                        <select class="form-select form-select-solid w-75px fs-7 fw-bold" id="pagesize-danor">
                             <option value="10">10</option>
                             <option value="25">25</option>
+                            <option value="50">50</option>
                         </select>
                     </div>
 
                     <div class="d-flex flex-wrap align-items-center gap-3 ms-auto">
-                        <select class="form-select form-select-solid w-175px fs-7 fw-semibold" id="filter-kecamatan-danor" onchange="loadKelurahanDanor(this.value)">
+                        <select class="form-select form-select-solid w-175px fs-7 fw-semibold" id="filter-kecamatan-danor">
                             <option value="">Semua Kecamatan</option>
                         </select>
 
-                        <select class="form-select form-select-solid w-175px fs-7 fw-semibold" id="filter-kelurahan-danor">
-                            <option value="">Pilih Kelurahan</option>
+                        <select class="form-select form-select-solid w-175px fs-7 fw-semibold" id="filter-kelurahan-danor" disabled>
+                            <option value="">Semua Kelurahan</option>
                         </select>
 
                         <div class="d-flex align-items-center position-relative">
                             <i class="ki-outline ki-magnifier fs-3 position-absolute ms-3 text-gray-500"></i>
-                            <input type="text" class="form-control form-control-solid ps-10 w-200px fs-7 fw-semibold" placeholder="Cari..." />
+                            <input type="text" id="search-danor" class="form-control form-control-solid ps-10 w-200px fs-7 fw-semibold" placeholder="Cari..." />
                         </div>
                     </div>
                 </div>
 
-                <!-- Tabel Data BSI -->
                 <div class="table-responsive">
                     <table class="table align-middle table-row-dashed table-bordered fs-7 gy-3 gs-4">
-                        <thead>
-                            <tr class="fw-bolder text-gray-800 bg-light text-uppercase">
-                                <th class="w-50px text-center">NO</th>
-                                <th>NAMA BSI</th>
-                                <th>ALAMAT BSI</th>
-                                <th>METODE PENGOLAHAN</th>
-                                <th>KECAMATAN</th>
-                                <th>KELURAHAN</th>
-                                <th class="text-center">RW</th>
-                                <th class="text-center">RT</th>
-                                <th class="text-center">AKSI</th>
-                            </tr>
-                        </thead>
+                        <thead id="thead-danor"></thead>
                         <tbody class="fw-semibold text-gray-700" id="tbody-danor">
-                            <!-- Content generated dynamically -->
+                            <tr><td class="text-center py-5 text-gray-500">Memuat data...</td></tr>
                         </tbody>
                     </table>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4">
+                    <span class="text-gray-600 fs-8 fw-semibold" id="info-danor"></span>
+                    <ul class="pagination pagination-outline mb-0" id="pagination-danor"></ul>
                 </div>
             </div>
         </div>
@@ -199,25 +204,21 @@
                     <label class="form-label fw-bold fs-7">Kecamatan</label>
                     <select id="basam-kecamatan" class="form-select form-select-solid">
                         <option value="" selected>- Pilih Kecamatan -</option>
-                        <option value="wonokromo">Wonokromo</option>
-                        <option value="gubeng">Gubeng</option>
-                        <option value="sukolilo">Sukolilo</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-4">
                     <label class="form-label fw-bold fs-7">Kelurahan</label>
-                    <select id="basam-kelurahan" class="form-select form-select-solid">
+                    <select id="basam-kelurahan" class="form-select form-select-solid" disabled>
                         <option value="" selected>-- Pilih Kelurahan --</option>
                     </select>
                 </div>
                 <div class="col-6 col-md-2">
-                    <button type="button" class="btn btn-primary w-100 fw-bold" style="background-color: #0d9488 !important; border-color: #0d9488 !important;">Filter</button>
+                    <button type="button" class="btn btn-primary w-100 fw-bold" style="background-color: #0d9488 !important; border-color: #0d9488 !important;" onclick="basamFilterDanor()">Filter</button>
                 </div>
                 <div class="col-6 col-md-2">
-                    <button type="button" class="btn btn-light w-100 fw-semibold">Reset</button>
+                    <button type="button" class="btn btn-light w-100 fw-semibold" onclick="basamResetDanor()">Reset</button>
                 </div>
             </div>
-
             <div class="row g-4">
                 <div class="col-12 col-md-6">
                     <div class="basam-card h-100 shadow-sm">
@@ -228,13 +229,13 @@
                             <div class="row text-center align-items-center">
                                 <div class="col-6 border-end basam-clickable" onclick="openEmptyPopUp('Data Pilah Sampah - SUDAH', 'Rincian data warga/wilayah yang SUDAH melakukan pemilahan sampah')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">SUDAH</span>
-                                    <div class="fs-2hx fw-bolder my-1" style="color: #10b981;">784.66</div>
-                                    <span class="fs-1 fw-bolder text-success">4</span>
+                                    <div class="fs-2hx fw-bolder my-1" style="color: #10b981;" id="basam-pilah-sudah-tonase">0</div>
+                                    <span class="fs-1 fw-bolder text-success" id="basam-pilah-sudah-count">0</span>
                                 </div>
                                 <div class="col-6 basam-clickable" onclick="openEmptyPopUp('Data Pilah Sampah - BELUM', 'Rincian data warga/wilayah yang BELUM melakukan pemilahan sampah')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">BELUM</span>
-                                    <div class="fs-2hx fw-bolder text-danger my-1">1.671.6</div>
-                                    <span class="fs-1 fw-bolder text-danger">65</span>
+                                    <div class="fs-2hx fw-bolder text-danger my-1" id="basam-pilah-belum-tonase">0</div>
+                                    <span class="fs-1 fw-bolder text-danger" id="basam-pilah-belum-count">0</span>
                                 </div>
                             </div>
                         </div>
@@ -250,11 +251,11 @@
                             <div class="row text-center align-items-center">
                                 <div class="col-6 border-end basam-clickable" onclick="openEmptyPopUp('Data Bank Sampah - SUDAH ADA', 'Rincian lokasi & daftar Bank Sampah yang SUDAH ADA')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">SUDAH ADA</span>
-                                    <div class="fs-2hx fw-bolder my-2" style="color: #10b981;">1.040</div>
+                                    <div class="fs-2hx fw-bolder my-2" style="color: #10b981;" id="basam-bank-ada">0</div>
                                 </div>
                                 <div class="col-6 basam-clickable" onclick="openEmptyPopUp('Data Bank Sampah - BELUM ADA', 'Rincian wilayah/RT/RW yang BELUM ADA Bank Sampah')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">BELUM ADA</span>
-                                    <div class="fs-2hx fw-bolder text-danger my-2">0</div>
+                                    <div class="fs-2hx fw-bolder text-danger my-2" id="basam-bank-belum">0</div>
                                 </div>
                             </div>
                         </div>
@@ -267,7 +268,7 @@
                             <h5 class="fw-bolder text-white m-0 tracking-wider">TONASE AN-ORGANIK</h5>
                         </div>
                         <div class="card-body p-5 text-center">
-                            <div class="fs-2hx fw-bolder text-gray-900 mt-1">1.307.566</div>
+                            <div class="fs-2hx fw-bolder text-gray-900 mt-1" id="basam-tonase-anorganik">0</div>
                             <span class="fs-8 fw-bold text-gray-500 text-uppercase">Kg</span>
                         </div>
                     </div>
@@ -282,15 +283,15 @@
                             <div class="row text-center align-items-center">
                                 <div class="col-4 border-end basam-clickable" onclick="openEmptyPopUp('Data Paving - JUMLAH', 'Rincian total titik paving')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">JUMLAH</span>
-                                    <div class="fs-2hx fw-bolder text-gray-900 mt-1">843</div>
+                                    <div class="fs-2hx fw-bolder text-gray-900 mt-1" id="basam-paving-total">0</div>
                                 </div>
                                 <div class="col-4 border-end basam-clickable" onclick="openEmptyPopUp('Data Paving - SUDAH BIOPORI', 'Rincian titik paving yang SUDAH memiliki biopori')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">SUDAH BIOPORI</span>
-                                    <div class="fs-2hx fw-bolder my-1" style="color: #10b981;">843</div>
+                                    <div class="fs-2hx fw-bolder my-1" style="color: #10b981;" id="basam-paving-sudah">0</div>
                                 </div>
                                 <div class="col-4 basam-clickable" onclick="openEmptyPopUp('Data Paving - BELUM BIOPORI', 'Rincian titik paving yang BELUM memiliki biopori')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">BELUM BIOPORI</span>
-                                    <div class="fs-2hx fw-bolder text-danger mt-1">0</div>
+                                    <div class="fs-2hx fw-bolder text-danger mt-1" id="basam-paving-belum">0</div>
                                 </div>
                             </div>
                         </div>
@@ -298,24 +299,23 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
 <!-- ================================================================= -->
-<!-- MODAL TAMBAH DATA PISANG DANOR -->
+<!-- MODAL TAMBAH DATA ANORGANIK (Pisang BSI) -->
 <!-- ================================================================= -->
 <div class="modal fade" id="modal_tambah_danor" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-4 border-0">
             <div class="modal-header border-0 pb-0 pt-6 px-7">
-                <h3 class="modal-title fw-bolder text-gray-900 fs-3">Tambah Data Pisang Danor</h3>
+                <h3 class="modal-title fw-bolder text-gray-900 fs-3">Tambah Data Pisang BSI (Anorganik)</h3>
                 <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
                     <i class="ki-outline ki-cross fs-1"></i>
                 </button>
             </div>
             <div class="modal-body py-6 px-7">
-                <form id="form-tambah-danor" enctype="multipart/form-data" onsubmit="simpanDataDanor(event)">
+                <form id="form-tambah-danor" enctype="multipart/form-data">
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">NAMA BSI <span class="text-danger">*</span></label>
@@ -335,13 +335,13 @@
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">KECAMATAN <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-solid" name="kecamatan" id="modal-kecamatan-danor" onchange="loadKelurahanModalDanor(this.value)" required>
+                            <select class="form-select form-select-solid" name="kecamatan" id="modal-kecamatan-danor" required>
                                 <option value="" selected disabled>Pilih Kecamatan</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">KELURAHAN <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-solid" name="kelurahan" id="modal-kelurahan-danor" required>
+                            <select class="form-select form-select-solid" name="kelurahan" id="modal-kelurahan-danor" required disabled>
                                 <option value="" selected disabled>Pilih Kelurahan</option>
                             </select>
                         </div>
@@ -358,14 +358,21 @@
                         </div>
                     </div>
 
+                    <div class="row g-4 mb-2">
+                        <div class="col-6"><div class="pd-photo-box" id="pd-add-preview-1"><i class="ki-outline ki-picture fs-3x text-gray-300"></i></div></div>
+                        <div class="col-6"><div class="pd-photo-box" id="pd-add-preview-2"><i class="ki-outline ki-picture fs-3x text-gray-300"></i></div></div>
+                    </div>
+
                     <div class="row g-4 mb-6">
                         <div class="col-md-6">
-                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload File <span class="text-danger">*</span></label>
-                            <input type="file" class="form-control form-control-solid" name="upload_file_1" required />
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload File 1</label>
+                            <input type="file" class="form-control form-control-solid pd-foto-input" name="upload_file_1" data-preview="pd-add-preview-1" accept="image/jpg, image/jpeg, image/png" />
+                            <span class="text-danger fs-9 mt-1 d-block">Maksimal 2MB (jpg, png, jpeg).</span>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload File 2 <span class="text-danger">*</span></label>
-                            <input type="file" class="form-control form-control-solid" name="upload_file_2" required />
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload File 2</label>
+                            <input type="file" class="form-control form-control-solid pd-foto-input" name="upload_file_2" data-preview="pd-add-preview-2" accept="image/jpg, image/jpeg, image/png" />
+                            <span class="text-danger fs-9 mt-1 d-block">Maksimal 2MB (jpg, png, jpeg).</span>
                         </div>
                     </div>
 
@@ -380,20 +387,20 @@
 </div>
 
 <!-- ================================================================= -->
-<!-- MODAL EDIT DATA PISANG DANOR -->
+<!-- MODAL EDIT DATA ANORGANIK (Pisang BSI) -->
 <!-- ================================================================= -->
 <div class="modal fade" id="modal_edit_danor" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-4 border-0">
             <div class="modal-header border-0 pb-0 pt-6 px-7">
-                <h3 class="modal-title fw-bolder text-gray-900 fs-3">Edit Data Pisang Danor</h3>
+                <h3 class="modal-title fw-bolder text-gray-900 fs-3">Edit Data Pisang BSI (Anorganik)</h3>
                 <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
                     <i class="ki-outline ki-cross fs-1"></i>
                 </button>
             </div>
             <div class="modal-body py-6 px-7">
-                <form id="form-edit-danor" enctype="multipart/form-data" onsubmit="simpanEditDanor(event)">
-                    <input type="hidden" id="edit-id-danor" name="id" />
+                <form id="form-edit-danor" enctype="multipart/form-data">
+                    <input type="hidden" id="edit-id-danor" />
 
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
@@ -414,7 +421,7 @@
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">KECAMATAN <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-solid" id="edit-kecamatan-danor" name="kecamatan" onchange="loadKelurahanEditDanor(this.value)" required>
+                            <select class="form-select form-select-solid" id="edit-kecamatan-danor" name="kecamatan" required>
                                 <option value="" selected disabled>Pilih Kecamatan</option>
                             </select>
                         </div>
@@ -437,20 +444,133 @@
                         </div>
                     </div>
 
+                    <div class="row g-4 mb-2">
+                        <div class="col-6"><div class="pd-photo-box" id="pd-edit-preview-1"><i class="ki-outline ki-picture fs-3x text-gray-300"></i></div></div>
+                        <div class="col-6"><div class="pd-photo-box" id="pd-edit-preview-2"><i class="ki-outline ki-picture fs-3x text-gray-300"></i></div></div>
+                    </div>
+
                     <div class="row g-4 mb-6">
                         <div class="col-md-6">
-                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload File (Opsional)</label>
-                            <input type="file" class="form-control form-control-solid" name="upload_file_1" />
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload File 1 (Opsional)</label>
+                            <input type="file" class="form-control form-control-solid pd-foto-input" id="edit-file-1" name="upload_file_1" data-preview="pd-edit-preview-1" accept="image/jpg, image/jpeg, image/png" />
+                            <span class="text-danger fs-9 mt-1 d-block">Maksimal 2MB (jpg, png, jpeg).</span>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload File 2 (Opsional)</label>
-                            <input type="file" class="form-control form-control-solid" name="upload_file_2" />
+                            <input type="file" class="form-control form-control-solid pd-foto-input" id="edit-file-2" name="upload_file_2" data-preview="pd-edit-preview-2" accept="image/jpg, image/jpeg, image/png" />
+                            <span class="text-danger fs-9 mt-1 d-block">Maksimal 2MB (jpg, png, jpeg).</span>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-end gap-3 pt-4 border-top">
                         <button type="button" class="btn btn-light-danger fw-bold px-6" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary fw-bold px-6">Simpan Changes</button>
+                        <button type="submit" class="btn btn-primary fw-bold px-6">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================= -->
+<!-- MODAL TAMBAH / EDIT DATA ORGANIK -->
+<!-- ================================================================= -->
+<div class="modal fade" id="modal_organik_danor" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header border-0 pb-0 pt-6 px-7">
+                <h3 class="modal-title fw-bolder text-gray-900 fs-3" id="po-title">Tambah Data Pisang Organik</h3>
+                <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <i class="ki-outline ki-cross fs-1"></i>
+                </button>
+            </div>
+            <div class="modal-body py-6 px-7">
+                <form id="form-organik-danor" enctype="multipart/form-data">
+                    <input type="hidden" id="po-id" />
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">KECAMATAN <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-solid" id="po-kecamatan" name="kecamatan" required>
+                                <option value="" selected disabled>Pilih Kecamatan</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">KELURAHAN <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-solid" id="po-kelurahan" name="kelurahan" required disabled>
+                                <option value="" selected disabled>Pilih Kelurahan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">RW</label>
+                            <input type="text" class="form-control form-control-solid" id="po-rw" name="rw" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">RT</label>
+                            <input type="text" class="form-control form-control-solid" id="po-rt" name="rt" />
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Jumlah Tonase (Kg) <span class="text-danger">*</span></label>
+                            <input type="number" min="0" step="0.01" class="form-control form-control-solid" id="po-tonase" name="jumlah_tonase" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Tonase Residu (Kg) <span class="text-danger">*</span></label>
+                            <input type="number" min="0" step="0.01" class="form-control form-control-solid" id="po-residu" name="tonase_residu" required />
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Sampah Terolah Anorganik (Kg)</label>
+                            <input type="number" min="0" step="0.01" class="form-control form-control-solid" id="po-terolah-anorganik" name="sampah_terolah_anorganik" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Sampah Terolah Organik (Kg)</label>
+                            <input type="number" min="0" step="0.01" class="form-control form-control-solid" id="po-terolah-organik" name="sampah_terolah_organik" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fs-8 fw-bold text-uppercase text-gray-700 mb-2">Metode Pengolahan Sampah</label>
+                        <div class="pd-checkbox-grid">
+                            @foreach(['KOMPOSTING','BIOPORI','MAGGOT','BANK SAMPAH','DAUR ULANG','TPS3R','ECOBRICK','INSINERATOR','RDF','PIROLISIS','GASIFIKASI','LANDFILL','CO PROCESSING','LAINNYA'] as $metode)
+                                <label class="pd-checkbox-item">
+                                    <input type="checkbox" class="form-check-input po-metode" value="{{ $metode }}">
+                                    {{ $metode }}
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- BOX PREVIEW FOTO ORGANIK -->
+                    <div class="row g-4 mb-2">
+                        <div class="col-6"><div class="pd-photo-box" id="po-preview-1"><i class="ki-outline ki-picture fs-3x text-gray-300"></i></div></div>
+                        <div class="col-6"><div class="pd-photo-box" id="po-preview-2"><i class="ki-outline ki-picture fs-3x text-gray-300"></i></div></div>
+                    </div>
+
+                    <!-- INPUT UPLOAD FOTO ORGANIK -->
+                    <div class="row g-4 mb-6">
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload File 1</label>
+                            <input type="file" class="form-control form-control-solid pd-foto-input" id="po-file-1" name="upload_file_1" data-preview="po-preview-1" accept="image/jpg, image/jpeg, image/png" />
+                            <span class="text-danger fs-9 mt-1 d-block">Maksimal 2MB (jpg, png, jpeg).</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload File 2</label>
+                            <input type="file" class="form-control form-control-solid pd-foto-input" id="po-file-2" name="upload_file_2" data-preview="po-preview-2" accept="image/jpg, image/jpeg, image/png" />
+                            <span class="text-danger fs-9 mt-1 d-block">Maksimal 2MB (jpg, png, jpeg).</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                        <button type="button" class="btn btn-light-danger fw-bold px-6" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success fw-bold px-6 text-white" style="background-color: #22c55e !important;">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -483,311 +603,486 @@
     </div>
 </div>
 
-<!-- Script Logic & Event Listeners -->
 <script>
-const dataWilayahSurabayaDanor = {
-    "ASEM ROWO": ["ASEM ROWO", "GENTING KALIANAK", "TAMBAK SARIOSO"],
-    "BENOWO": ["KANDANGAN", "ROMOKALISARI", "SEMEMI", "TAMBAK OSO WILANGUN"],
-    "BUBUTAN": ["ALUN-ALUN CONTONG", "BUBUTAN", "GUNDIH", "JEPARA", "TEMBOK DUKUH"],
-    "BULAK": ["BULAK", "KEDUNG COWEK", "KENJERAN", "SUKOLILO BARU"],
-    "DUKUH PAKIS": ["DUKUH KUPANG", "DUKUH PAKIS", "GUNUNG SARI", "PRADAH KALIKENDAL"],
-    "GAYUNGAN": ["DUKUH MENANGGAL", "GAYUNGAN", "KETINTANG", "MENANGGAL"],
-    "GENTENG": ["EMBONG KALIASIN", "GENTENG", "KAPASARI", "KETABANG", "PENELEH"],
-    "GUBENG": ["AIRLANGGA", "BARATAJAYA", "GUBENG", "KERTAJAYA", "MOJO", "PUCANG SEWU"],
-    "GUNUNG ANYAR": ["GUNUNG ANYAR", "GUNUNG ANYAR TAMBAK", "RUNGKUT MENANGGAL", "RUNGKUT TENGAH"],
-    "JAMBANGAN": ["JAMBANGAN", "KARAH", "KEBONSARI", "PAGESANGAN"],
-    "KARANG PILANG": ["KARANG PILANG", "KEBRAON", "KEDURUS", "WARU GUNUNG"],
-    "KENJERAN": ["BULAK BANTENG", "SIDOTOPO WETAN", "TAMBAK WEDI", "TANAH KALI KEDINDING"],
-    "KREMBANGAN": ["DUPAK", "KEMAYORAN", "KREMBANGAN SELATAN", "MOROKREMBANGAN", "PERAK BARAT"],
-    "LAKARSANTRI": ["BANGKINGAN", "JERUK", "LAKARSANTRI", "LIDAH KULON", "LIDAH WETAN", "SUMURWELUT"],
-    "MULYOREJO": ["DUKUH SUTOREJO", "KALIJUDAN", "KALISARI", "KEJAWAAN PUTIH TAMBAK", "MANYAR SABRANGAN", "MULYOREJO"],
-    "PABEAN CANTIAN": ["BONGKARAN", "KREMBANGAN UTARA", "NYAMPLUNGAN", "TANJUNG PERAK"],
-    "PAKAL": ["BABAT JERAWAT", "BENOWO", "PAKAL", "SUMBER REJO"],
-    "RUNGKUT": ["KALIRUNGKUT", "KEDUNG BARUK", "MEDOKAN AYU", "PENJARINGANSARI", "RUNGKUT KIDUL", "WONOREJO"],
-    "SAMBIKEREP": ["BERINGIN", "LONTAR", "MADE", "SAMBIKEREP"],
-    "SAWAHAN": ["BANYU URIP", "KUPANG KRAJAN", "PAKIS", "PETEMON", "PUTAT JAYA", "SAWAHAN"],
-    "SEMAMPIR": ["AMPEL", "PEGIRIAN", "SIDOTOPO", "UJUNG", "WONOKUSUMO"],
-    "SIMOKERTO": ["KAPASAN", "SIDODADI", "SIMOKERTO", "SIMOLAWANG", "TAMBAKREJO"],
-    "SUKOLILO": ["GEBANG PUTIH", "KEPUTIH", "KLAMPIS NGASEM", "MEDOKAN SEMAMPIR", "MENUR PUMPUNGAN", "NGINDEN JANGKUNGAN", "SEMOLOWARU"],
-    "SUKOMANUNGGAL": ["PUTAT GEDE", "SIMOMULYO", "SIMOMULYO BARU", "SONOKWIJENAN", "SUKOMANUNGGAL", "TANJUNGSARI"],
-    "TAMBAKSARI": ["DUKUH SETRO", "GADING", "KAPASMADYA BARU", "PACARKELING", "PACARKEMBANG", "PLOSO", "RANGKAH", "TAMBAKSARI"],
-    "TANDES": ["BALONGSARI", "BANJAR SUGIHAN", "KARANG POH", "MANUKAN KULON", "MANUKAN WETAN", "TANDES"],
-    "TEGALSARI": ["DR. SOETOMO", "KEDUNGDORO", "KEPUTRAN", "TEGALSARI", "WONOREJO"],
-    "TENGGILIS MEJOYO": ["KENDANGSARI", "KUTISARI", "PANJANG JIWO", "TENGGILIS MEJOYO"],
-    "WIYUNG": ["BABATAN", "BALAS KLUMPRIK", "JAJAR TUNGGAL", "WIYUNG"],
-    "WONOCOLO": ["BENDUL MERISI", "JEMUR WONOSARI", "MARGOREJO", "SIDOSERMO", "SIWALANKERTO"],
-    "WONOKROMO": ["DARMO", "JAGIR", "NGAGEL", "NGAGEL REJO", "SAWUNGGALING", "WONOKROMO"]
-};
+(function () {
+    let wilayah = {};
+    let kategori = 'anorganik';
+    let dataBsi = [];
+    let dataOrganik = [];
+    let page = 1;
 
-let kategoriDanorAktif = 'anorganik';
+    const csrf = document.getElementById('pd-csrf-token').value;
+    const $ = function (id) { return document.getElementById(id); };
+    const EMPTY_IMG = '<i class="ki-outline ki-picture fs-3x text-gray-300"></i>';
 
-// Dummy Data untuk Anorganik & Organik
-let listDataAnorganik = [
-    { id: 1, nama_bsi: "BSI Bank Sampah Melati", alamat: "Jl. Embong Malang No. 22", metode: "Daur Ulang Plastik & Kerajinan", kecamatan: "GENTENG", kelurahan: "EMBONG KALIASIN", rw: "03", rt: "05" },
-    { id: 2, nama_bsi: "BSI Bersinar Tegalsari", alamat: "Jl. Kedungdoro No. 104", metode: "Pencacahan Plastik Keras", kecamatan: "TEGALSARI", kelurahan: "KEDUNGDORO", rw: "01", rt: "02" }
-];
-
-let listDataOrganik = [
-    { id: 1, nama_bsi: "Rumah Kompos Jambangan", alamat: "Jl. Jambangan No. 45", metode: "Pengomposan Takakura & Maggot BSF", kecamatan: "JAMBANGAN", kelurahan: "JAMBANGAN", rw: "02", rt: "04" },
-    { id: 2, nama_bsi: "BSI Organik Hijau Rungkut", alamat: "Jl. Kalirungkut No. 12", metode: "Budidaya Maggot & Eco Enzyme", kecamatan: "RUNGKUT", kelurahan: "KALIRUNGKUT", rw: "05", rt: "01" }
-];
-
-function initDropdownDanor() {
-    const kecFilter = document.getElementById('filter-kecamatan-danor');
-    const kecModalTambah = document.getElementById('modal-kecamatan-danor');
-    const kecModalEdit = document.getElementById('edit-kecamatan-danor');
-    const listKec = Object.keys(dataWilayahSurabayaDanor);
-
-    if (kecFilter) {
-        kecFilter.innerHTML = '<option value="">Semua Kecamatan</option>';
-        listKec.forEach(k => kecFilter.appendChild(new Option(k, k)));
+    function esc(v) {
+        if (v === null || v === undefined) return '';
+        return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
-    if (kecModalTambah) {
-        kecModalTambah.innerHTML = '<option value="" selected disabled>Pilih Kecamatan</option>';
-        listKec.forEach(k => kecModalTambah.appendChild(new Option(k, k)));
-    }
-    if (kecModalEdit) {
-        kecModalEdit.innerHTML = '<option value="" selected disabled>Pilih Kecamatan</option>';
-        listKec.forEach(k => kecModalEdit.appendChild(new Option(k, k)));
-    }
-}
+    function num(v) { return Number(v) || 0; }
+    function fmt(v) { return num(v).toLocaleString('id-ID', { maximumFractionDigits: 2 }); }
 
-function loadKelurahanDanor(kec) {
-    const kelSelect = document.getElementById('filter-kelurahan-danor');
-    if (!kelSelect) return;
-    kelSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
-    if (kec && dataWilayahSurabayaDanor[kec]) {
-        dataWilayahSurabayaDanor[kec].forEach(k => kelSelect.appendChild(new Option(k, k)));
-    }
-}
-
-function loadKelurahanModalDanor(kec) {
-    const kelSelect = document.getElementById('modal-kelurahan-danor');
-    if (!kelSelect) return;
-    kelSelect.innerHTML = '<option value="" selected disabled>Pilih Kelurahan</option>';
-    if (kec && dataWilayahSurabayaDanor[kec]) {
-        dataWilayahSurabayaDanor[kec].forEach(k => kelSelect.appendChild(new Option(k, k)));
-    }
-}
-
-function loadKelurahanEditDanor(kec) {
-    const kelSelect = document.getElementById('edit-kelurahan-danor');
-    if (!kelSelect) return;
-    kelSelect.innerHTML = '<option value="" selected disabled>Pilih Kelurahan</option>';
-    if (kec && dataWilayahSurabayaDanor[kec]) {
-        dataWilayahSurabayaDanor[kec].forEach(k => kelSelect.appendChild(new Option(k, k)));
-    }
-}
-
-function pilihKategoriDanor(jenis) {
-    kategoriDanorAktif = jenis;
-
-    const btnAnorganik = document.getElementById('card-btn-anorganik');
-    const btnOrganik = document.getElementById('card-btn-organik');
-    const titleTabel = document.getElementById('title-tabel-danor');
-    const subtitleTabel = document.getElementById('subtitle-tabel-danor');
-
-    if (jenis === 'anorganik') {
-        btnAnorganik.classList.add('active-kategori');
-        btnOrganik.classList.remove('active-kategori');
-        if (titleTabel) titleTabel.textContent = 'Data Pisang BSI (Anorganik)';
-        if (subtitleTabel) subtitleTabel.textContent = 'Menampilkan daftar data pengolahan sampah anorganik';
-    } else {
-        btnOrganik.classList.add('active-kategori');
-        btnAnorganik.classList.remove('active-kategori');
-        if (titleTabel) titleTabel.textContent = 'Data Pisang BSI (Organik)';
-        if (subtitleTabel) subtitleTabel.textContent = 'Menampilkan daftar data pengolahan sampah organik (kompos, maggot, dll)';
-    }
-
-    renderTabelDanor();
-}
-
-function renderTabelDanor() {
-    const tbody = document.getElementById('tbody-danor');
-    if (!tbody) return;
-
-    const dataset = (kategoriDanorAktif === 'anorganik') ? listDataAnorganik : listDataOrganik;
-
-    if (dataset.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-gray-500">Belum ada data tersedia</td></tr>`;
-        return;
-    }
-
-    tbody.innerHTML = dataset.map((item, index) => {
-        const badgeColor = (kategoriDanorAktif === 'anorganik') ? 'badge-light-primary' : 'badge-light-success';
-        return `
-            <tr>
-                <td class="text-center fw-bold">${index + 1}</td>
-                <td class="fw-bold text-gray-800">${item.nama_bsi}</td>
-                <td>${item.alamat}</td>
-                <td><span class="badge ${badgeColor} fw-bold px-3 py-2">${item.metode}</span></td>
-                <td>${item.kecamatan}</td>
-                <td>${item.kelurahan}</td>
-                <td class="text-center">${item.rw}</td>
-                <td class="text-center">${item.rt}</td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-icon btn-light-primary rounded-circle me-1" title="Edit" onclick="openModalEditDanor(${item.id})">
-                        <i class="ki-outline ki-pencil fs-5"></i>
-                    </button>
-                    <button class="btn btn-sm btn-icon btn-light-danger rounded-circle" title="Hapus" onclick="hapusDataDanor(${item.id}, '${item.nama_bsi}')">
-                        <i class="ki-outline ki-trash fs-5"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-// SIMPAN TAMBAH DATA (Pop-up: Data berhasil ditambahkan)
-function simpanDataDanor(e) {
-    e.preventDefault();
-    const modalEl = document.getElementById('modal_tambah_danor');
-    if (modalEl) {
-        bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-    }
-
-    Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
-        text: 'Data berhasil ditambahkan',
-        showConfirmButton: false,
-        timer: 2000,
-        customClass: { popup: 'rounded-4' }
-    });
-
-    document.getElementById('form-tambah-danor').reset();
-}
-
-// BUKA MODAL EDIT DATA
-function openModalEditDanor(id) {
-    const dataset = (kategoriDanorAktif === 'anorganik') ? listDataAnorganik : listDataOrganik;
-    const item = dataset.find(d => d.id === id);
-
-    if (!item) return;
-
-    document.getElementById('edit-id-danor').value = item.id;
-    document.getElementById('edit-nama-bsi').value = item.nama_bsi;
-    document.getElementById('edit-metode-pengolahan').value = item.metode;
-    document.getElementById('edit-alamat-bsi').value = item.alamat;
-    document.getElementById('edit-rw').value = item.rw;
-    document.getElementById('edit-rt').value = item.rt;
-
-    const kecEditSelect = document.getElementById('edit-kecamatan-danor');
-    kecEditSelect.value = item.kecamatan;
-    loadKelurahanEditDanor(item.kecamatan);
-
-    setTimeout(() => {
-        document.getElementById('edit-kelurahan-danor').value = item.kelurahan;
-    }, 100);
-
-    const modalEditEl = document.getElementById('modal_edit_danor');
-    bootstrap.Modal.getOrCreateInstance(modalEditEl).show();
-}
-
-// SIMPAN EDIT DATA (Pop-up: Data berhasil diubah)
-function simpanEditDanor(e) {
-    e.preventDefault();
-
-    const id = parseInt(document.getElementById('edit-id-danor').value);
-    const dataset = (kategoriDanorAktif === 'anorganik') ? listDataAnorganik : listDataOrganik;
-    const item = dataset.find(d => d.id === id);
-
-    if (item) {
-        item.nama_bsi = document.getElementById('edit-nama-bsi').value;
-        item.metode = document.getElementById('edit-metode-pengolahan').value;
-        item.alamat = document.getElementById('edit-alamat-bsi').value;
-        item.kecamatan = document.getElementById('edit-kecamatan-danor').value;
-        item.kelurahan = document.getElementById('edit-kelurahan-danor').value;
-        item.rw = document.getElementById('edit-rw').value;
-        item.rt = document.getElementById('edit-rt').value;
-    }
-
-    const modalEditEl = document.getElementById('modal_edit_danor');
-    bootstrap.Modal.getOrCreateInstance(modalEditEl).hide();
-
-    renderTabelDanor();
-
-    Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
-        text: 'Data berhasil diubah',
-        showConfirmButton: false,
-        timer: 2000,
-        customClass: { popup: 'rounded-4' }
-    });
-}
-
-// HAPUS DATA DENGAN KONFIRMASI (Pop-up Yakin/Batal & Data berhasil dihapus)
-function hapusDataDanor(id, namaBsi) {
-    Swal.fire({
-        title: 'Konfirmasi Hapus',
-        text: `Apakah anda yakin untuk menghapus ${namaBsi} ini?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yakin',
-        cancelButtonText: 'Batal',
-        customClass: {
-            confirmButton: 'btn btn-success fw-bold px-6 me-2',
-            cancelButton: 'btn btn-danger fw-bold px-6',
-            popup: 'rounded-4'
-        },
-        buttonsStyling: false
-    }).then((result) => {
-        if (result.isConfirmed) {
-            if (kategoriDanorAktif === 'anorganik') {
-                listDataAnorganik = listDataAnorganik.filter(item => item.id !== id);
-            } else {
-                listDataOrganik = listDataOrganik.filter(item => item.id !== id);
-            }
-
-            renderTabelDanor();
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: 'Data berhasil dihapus',
-                showConfirmButton: false,
-                timer: 2000,
-                customClass: { popup: 'rounded-4' }
+    function api(url, options) {
+        options = options || {};
+        options.headers = Object.assign({ 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf }, options.headers || {});
+        return fetch(url, options).then(function (res) {
+            return res.json().catch(function () { return {}; }).then(function (body) {
+                if (!res.ok) {
+                    let msg = body.message || 'Terjadi kesalahan.';
+                    if (body.errors) msg = Object.values(body.errors)[0][0];
+                    throw new Error(msg);
+                }
+                return body;
             });
+        });
+    }
+
+    function sukses(teks) {
+        Swal.fire({ icon: 'success', title: 'Berhasil!', text: teks, showConfirmButton: false, timer: 2000, customClass: { popup: 'rounded-4' } });
+    }
+    function gagal(teks) {
+        Swal.fire({ icon: 'error', title: 'Gagal', text: teks, customClass: { popup: 'rounded-4' } });
+    }
+    function modal(id) { return bootstrap.Modal.getOrCreateInstance($(id)); }
+
+    function isiKecamatan(select, placeholder, disabledPlaceholder) {
+        select.innerHTML = '<option value=""' + (disabledPlaceholder ? ' selected disabled' : '') + '>' + placeholder + '</option>';
+        Object.keys(wilayah).sort().forEach(function (k) { select.appendChild(new Option(k, k)); });
+    }
+    function isiKelurahan(select, kec, placeholder, disabledPlaceholder, terpilih) {
+        select.innerHTML = '<option value=""' + (disabledPlaceholder ? ' selected disabled' : '') + '>' + placeholder + '</option>';
+        const list = wilayah[kec] || [];
+        list.forEach(function (k) { select.appendChild(new Option(k, k)); });
+        select.disabled = list.length === 0;
+        if (terpilih) select.value = terpilih;
+    }
+
+    function initWilayah() {
+        // Dropdown Filter Tabel Utama
+        isiKecamatan($('filter-kecamatan-danor'), 'Semua Kecamatan', false);
+        $('filter-kecamatan-danor').addEventListener('change', function () {
+            isiKelurahan($('filter-kelurahan-danor'), this.value, 'Semua Kelurahan', false);
+            page = 1; render();
+        });
+        $('filter-kelurahan-danor').addEventListener('change', function () { page = 1; render(); });
+
+        // Modal Tambah Anorganik
+        isiKecamatan($('modal-kecamatan-danor'), 'Pilih Kecamatan', true);
+        $('modal-kecamatan-danor').addEventListener('change', function () {
+            isiKelurahan($('modal-kelurahan-danor'), this.value, 'Pilih Kelurahan', true);
+        });
+
+        // Modal Edit Anorganik
+        isiKecamatan($('edit-kecamatan-danor'), 'Pilih Kecamatan', true);
+        $('edit-kecamatan-danor').addEventListener('change', function () {
+            isiKelurahan($('edit-kelurahan-danor'), this.value, 'Pilih Kelurahan', true);
+        });
+
+        // Modal Organik (Tambah & Edit)
+        isiKecamatan($('po-kecamatan'), 'Pilih Kecamatan', true);
+        $('po-kecamatan').addEventListener('change', function () {
+            isiKelurahan($('po-kelurahan'), this.value, 'Pilih Kelurahan', true);
+        });
+
+        // Dropdown SI BASAM
+        isiKecamatan($('basam-kecamatan'), '- Pilih Kecamatan -', false);
+        $('basam-kecamatan').addEventListener('change', function () {
+            isiKelurahan($('basam-kelurahan'), this.value, '-- Pilih Kelurahan --', false);
+            hitungSiBasam();
+        });
+        $('basam-kelurahan').addEventListener('change', function () { hitungSiBasam(); });
+    }
+
+    function hitungSiBasam() {
+        const kec = $('basam-kecamatan').value;
+        const kel = $('basam-kelurahan').value;
+
+        const fOrganik = dataOrganik.filter(function(r) {
+            if (kec && r.kecamatan !== kec) return false;
+            if (kel && r.kelurahan !== kel) return false;
+            return true;
+        });
+
+        const fBsi = dataBsi.filter(function(r) {
+            if (kec && r.kecamatan !== kec) return false;
+            if (kel && r.kelurahan !== kel) return false;
+            return true;
+        });
+
+        let tonaseAnorganik = 0;
+        fOrganik.forEach(function(r) { tonaseAnorganik += num(r.sampah_terolah_anorganik); });
+
+        // Angka di bawah ini belum punya sumber data asli, jadi ditampilkan "-" (bukan angka karangan)
+        ['basam-pilah-sudah-tonase','basam-pilah-sudah-count','basam-pilah-belum-tonase','basam-pilah-belum-count',
+         'basam-bank-belum','basam-paving-total','basam-paving-sudah','basam-paving-belum'].forEach(function(id) {
+            $(id).textContent = '-';
+        });
+
+        $('basam-bank-ada').textContent = fBsi.length;
+        $('basam-tonase-anorganik').textContent = fmt(tonaseAnorganik);
+    }
+
+    function loadAll() {
+        return Promise.all([api('/pisang-danor/bsi'), api('/pisang-danor/organik')])
+            .then(function (hasil) {
+                dataBsi = hasil[0];
+                dataOrganik = hasil[1];
+                render();
+                hitungSiBasam();
+            })
+            .catch(function () {
+                $('tbody-danor').innerHTML = '<tr><td class="text-center text-danger py-5">Gagal memuat data.</td></tr>';
+            });
+    }
+
+    window.pilihKategoriDanor = function (jenis) {
+        kategori = jenis;
+        $('card-btn-anorganik').classList.toggle('active-kategori', jenis === 'anorganik');
+        $('card-btn-organik').classList.toggle('active-kategori', jenis === 'organik');
+
+        if (jenis === 'anorganik') {
+            $('title-tabel-danor').textContent = 'Data Pisang BSI (Anorganik)';
+            $('subtitle-tabel-danor').textContent = 'Menampilkan daftar data pengolahan sampah anorganik';
+        } else {
+            $('title-tabel-danor').textContent = 'Data Pisang Organik';
+            $('subtitle-tabel-danor').textContent = 'Menampilkan daftar data pengolahan sampah organik (kompos, maggot, dll)';
         }
+        page = 1;
+        render();
+    };
+
+    function filtered() {
+        const kec = $('filter-kecamatan-danor').value;
+        const kel = $('filter-kelurahan-danor').value;
+        const q = $('search-danor').value.trim().toLowerCase();
+        const sumber = kategori === 'anorganik' ? dataBsi : dataOrganik;
+
+        return sumber.filter(function (r) {
+            if (kec && r.kecamatan !== kec) return false;
+            if (kel && r.kelurahan !== kel) return false;
+            if (q) {
+                const teks = Object.values(r).join(' ').toLowerCase();
+                if (teks.indexOf(q) === -1) return false;
+            }
+            return true;
+        });
+    }
+
+    function render() {
+        const thead = $('thead-danor');
+        const tbody = $('tbody-danor');
+        const rows = filtered();
+        const perPage = parseInt($('pagesize-danor').value, 10) || 10;
+        const totalPage = Math.max(1, Math.ceil(rows.length / perPage));
+        if (page > totalPage) page = totalPage;
+        const mulai = (page - 1) * perPage;
+        const tampil = rows.slice(mulai, mulai + perPage);
+
+        let kolom = 11;
+        if (kategori === 'anorganik') {
+            thead.innerHTML = '<tr class="fw-bolder text-gray-800 bg-light text-uppercase">' +
+                '<th class="w-50px text-center">NO</th><th>NAMA BSI</th><th>ALAMAT BSI</th><th>METODE PENGOLAHAN</th>' +
+                '<th>KECAMATAN</th><th>KELURAHAN</th><th class="text-center">RW</th><th class="text-center">RT</th>' +
+                '<th class="text-center">LIHAT FOTO</th><th class="text-center">AKSI</th></tr>';
+            kolom = 10;
+        } else {
+            thead.innerHTML = '<tr class="fw-bolder text-gray-800 bg-light text-uppercase">' +
+                '<th class="w-50px text-center">NO</th><th>KECAMATAN</th><th>KELURAHAN</th><th class="text-center">RW</th><th class="text-center">RT</th>' +
+                '<th class="text-end">JUMLAH TONASE</th><th class="text-end">JUMLAH SAMPAH TEROLAH</th><th class="text-end">JUMLAH TONASE RESIDU</th>' +
+                '<th class="text-center">JUMLAH METODE PENGOLAHAN</th><th class="text-center">LIHAT FOTO</th><th class="text-center">AKSI</th></tr>';
+            kolom = 11;
+        }
+
+        if (!tampil.length) {
+            tbody.innerHTML = '<tr><td colspan="' + kolom + '" class="text-center py-5 text-gray-500">Belum ada data tersedia</td></tr>';
+        } else {
+            tbody.innerHTML = tampil.map(function (r, i) {
+                const no = mulai + i + 1;
+                const aksi = '<td class="text-center">' +
+                    '<button class="btn btn-sm btn-icon btn-light-primary rounded-circle me-1 pd-btn-edit" data-id="' + r.id + '" title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>' +
+                    '<button class="btn btn-sm btn-icon btn-light-danger rounded-circle pd-btn-hapus" data-id="' + r.id + '" title="Hapus"><i class="ki-outline ki-trash fs-5"></i></button></td>';
+
+                // Tombol Lihat Foto
+                let btnFoto = '<span class="text-muted fs-8">-</span>';
+                if (r.upload_file_1_url || r.upload_file_2_url) {
+                    btnFoto = '<div class="d-flex justify-content-center gap-1">';
+                    if (r.upload_file_1_url) {
+                        btnFoto += '<a href="' + esc(r.upload_file_1_url) + '" target="_blank" class="btn btn-sm btn-icon btn-light-info" title="Lihat Foto 1"><i class="ki-outline ki-eye fs-5"></i></a>';
+                    }
+                    if (r.upload_file_2_url) {
+                        btnFoto += '<a href="' + esc(r.upload_file_2_url) + '" target="_blank" class="btn btn-sm btn-icon btn-light-success" title="Lihat Foto 2"><i class="ki-outline ki-eye fs-5"></i></a>';
+                    }
+                    btnFoto += '</div>';
+                }
+
+                if (kategori === 'anorganik') {
+                    return '<tr><td class="text-center fw-bold">' + no + '</td>' +
+                        '<td class="fw-bold text-gray-800">' + esc(r.nama_bsi) + '</td>' +
+                        '<td>' + esc(r.alamat_bsi) + '</td>' +
+                        '<td><span class="badge badge-light-primary fw-bold px-3 py-2">' + esc(r.metode_pengolahan) + '</span></td>' +
+                        '<td>' + esc(r.kecamatan) + '</td><td>' + esc(r.kelurahan) + '</td>' +
+                        '<td class="text-center">' + esc(r.rw) + '</td><td class="text-center">' + esc(r.rt) + '</td>' +
+                        '<td class="text-center">' + btnFoto + '</td>' + aksi + '</tr>';
+                }
+
+                const terolah = num(r.sampah_terolah_anorganik) + num(r.sampah_terolah_organik);
+                const jmlMetode = Array.isArray(r.metode_pengolahan) ? r.metode_pengolahan.length : 0;
+                return '<tr><td class="text-center fw-bold">' + no + '</td>' +
+                    '<td>' + esc(r.kecamatan) + '</td><td>' + esc(r.kelurahan) + '</td>' +
+                    '<td class="text-center">' + esc(r.rw) + '</td><td class="text-center">' + esc(r.rt) + '</td>' +
+                    '<td class="text-end">' + fmt(r.jumlah_tonase) + '</td>' +
+                    '<td class="text-end">' + fmt(terolah) + '</td>' +
+                    '<td class="text-end">' + fmt(r.tonase_residu) + '</td>' +
+                    '<td class="text-center"><span class="badge badge-light-success fw-bold px-3 py-2">' + jmlMetode + '</span></td>' +
+                    '<td class="text-center">' + btnFoto + '</td>' + aksi + '</tr>';
+            }).join('');
+        }
+
+        $('info-danor').textContent = rows.length
+            ? 'Menampilkan ' + (mulai + 1) + ' - ' + (mulai + tampil.length) + ' dari ' + rows.length + ' data'
+            : 'Tidak ada data';
+
+        let pg = '';
+        pg += '<li class="page-item ' + (page === 1 ? 'disabled' : '') + '"><a class="page-link pd-page" href="#" data-page="' + (page - 1) + '">Sebelumnya</a></li>';
+        for (let p = 1; p <= totalPage; p++) {
+            pg += '<li class="page-item ' + (p === page ? 'active' : '') + '"><a class="page-link pd-page" href="#" data-page="' + p + '">' + p + '</a></li>';
+        }
+        pg += '<li class="page-item ' + (page === totalPage ? 'disabled' : '') + '"><a class="page-link pd-page" href="#" data-page="' + (page + 1) + '">Berikutnya</a></li>';
+        $('pagination-danor').innerHTML = pg;
+    }
+
+    $('pagesize-danor').addEventListener('change', function () { page = 1; render(); });
+    $('search-danor').addEventListener('input', function () { page = 1; render(); });
+
+    $('tbody-danor').addEventListener('click', function (e) {
+        const edit = e.target.closest('.pd-btn-edit');
+        const hapus = e.target.closest('.pd-btn-hapus');
+        if (edit) bukaEdit(edit.dataset.id);
+        if (hapus) konfirmasiHapus(hapus.dataset.id);
     });
-}
+    $('pagination-danor').addEventListener('click', function (e) {
+        const a = e.target.closest('.pd-page');
+        if (!a) return;
+        e.preventDefault();
+        const p = parseInt(a.dataset.page, 10);
+        if (p >= 1) { page = p; render(); }
+    });
 
-function openEmptyPopUp(title, subtitle) {
-    document.getElementById('popup-title').textContent = title;
-    document.getElementById('popup-subtitle').textContent = subtitle;
+    document.querySelectorAll('.pd-foto-input').forEach(function (input) {
+        input.addEventListener('change', function () {
+            const box = $(this.dataset.preview);
+            const file = this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) { box.innerHTML = '<img src="' + e.target.result + '" alt="preview">'; };
+            reader.readAsDataURL(file);
+        });
+    });
+    function fotoHtml(url) { return url ? '<img src="' + esc(url) + '" alt="foto">' : EMPTY_IMG; }
 
-    const modalEl = document.getElementById('modalPopUpKosong');
-    if (modalEl && typeof bootstrap !== 'undefined') {
-        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    window.openTambahDanor = function () {
+        if (kategori === 'anorganik') {
+            $('form-tambah-danor').reset();
+            isiKecamatan($('modal-kecamatan-danor'), 'Pilih Kecamatan', true);
+            $('modal-kelurahan-danor').innerHTML = '<option value="" selected disabled>Pilih Kelurahan</option>';
+            $('modal-kelurahan-danor').disabled = true;
+            $('pd-add-preview-1').innerHTML = EMPTY_IMG;
+            $('pd-add-preview-2').innerHTML = EMPTY_IMG;
+            modal('modal_tambah_danor').show();
+        } else {
+            resetFormOrganik();
+            $('po-title').textContent = 'Tambah Data Pisang Organik';
+            isiKecamatan($('po-kecamatan'), 'Pilih Kecamatan', true);
+            modal('modal_organik_danor').show();
+        }
+    };
+
+    $('form-tambah-danor').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const btn = this.querySelector('button[type=submit]');
+        btn.disabled = true;
+
+        api('/pisang-danor/bsi', { method: 'POST', body: new FormData(this) })
+            .then(function (res) {
+                modal('modal_tambah_danor').hide();
+                sukses(res.message || 'Data berhasil ditambahkan');
+                return loadAll();
+            })
+            .catch(function (err) { gagal(err.message); })
+            .finally(function () { btn.disabled = false; });
+    });
+
+    function bukaEdit(id) {
+        if (kategori === 'anorganik') {
+            const r = dataBsi.find(function (d) { return String(d.id) === String(id); });
+            if (!r) return;
+            $('edit-id-danor').value = r.id;
+            $('edit-nama-bsi').value = r.nama_bsi || '';
+            $('edit-metode-pengolahan').value = r.metode_pengolahan || '';
+            $('edit-alamat-bsi').value = r.alamat_bsi || '';
+            $('edit-rw').value = r.rw || '';
+            $('edit-rt').value = r.rt || '';
+            isiKecamatan($('edit-kecamatan-danor'), 'Pilih Kecamatan', true);
+            $('edit-kecamatan-danor').value = r.kecamatan;
+            isiKelurahan($('edit-kelurahan-danor'), r.kecamatan, 'Pilih Kelurahan', true, r.kelurahan);
+            $('edit-file-1').value = '';
+            $('edit-file-2').value = '';
+            $('pd-edit-preview-1').innerHTML = fotoHtml(r.upload_file_1_url);
+            $('pd-edit-preview-2').innerHTML = fotoHtml(r.upload_file_2_url);
+            modal('modal_edit_danor').show();
+        } else {
+            const r = dataOrganik.find(function (d) { return String(d.id) === String(id); });
+            if (!r) return;
+            resetFormOrganik();
+            $('po-title').textContent = 'Edit Data Pisang Organik';
+            $('po-id').value = r.id;
+            isiKecamatan($('po-kecamatan'), 'Pilih Kecamatan', true);
+            $('po-kecamatan').value = r.kecamatan;
+            isiKelurahan($('po-kelurahan'), r.kecamatan, 'Pilih Kelurahan', true, r.kelurahan);
+            $('po-rw').value = r.rw || '';
+            $('po-rt').value = r.rt || '';
+            $('po-tonase').value = r.jumlah_tonase;
+            $('po-residu').value = r.tonase_residu;
+            $('po-terolah-anorganik').value = r.sampah_terolah_anorganik === null ? '' : r.sampah_terolah_anorganik;
+            $('po-terolah-organik').value = r.sampah_terolah_organik === null ? '' : r.sampah_terolah_organik;
+            const dipilih = Array.isArray(r.metode_pengolahan) ? r.metode_pengolahan : [];
+            document.querySelectorAll('.po-metode').forEach(function (cb) { cb.checked = dipilih.indexOf(cb.value) !== -1; });
+
+            $('po-file-1').value = '';
+            $('po-file-2').value = '';
+            $('po-preview-1').innerHTML = fotoHtml(r.upload_file_1_url);
+            $('po-preview-2').innerHTML = fotoHtml(r.upload_file_2_url);
+
+            modal('modal_organik_danor').show();
+        }
     }
-}
 
-function switchMainTabDanor(tab) {
-    const sectionDanor = document.getElementById('view-section-pisang-danor');
-    const sectionBasam = document.getElementById('view-section-si-basam');
-    const btnDanor = document.getElementById('tab-btn-danor');
-    const btnBasam = document.getElementById('tab-btn-basam');
-    const mainTitle = document.getElementById('main-section-title');
+    $('form-edit-danor').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const btn = this.querySelector('button[type=submit]');
+        btn.disabled = true;
 
-    if (tab === 'danor') {
-        sectionDanor.classList.remove('d-none');
-        sectionBasam.classList.add('d-none');
-        btnDanor.classList.add('active');
-        btnBasam.classList.remove('active');
-        if (mainTitle) mainTitle.textContent = 'Pelatihan Inovasi Pisang Danor (Pilah Sampah Anorganik dan Organik)';
-    } else {
-        sectionBasam.classList.remove('d-none');
-        sectionDanor.classList.add('d-none');
-        btnBasam.classList.add('active');
-        btnDanor.classList.remove('active');
-        if (mainTitle) mainTitle.textContent = 'Data Monitoring SI BASAM';
+        const fd = new FormData(this);
+        fd.append('_method', 'PUT');
+
+        api('/pisang-danor/bsi/' + $('edit-id-danor').value, { method: 'POST', body: fd })
+            .then(function (res) {
+                modal('modal_edit_danor').hide();
+                sukses(res.message || 'Data berhasil diubah');
+                return loadAll();
+            })
+            .catch(function (err) { gagal(err.message); })
+            .finally(function () { btn.disabled = false; });
+    });
+
+    function resetFormOrganik() {
+        $('form-organik-danor').reset();
+        $('po-id').value = '';
+        isiKecamatan($('po-kecamatan'), 'Pilih Kecamatan', true);
+        $('po-kelurahan').innerHTML = '<option value="" selected disabled>Pilih Kelurahan</option>';
+        $('po-kelurahan').disabled = true;
+        document.querySelectorAll('.po-metode').forEach(function (cb) { cb.checked = false; });
+        $('po-preview-1').innerHTML = EMPTY_IMG;
+        $('po-preview-2').innerHTML = EMPTY_IMG;
     }
-}
 
-document.addEventListener('DOMContentLoaded', function() {
-    initDropdownDanor();
-    renderTabelDanor();
-});
+    $('form-organik-danor').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const btn = this.querySelector('button[type=submit]');
+        btn.disabled = true;
+
+        const id = $('po-id').value;
+        const fd = new FormData(this);
+        document.querySelectorAll('.po-metode:checked').forEach(function (cb) { fd.append('metode_pengolahan[]', cb.value); });
+
+        let url = '/pisang-danor/organik';
+        if (id) { url += '/' + id; fd.append('_method', 'PUT'); }
+
+        api(url, { method: 'POST', body: fd })
+            .then(function (res) {
+                modal('modal_organik_danor').hide();
+                sukses(res.message || (id ? 'Data berhasil diubah' : 'Data berhasil ditambahkan'));
+                return loadAll();
+            })
+            .catch(function (err) { gagal(err.message); })
+            .finally(function () { btn.disabled = false; });
+    });
+
+    function konfirmasiHapus(id) {
+        const r = (kategori === 'anorganik' ? dataBsi : dataOrganik).find(function (d) { return String(d.id) === String(id); });
+        if (!r) return;
+        const nama = kategori === 'anorganik' ? r.nama_bsi : (r.kelurahan + ' RW ' + (r.rw || '-') + ' RT ' + (r.rt || '-'));
+
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: 'Apakah anda yakin untuk menghapus ' + nama + ' ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yakin',
+            cancelButtonText: 'Batal',
+            customClass: { confirmButton: 'btn btn-success fw-bold px-6 me-2', cancelButton: 'btn btn-danger fw-bold px-6', popup: 'rounded-4' },
+            buttonsStyling: false
+        }).then(function (result) {
+            if (!result.isConfirmed) return;
+            const url = (kategori === 'anorganik' ? '/pisang-danor/bsi/' : '/pisang-danor/organik/') + id;
+            api(url, { method: 'DELETE' })
+                .then(function (res) { sukses(res.message || 'Data berhasil dihapus'); return loadAll(); })
+                .catch(function (err) { gagal(err.message); });
+        });
+    }
+
+    window.basamFilterDanor = function () {
+        hitungSiBasam();
+        Swal.fire({
+            icon: 'success',
+            title: 'Filter Terpasang',
+            text: 'Data monitoring SI BASAM telah diperbarui berdasarkan lokasi pilihan.',
+            timer: 1500,
+            showConfirmButton: false,
+            customClass: { popup: 'rounded-4' }
+        });
+    };
+
+    window.basamResetDanor = function () {
+        $('basam-kecamatan').value = '';
+        isiKelurahan($('basam-kelurahan'), '', '-- Pilih Kelurahan --', false);
+        $('basam-kelurahan').disabled = true;
+        hitungSiBasam();
+    };
+
+    window.openEmptyPopUp = function (title, subtitle) {
+        $('popup-title').textContent = title;
+        $('popup-subtitle').textContent = subtitle;
+        modal('modalPopUpKosong').show();
+    };
+
+    window.switchMainTabDanor = function (tab) {
+        const sectionDanor = $('view-section-pisang-danor');
+        const sectionBasam = $('view-section-si-basam');
+        const btnDanor = $('tab-btn-danor');
+        const btnBasam = $('tab-btn-basam');
+        const mainTitle = $('main-section-title');
+
+        if (tab === 'danor') {
+            sectionDanor.classList.remove('d-none');
+            sectionBasam.classList.add('d-none');
+            btnDanor.classList.add('active');
+            btnBasam.classList.remove('active');
+            if (mainTitle) mainTitle.textContent = 'Pelatihan Inovasi Pisang Danor (Pilah Sampah Anorganik dan Organik)';
+        } else {
+            sectionBasam.classList.remove('d-none');
+            sectionDanor.classList.add('d-none');
+            btnBasam.classList.add('active');
+            btnDanor.classList.remove('active');
+            if (mainTitle) mainTitle.textContent = 'Data Monitoring SI BASAM';
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+        api('/pisang-danor/wilayah')
+            .then(function (data) { wilayah = data; })
+            .catch(function () { gagal('Gagal mengambil data kecamatan/kelurahan dari database.'); })
+            .finally(function () { initWilayah(); loadAll(); });
+    });
+})();
 </script>
