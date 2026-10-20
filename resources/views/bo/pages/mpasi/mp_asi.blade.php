@@ -1,6 +1,28 @@
 @extends('bo.layout.app')
 
 @section('content')
+<style>
+    .lt {
+        --bs-primary: #0D83A6;  --bs-primary-rgb: 13,131,166;  --bs-primary-active: #0B6F8C;  --bs-primary-light: #E3F3F8;  --bs-primary-inverse: #fff;
+        --bs-danger:  #EE526F;  --bs-danger-rgb: 238,82,111;   --bs-danger-active: #D63F5C;   --bs-danger-light: #FDE9ED;   --bs-danger-inverse: #fff;
+        --bs-warning: #FFBA00;  --bs-warning-rgb: 255,186,0;   --bs-warning-active: #E0A500;  --bs-warning-light: #FFF6D9;  --bs-warning-inverse: #3a2e00;
+        --bs-success: #58B847;  --bs-success-rgb: 88,184,71;   --bs-success-active: #4AA03A;  --bs-success-light: #EAF6E7;  --bs-success-inverse: #fff;
+        --bs-info:    #0A5F78;  --bs-info-rgb: 10,95,120;      --bs-info-active: #084C60;     --bs-info-light: #DDEFF4;     --bs-info-inverse: #fff;
+    }
+    .lt .btn.btn-primary { background-color: #0D83A6; border-color: #0D83A6; color: #fff; }
+    .lt .btn.btn-primary:hover, .lt .btn.btn-primary:focus, .lt .btn.btn-primary:active { background-color: #0B6F8C; border-color: #0B6F8C; color: #fff; }
+    .lt .badge-light-warning { color: #9A6F00; }
+    .lt .form-control:focus, .lt .form-select:focus { border-color: #0D83A6; }
+    .lt .pagination .page-item.active .page-link { background-color: #0D83A6; color: #fff; }
+
+    .lt-banner { background: linear-gradient(135deg, #FDE9ED 0%, #FFF3D1 100%); border-radius: 12px; }
+    .lt-blob { position: absolute; border-radius: 50%; pointer-events: none; }
+    .lt-blob-1 { width: 260px; height: 260px; right: -60px; top: -90px; background: rgba(238,82,111,.14); }
+    .lt-blob-2 { width: 170px; height: 170px; right: 150px; bottom: -85px; background: rgba(255,186,0,.22); }
+    .lt-blob-3 { width: 90px;  height: 90px;  right: 40px;  bottom: 30px; background: rgba(13,131,166,.14); }
+</style>
+
+<div class="lt">
 
 @php
     $fallbackImg = 'https://images.unsplash.com/photo-1547592180-85f173990554?w=100';
@@ -10,16 +32,17 @@
 @endphp
 
 <!--begin::Card Banner Header-->
-<div class="card border-0 mb-5 mb-xl-8 overflow-hidden rounded-4 position-relative" style="background: linear-gradient(135deg, #fff5f8 0%, #fff8dd 100%);">
-    <div class="card-body p-8 p-lg-10">
+<div class="card border-0 mb-5 mb-xl-8 overflow-hidden position-relative lt-banner">
+    <span class="lt-blob lt-blob-1"></span>
+    <span class="lt-blob lt-blob-2"></span>
+    <span class="lt-blob lt-blob-3"></span>
+
+    <div class="card-body p-8 p-lg-10 position-relative" style="z-index:1;">
         <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-5">
-            <div class="max-w-md-500px">
-                <span class="badge badge-lg badge-light-primary text-primary fw-bold mb-4 px-4 py-2 rounded-pill">
-                    Dapur PKK Kota Surabaya
-                </span>
+            <div style="max-width:520px;">
 
                 <h1 class="text-dark fw-bolder mb-3 fs-2hx">Dapur Resep MPASI 🥑</h1>
-                <p class="text-gray-600 fw-semibold fs-6 mb-6">
+                <p class="text-gray-700 fw-semibold fs-6 mb-6">
                     Catat dan bagikan panduan resep makanan pendamping ASI yang lezat dan mudah dibuat.
                 </p>
 
@@ -30,8 +53,8 @@
                 @endif
             </div>
 
-            <div class="d-none d-lg-block me-5 opacity-75">
-                <i class="ki-outline ki-heart-circle text-info" style="font-size: 12rem;"></i>
+            <div class="d-none d-lg-block me-10">
+                <i class="ki-outline ki-heart-circle text-danger" style="font-size: 9rem; opacity:.85;"></i>
             </div>
         </div>
     </div>
@@ -352,6 +375,7 @@
 </div>
 <!-- end::Video Tutorial Modal -->
 
+</div>
 @endsection
 
 @section('js')
@@ -473,7 +497,7 @@ $(document).ready(function () {
             text: 'Data menu MPASI ini akan dihapus!',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#f1416c',
+            confirmButtonColor: '#EE526F',
             cancelButtonColor: '#78829d',
             confirmButtonText: 'Ya, Hapus!',
             cancelButtonText: 'Batal'
@@ -534,7 +558,6 @@ $(document).ready(function () {
         $ul.append(item(currentPage - 1, '<i class="ki-outline ki-left fs-5"></i>',
             currentPage === 1 ? 'previous disabled' : 'previous'));
 
-        // 1 ... (cur-1) cur (cur+1) ... last
         let pages = [];
         for (let p = 1; p <= totalPages; p++) {
             if (p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1) pages.push(p);

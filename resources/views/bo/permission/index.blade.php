@@ -2,19 +2,53 @@
 @section('content')
 <div class="container-fluid">
     <!-- Filter Card Header -->
+    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 mb-5">
+            <!--begin::Page title-->
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <!--begin::Title-->
+                <h1 class="page-heading d-flex flex-column justify-content-center text-gray-900 fw-bold fs-3 m-0">Permission</h1>
+                <!--end::Title-->
+                <!--begin::Breadcrumb-->
+                <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0">
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item text-muted">
+                        <a href="{{ route('dashboard') }}" class="text-muted text-hover-primary">Dashboard</a>
+                    </li>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item">
+                        <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                    </li>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item text-muted">Master</li>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item">
+                        <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                    </li>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <li class="breadcrumb-item text-muted">Permission</li>
+                    <!--end::Item-->
+                </ul>
+                <!--end::Breadcrumb-->
+            </div>
+            <!--end::Page title-->
+    </div>
     <div class="card mb-5 shadow-sm">
         <div class="card-body">
-            <label class="form-label fw-bold">Pilih Role</label>
-            <div class="d-flex align-items-center gap-3">
-                <select id="select-role" class="form-select form-select-solid w-300px">
-                    <option value="">-- Pilih Role --</option>
+            <div class="perm-filter">
+                <select id="select-role" class="form-select form-select-solid"
+                        data-control="select2" data-placeholder="-- Pilih Role --" data-allow-clear="true">
+                    <option value=""></option>
                     @foreach($roles as $role)
                         <option value="{{ Crypt::encryptString($role->id) }}">{{ $role->name }}</option>
                     @endforeach
                 </select>
-                <button type="button" id="btn-reload" class="btn btn-light btn-active-light-primary">
-                    <i class="fas fa-sync-alt me-1"></i> Muat Ulang
-                </button>
+
+                <input type="text" id="search-menu" class="form-control form-control-solid"
+                    placeholder="Cari menu..." autocomplete="off">
             </div>
         </div>
     </div>
@@ -27,9 +61,29 @@
             </div>
         </div>
     </div>
+    <div id="no-result" class="card shadow-sm" style="display:none;">
+        <div class="card-body text-center py-10 text-muted">Menu tidak ditemukan.</div>
+    </div>
 </div>
 
 <style>
+.perm-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+.perm-filter > select,
+.perm-filter > input,
+.perm-filter .select2-container {
+    flex: 1 1 240px;
+    max-width: 320px;
+    width: auto !important; 
+}
+.perm-filter > button {
+    flex: 0 0 auto;
+}
+
 .perm-badge-check {
     display: none;
 }
@@ -58,7 +112,34 @@
 
 @push('js')
 <script>
+$('#select-role').select2({ width: '100%', allowClear: true, placeholder: '-- Pilih Role --' });
+
 $(document).ready(function () {
+
+    function applySearch() {
+    const q = $('#search-menu').val().trim().toLowerCase();
+
+    $('.perm-card').each(function () {
+        const $card = $(this);
+        const groupName = $card.find('.card-header h6').text().toLowerCase();
+        const groupMatch = q === '' || groupName.includes(q);
+        let anyVisible = false;
+
+        $card.find('.perm-row').each(function () {
+            const text = $(this).find('h6, .text-muted').text().toLowerCase();
+            const match = groupMatch || text.includes(q);
+            $(this).toggle(match);
+            if (match) anyVisible = true;
+        });
+
+        $card.toggle(anyVisible);
+    });
+
+    const hasCards = $('.perm-card').length > 0;
+    $('#no-result').toggle(q !== '' && hasCards && $('.perm-card:visible').length === 0);
+}
+
+    $('#search-menu').on('input', applySearch);
 
     $('#select-role').on('change', function () {
         loadPermissions();
@@ -134,7 +215,7 @@ $(document).ready(function () {
     if (!menus || menus.length === 0) {
         $('#permission-container').html(`
             <div class="card shadow-sm">
-                <div class="card-body text-center text-muted">Role ini belum memiliki menu. Atur di submenu Role.</div>
+                <div class="card-body text-center text-muted perm-card">Role ini belum memiliki menu. Atur di submenu Role.</div>
             </div>`);
         return;
     }
@@ -142,7 +223,7 @@ $(document).ready(function () {
     menus.forEach(function (menu) {
         if (menu.children && menu.children.length > 0) {
             html += `
-            <div class="card mb-5 shadow-sm">
+            <div class="card mb-5 shadow-sm perm-card">
                 <div class="card-header bg-light">
                     <h6 class="card-title fw-bold m-0">${esc(menu.nama_menu)}</h6>
                 </div>
@@ -156,13 +237,14 @@ $(document).ready(function () {
             html += `</div></div>`;
         } else {
             html += `
-            <div class="card mb-4 shadow-sm">
+            <div class="card mb-4 shadow-sm perm-card">
                 <div class="card-body">${buildMenuRow(menu, permissions)}</div>
             </div>`;
         }
     });
 
     $('#permission-container').html(html);
+    applySearch();
 }
 
   function buildMenuRow(menu, permissions) {
@@ -177,7 +259,7 @@ $(document).ready(function () {
     let isAll    = (perm.table && perm.create && perm.update && perm.delete) ? 'checked' : '';
 
     return `
-    <div class="py-3 border-bottom">
+    <div class="py-3 border-bottom perm-row">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <h6 class="fw-bold mb-1">${esc(menu.nama_menu)}</h6>
@@ -256,7 +338,7 @@ $(document).ready(function () {
             },
             error: function (xhr) {
                 notifyError(xhr, 'Gagal menyimpan');
-                loadPermissions(); // reset the checkboxes to what's actually saved
+                loadPermissions(); 
             },
         });
     }

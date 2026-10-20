@@ -1,9 +1,50 @@
 @extends('bo.layout.app')
 
 @section('content')
+<div class="lt">
 
 <style>
-    /* Preview PDF (viewer bawaan browser) */
+    .lt {
+        --bs-primary: #0D83A6;  --bs-primary-rgb: 13,131,166;  --bs-primary-active: #0B6F8C;  --bs-primary-light: #E3F3F8;  --bs-primary-inverse: #fff;
+        --bs-danger:  #EE526F;  --bs-danger-rgb: 238,82,111;   --bs-danger-active: #D63F5C;   --bs-danger-light: #FDE9ED;   --bs-danger-inverse: #fff;
+        --bs-warning: #FFBA00;  --bs-warning-rgb: 255,186,0;   --bs-warning-active: #E0A500;  --bs-warning-light: #FFF6D9;  --bs-warning-inverse: #3a2e00;
+        --bs-success: #58B847;  --bs-success-rgb: 88,184,71;   --bs-success-active: #4AA03A;  --bs-success-light: #EAF6E7;  --bs-success-inverse: #fff;
+        --bs-info:    #0A5F78;  --bs-info-rgb: 10,95,120;      --bs-info-active: #084C60;     --bs-info-light: #DDEFF4;     --bs-info-inverse: #fff;
+    }
+    .lt .btn.btn-primary { background-color: #0D83A6; border-color: #0D83A6; color: #fff; }
+    .lt .btn.btn-primary:hover, .lt .btn.btn-primary:focus, .lt .btn.btn-primary:active { background-color: #0B6F8C; border-color: #0B6F8C; color: #fff; }
+    .lt .badge-light-warning { color: #9A6F00; }
+    .lt .form-control:focus, .lt .form-select:focus { border-color: #0D83A6; }
+
+    .lt-banner { background: linear-gradient(135deg, #FDE9ED 0%, #FFF3D1 100%); border-radius: 12px; }
+    .lt-blob { position: absolute; border-radius: 50%; pointer-events: none; }
+    .lt-blob-1 { width: 260px; height: 260px; right: -60px; top: -90px; background: rgba(238,82,111,.14); }
+    .lt-blob-2 { width: 170px; height: 170px; right: 150px; bottom: -85px; background: rgba(255,186,0,.22); }
+    .lt-blob-3 { width: 90px;  height: 90px;  right: 40px;  bottom: 30px; background: rgba(13,131,166,.14); }
+
+    .lt .nav-line-tabs { overflow-y: hidden; }
+    .lt .nav-line-tabs .nav-link {
+        position: relative;
+        border-bottom: 0 !important;
+        font-weight: 600 !important;
+        color: var(--bs-gray-600, #78829D);
+        box-shadow: none !important;
+        outline: 0 !important;
+        transition: color .2s ease;
+    }
+    .lt .nav-line-tabs .nav-link::after {
+        content: "";
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 2px;
+        background-color: transparent;
+        transition: background-color .2s ease;
+    }
+    .lt .nav-line-tabs .nav-link:hover:not(.active):not(.disabled) { color: #0D83A6; }
+    .lt .nav-line-tabs .nav-link:hover:not(.active):not(.disabled)::after { background-color: rgba(13,131,166,.35); }
+    .lt .nav-line-tabs .nav-link.active { color: #0D83A6; }
+    .lt .nav-line-tabs .nav-link.active::after { background-color: #0D83A6; }
+
     .file-frame { width:100%; height:420px; border:0; border-radius:14px; background:#3c3c3c; display:block; }
 </style>
 
@@ -110,14 +151,17 @@
     ];
 @endphp
 
-<div class="card mb-5 mb-xl-8">
-    <!--begin::Card Banner Header-->
-<div class="card border-0 mb-5 mb-xl-8 overflow-hidden rounded-4 position-relative" style="background: linear-gradient(135deg, #fff5f8 0%, #fff8dd 100%);">
-    <div class="card-body p-8 p-lg-10">
+<!--begin::Card Banner Header-->
+<div class="card border-0 mb-5 mb-xl-8 overflow-hidden position-relative lt-banner">
+    <span class="lt-blob lt-blob-1"></span>
+    <span class="lt-blob lt-blob-2"></span>
+    <span class="lt-blob lt-blob-3"></span>
+
+    <div class="card-body p-8 p-lg-10 position-relative" style="z-index:1;">
         <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-5">
-            <div class="max-w-md-500px">
+            <div style="max-width:520px;">
                 <h1 class="text-dark fw-bolder mb-3 fs-2hx">Laporan Pertanggungjawaban</h1>
-                <p class="text-gray-600 fw-semibold fs-6 mb-6">
+                <p class="text-gray-700 fw-semibold fs-6 mb-6">
                     Dokumentasi Laporan Tahunan dan Memori Pertanggungjawaban
                 </p>
                 @if($canCreate)
@@ -127,14 +171,16 @@
                 @endif
             </div>
 
-            <div class="d-none d-lg-block me-5 opacity-75">
-                <i class="ki-outline ki-heart-circle text-info" style="font-size: 12rem;"></i>
+            <div class="d-none d-lg-block me-10">
+                <i class="ki-outline ki-document text-primary" style="font-size: 9rem; opacity:.85;"></i>
             </div>
         </div>
     </div>
 </div>
+<!--end::Card Banner Header-->
 
-    <!-- Card Body / Tabel -->
+<!-- Card Tabel -->
+<div class="card mb-5 mb-xl-8">
     <div class="card-body py-4">
         @php
             $filterAktif = collect(['q', 'jenis', 'tahun', 'wilayah'])->contains(fn ($k) => request()->filled($k));
@@ -391,6 +437,7 @@
     </div>
 @endif
 
+</div>
 @endsection
 
 @section('js')
@@ -422,10 +469,9 @@
             }
 
             const $scope  = $(this).closest('.tab-pane, #sectionMemoriPj, #editSectionMemoriPj');
-            const $status = $scope.find('.file-status'); // hanya ada di modal edit
+            const $status = $scope.find('.file-status'); 
 
             if ($status.length) {
-                // EDIT: preview langsung diganti file baru, batal pilih = balik ke file lama
                 if (file) {
                     $status.empty().append(
                         $('<div class="file-preview"></div>')
@@ -435,7 +481,6 @@
                     renderStatus($status, $status.data('url'));
                 }
             } else {
-                // TAMBAH: preview muncul di bawah input
                 let $new = $scope.find('.new-file-preview');
                 if (!$new.length) {
                     $new = $('<div class="new-file-preview mt-4"></div>').insertAfter($(this));
@@ -457,10 +502,13 @@
         function resetTabs(formSelector, tabsSelector) {
             $(formSelector)[0].reset();
             $(formSelector).find('.new-file-preview').remove();
-            const firstTab = document.querySelector(tabsSelector + ' .nav-link');
-            if (firstTab) {
-                new bootstrap.Tab(firstTab).show();
-            }
+
+            const $links = $(tabsSelector + ' .nav-link');
+            const $panes = $(formSelector).find('.tab-pane');
+            $links.removeClass('active').attr('aria-selected', 'false').blur();
+            $panes.removeClass('active show');
+            $links.first().addClass('active').attr('aria-selected', 'true');
+            $panes.first().addClass('active show');
         }
 
         $('#modalTambahLaporan').on('hidden.bs.modal', function () {
