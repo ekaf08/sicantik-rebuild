@@ -1,408 +1,428 @@
 @extends('bo.layout.app')
 
 @section('content')
-<!-- Load SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <div class="d-flex flex-column flex-column-fluid">
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <div id="kt_app_content_container" class="app-container container-fluid">
 
-<!-- Banner Header Penghargaan -->
-<div class="card border-0 shadow-sm rounded-4 mb-6 overflow-hidden" style="background-color: #0d6e5a !important;">
-    <div class="card-body p-8 p-lg-10 position-relative d-flex align-items-center justify-content-between">
-        <!-- Teks Banner -->
-        <div class="text-white z-index-2">
-            <h1 class="fw-bolder text-white fs-2hx mb-2 text-uppercase tracking-wide">PENGHARGAAN</h1>
-            <p class="fs-6 fw-semibold text-white-50 m-0">Data Penghargaan</p>
-        </div>
+                <!-- Banner Header Hijau Tema SiCantik -->
+                <div class="card mb-7 border-0 position-relative overflow-hidden"
+                    style="background-color: #0d5c3a; border-radius: 12px;">
+                    <div
+                        class="card-body p-8 text-white d-flex align-items-center justify-content-between position-relative z-index-1">
+                        <div>
+                            <h1 class="text-white fw-bolder fs-2hx mb-2" style="letter-spacing: 0.5px;">PENGHARGAAN</h1>
+                            <p class="fs-6 text-white opacity-80 mb-0">Data Penghargaan Kota Surabaya</p>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- Hiasan Ornamen Gedung -->
-        <div class="position-absolute end-0 bottom-0 top-0 d-none d-md-flex align-items-end pe-6 opacity-25 pointer-events-none" style="max-height: 100%;">
-            <svg width="220" height="110" viewBox="0 0 220 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M160 110V20L170 0L180 20V110H160Z" fill="#ffffff" />
-                <path d="M185 110V45H200V110H185Z" fill="#ffffff" />
-                <path d="M205 110V60H218V110H205Z" fill="#ffffff" />
-                <path d="M140 110C140 80 110 50 70 50C30 50 0 80 0 110H140Z" fill="#ffffff" />
-            </svg>
+                <!-- Card Utama -->
+                <div class="card card-flush">
+                    <div class="card-header border-0 pt-6">
+                        <div class="card-title flex-column">
+                            <h2 class="fw-bold mb-1">Data Penghargaan</h2>
+                            <span class="text-muted fs-7">Daftar capaian dan dokumentasi penghargaan Kota Surabaya</span>
+                        </div>
+
+                        <!-- Toolbar Filter & Button Tambah -->
+                        <div class="card-toolbar gap-3">
+                            <!-- Filter Kecamatan -->
+                            <select id="filter_kecamatan" class="form-select form-select-solid w-175px"
+                                onchange="loadKelurahan(this.value)">
+                                <option value="">Pilih Kecamatan</option>
+                                @if (isset($kecamatan))
+                                    @foreach ($kecamatan as $kec)
+                                        <option value="{{ $kec->id_kec ?? ($kec->id_kecamatan ?? ($kec->id ?? '')) }}">
+                                            {{ $kec->nama_kecamatan ?? ($kec->nama_kec ?? ($kec->nama ?? '')) }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+
+                            <!-- Filter Kelurahan (Dinamis AJAX) -->
+                            <select id="filter_kelurahan" class="form-select form-select-solid w-175px">
+                                <option value="">Pilih Kelurahan</option>
+                            </select>
+
+                            <!-- Filter Tahun (Manual Statis agar tidak error loop) -->
+                            <select id="filter_tahun" class="form-select form-select-solid w-125px">
+                                <option value="">Tahun</option>
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                            </select>
+
+                            <!-- Tombol Tambah Penghargaan Hijau Tema -->
+                            <button type="button" class="btn fw-bold text-white px-6" style="background-color: #0d5c3a;"
+                                data-bs-toggle="modal" data-bs-target="#modal_tambah_penghargaan">
+                                <i class="ki-outline ki-plus fs-2 text-white me-1"></i> Tambah Penghargaan
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body pt-0">
+                        <!-- Input Search Real-time -->
+                        <div class="d-flex align-items-center position-relative my-5">
+                            <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5 text-gray-500"></i>
+                            <input type="text" id="search_penghargaan"
+                                class="form-control form-control-solid w-250px ps-13" placeholder="Search..." />
+                        </div>
+
+                        <!-- Tabel Data Penghargaan -->
+                        <div class="table-responsive">
+                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_penghargaan">
+                                <thead>
+                                    <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                                        <th class="w-50px">NO</th>
+                                        <th>NAMA PENGHARGAAN</th>
+                                        <th>DESKRIPSI PENGHARGAAN</th>
+                                        <th>KATEGORI PENGHARGAAN</th>
+                                        <th>TAHUN</th>
+                                        <th>FOTO</th>
+                                        <th>FILE</th>
+                                        <th>DIBUAT OLEH</th>
+                                        <th class="text-end">ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="fw-semibold text-gray-600">
+                                    @if (isset($penghargaan) && count($penghargaan) > 0)
+                                        @foreach ($penghargaan as $index =>$item)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td class="fw-bold text-gray-800">{{ $item->nama_penghargaan }}</td>
+                                                <td>{{ $item->deskripsi_penghargaan }}</td>
+                                                <td><span
+                                                        class="badge badge-light-success fw-bold fs-8">{{ $item->kategori_penghargaan }}</span>
+                                                </td>
+                                                <td>{{ $item->tahun }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-light-success fw-bold px-3"
+                                                        onclick="previewFoto('{{ asset('storage/' . $item->foto) }}')">
+                                                        <i class="ki-outline ki-eye fs-5"></i> Lihat Foto
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ asset('storage/' . $item->file) }}" target="_blank"
+                                                        class="btn btn-sm btn-light-success fw-bold px-3">
+                                                        <i class="ki-outline ki-eye fs-5"></i> Lihat File
+                                                    </a>
+                                                </td>
+                                                <td>{{ $item->created_by ?? 'Admin' }}</td>
+                                                <td class="text-end">
+                                                    <button type="button"
+                                                        class="btn btn-icon btn-light-primary btn-sm me-1"
+                                                        onclick="editPenghargaan({{ json_encode($item) }})">
+                                                        <i class="ki-outline ki-pencil fs-2"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-icon btn-light-danger btn-sm"
+                                                        onclick="hapusPenghargaan('{{ $item->id }}', '{{$item->nama_penghargaan }}')">
+                                                        <i class="ki-outline ki-trash fs-2"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="9" class="text-center text-muted py-10 fs-6">Belum ada data
+                                                penghargaan.</td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Card Utama Data Penghargaan -->
-<div class="card card-flush border-0 shadow-sm rounded-4 mb-6">
-    <div class="card-header align-items-center border-0 pt-6 px-6">
-        <div>
-            <h3 class="card-title fw-bolder text-gray-900 fs-3 m-0">Data Penghargaan</h3>
-            <span class="text-gray-500 fs-8 fw-semibold">Daftar capaian dan dokumentasi penghargaan Kota Surabaya</span>
-        </div>
-
-        <!-- Filter Wilayah & Tahun Atas -->
-        <div class="card-toolbar d-flex flex-wrap align-items-center gap-3">
-            <select class="form-select form-select-solid w-175px fs-7 fw-semibold" id="filter-kecamatan">
-                <option value="KOTA SURABAYA" selected>KOTA SURABAYA</option>
-            </select>
-
-            <select class="form-select form-select-solid w-175px fs-7 fw-semibold" id="filter-kelurahan">
-                <option value="" selected>Pilih Kelurahan</option>
-            </select>
-
-            <select class="form-select form-select-solid w-100px fs-7 fw-semibold" id="filter-tahun">
-                <option value="2026" selected>2026</option>
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
-            </select>
-
-            <button type="button" class="btn btn-primary fw-bold fs-7 px-5 rounded-3" style="background-color: #0d9488 !important; border-color: #0d9488 !important;" data-bs-toggle="modal" data-bs-target="#modal_tambah_penghargaan">
-                <i class="ki-outline ki-plus fs-3 text-white me-1"></i> Tambah Penghargaan
-            </button>
-        </div>
-    </div>
-
-    <div class="card-body p-6">
-        <!-- Controls Show Entries & Search -->
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-6">
-            <div class="d-flex align-items-center gap-2">
-                <span class="text-gray-600 fs-7 fw-semibold">Show</span>
-                <select class="form-select form-select-solid w-75px fs-7 fw-bold">
-                    <option value="10" selected>10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                </select>
-            </div>
-
-            <div class="d-flex align-items-center position-relative ms-auto">
-                <span class="text-gray-600 fs-7 fw-semibold me-2">Search:</span>
-                <input type="text" class="form-control form-control-solid w-200px fs-7 fw-semibold" placeholder="" />
-            </div>
-        </div>
-
-        <!-- Tabel Data Penghargaan -->
-        <div class="table-responsive">
-            <table class="table align-middle table-row-dashed fs-7 gy-4 gs-4">
-                <thead>
-                    <tr class="fw-bolder text-gray-700 bg-light-subtle text-uppercase border-bottom">
-                        <th class="w-50px text-center">NO</th>
-                        <th>NAMA PENGHARGAAN</th>
-                        <th>DESKRIPSI PENGHARGAAN</th>
-                        <th>KATEGORI PENGHARGAAN</th>
-                        <th class="text-center">TAHUN</th>
-                        <th class="text-center">FOTO</th>
-                        <th class="text-center">FILE</th>
-                        <th>DIBUAT OLEH</th>
-                        <th class="text-center">ACTION</th>
-                    </tr>
-                </thead>
-                <tbody class="fw-semibold text-gray-600" id="tbody-penghargaan">
-                    @forelse($penghargaans as $index =>$item)
-                    <tr>
-                        <td class="text-center fw-bold">{{ $index + 1 }}</td>
-                        <td class="fw-bold text-gray-800">{{ $item->nama_penghargaan }}</td>
-                        <td>{{ $item->deskripsi_penghargaan }}</td>
-                        <td><span class="badge badge-light-success fw-bold px-3 py-2 text-success">{{ $item->kategori_penghargaan }}</span></td>
-                        <td class="text-center">{{ $item->tahun }}</td>
-                        <td class="text-center">
-                            @if($item->foto)
-                                <a href="{{ asset('storage/' . $item->foto) }}" target="_blank" class="badge badge-light-primary fw-bold text-decoration-none">
-                                    <i class="ki-outline ki-picture fs-5 text-primary me-1"></i> Lihat Foto
-                                </a>
-                            @else
-                                <span class="badge badge-light-secondary">-</span>
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            @if($item->file)
-                                <a href="{{ asset('storage/' . $item->file) }}" target="_blank" class="badge badge-light-info fw-bold text-decoration-none">
-                                    <i class="ki-outline ki-file-down fs-5 text-info me-1"></i> Download
-                                </a>
-                            @else
-                                <span class="badge badge-light-secondary">-</span>
-                            @endif
-                        </td>
-                        <td>{{ $item->created_by }}</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-icon btn-light-success rounded-circle me-1" title="Edit" data-bs-toggle="modal" data-bs-target="#modal_edit_{{ $item->id }}">
-                                <i class="ki-outline ki-pencil fs-5 text-success"></i>
-                            </button>
-                            <form action="{{ route('penghargaan.destroy', $item->id) }}" method="POST" class="d-inline" id="form-delete-{{ $item->id }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button" class="btn btn-sm btn-icon btn-light-danger rounded-circle" title="Hapus" onclick="hapusPenghargaan('{{ $item->id }}', '{{$item->nama_penghargaan }}')">
-                                    <i class="ki-outline ki-trash fs-5 text-danger"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    @empty
-                    <!-- Tampilan Sampel/Dummy jika Database Belum Ada -->
-                    <tr>
-                        <td class="text-center fw-bold">1</td>
-                        <td class="fw-bold text-gray-800">Penghargaan SPBE Terbaik</td>
-                        <td>Inovasi Digitalisasi Pelayanan Publik Terintegrasi</td>
-                        <td><span class="badge badge-light-success fw-bold px-3 py-2 text-success">Pemerintahan</span></td>
-                        <td class="text-center">2026</td>
-                        <td class="text-center">
-                            <span class="badge badge-light-primary fw-bold cursor-pointer"><i class="ki-outline ki-picture fs-5 text-primary me-1"></i> Lihat Foto</span>
-                        </td>
-                        <td class="text-center">
-                            <a href="#" class="badge badge-light-info fw-bold text-decoration-none"><i class="ki-outline ki-file-down fs-5 text-info me-1"></i> Download</a>
-                        </td>
-                        <td>Admin Kominfo</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-icon btn-light-success rounded-circle me-1" title="Edit" data-bs-toggle="modal" data-bs-target="#modal_edit_dummy">
-                                <i class="ki-outline ki-pencil fs-5 text-success"></i>
-                            </button>
-                            <button class="btn btn-sm btn-icon btn-light-danger rounded-circle" title="Hapus" onclick="hapusPenghargaan('dummy', 'Penghargaan SPBE Terbaik')">
-                                <i class="ki-outline ki-trash fs-5 text-danger"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Tambah Penghargaan -->
-<div class="modal fade" id="modal_tambah_penghargaan" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content rounded-4 border-0">
-            <div class="modal-header border-0 pb-0 pt-6 px-7">
-                <h3 class="modal-title fw-bolder text-gray-900 fs-3">Tambah Data Penghargaan</h3>
-                <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                    <i class="ki-outline ki-cross fs-1"></i>
-                </button>
-            </div>
-            <div class="modal-body py-6 px-7">
-                <form action="{{ route('penghargaan.store') }}" method="POST" enctype="multipart/form-data" onsubmit="return simpanPenghargaan(event)">
+    <!-- Modal Tambah Penghargaan -->
+    <div class="modal fade" id="modal_tambah_penghargaan" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #0d5c3a;">
+                    <h2 class="fw-bold text-white mb-0">Tambah Data Penghargaan</h2>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form action="{{ route('penghargaan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <div class="mb-4">
-                        <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Nama Penghargaan <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control form-control-solid" name="nama_penghargaan" placeholder="Masukkan Nama Penghargaan" required />
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Deskripsi Penghargaan <span class="text-danger">*</span></label>
-                        <textarea class="form-control form-control-solid" name="deskripsi_penghargaan" rows="3" placeholder="Masukkan Deskripsi Ringkas" required></textarea>
-                    </div>
-
-                    <div class="row g-4 mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Kategori Penghargaan <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-solid" name="kategori_penghargaan" placeholder="misal: Pemerintahan / Kesehatan" required />
+                    <div class="modal-body py-8 px-lg-10">
+                        <div class="mb-5">
+                            <label class="required fs-6 fw-semibold mb-2">Nama Penghargaan</label>
+                            <input type="text" class="form-control form-control-solid" name="nama_penghargaan"
+                                placeholder="Masukkan nama penghargaan" required />
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Tahun <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-solid" name="tahun" required>
-                                <option value="2026" selected>2026</option>
-                                <option value="2025">2025</option>
-                                <option value="2024">2024</option>
-                            </select>
+                        <div class="mb-5">
+                            <label class="required fs-6 fw-semibold mb-2">Deskripsi Penghargaan</label>
+                            <textarea class="form-control form-control-solid" rows="3" name="deskripsi_penghargaan"
+                                placeholder="Masukkan deskripsi" required></textarea>
                         </div>
-                    </div>
-
-                    <div class="row g-4 mb-6">
-                        <div class="col-md-6">
-                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload Foto <span class="text-danger">*</span></label>
-                            <input type="file" class="form-control form-control-solid" name="foto" id="tambah_foto" accept=".jpg,.jpeg,.png" required />
-                            <div class="form-text fs-8 text-danger mt-1 fw-semibold">File harus di bawah 2MB dan berformat jpg, png atau jpeg.</div>
+                        <div class="row mb-5">
+                            <div class="col-md-6">
+                                <label class="required fs-6 fw-semibold mb-2">Kategori Penghargaan</label>
+                                <input type="text" class="form-control form-control-solid" name="kategori_penghargaan"
+                                    placeholder="Pemerintahan / Inovasi" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="required fs-6 fw-semibold mb-2">Tahun</label>
+                                <input type="text" class="form-control form-control-solid" name="tahun"
+                                    placeholder="2026" maxlength="4" required />
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload File / Dokumen <span class="text-danger">*</span></label>
-                            <input type="file" class="form-control form-control-solid" name="file" id="tambah_file" accept=".jpg,.jpeg,.png" required />
-                            <div class="form-text fs-8 text-danger mt-1 fw-semibold">File harus di bawah 2MB dan berformat jpg, png atau jpeg.</div>
+                        <div class="mb-5">
+                            <label class="required fs-6 fw-semibold mb-2">Upload Foto (JPG/PNG, Max 2MB)</label>
+                            <input type="file" class="form-control form-control-solid" name="foto"
+                                accept=".jpg,.jpeg,.png" required />
+                        </div>
+                        <div class="mb-5">
+                            <label class="required fs-6 fw-semibold mb-2">Upload File Dokumen (PDF/DOC/DOCX, Max 2MB)</label>
+                            <input type="file" class="form-control form-control-solid" name="file"
+                                accept=".pdf,.doc,.docx" required />
                         </div>
                     </div>
-
-                    <div class="d-flex justify-content-end gap-3 pt-4 border-top">
-                        <button type="button" class="btn btn-light-danger fw-bold px-6" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-success fw-bold px-6 text-white" style="background-color: #22c55e !important;">Simpan Data</button>
+                    <div class="modal-footer flex-center">
+                        <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn fw-bold text-white px-8"
+                            style="background-color: #0d5c3a;">Simpan</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal Edit Dummy (Sementara Sebelum Ada DB) -->
-<div class="modal fade" id="modal_edit_dummy" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content rounded-4 border-0">
-            <div class="modal-header border-0 pb-0 pt-6 px-7">
-                <h3 class="modal-title fw-bolder text-gray-900 fs-3">Edit Data Penghargaan</h3>
-                <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                    <i class="ki-outline ki-cross fs-1"></i>
-                </button>
-            </div>
-            <div class="modal-body py-6 px-7">
-                <form onsubmit="return updatePenghargaan(event, 'dummy')">
-                    <div class="mb-4">
-                        <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Nama Penghargaan <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control form-control-solid" name="nama_penghargaan" value="Penghargaan SPBE Terbaik" required />
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Deskripsi Penghargaan <span class="text-danger">*</span></label>
-                        <textarea class="form-control form-control-solid" name="deskripsi_penghargaan" rows="3" required>Inovasi Digitalisasi Pelayanan Publik Terintegrasi</textarea>
-                    </div>
-
-                    <div class="row g-4 mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Kategori Penghargaan <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-solid" name="kategori_penghargaan" value="Pemerintahan" required />
+    <!-- Modal Edit Penghargaan -->
+    <div class="modal fade" id="modal_edit_penghargaan" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #0d5c3a;">
+                    <h2 class="fw-bold text-white mb-0">Edit Data Penghargaan</h2>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form_edit_penghargaan" action="" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body py-8 px-lg-10">
+                        <div class="mb-5">
+                            <label class="required fs-6 fw-semibold mb-2">Nama Penghargaan</label>
+                            <input type="text" class="form-control form-control-solid" id="edit_nama_penghargaan" name="nama_penghargaan" required />
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Tahun <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-solid" name="tahun" required>
-                                <option value="2026" selected>2026</option>
-                                <option value="2025">2025</option>
-                                <option value="2024">2024</option>
-                            </select>
+                        <div class="mb-5">
+                            <label class="required fs-6 fw-semibold mb-2">Deskripsi Penghargaan</label>
+                            <textarea class="form-control form-control-solid" rows="3" id="edit_deskripsi_penghargaan" name="deskripsi_penghargaan" required></textarea>
                         </div>
-                    </div>
-
-                    <div class="row g-4 mb-6">
-                        <div class="col-md-6">
-                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload Foto (Opsional jika diubah)</label>
-                            <input type="file" class="form-control form-control-solid" name="foto" id="edit_foto_dummy" accept=".jpg,.jpeg,.png" />
-                            <div class="form-text fs-8 text-danger mt-1 fw-semibold">File harus di bawah 2MB dan berformat jpg, png atau jpeg.</div>
+                        <div class="row mb-5">
+                            <div class="col-md-6">
+                                <label class="required fs-6 fw-semibold mb-2">Kategori Penghargaan</label>
+                                <input type="text" class="form-control form-control-solid" id="edit_kategori_penghargaan" name="kategori_penghargaan" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="required fs-6 fw-semibold mb-2">Tahun</label>
+                                <input type="text" class="form-control form-control-solid" id="edit_tahun" name="tahun" maxlength="4" required />
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">Upload File / Dokumen (Opsional jika diubah)</label>
-                            <input type="file" class="form-control form-control-solid" name="file" id="edit_file_dummy" accept=".jpg,.jpeg,.png" />
-                            <div class="form-text fs-8 text-danger mt-1 fw-semibold">File harus di bawah 2MB dan berformat jpg, png atau jpeg.</div>
+                        <div class="mb-5">
+                            <label class="fs-6 fw-semibold mb-2">Ganti Foto (Opsional, Max 2MB)</label>
+                            <input type="file" class="form-control form-control-solid" name="foto" accept=".jpg,.jpeg,.png" />
+                            <small class="text-muted">Biarkan kosong jika tidak ingin mengganti foto.</small>
+                        </div>
+                        <div class="mb-5">
+                            <label class="fs-6 fw-semibold mb-2">Ganti File Dokumen (PDF/DOC/DOCX, Max 2MB)</label>
+                            <input type="file" class="form-control form-control-solid" name="file" accept=".pdf,.doc,.docx" />
+                            <small class="text-muted">Biarkan kosong jika tidak ingin mengganti file.</small>
                         </div>
                     </div>
-
-                    <div class="d-flex justify-content-end gap-3 pt-4 border-top">
-                        <button type="button" class="btn btn-light-danger fw-bold px-6" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-success fw-bold px-6 text-white" style="background-color: #22c55e !important;">Simpan Perubahan</button>
+                    <div class="modal-footer flex-center">
+                        <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn fw-bold text-white px-8" style="background-color: #0d5c3a;">Update Data</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-function validasiFile(inputElement, fieldLabel) {
-    if (!inputElement || !inputElement.files[0]) return true;
-    const file = inputElement.files[0];
+    <!-- Modal Preview Foto -->
+    <div class="modal fade" id="modal_preview_foto" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Preview Foto Penghargaan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-5">
+                    <img id="img_preview" src="" class="img-fluid rounded shadow-sm" alt="Foto Penghargaan" />
+                </div>
+            </div>
+        </div>
+    </div>
 
-    const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
-    const allowedExtensions = ['jpg', 'jpeg', 'png'];
-    const fileName = file.name;
-    const fileExtension = fileName.split('.').pop().toLowerCase();
+    <!-- Form Hidden Delete -->
+    <form id="form_delete_penghargaan" action="" method="POST" class="d-none">
+        @csrf
+        @method('DELETE')
+    </form>
 
-    if (!allowedExtensions.includes(fileExtension)) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Format File Ditolak!',
-            text: `${fieldLabel} harus berformat jpg, png, atau jpeg.`,
-            customClass: { popup: 'rounded-4' }
-        });
-        inputElement.value = '';
-        return false;
+    <script>
+    // 1. Fungsi Edit Data
+    function editPenghargaan(data) {
+        $('#form_edit_penghargaan').attr('action', `/penghargaan/update/${data.id}`);
+        $('#edit_nama_penghargaan').val(data.nama_penghargaan);
+        $('#edit_deskripsi_penghargaan').val(data.deskripsi_penghargaan);
+        $('#edit_kategori_penghargaan').val(data.kategori_penghargaan);
+        $('#edit_tahun').val(data.tahun);
+
+        var modalEdit = new bootstrap.Modal(document.getElementById('modal_edit_penghargaan'));
+        modalEdit.show();
     }
 
-    if (file.size > maxSizeInBytes) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Ukuran File Terlalu Besar!',
-            text: `${fieldLabel} tidak boleh lebih dari 2MB.`,
-            customClass: { popup: 'rounded-4' }
-        });
-        inputElement.value = '';
-        return false;
-    }
+    // 2. Load Kelurahan Dinamis
+    function loadKelurahan(kecamatanId) {
+        let $kelurahan =$('#filter_kelurahan');
+        $kelurahan.html('<option value="">Memuat Kelurahan...</option>');
 
-    return true;
-}
-
-function simpanPenghargaan(e) {
-    const inputFoto = document.getElementById('tambah_foto');
-    const inputFile = document.getElementById('tambah_file');
-
-    if (!validasiFile(inputFoto, 'Foto') || !validasiFile(inputFile, 'File Dokumen')) {
-        e.preventDefault();
-        return false;
-    }
-
-    return true;
-}
-
-function updatePenghargaan(e, id) {
-    const inputFoto = document.getElementById(`edit_foto_${id}`);
-    const inputFile = document.getElementById(`edit_file_${id}`);
-
-    if (!validasiFile(inputFoto, 'Foto') || !validasiFile(inputFile, 'File Dokumen')) {
-        e.preventDefault();
-        return false;
-    }
-
-    // Jika mode dummy/statis
-    if (id === 'dummy') {
-        e.preventDefault();
-        const modalEl = document.getElementById('modal_edit_dummy');
-        if (modalEl) {
-            bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+        if (!kecamatanId) {
+            $kelurahan.html('<option value="">Pilih Kelurahan</option>');
+            return;
         }
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: 'Data berhasil diperbarui',
-            showConfirmButton: false,
-            timer: 2000,
-            customClass: { popup: 'rounded-4' }
-        });
-        return false;
+
+        fetch(`/get-kelurahan/${kecamatanId}`)
+            .then(res => res.json())
+            .then(data => {
+                let html = '<option value="">Pilih Kelurahan</option>';
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        let id = item.id_kel ?? item.id_kelurahan ?? item.id ?? '';
+                        let nama = item.nama_kelurahan ?? item.nama_kel ?? item.nama ?? '';
+                        html += `<option value="${id}">${nama}</option>`;
+                    });
+                } else {
+                    html = '<option value="">Tidak ada kelurahan</option>';
+                }
+                $kelurahan.html(html);
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                $kelurahan.html('<option value="">Pilih Kelurahan</option>');
+            });
     }
 
-    return true;
-}
+    // 3. Preview Foto
+    function previewFoto(url) {
+        $('#img_preview').attr('src', url);
+        var modal = new bootstrap.Modal(document.getElementById('modal_preview_foto'));
+        modal.show();
+    }
 
-function hapusPenghargaan(id, nama) {
-    Swal.fire({
-        title: 'Konfirmasi Hapus',
-        text: `Apakah anda yakin untuk menghapus ${nama} ini?`,
-        icon: 'error',
-        showCancelButton: true,
-        confirmButtonText: 'Yakin',
-        cancelButtonText: 'Batal',
-        customClass: {
-            confirmButton: 'btn btn-danger fw-bold px-6 me-2',
-            cancelButton: 'btn btn-light fw-bold px-6',
-            popup: 'rounded-4'
-        },
-        buttonsStyling: false
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const formDelete = document.getElementById(`form-delete-${id}`);
-            if (formDelete) {
-                formDelete.submit();
-            } else {
-                // Mode Dummy/Statis
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Data berhasil dihapus',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    customClass: { popup: 'rounded-4' }
-                });
+    // 4. Pop-up Konfirmasi & Proses Hapus
+    function hapusPenghargaan(id, nama) {
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: `Apakah Anda yakin menghapus ${nama}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yakin',
+            cancelButtonText: 'Batal',
+            customClass: {
+                confirmButton: 'btn btn-danger fw-bold px-6 me-2',
+                cancelButton: 'btn btn-success fw-bold px-6'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let form = document.getElementById('form_delete_penghargaan');
+                form.action = `/penghargaan/delete/${id}`;
+
+                sessionStorage.setItem('flash_delete_success', `${nama} berhasil dihapus`);
+                form.submit();
             }
-        }
-    });
-}
-</script>
+        });
+    }
 
-@if(session('success'))
-<script>
-    Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
-        text: "{{ session('success') }}",
-        showConfirmButton: false,
-        timer: 2000,
-        customClass: { popup: 'rounded-4' }
+    // 5. Inisialisasi DataTables & Pop-Up SweetAlert
+    $(document).ready(function() {
+        var table = $('#kt_table_penghargaan').DataTable({
+            "info": false,
+            'order': [],
+            'pageLength': 10
+        });
+
+        $('#search_penghargaan').on('keyup', function() {
+            table.search(this.value).draw();
+        });
+
+        // --- Cek Notifikasi Setelah Delete (Merah) ---
+        let deleteMsg = sessionStorage.getItem('flash_delete_success');
+        if (deleteMsg) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Berhasil Dihapus',
+                text: deleteMsg,
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'btn btn-danger fw-bold px-6'
+                },
+                buttonsStyling: false
+            });
+            sessionStorage.removeItem('flash_delete_success');
+        }
+
+        // --- Pop-Up Tambah Data Berhasil (Centang Hijau) ---
+        @if(session('success_store'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Berhasil menambahkan data',
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'btn btn-success fw-bold px-6'
+                },
+                buttonsStyling: false
+            });
+        @endif
+
+        // --- Pop-Up Edit Data Berhasil (Centang Hijau) ---
+        @if(session('success_update') || session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Edit data telah berhasil',
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'btn btn-success fw-bold px-6'
+                },
+                buttonsStyling: false
+            });
+        @endif
+
+        // --- Pop-Up Error Validasi / Database ---
+        @if ($errors->any())
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Simpan Data',
+                html: '{!! implode("<br>", $errors->all()) !!}',
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'btn btn-danger fw-bold px-6'
+                },
+                buttonsStyling: false
+            });
+        @endif
+
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: '{{ session("error") }}',
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'btn btn-danger fw-bold px-6'
+                },
+                buttonsStyling: false
+            });
+        @endif
     });
 </script>
-@endif
 @endsection

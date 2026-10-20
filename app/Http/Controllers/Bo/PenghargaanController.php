@@ -5,107 +5,169 @@ namespace App\Http\Controllers\Bo;
 use App\Http\Controllers\Controller;
 use App\Models\Penghargaan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
 
 class PenghargaanController extends Controller
 {
-    public function index()
-{
-    try {
-        $penghargaans = Penghargaan::orderBy('id', 'desc')->get();
-    } catch (\Throwable $e) {
-        // Jika tabel belum dibuat di DB, kembalikan array/collection kosong agar UI tidak crash
-        $penghargaans = collect([]);
+    /**
+     * Tampilkan halaman utama Penghargaan beserta data pendukung dropdown
+     */
+    public function index(Request $request)
+    {
+        try {
+            $kecamatan = DB::table('m_kecamatan')->get();
+            $kelurahan = DB::table('m_kelurahan')->get();
+
+            $query = Penghargaan::query();
+
+            if ($request->filled('kecamatan_id')) {
+                $query->where('kecamatan_id', $request->kecamatan_id);
+            }
+            if ($request->filled('kelurahan_id')) {
+                $query->where('kelurahan_id', $request->kelurahan_id);
+            }
+            if ($request->filled('tahun')) {
+                $query->where('tahun', $request->tahun);
+            }
+
+            $penghargaan = $query->orderBy('created_at', 'desc')->get();
+
+            return view('bo.pages.penghargaan.penghargaan', compact('penghargaan', 'kecamatan', 'kelurahan'));
+        } catch (\Exception $e) {
+            $kecamatan = collect();
+            $kelurahan = collect();
+            $penghargaan = collect();
+
+            return view('bo.pages.penghargaan.penghargaan', compact('penghargaan', 'kecamatan', 'kelurahan'));
+        }
     }
 
-    return view('bo.pages.penghargaan.penghargaan', compact('penghargaans'));
-}
+    /**
+     * Ambil data Kelurahan via AJAX berdasarkan Kecamatan ID
+     */
+    public function getKelurahan(int $kecamatan_id)
+    {
+        $kelurahan = DB::table('m_kelurahan')
+            ->where('kecamatan_id', $kecamatan_id)
+            ->orWhere('id_kec', $kecamatan_id)
+            ->orWhere('id_kecamatan', $kecamatan_id)
+            ->get();
 
+        return response()->json($kelurahan);
+    }
+
+    /**
+     * Simpan Data Penghargaan baru
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'nama_penghargaan' => 'required|string|max:255',
+            'nama_penghargaan'      => 'required|string|max:255',
             'deskripsi_penghargaan' => 'required|string',
-            'kategori_penghargaan' => 'required|string|max:255',
-            'tahun' => 'required|numeric',
-            'foto' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'file' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'kategori_penghargaan'  => 'required|string|max:255',
+            'tahun'                 => 'required|string|max:4',
+            'foto'                  => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'file'                  => 'required|file|mimes:pdf,doc,docx|max:2048',
+        ], [
+            'foto.mimes' => 'Format foto harus berupa JPG, JPEG, atau PNG!',
+            'foto.max'   => 'Ukuran foto maksimal 2MB!',
+            'file.mimes' => 'Format file dokumen harus berupa PDF, DOC, atau DOCX!',
+            'file.max'   => 'Ukuran file dokumen maksimal 2MB!',
         ]);
 
-        $fotoPath = null;
-        if ($request->hasFile('foto')) {
+        try {
             $fotoPath = $request->file('foto')->store('penghargaan/foto', 'public');
-        }
-
-        $filePath = null;
-        if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('penghargaan/file', 'public');
+
+            Penghargaan::create([
+                'nama_penghargaan'      => $request->nama_penghargaan,
+                'deskripsi_penghargaan' => $request->deskripsi_penghargaan,
+                'kategori_penghargaan'  => $request->kategori_penghargaan,
+                'tahun'                 => $request->tahun,
+                'foto'                  => $fotoPath,
+                'file'                  => $filePath,
+                'created_by'            => 'Admin Kominfo',
+            ]);
+
+            return redirect()->back()->with('success_store', true);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
-
-        Penghargaan::create([
-            'nama_penghargaan' => $request->nama_penghargaan,
-            'deskripsi_penghargaan' => $request->deskripsi_penghargaan,
-            'kategori_penghargaan' => $request->kategori_penghargaan,
-            'tahun' => $request->tahun,
-            'foto' => $fotoPath,
-            'file' => $filePath,
-            'created_by' => Auth::user()->name ?? 'Admin Kominfo',
-        ]);
-
-        return redirect()->back()->with('success', 'Data penghargaan berhasil ditambahkan');
     }
 
+    /**
+     * Update Data Penghargaan
+     */
     public function update(Request $request, int $id)
     {
-        $penghargaan = Penghargaan::findOrFail($id);
-
         $request->validate([
-            'nama_penghargaan' => 'required|string|max:255',
+            'nama_penghargaan'      => 'required|string|max:255',
             'deskripsi_penghargaan' => 'required|string',
-            'kategori_penghargaan' => 'required|string|max:255',
-            'tahun' => 'required|numeric',
-            'foto' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-            'file' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'kategori_penghargaan'  => 'required|string|max:255',
+            'tahun'                 => 'required|string|max:4',
+            'foto'                  => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'file'                  => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+        ], [
+            'foto.mimes' => 'Format foto harus berupa JPG, JPEG, atau PNG!',
+            'foto.max'   => 'Ukuran foto maksimal 2MB!',
+            'file.mimes' => 'Format file dokumen harus berupa PDF, DOC, atau DOCX!',
+            'file.max'   => 'Ukuran file dokumen maksimal 2MB!',
         ]);
 
-        if ($request->hasFile('foto')) {
-            if ($penghargaan->foto) {
-                Storage::disk('public')->delete($penghargaan->foto);
+        try {
+            $penghargaan = Penghargaan::findOrFail($id);
+
+            $data = [
+                'nama_penghargaan'      => $request->nama_penghargaan,
+                'deskripsi_penghargaan' => $request->deskripsi_penghargaan,
+                'kategori_penghargaan'  => $request->kategori_penghargaan,
+                'tahun'                 => $request->tahun,
+            ];
+
+            if ($request->hasFile('foto')) {
+                if ($penghargaan->foto && Storage::disk('public')->exists($penghargaan->foto)) {
+                    Storage::disk('public')->delete($penghargaan->foto);
+                }
+                $data['foto'] = $request->file('foto')->store('penghargaan/foto', 'public');
             }
-            $penghargaan->foto = $request->file('foto')->store('penghargaan/foto', 'public');
-        }
 
-        if ($request->hasFile('file')) {
-            if ($penghargaan->file) {
-                Storage::disk('public')->delete($penghargaan->file);
+            if ($request->hasFile('file')) {
+                if ($penghargaan->file && Storage::disk('public')->exists($penghargaan->file)) {
+                    Storage::disk('public')->delete($penghargaan->file);
+                }
+                $data['file'] = $request->file('file')->store('penghargaan/file', 'public');
             }
-            $penghargaan->file = $request->file('file')->store('penghargaan/file', 'public');
+
+            $penghargaan->update($data);
+
+            return redirect()->back()->with('success_update', true);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
         }
-
-        $penghargaan->update([
-            'nama_penghargaan' => $request->nama_penghargaan,
-            'deskripsi_penghargaan' => $request->deskripsi_penghargaan,
-            'kategori_penghargaan' => $request->kategori_penghargaan,
-            'tahun' => $request->tahun,
-        ]);
-
-        return redirect()->back()->with('success', 'Data penghargaan berhasil diperbarui');
     }
 
+    /**
+     * Hapus Data Penghargaan
+     */
     public function destroy(int $id)
     {
-        $penghargaan = Penghargaan::findOrFail($id);
+        try {
+            $penghargaan = Penghargaan::find($id);
 
-        if ($penghargaan->foto) {
-            Storage::disk('public')->delete($penghargaan->foto);
+            if ($penghargaan) {
+                if ($penghargaan->foto && Storage::disk('public')->exists($penghargaan->foto)) {
+                    Storage::disk('public')->delete($penghargaan->foto);
+                }
+                if ($penghargaan->file && Storage::disk('public')->exists($penghargaan->file)) {
+                    Storage::disk('public')->delete($penghargaan->file);
+                }
+                $penghargaan->delete();
+            }
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
-        if ($penghargaan->file) {
-            Storage::disk('public')->delete($penghargaan->file);
-        }
-
-        $penghargaan->delete();
-
-        return redirect()->back()->with('success', 'Data penghargaan berhasil dihapus');
     }
 }

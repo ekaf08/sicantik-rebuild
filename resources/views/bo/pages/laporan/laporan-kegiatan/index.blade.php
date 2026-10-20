@@ -1,11 +1,11 @@
 @extends('bo.layout.app')
- 
+
 @section('content')
 <style>
     .pkk { --teal:#2fa88f; --teal-dark:#286b83; --teal-deep:#205d73; --ink:#183b49; --muted:#6d8189; --line:#dce9ec; --green:#3fae5f; --purple:#7765d8; --blue:#4a90e2; --toska-cerah:#3FAAB2; --toska-gelap: #2A6B7C; --toska-sedang: #4EA8B0}
     .pkk, .pkk * { box-sizing: border-box; }
     .pkk { color: var(--ink); }
- 
+
     /* Hero / Header Pelaporan PKK */
     .pkk-hero {
         position:relative; isolation:isolate; display:flex; align-items:center;
@@ -49,13 +49,13 @@
         .pkk-hero-art { right:-52px; width:150px; opacity:.34; }
         .pkk-hero-dots { right:10px; }
     }
- 
+
     /* Filter */
     .pkk-filters { display:flex; flex-wrap:wrap; gap:10px; margin:16px 0; }
     .pkk-sel { position:relative; }
     .pkk-sel i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--teal); pointer-events:none; }
     .pkk-filters select { height:42px; padding:0 14px 0 38px; min-width:160px; border:1px solid var(--line); border-radius:9px; background:#fff; color:#46616b; }
- 
+
     /* Statistik */
     .pkk-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
     .pkk-stat { display:flex; gap:14px; align-items:center; padding:18px; border-radius:14px; border:1px solid var(--line); }
@@ -68,9 +68,9 @@
     .pkk-stat strong { font-size:26px; line-height:1.2; }
     .pkk-stat .up { font-size:11px; color:var(--green); margin-left:6px; }
     .pkk-stat .down { font-size:11px; color:#d94d6c; margin-left:6px; }
- 
+
     /* Panel & grafik */
-    
+
     /* Panel & grafik */
 .pkk-panel { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; height: 100%; }
 .pkk-grid { display:grid; grid-template-columns: 320px 1fr 1fr; gap:14px; margin-top:14px; align-items: stretch; }
@@ -83,7 +83,7 @@
     .pkk-prog .bar { height:8px; background:#edf3f4; border-radius:99px; overflow:hidden; }
     .pkk-prog .bar i { display:block; height:100%; border-radius:99px; background:var(--toska-cerah); }
     .pkk-prog .bar i.mid { background:var(--blue); }
- 
+
     /* Tabel */
     .pkk-table-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px; }
     .pkk-table-head h2 { font-size:17px; margin:0; }
@@ -118,11 +118,11 @@
     .pkk .abtn.del  { color:#d94d6c; border-color:#f4c3cf; }
     .pkk .pkk-foot { margin-top:14px; font-size:12px; color:var(--muted); }
     .pkk .pagination { margin:0; }
- 
+
     /* Preview foto di modal */
     .pkk-prev { width:100%; max-width:260px; background:#fff; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.15); padding:8px; }
     .pkk-prev img { width:100%; height:190px; object-fit:contain; display:block; }
- 
+
     @media (max-width:1200px) { .pkk-stats { grid-template-columns:repeat(2,1fr); } .pkk-grid { grid-template-columns:1fr 1fr; } .pkk-grid > :last-child { grid-column:1/-1; } }
     @media (max-width:700px)  { .pkk-stats, .pkk-grid { grid-template-columns:1fr; } }
 
@@ -172,9 +172,9 @@
         background-color: #35959c !important;
     }
 </style>
- 
+
 <div class="pkk" id="pkk">
- 
+
     {{-- Hero / Header Pelaporan PKK --}}
     <section class="pkk-hero">
         <div class="pkk-hero-icon" aria-hidden="true">
@@ -212,7 +212,7 @@
             <circle cx="218" cy="52" r="3" fill="#A2E9E2"/>
         </svg>
     </section>
- 
+
     {{-- Filter statistik & grafik --}}
     <div class="pkk-filters">
         <div class="pkk-sel"><i class="ki-outline ki-geolocation fs-3"></i>
@@ -229,8 +229,8 @@
         <div class="pkk-sel"><i class="ki-outline ki-calendar-8 fs-3"></i>
             <select id="stBln">
                 <option value="">Semua Bulan</option>
-                @foreach (['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'] as $i => $b)
-                    <option value="{{ $i + 1 }}">Bulan {{ $b }}</option>
+                @foreach(['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $index => $bulan)
+                    <option value="{{ $index + 1 }}">{{ $bulan }}</option>
                 @endforeach
             </select></div>
         <div class="pkk-sel"><i class="ki-outline ki-people fs-3"></i>
@@ -243,7 +243,7 @@
                 <option value="5">Sekretaris</option>
             </select></div>
     </div>
- 
+
     {{-- Statistik + Grafik --}}
     <section class="pkk-grid">
 
@@ -281,19 +281,19 @@
         </div>
 
     </section>
- 
+
     {{-- Tabel (data dari database) --}}
     <section class="pkk-panel" style="margin-top:14px">
         <div class="pkk-table-head">
             <h2>Data Laporan Kegiatan</h2>
         </div>
- 
+
         <div class="pkk-tools">
             <button type="button" id="btnTambah" class="pkk-btn-main" data-bs-toggle="modal" data-bs-target="#modalTambah">＋ Tambah Laporan Kegiatan</button>
             <input type="text" id="cariLaporan" class="grow" placeholder="Cari kegiatan, tempat, atau nama...">
             <select id="fKec"><option value="">Pilih Kecamatan</option></select>
             <select id="fKel" disabled><option value="">Pilih Kelurahan</option></select>
-            
+
             <input type="month" id="fBulan">
 
             <select id="fPokja">
@@ -306,7 +306,7 @@
             </select>
             <button type="button" id="btnExport" class="pkk-btn-main">Export</button>
         </div>
- 
+
         <div class="pkk-wrap">
             <table id="tblLaporan">
                 <thead>
@@ -318,7 +318,7 @@
             </table>
         </div>
     </section>
- 
+
     {{-- Modal: Tambah / Edit --}}
     <div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
@@ -331,13 +331,13 @@
                             <i class="ki-outline ki-cross fs-1"></i>
                         </button>
                     </div>
- 
+
                     <div class="modal-body" style="overflow-y:auto">
                         <div class="mb-6">
                             <label class="form-label required">Tanggal Kegiatan</label>
                             <input type="date" name="tanggal" class="form-control form-control-solid" required>
                         </div>
- 
+
                         <div class="mb-6">
                             <label class="form-label required">Pokja</label>
                             <select name="pokja" id="selPokja" class="form-select form-select-solid" required>
@@ -349,34 +349,34 @@
                                 <option value="5">Sekretaris</option>
                             </select>
                         </div>
- 
+
                         <div class="mb-6">
                             <label class="form-label required">Jenis Kegiatan</label>
                             <select name="kegiatan_id" id="selKegiatan" class="form-select form-select-solid" required>
                                 <option value="">- Pilih Kegiatan -</option>
-                                @foreach ($kegiatan as $k)
+                                @foreach($kegiatan as $k)
                                     <option value="{{ $k->kegiatan_id }}">{{ $k->kegiatan_nama }}</option>
                                 @endforeach
                             </select>
                         </div>
- 
+
                         <div class="mb-6">
                             <label class="form-label">Jenis Sub Kegiatan</label>
                             <select name="sub_kegiatan_id" id="selSub" class="form-select form-select-solid" required>
                                 <option value="">Pilih Pokja dan Jenis Kegiatan terlebih dahulu</option>
                             </select>
                         </div>
- 
+
                         <div class="mb-6">
                             <label class="form-label">Tempat Kegiatan</label>
                             <input type="text" name="tempat" class="form-control form-control-solid">
                         </div>
- 
+
                         <div class="mb-6">
                             <label class="form-label">Jam Kegiatan</label>
                             <input type="time" name="jam" class="form-control form-control-solid">
                         </div>
- 
+
                         <div class="mb-6">
                             <label class="form-label">Apakah Ada Notulen ?</label>
                             <select name="notulen" id="selNotulen" class="form-select form-select-solid">
@@ -385,7 +385,7 @@
                                 <option value="0">Tidak Ada</option>
                             </select>
                         </div>
- 
+
                         {{-- Muncul hanya kalau notulen = Ada --}}
                         <div id="blkNotulen" class="d-none">
                             <div class="mb-6">
@@ -398,45 +398,45 @@
                                 <div class="text-danger fs-8 mt-2">File harus di bawah 2MB dan berformat jpg, png, atau pdf.</div>
                             </div>
                         </div>
- 
+
                         <div class="mb-6">
                             <label class="form-label">File Absensi</label>
                             <input type="file" name="file_absensi" class="form-control form-control-solid pkk-file" accept=".jpg,.jpeg,.png, .pdf">
                             <div class="text-danger fs-8 mt-2">File harus di bawah 2MB dan berformat jpg, png, atau pdf.</div>
                         </div>
- 
+
                         <div class="mb-6">
                             <label class="form-label">Deskripsi</label>
                             <textarea name="deskripsi" class="form-control form-control-solid" rows="5"></textarea>
                         </div>
- 
+
                         {{-- Preview Foto Kegiatan --}}
                         <div class="mb-6">
                             <label class="form-label">Preview Foto Kegiatan</label>
-                            @foreach ([1, 2, 3] as $n)
+                            @foreach([1, 2, 3] as $n)
                                 <div class="pkk-prev mb-4">
                                     <img id="prev_{{ $n }}" alt="Preview foto {{ $n }}"
                                         src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'><rect width='200' height='150' fill='white'/><circle cx='70' cy='55' r='14' fill='%23c9c9c9'/><path d='M40 115l35-40 25 28 20-18 40 30z' fill='%23c9c9c9'/></svg>">
                                 </div>
                             @endforeach
                         </div>
- 
+
                         {{-- Upload Foto Kegiatan --}}
-                        @foreach ([1, 2, 3] as $n)
+                        @foreach([1, 2, 3] as $n)
                             <div class="mb-6">
                                 <label class="form-label">Foto Kegiatan {{ $n }}</label>
                                 <input type="file" name="foto_{{ $n }}" class="form-control form-control-solid pkk-file pkk-foto" data-target="prev_{{ $n }}" accept=".jpg,.jpeg,.png">
                                 <div class="text-danger fs-8 mt-2">File harus di bawah 2MB dan berformat jpg, png atau jpeg.</div>
                             </div>
                         @endforeach
- 
+
                         <div class="mb-2">
                             <label class="form-label">File Undangan</label>
                             <input type="file" name="file_undangan" class="form-control form-control-solid pkk-file" accept=".jpg,.jpeg,.png,.pdf">
                             <div class="text-danger fs-8 mt-2">File harus di bawah 2MB. Dan dilarang upload foto selfie</div>
                         </div>
                     </div>
- 
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -487,7 +487,7 @@
         </div>
     </div>
 </div>
- 
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 
@@ -507,11 +507,11 @@ function bukaViewerFoto(urlFoto) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
- 
+
     var CSRF      = '{{ csrf_token() }}';
     var STORE_URL = "{{ route('laporan-kegiatan.store') }}";
     var SUB_URL   = "{{ url('laporan-kegiatan/sub') }}";
- 
+
     var form        = document.getElementById('formTambah');
     var modalEl     = document.getElementById('modalTambah');
     var modal       = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -535,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('modalViewFoto').addEventListener('hidden.bs.modal', function () {
     document.getElementById('imgViewer').src = '';
     });
- 
+
     function notif(msg, type) {
         if (window.Swal) { Swal.fire({ text: msg, icon: type, confirmButtonText: 'OK' }); }
         else { alert(msg); }
@@ -547,7 +547,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
         });
     }
- 
+
     /* ---------- Notulen: blok nama + file muncul kalau "Ada" ---------- */
     function toggleNotulen() {
         var ada = selNotulen.value === '1';
@@ -555,13 +555,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('inpNamaNotulen').required = ada;
     }
     selNotulen.addEventListener('change', toggleNotulen);
- 
+
     /* ---------- Sub kegiatan di FORM mengikuti Pokja + Jenis Kegiatan ---------- */
     function resetSub() {
         selSub.innerHTML = '<option value="">Pilih Pokja dan Jenis Kegiatan terlebih dahulu</option>';
         selSub.disabled = true;
     }
- 
+
     function loadSub(kegiatanId, pokja, terpilih) {
         if (!kegiatanId || !pokja) { resetSub(); return Promise.resolve(); }
         selSub.disabled = true;
@@ -581,7 +581,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function refreshSub() { loadSub(selKegiatan.value, selPokja.value); }
     selPokja.addEventListener('change', refreshSub);
     selKegiatan.addEventListener('change', refreshSub);
- 
+
     /* ---------- Filter wilayah: Kecamatan lalu Kelurahan ---------- */
     var WILAYAH_URL = "{{ url('laporan-kegiatan/wilayah') }}";
 
@@ -604,8 +604,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         tabel.draw();
     });
-    
- 
+
+
     /* ---------- Validasi ukuran file 2MB ---------- */
     document.querySelectorAll('.pkk-file').forEach(function (inp) {
         inp.addEventListener('change', function () {
@@ -629,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
- 
+
     /* ---------- Preview foto ---------- */
     var defaults = {};
     document.querySelectorAll('.pkk-foto').forEach(function (inp) {
@@ -641,11 +641,11 @@ document.addEventListener('DOMContentLoaded', function () {
             img.src = f ? URL.createObjectURL(f) : defaults[this.dataset.target];
         });
     });
- 
+
     function resetPreview() {
         Object.keys(defaults).forEach(function (id) { document.getElementById(id).src = defaults[id]; });
     }
- 
+
     /* ---------- DataTable ---------- */
     var tabel = $('#tblLaporan').DataTable({
         processing: true,
@@ -682,18 +682,18 @@ document.addEventListener('DOMContentLoaded', function () {
             paginate: { previous: '‹', next: '›' }
         }
     });
- 
+
     var timer;
     document.getElementById('cariLaporan').addEventListener('keyup', function () {
         var v = this.value;
         clearTimeout(timer);
         timer = setTimeout(function () { tabel.search(v).draw(); }, 350);
     });
- 
+
     [fKel, fBulan, fPokja].forEach(function (el) {
         el.addEventListener('change', function () { tabel.draw(); });
     });
- 
+
     // Export mengikuti filter yang sedang aktif
     document.getElementById('btnExport').addEventListener('click', function () {
         var p = new URLSearchParams({
@@ -703,7 +703,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         window.location = EXPORT_URL + '?' + p.toString();
     });
- 
+
     /* ---------- Batas tanggal: H-7 sampai hari ini ---------- */
     function batasTanggal() {
         var fmt = function (d) {
@@ -725,7 +725,7 @@ document.addEventListener('DOMContentLoaded', function () {
       batasTanggal();
       toggleNotulen();
   });
- 
+
     /* ---------- Isi form untuk Edit ---------- */
     function isiForm(d) {
         form.tanggal.value = d.tanggal;
@@ -742,11 +742,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         return loadSub(d.kegiatan_id, d.pokja, d.sub_kegiatan_id);
     }
- 
+
     /* ---------- Tombol di tabel ---------- */
     document.getElementById('tblLaporan').addEventListener('click', function (e) {
         var b;
- 
+
         // EDIT
         if ((b = e.target.closest('.btn-edit'))) {
             fetch(b.dataset.show, { headers: { 'Accept': 'application/json' } })
@@ -761,7 +761,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     isiForm(res.data).then(function () { modal.show(); });
                 });
         }
- 
+
         // LIHAT
         if ((b = e.target.closest('.btn-lihat'))) {
             var row = tabel.row($(b).closest('tr')).data();
@@ -790,7 +790,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     else { alert(row.sub + ' - ' + row.tempat); }
                 });
         }
- 
+
         // HAPUS
         if ((b = e.target.closest('.btn-hapus'))) {
             var hapus = function () {
@@ -811,17 +811,17 @@ document.addEventListener('DOMContentLoaded', function () {
             } else if (confirm('Hapus laporan ini?')) { hapus(); }
         }
     });
- 
+
     /* ---------- Simpan (tambah / edit) ---------- */
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         var fd  = new FormData(form);
         var url = STORE_URL;
         if (updateUrl) { fd.append('_method', 'PUT'); url = updateUrl; }
- 
+
         var btn = form.querySelector('[type=submit]');
         btn.disabled = true;
- 
+
         fetch(url, { method: 'POST', body: fd, headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } })
             .then(function (r) {
                 return r.text().then(function (t) {
@@ -857,7 +857,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 notif('Terjadi kesalahan: ' + err.message, 'error');
             });
     });
- 
+
     /* ---------- Reset saat modal ditutup ---------- */
     modalEl.addEventListener('hidden.bs.modal', function () {
         form.reset();
@@ -866,7 +866,7 @@ document.addEventListener('DOMContentLoaded', function () {
         resetPreview();
         toggleNotulen();
     });
- 
+
     /* ---------- Statistik & grafik: mengikuti 5 filter paling atas ---------- */
     var stKec   = document.getElementById('stKec');
     var stKel   = document.getElementById('stKel');

@@ -19,12 +19,12 @@ class InovasiController extends Controller
         return view('bo.inovasi.index', compact('kecamatan', 'kelurahan'));
     }
 
-    private function encRef($value)
+    private function encRef(int $value)
     {
         return rtrim(strtr(base64_encode(Crypt::encryptString((string) $value)), '+/', '-_'), '=');
     }
 
-    private function decRef($token)
+    private function decRef( int $token)
     {
         try {
             $raw = base64_decode(strtr((string) $token, '-_', '+/'));
