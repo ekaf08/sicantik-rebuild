@@ -68,6 +68,11 @@
     .pd-photo-box img { width: 100%; height: 100%; object-fit: cover; }
     .pd-checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .5rem .75rem; }
     .pd-checkbox-item { display: flex; align-items: center; gap: .5rem; font-size: .85rem; font-weight: 600; color: #4b5675; cursor: pointer; }
+    /* Popup detail SI BASAM */
+    .basam-detail-header { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); border-radius: 1rem 1rem 0 0; }
+    .basam-detail-table thead th { background: #f0fdfa; color: #0f766e; font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+    .basam-detail-table tbody tr:hover { background: #f0fdfa; }
+    .basam-chip { background: rgba(255,255,255,.18); color: #fff; border-radius: 999px; padding: .25rem .75rem; font-size: .8rem; font-weight: 700; }
 </style>
 
 <!-- Banner Deskripsi Inovasi Pisang Danor -->
@@ -227,12 +232,12 @@
                         </div>
                         <div class="card-body p-5">
                             <div class="row text-center align-items-center">
-                                <div class="col-6 border-end basam-clickable" onclick="openEmptyPopUp('Data Pilah Sampah - SUDAH', 'Rincian data warga/wilayah yang SUDAH melakukan pemilahan sampah')">
+                                <div class="col-6 border-end basam-clickable" onclick="basamDetailDanor('pilah_sudah')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">SUDAH</span>
                                     <div class="fs-2hx fw-bolder my-1" style="color: #10b981;" id="basam-pilah-sudah-tonase">0</div>
                                     <span class="fs-1 fw-bolder text-success" id="basam-pilah-sudah-count">0</span>
                                 </div>
-                                <div class="col-6 basam-clickable" onclick="openEmptyPopUp('Data Pilah Sampah - BELUM', 'Rincian data warga/wilayah yang BELUM melakukan pemilahan sampah')">
+                                <div class="col-6 basam-clickable" onclick="basamDetailDanor('pilah_belum')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">BELUM</span>
                                     <div class="fs-2hx fw-bolder text-danger my-1" id="basam-pilah-belum-tonase">0</div>
                                     <span class="fs-1 fw-bolder text-danger" id="basam-pilah-belum-count">0</span>
@@ -249,11 +254,11 @@
                         </div>
                         <div class="card-body p-5">
                             <div class="row text-center align-items-center">
-                                <div class="col-6 border-end basam-clickable" onclick="openEmptyPopUp('Data Bank Sampah - SUDAH ADA', 'Rincian lokasi & daftar Bank Sampah yang SUDAH ADA')">
+                                <div class="col-6 border-end basam-clickable" onclick="basamDetailDanor('bank')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">SUDAH ADA</span>
                                     <div class="fs-2hx fw-bolder my-2" style="color: #10b981;" id="basam-bank-ada">0</div>
                                 </div>
-                                <div class="col-6 basam-clickable" onclick="openEmptyPopUp('Data Bank Sampah - BELUM ADA', 'Rincian wilayah/RT/RW yang BELUM ADA Bank Sampah')">
+                                <div class="col-6 basam-clickable" onclick="basamDetailDanor('bank_belum')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">BELUM ADA</span>
                                     <div class="fs-2hx fw-bolder text-danger my-2" id="basam-bank-belum">0</div>
                                 </div>
@@ -263,7 +268,7 @@
                 </div>
 
                 <div class="col-12 col-md-6">
-                    <div class="basam-card h-100 shadow-sm basam-clickable" onclick="openEmptyPopUp('Data Tonase An-Organik', 'Rincian akumulasi tonase sampah anorganik (Kg)')">
+                    <div class="basam-card h-100 shadow-sm basam-clickable" onclick="basamDetailDanor('tonase')">
                         <div class="basam-header-tonase text-white text-center py-3">
                             <h5 class="fw-bolder text-white m-0 tracking-wider">TONASE AN-ORGANIK</h5>
                         </div>
@@ -281,15 +286,15 @@
                         </div>
                         <div class="card-body p-5">
                             <div class="row text-center align-items-center">
-                                <div class="col-4 border-end basam-clickable" onclick="openEmptyPopUp('Data Paving - JUMLAH', 'Rincian total titik paving')">
+                                <div class="col-4 border-end basam-clickable" onclick="basamDetailDanor('paving')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">JUMLAH</span>
                                     <div class="fs-2hx fw-bolder text-gray-900 mt-1" id="basam-paving-total">0</div>
                                 </div>
-                                <div class="col-4 border-end basam-clickable" onclick="openEmptyPopUp('Data Paving - SUDAH BIOPORI', 'Rincian titik paving yang SUDAH memiliki biopori')">
+                                <div class="col-4 border-end basam-clickable" onclick="basamDetailDanor('paving_sudah')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">SUDAH BIOPORI</span>
                                     <div class="fs-2hx fw-bolder my-1" style="color: #10b981;" id="basam-paving-sudah">0</div>
                                 </div>
-                                <div class="col-4 basam-clickable" onclick="openEmptyPopUp('Data Paving - BELUM BIOPORI', 'Rincian titik paving yang BELUM memiliki biopori')">
+                                <div class="col-4 basam-clickable" onclick="basamDetailDanor('paving_belum')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">BELUM BIOPORI</span>
                                     <div class="fs-2hx fw-bolder text-danger mt-1" id="basam-paving-belum">0</div>
                                 </div>
@@ -573,6 +578,51 @@
                         <button type="submit" class="btn btn-success fw-bold px-6 text-white" style="background-color: #22c55e !important;">Simpan</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detail SI BASAM -->
+<div class="modal fade" id="modalDetailBasam" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content rounded-4 border-0 overflow-hidden">
+            <div class="basam-detail-header text-white px-7 py-5 d-flex align-items-start justify-content-between">
+                <div>
+                    <h3 class="fw-bolder text-white fs-3 mb-1" id="bd-title">Detail</h3>
+                    <p class="mb-2 fs-8" style="color: rgba(255,255,255,.8);" id="bd-subtitle"></p>
+                    <span class="basam-chip" id="bd-chip"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-7">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-5">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-gray-600 fs-7 fw-semibold">Tampilkan</span>
+                        <select class="form-select form-select-solid w-75px fs-7 fw-bold" id="bd-perpage">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <label class="fs-7 fw-semibold text-gray-700 mb-0" for="bd-search">Cari:</label>
+                        <input type="text" id="bd-search" class="form-control form-control-solid w-200px fs-7" />
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle table-row-dashed fs-7 gy-3 gs-4 basam-detail-table">
+                        <thead id="bd-thead"></thead>
+                        <tbody class="fw-semibold text-gray-700" id="bd-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4">
+                    <span class="text-gray-600 fs-8 fw-semibold" id="bd-info"></span>
+                    <ul class="pagination pagination-outline mb-0" id="bd-pagination"></ul>
+                </div>
+            </div>
+            <div class="modal-footer border-top py-3 px-7">
+                <button type="button" class="btn btn-light fs-7 fw-semibold" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -1048,6 +1098,154 @@
         isiKelurahan($('basam-kelurahan'), '', '-- Pilih Kelurahan --', false);
         $('basam-kelurahan').disabled = true;
         hitungSiBasam();
+    };
+
+
+    // ---------- Popup detail SI BASAM ----------
+    const bd = { cols: [], rows: [], page: 1 };
+
+    function bdRender() {
+        const q = $('bd-search').value.trim().toLowerCase();
+        const per = parseInt($('bd-perpage').value, 10) || 10;
+        const rows = bd.rows.filter(function (r) { return !q || r.join(' ').toLowerCase().indexOf(q) !== -1; });
+        const totalPage = Math.max(1, Math.ceil(rows.length / per));
+        if (bd.page > totalPage) bd.page = totalPage;
+        const mulai = (bd.page - 1) * per;
+        const tampil = rows.slice(mulai, mulai + per);
+
+        $('bd-thead').innerHTML = '<tr><th class="text-center w-50px">NO</th>' + bd.cols.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr>';
+
+        if (!tampil.length) {
+            $('bd-tbody').innerHTML = '<tr><td colspan="' + (bd.cols.length + 1) + '" class="text-center py-8 text-gray-500">Belum ada data tersedia</td></tr>';
+        } else {
+            $('bd-tbody').innerHTML = tampil.map(function (r, i) {
+                return '<tr><td class="text-center fw-bold">' + (mulai + i + 1) + '</td>' + r.map(function (c) { return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>';
+            }).join('');
+        }
+
+        $('bd-info').textContent = rows.length
+            ? 'Menampilkan ' + (mulai + 1) + ' - ' + (mulai + tampil.length) + ' dari ' + rows.length + ' data'
+            : 'Tidak ada data';
+
+        let pg = '<li class="page-item ' + (bd.page === 1 ? 'disabled' : '') + '"><a class="page-link bd-page" href="#" data-page="' + (bd.page - 1) + '">Sebelumnya</a></li>';
+        for (let p = 1; p <= totalPage; p++) {
+            pg += '<li class="page-item ' + (p === bd.page ? 'active' : '') + '"><a class="page-link bd-page" href="#" data-page="' + p + '">' + p + '</a></li>';
+        }
+        pg += '<li class="page-item ' + (bd.page === totalPage ? 'disabled' : '') + '"><a class="page-link bd-page" href="#" data-page="' + (bd.page + 1) + '">Berikutnya</a></li>';
+        $('bd-pagination').innerHTML = pg;
+    }
+
+    $('bd-perpage').addEventListener('change', function () { bd.page = 1; bdRender(); });
+    $('bd-search').addEventListener('input', function () { bd.page = 1; bdRender(); });
+    $('bd-pagination').addEventListener('click', function (e) {
+        const a = e.target.closest('.bd-page');
+        if (!a) return;
+        e.preventDefault();
+        const p = parseInt(a.dataset.page, 10);
+        if (p >= 1) { bd.page = p; bdRender(); }
+    });
+
+    function bdBuka(judul, sub, chip, cols, rows) {
+        bd.cols = cols; bd.rows = rows; bd.page = 1;
+        $('bd-title').textContent = judul;
+        $('bd-subtitle').textContent = sub;
+        $('bd-chip').textContent = chip;
+        $('bd-chip').style.display = chip ? 'inline-block' : 'none';
+        $('bd-search').value = '';
+        bdRender();
+        modal('modalDetailBasam').show();
+    }
+
+    // Pengaturan tiap popup. "rows" mengembalikan data asli bila sumber datanya sudah ada.
+    // Sumber data untuk Pilah, Bank Sampah "Belum Ada", dan Paving belum tersedia di database,
+    // jadi saat ini tampil popup "Data belum ada" (bukan angka karangan).
+    function basamKonfig(cocok) {
+        const kosong = function () { return []; };
+        return {
+            pilah_sudah: {
+                title: 'Detail Pilah Sampah (SUDAH)', sub: 'Rincian warga yang sudah melakukan pemilahan sampah',
+                cols: ['NO KK', 'ALAMAT DOMISILI', 'KECAMATAN', 'KELURAHAN', 'RW', 'RT', 'NAMA JAWABAN'],
+                kosong: 'Belum terdapat data warga yang sudah memilah sampah', rows: kosong
+            },
+            pilah_belum: {
+                title: 'Detail Pilah Sampah (BELUM)', sub: 'Rincian warga yang belum melakukan pemilahan sampah',
+                cols: ['NO KK', 'ALAMAT DOMISILI', 'KECAMATAN', 'KELURAHAN', 'RW', 'RT', 'NAMA JAWABAN'],
+                kosong: 'Belum terdapat data warga yang belum memilah sampah', rows: kosong
+            },
+            bank: {
+                title: 'Detail Bank Sampah', sub: 'Daftar Bank Sampah yang sudah tercatat',
+                cols: ['NAMA BANK', 'ALAMAT', 'KECAMATAN', 'KELURAHAN', 'RW', 'RT'],
+                kosong: 'Belum terdapat data bank sampah',
+                rows: function () {
+                    return dataBsi.filter(cocok).map(function (r) {
+                        return [r.nama_bsi, r.alamat_bsi, r.kecamatan, r.kelurahan, r.rw || '-', r.rt || '-'];
+                    });
+                },
+                chip: function (rows) { return 'Jumlah: ' + rows.length + ' Bank Sampah'; }
+            },
+            bank_belum: {
+                title: 'Detail Bank Sampah', sub: 'Wilayah yang belum memiliki Bank Sampah',
+                cols: ['NAMA BANK', 'ALAMAT', 'KECAMATAN', 'KELURAHAN'],
+                kosong: 'Belum terdapat data wilayah yang belum memiliki bank sampah', rows: kosong
+            },
+            tonase: {
+                title: 'Detail Tonase An-Organik', sub: 'Rincian tonase sampah anorganik terolah',
+                cols: ['KECAMATAN', 'KELURAHAN', 'RW', 'RT', 'TOTAL KG'],
+                kosong: 'Belum terdapat data tonase sampah anorganik',
+                rows: function () {
+                    return dataOrganik.filter(cocok).map(function (r) {
+                        return [r.kecamatan, r.kelurahan, r.rw || '-', r.rt || '-', fmt(r.sampah_terolah_anorganik)];
+                    });
+                },
+                chip: function () {
+                    let t = 0;
+                    dataOrganik.filter(cocok).forEach(function (r) { t += num(r.sampah_terolah_anorganik); });
+                    return 'Total: ' + fmt(t) + ' Kg';
+                }
+            },
+            paving: {
+                title: 'Detail Paving', sub: 'Rincian seluruh titik paving',
+                cols: ['KOMPONEN', 'DETAIL', 'KOEF', 'HARGA SATUAN', 'TOTAL', 'KECAMATAN', 'KELURAHAN'],
+                kosong: 'Belum terdapat data paving', rows: kosong
+            },
+            paving_sudah: {
+                title: 'Detail Paving Sudah Biopori', sub: 'Titik paving yang sudah memiliki biopori',
+                cols: ['KOMPONEN', 'DETAIL', 'KOEF', 'HARGA SATUAN', 'TOTAL', 'KECAMATAN', 'KELURAHAN'],
+                kosong: 'Belum terdapat data paving yang sudah berbiopori', rows: kosong
+            },
+            paving_belum: {
+                title: 'Detail Paving Belum Biopori', sub: 'Titik paving yang belum memiliki biopori',
+                cols: ['KOMPONEN', 'DETAIL', 'KOEF', 'HARGA SATUAN', 'TOTAL', 'KECAMATAN', 'KELURAHAN'],
+                kosong: 'Belum terdapat data paving yang belum berbiopori', rows: kosong
+            }
+        };
+    }
+
+    function basamKosongPopup(pesan, lokasi) {
+        Swal.fire({
+            iconHtml: '<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 11v4"/><path d="M12 17.5h.01"/></svg>',
+            title: 'Data belum ada',
+            html: '<div style="color:#64748b">' + esc(pesan) + (lokasi ? '<br><span style="font-size:.85rem">Wilayah: ' + esc(lokasi) + '</span>' : '') + '</div>',
+            confirmButtonText: 'Mengerti',
+            buttonsStyling: false,
+            customClass: { popup: 'rounded-4', icon: 'border-0', confirmButton: 'btn fw-bold px-8 text-white', title: 'fw-bolder fs-3' },
+            didOpen: function () { const b = Swal.getConfirmButton(); if (b) b.style.backgroundColor = '#0d9488'; }
+        });
+    }
+
+    window.basamDetailDanor = function (jenis) {
+        const kec = $('basam-kecamatan').value;
+        const kel = $('basam-kelurahan').value;
+        const lokasi = kel ? (kec + ' / ' + kel) : kec;
+        const cocok = function (r) { return (!kec || r.kecamatan === kec) && (!kel || r.kelurahan === kel); };
+
+        const k = basamKonfig(cocok)[jenis];
+        if (!k) return;
+        const rows = k.rows();
+
+        if (!rows.length) { basamKosongPopup(k.kosong, lokasi); return; }
+
+        bdBuka(k.title, k.sub + (lokasi ? ' - ' + lokasi : ''), k.chip ? k.chip(rows) : '', k.cols, rows);
     };
 
     window.openEmptyPopUp = function (title, subtitle) {
