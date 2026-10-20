@@ -24,11 +24,11 @@ class InovasiController extends Controller
         return rtrim(strtr(base64_encode(Crypt::encryptString((string) $value)), '+/', '-_'), '=');
     }
 
-    private function decRef( int $token)
+    private function decRef($token)
     {
         try {
             $raw = base64_decode(strtr((string) $token, '-_', '+/'));
-            return Crypt::decryptString($raw);
+            return (int) Crypt::decryptString($raw);
         } catch (\Throwable $e) {
             return null;
         }
@@ -55,7 +55,6 @@ class InovasiController extends Controller
     public function getData()
     {
         try {
-            // Ambil data inovasi global
             $inovasi = DB::table('t_inovasi_global as tig')
                 ->leftJoin('m_kecamatan as mk', 'tig.id_kec', '=', 'mk.id_kec')
                 ->leftJoin('m_kelurahan as mkel', 'tig.id_kel', '=', 'mkel.id_kel')
@@ -244,8 +243,6 @@ class InovasiController extends Controller
         $page      = (int) $request->input('page', 1);
         $limit     = (int) $request->input('limit', 10);
         $kecamatan = $request->input('kecamatan', 'Semua');
-        $kelurahan = $request->input('kelurahan', 'Semua');
-        $tahun     = $request->input('tahun', 'Semua');
         $search    = $request->input('search', '');
 
         $dummyData = [
@@ -305,6 +302,222 @@ class InovasiController extends Controller
             'per_page'     => $limit,
             'last_page'    => max(1, (int) ceil($total / max(1, $limit))),
             'data'         => $pagedData
+        ]);
+    }
+
+    public function soth()
+    {
+        return view('bo.pages.inovasi_soth.index');
+    }
+
+    public function getSothData(Request $request)
+    {
+        $page      = (int) $request->input('page', 1);
+        $limit     = (int) $request->input('limit', 10);
+        $kecamatan = $request->input('kecamatan');
+
+        $query = DB::table('t_inovasi_soth')->whereNull('deleted_at');
+
+        if (!empty($kecamatan) && $kecamatan !== 'all') {
+            $query->where('kecamatan', 'ilike', trim($kecamatan));
+        }
+
+        $total = $query->count();
+        $offset = ($page - 1) * $limit;
+
+        $items = $query->orderBy('id', 'desc')
+            ->offset($offset)
+            ->limit($limit)
+            ->get()
+            ->map(function ($row) {
+                $row->hash = $this->encRef($row->id);
+                unset($row->id);
+                return $row;
+            });
+
+        return response()->json([
+            'total'        => $total,
+            'current_page' => $page,
+            'per_page'     => $limit,
+            'last_page'    => max(1, (int) ceil($total / max(1, $limit))),
+            'from'         => $total > 0 ? $offset + 1 : 0,
+            'to'           => min($offset + $limit, $total),
+            'data'         => $items
+        ]);
+    }
+
+    public function getSothChart(Request $request)
+    {
+        $kecamatan = $request->input('kecamatan');
+
+        $query = DB::table('t_inovasi_soth')->whereNull('deleted_at');
+
+        if (!empty($kecamatan) && $kecamatan !== 'all') {
+            $query->where('kecamatan', 'ilike', trim($kecamatan));
+        }
+
+        $data = $query->select(
+            'kecamatan',
+            DB::raw('ROUND(AVG(rata_pre)::numeric, 2) as avg_pre'),
+            DB::raw('ROUND(AVG(rata_post)::numeric, 2) as avg_post')
+        )
+        ->groupBy('kecamatan')
+        ->orderBy('kecamatan', 'asc')
+        ->get();
+
+        $labels   = [];
+        $preData  = [];
+        $postData = [];
+
+        foreach ($data as $item) {
+            $labels[]   = $item->kecamatan;
+            $preData[]  = (float) $item->avg_pre;
+            $postData[] = (float) $item->avg_post;
+        }
+
+        return response()->json([
+            'labels'   => $labels,
+            'pretest'  => $preData,
+            'posttest' => $postData,
+        ]);
+    }
+
+    public function storeSoth(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama'          => 'required|string|max:255',
+            'alamat'        => 'required|string|max:255',
+            'rt'            => 'required|string|max:20',
+            'kelurahan'     => 'required|string|max:255',
+            'kecamatan'     => 'required|string|max:255',
+            'rata_pre'      => 'required|numeric|min:0|max:100',
+            'rata_post'     => 'required|numeric|min:0|max:100',
+            'total_peserta' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        $user = Auth::user()->name ?? 'Admin';
+
+        DB::table('t_inovasi_soth')->insert([
+            'nama'          => $request->nama,
+            'alamat'        => $request->alamat,
+            'rt'            => $request->rt,
+            'kelurahan'     => $request->kelurahan,
+            'kecamatan'     => strtoupper($request->kecamatan),
+            'rata_pre'      => $request->rata_pre,
+            'rata_post'     => $request->rata_post,
+            'total_peserta' => $request->total_peserta,
+            'created_by'    => $user,
+            'created_at'    => now(),
+            'updated_at'    => now(),
+        ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data SOTH berhasil ditambahkan'
+        ]);
+    }
+
+    public function showSoth($id)
+    {
+        $realId = $this->decRef($id);
+        if (!$realId) {
+            return response()->json(['status' => 'error', 'message' => 'Data tidak valid'], 400);
+        }
+
+        $data = DB::table('t_inovasi_soth')
+            ->where('id', $realId)
+            ->whereNull('deleted_at')
+            ->first();
+
+        if (!$data) {
+            return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan'], 404);
+        }
+
+        $data->hash = $this->encRef($data->id);
+        unset($data->id);
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $data
+        ]);
+    }
+
+    public function updateSoth(Request $request, $id)
+    {
+        $realId = $this->decRef($id);
+        if (!$realId) {
+            return response()->json(['status' => 'error', 'message' => 'Data tidak valid'], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'nama'          => 'required|string|max:255',
+            'alamat'        => 'required|string|max:255',
+            'rt'            => 'required|string|max:20',
+            'kelurahan'     => 'required|string|max:255',
+            'kecamatan'     => 'required|string|max:255',
+            'rata_pre'      => 'required|numeric|min:0|max:100',
+            'rata_post'     => 'required|numeric|min:0|max:100',
+            'total_peserta' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        $user = Auth::user()->name ?? 'Admin';
+
+        DB::table('t_inovasi_soth')
+            ->where('id', $realId)
+            ->update([
+                'nama'          => $request->nama,
+                'alamat'        => $request->alamat,
+                'rt'            => $request->rt,
+                'kelurahan'     => $request->kelurahan,
+                'kecamatan'     => strtoupper($request->kecamatan),
+                'rata_pre'      => $request->rata_pre,
+                'rata_post'     => $request->rata_post,
+                'total_peserta' => $request->total_peserta,
+                'updated_by'    => $user,
+                'updated_at'    => now(),
+            ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data SOTH berhasil diperbarui'
+        ]);
+    }
+
+    public function destroySoth(Request $request, $id = null)
+    {
+        $target = $id ?? $request->input('id');
+        $realId = $this->decRef($target);
+
+        if (!$realId) {
+            return response()->json(['status' => 'error', 'message' => 'ID data tidak valid'], 400);
+        }
+
+        $user = Auth::user()->name ?? 'Admin';
+
+        DB::table('t_inovasi_soth')
+            ->where('id', $realId)
+            ->update([
+                'deleted_by' => $user,
+                'deleted_at' => now(),
+            ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data SOTH berhasil dihapus'
         ]);
     }
 }

@@ -16,8 +16,10 @@ use App\Http\Controllers\ModalController;
 use App\Http\Controllers\MakanKetanController;
 use App\Http\Controllers\PisangDanorController;
 use App\Http\Controllers\PmtController;
+use App\Http\Controllers\Bo\InovasiSothController;
 use App\Http\Controllers\Bo\KebijakanController;
 use App\Http\Controllers\DataUmumController;
+use App\Http\Controllers\Bo\DaftarKetuaPkkController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -47,6 +49,14 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     // Inovasi
     Route::get('/inovasi/global', [InovasiController::class, 'global'])->name('inovasi.global');
     Route::match(['get', 'post'], '/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
+
+    //soth
+    Route::get('/inovasi-soth/data', [InovasiSothController::class, 'getData'])->name('soth.data');
+    Route::get('/inovasi-soth/chart', [InovasiSothController::class, 'getChartData'])->name('soth.chart');
+    Route::post('/inovasi-soth/store', [InovasiSothController::class, 'store'])->name('soth.store');
+    Route::get('/inovasi-soth/show/{id}', [InovasiSothController::class, 'show'])->name('soth.show');
+    Route::post('/inovasi-soth/update/{id}', [InovasiSothController::class, 'update'])->name('soth.update');
+    Route::delete('/inovasi-soth/destroy/{id}', [InovasiSothController::class, 'destroy'])->name('soth.destroy');
 
     Route::get('/inovasi/global/get-data', [InovasiController::class, 'getData'])->name('inovasi.global.getData');
     Route::post('/inovasi/global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
@@ -150,6 +160,11 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
      Route::post('/pmt-data', [PmtController::class, 'store']);
      Route::post('/pmt-data/{id}', [PmtController::class, 'update']);
      Route::delete('/pmt-data/{id}', [PmtController::class, 'destroy']);
+
+     //Daftar-Ketua-PKK 
+    Route::get('/daftar-ketua-pkk', [DaftarKetuaPkkController::class, 'index'])->name('ketua-pkk.index');
+    Route::post('/daftar-ketua-pkk/upload', [DaftarKetuaPkkController::class, 'upload'])->name('ketua-pkk.upload');
+    Route::delete('/daftar-ketua-pkk/destroy/{id}', [DaftarKetuaPkkController::class, 'destroy'])->name('ketua-pkk.destroy');
 
     // CATCH-ALL: harus paling bawah
     Route::get('/{slug}', [MenuController::class, 'handleDynamicPage']) ->where('slug', '.*')->name('menu.dynamic');
