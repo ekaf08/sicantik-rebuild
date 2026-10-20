@@ -67,9 +67,13 @@ class PenghargaanController extends Controller
             'deskripsi_penghargaan' => 'required|string',
             'kategori_penghargaan'  => 'required|string|max:255',
             'tahun'                 => 'required|string|max:4',
+            'kecamatan_id'          => 'required',
+            'kelurahan_id'          => 'required',
             'foto'                  => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'file'                  => 'required|file|mimes:pdf,doc,docx|max:2048',
         ], [
+            'kecamatan_id.required' => 'Kecamatan wajib dipilih!',
+            'kelurahan_id.required' => 'Kelurahan wajib dipilih!',
             'foto.mimes' => 'Format foto harus berupa JPG, JPEG, atau PNG!',
             'foto.max'   => 'Ukuran foto maksimal 2MB!',
             'file.mimes' => 'Format file dokumen harus berupa PDF, DOC, atau DOCX!',
@@ -80,15 +84,19 @@ class PenghargaanController extends Controller
             $fotoPath = $request->file('foto')->store('penghargaan/foto', 'public');
             $filePath = $request->file('file')->store('penghargaan/file', 'public');
 
-            Penghargaan::create([
+            // forceFill supaya kolom wilayah ikut tersimpan walau belum ada di $fillable model
+            $item = new Penghargaan();
+            $item->forceFill([
                 'nama_penghargaan'      => $request->nama_penghargaan,
                 'deskripsi_penghargaan' => $request->deskripsi_penghargaan,
                 'kategori_penghargaan'  => $request->kategori_penghargaan,
                 'tahun'                 => $request->tahun,
+                'kecamatan_id'          => $request->kecamatan_id,
+                'kelurahan_id'          => $request->kelurahan_id,
                 'foto'                  => $fotoPath,
                 'file'                  => $filePath,
                 'created_by'            => 'Admin Kominfo',
-            ]);
+            ])->save();
 
             return redirect()->back()->with('success_store', true);
         } catch (\Exception $e) {
@@ -125,6 +133,11 @@ class PenghargaanController extends Controller
                 'tahun'                 => $request->tahun,
             ];
 
+            if ($request->filled('kecamatan_id') && $request->filled('kelurahan_id')) {
+                $data['kecamatan_id'] = $request->kecamatan_id;
+                $data['kelurahan_id'] = $request->kelurahan_id;
+            }
+
             if ($request->hasFile('foto')) {
                 if ($penghargaan->foto && Storage::disk('public')->exists($penghargaan->foto)) {
                     Storage::disk('public')->delete($penghargaan->foto);
@@ -139,7 +152,7 @@ class PenghargaanController extends Controller
                 $data['file'] = $request->file('file')->store('penghargaan/file', 'public');
             }
 
-            $penghargaan->update($data);
+            $penghargaan->forceFill($data)->save();
 
             return redirect()->back()->with('success_update', true);
         } catch (\Exception $e) {
@@ -154,6 +167,7 @@ class PenghargaanController extends Controller
     {
         try {
             $penghargaan = Penghargaan::find($id);
+            $nama = $penghargaan->nama_penghargaan ?? 'Data';
 
             if ($penghargaan) {
                 if ($penghargaan->foto && Storage::disk('public')->exists($penghargaan->foto)) {
@@ -165,7 +179,7 @@ class PenghargaanController extends Controller
                 $penghargaan->delete();
             }
 
-            return redirect()->back();
+            return redirect()->back()->with('success_delete', $nama . ' berhasil dihapus');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }

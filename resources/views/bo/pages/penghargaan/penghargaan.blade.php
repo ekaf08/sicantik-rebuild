@@ -1,6 +1,32 @@
 @extends('bo.layout.app')
 
 @section('content')
+    @php
+        // Peta wilayah dari database: { id_kecamatan: { nama, kel: [ {id, nama} ] } }
+        $wil = [];
+        foreach (($kecamatan ?? []) as $k) {
+            if (!empty($k->deleted_at ?? null)) { continue; }
+            $kid = $k->id_kec ?? ($k->id_kecamatan ?? ($k->id ?? null));
+            if ($kid === null) { continue; }
+            $wil[$kid] = ['nama' => $k->nama_kec ?? ($k->nama_kecamatan ?? ($k->nama ?? '')), 'kel' => []];
+        }
+        foreach (($kelurahan ?? []) as $l) {
+            $kid = $l->no_kec ?? ($l->id_kec ?? ($l->kecamatan_id ?? ($l->id_kecamatan ?? null)));
+            if ($kid !== null && isset($wil[$kid])) {
+                $wil[$kid]['kel'][] = [
+                    'id'   => $l->id_kel ?? ($l->id_kelurahan ?? ($l->id ?? '')),
+                    'nama' => $l->nama_kel ?? ($l->nama_kelurahan ?? ($l->nama ?? '')),
+                ];
+            }
+        }
+    @endphp
+    <!-- SweetAlert2 untuk pop-up notifikasi -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Teks tabel Penghargaan: hitam tegas */
+        #kt_table_penghargaan thead th { color: #000 !important; font-weight: 800 !important; }
+        #kt_table_penghargaan tbody td { color: #000 !important; }
+    </style>
     <div class="d-flex flex-column flex-column-fluid">
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-fluid">
@@ -28,30 +54,21 @@
                         <!-- Toolbar Filter & Button Tambah -->
                         <div class="card-toolbar gap-3">
                             <!-- Filter Kecamatan -->
-                            <select id="filter_kecamatan" class="form-select form-select-solid w-175px"
-                                onchange="loadKelurahan(this.value)">
-                                <option value="">Pilih Kecamatan</option>
-                                @if (isset($kecamatan))
-                                    @foreach ($kecamatan as $kec)
-                                        <option value="{{ $kec->id_kec ?? ($kec->id_kecamatan ?? ($kec->id ?? '')) }}">
-                                            {{ $kec->nama_kecamatan ?? ($kec->nama_kec ?? ($kec->nama ?? '')) }}
-                                        </option>
-                                    @endforeach
-                                @endif
+                            <select id="filter_kecamatan" class="form-select form-select-solid w-175px">
+                                <option value="">Semua Kecamatan</option>
                             </select>
 
-                            <!-- Filter Kelurahan (Dinamis AJAX) -->
-                            <select id="filter_kelurahan" class="form-select form-select-solid w-175px">
-                                <option value="">Pilih Kelurahan</option>
+                            <!-- Filter Kelurahan -->
+                            <select id="filter_kelurahan" class="form-select form-select-solid w-175px" disabled>
+                                <option value="">Semua Kelurahan</option>
                             </select>
 
-                            <!-- Filter Tahun (Manual Statis agar tidak error loop) -->
+                            <!-- Filter Tahun -->
                             <select id="filter_tahun" class="form-select form-select-solid w-125px">
-                                <option value="">Tahun</option>
-                                <option value="2026">2026</option>
-                                <option value="2025">2025</option>
-                                <option value="2024">2024</option>
-                                <option value="2023">2023</option>
+                                <option value="">Semua Tahun</option>
+                                @for ($t = 2030; $t >= 2020; $t--)
+                                    <option value="{{ $t }}">{{ $t }}</option>
+                                @endfor
                             </select>
 
                             <!-- Tombol Tambah Penghargaan Hijau Tema -->
@@ -74,7 +91,7 @@
                         <div class="table-responsive">
                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_penghargaan">
                                 <thead>
-                                    <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                                    <tr class="text-start text-gray-900 fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="w-50px">NO</th>
                                         <th>NAMA PENGHARGAAN</th>
                                         <th>DESKRIPSI PENGHARGAAN</th>
@@ -86,10 +103,10 @@
                                         <th class="text-end">ACTION</th>
                                     </tr>
                                 </thead>
-                                <tbody class="fw-semibold text-gray-600">
+                                <tbody class="fw-semibold text-gray-900">
                                     @if (isset($penghargaan) && count($penghargaan) > 0)
                                         @foreach ($penghargaan as $index =>$item)
-                                            <tr>
+                                            <tr data-kec="{{ $item->kecamatan_id ?? '' }}" data-kel="{{ $item->kelurahan_id ?? '' }}" data-tahun="{{ $item->tahun }}">
                                                 <td>{{ $index + 1 }}</td>
                                                 <td class="fw-bold text-gray-800">{{ $item->nama_penghargaan }}</td>
                                                 <td>{{ $item->deskripsi_penghargaan }}</td>
@@ -173,6 +190,20 @@
                                     placeholder="2026" maxlength="4" required />
                             </div>
                         </div>
+                        <div class="row mb-5">
+                            <div class="col-md-6">
+                                <label class="required fs-6 fw-semibold mb-2">Kecamatan</label>
+                                <select class="form-select form-select-solid" id="add_kecamatan_id" name="kecamatan_id" required>
+                                    <option value="">Pilih Kecamatan</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="required fs-6 fw-semibold mb-2">Kelurahan</label>
+                                <select class="form-select form-select-solid" id="add_kelurahan_id" name="kelurahan_id" required disabled>
+                                    <option value="">Pilih Kelurahan</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="mb-5">
                             <label class="required fs-6 fw-semibold mb-2">Upload Foto (JPG/PNG, Max 2MB)</label>
                             <input type="file" class="form-control form-control-solid" name="foto"
@@ -224,6 +255,20 @@
                                 <input type="text" class="form-control form-control-solid" id="edit_tahun" name="tahun" maxlength="4" required />
                             </div>
                         </div>
+                        <div class="row mb-5">
+                            <div class="col-md-6">
+                                <label class="required fs-6 fw-semibold mb-2">Kecamatan</label>
+                                <select class="form-select form-select-solid" id="edit_kecamatan_id" name="kecamatan_id" >
+                                    <option value="">Pilih Kecamatan</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="required fs-6 fw-semibold mb-2">Kelurahan</label>
+                                <select class="form-select form-select-solid" id="edit_kelurahan_id" name="kelurahan_id"  disabled>
+                                    <option value="">Pilih Kelurahan</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="mb-5">
                             <label class="fs-6 fw-semibold mb-2">Ganti Foto (Opsional, Max 2MB)</label>
                             <input type="file" class="form-control form-control-solid" name="foto" accept=".jpg,.jpeg,.png" />
@@ -273,46 +318,57 @@
         $('#edit_deskripsi_penghargaan').val(data.deskripsi_penghargaan);
         $('#edit_kategori_penghargaan').val(data.kategori_penghargaan);
         $('#edit_tahun').val(data.tahun);
+        $('#edit_kecamatan_id').val(data.kecamatan_id || '');
+        isiKel(document.getElementById('edit_kelurahan_id'), data.kecamatan_id, 'Pilih Kelurahan', data.kelurahan_id);
 
-        var modalEdit = new bootstrap.Modal(document.getElementById('modal_edit_penghargaan'));
+        var modalEdit = bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_penghargaan'));
         modalEdit.show();
     }
 
-    // 2. Load Kelurahan Dinamis
-    function loadKelurahan(kecamatanId) {
-        let $kelurahan =$('#filter_kelurahan');
-        $kelurahan.html('<option value="">Memuat Kelurahan...</option>');
+    // 2. Wilayah (kecamatan -> kelurahan) dari database
+    var WILAYAH = @json($wil, JSON_FORCE_OBJECT);
 
-        if (!kecamatanId) {
-            $kelurahan.html('<option value="">Pilih Kelurahan</option>');
-            return;
-        }
+    function urutNama(ids) {
+        return ids.sort(function (x, y) { return String(WILAYAH[x].nama).localeCompare(String(WILAYAH[y].nama)); });
+    }
+    function isiKec(select, placeholder) {
+        select.innerHTML = '<option value="">' + placeholder + '</option>';
+        urutNama(Object.keys(WILAYAH)).forEach(function (id) { select.appendChild(new Option(WILAYAH[id].nama, id)); });
+    }
+    function isiKel(select, kecId, placeholder, terpilih) {
+        select.innerHTML = '<option value="">' + placeholder + '</option>';
+        var list = (kecId && WILAYAH[kecId]) ? Object.values(WILAYAH[kecId].kel) : [];
+        list.sort(function (x, y) { return String(x.nama).localeCompare(String(y.nama)); })
+            .forEach(function (k) { select.appendChild(new Option(k.nama, k.id)); });
+        select.disabled = list.length === 0;
+        if (terpilih) select.value = terpilih;
+    }
 
-        fetch(`/get-kelurahan/${kecamatanId}`)
-            .then(res => res.json())
-            .then(data => {
-                let html = '<option value="">Pilih Kelurahan</option>';
-                if (data && data.length > 0) {
-                    data.forEach(item => {
-                        let id = item.id_kel ?? item.id_kelurahan ?? item.id ?? '';
-                        let nama = item.nama_kelurahan ?? item.nama_kel ?? item.nama ?? '';
-                        html += `<option value="${id}">${nama}</option>`;
-                    });
-                } else {
-                    html = '<option value="">Tidak ada kelurahan</option>';
-                }
-                $kelurahan.html(html);
-            })
-            .catch(err => {
-                console.error('Error:', err);
-                $kelurahan.html('<option value="">Pilih Kelurahan</option>');
-            });
+    // 2b. Filter tabel (Kecamatan, Kelurahan, Tahun) + pencarian
+    var tabelPenghargaan = null;
+
+    function cocokFilter(tr) {
+        var kec = document.getElementById('filter_kecamatan').value;
+        var kel = document.getElementById('filter_kelurahan').value;
+        var thn = document.getElementById('filter_tahun').value;
+        if (kec && tr.dataset.kec !== kec) return false;
+        if (kel && tr.dataset.kel !== kel) return false;
+        if (thn && tr.dataset.tahun !== thn) return false;
+        return true;
+    }
+    function terapkanFilter() {
+        if (tabelPenghargaan) { tabelPenghargaan.draw(); return; }
+        var q = document.getElementById('search_penghargaan').value.toLowerCase();
+        document.querySelectorAll('#kt_table_penghargaan tbody tr').forEach(function (tr) {
+            var tampil = cocokFilter(tr) && tr.textContent.toLowerCase().indexOf(q) !== -1;
+            tr.style.display = tampil ? '' : 'none';
+        });
     }
 
     // 3. Preview Foto
     function previewFoto(url) {
         $('#img_preview').attr('src', url);
-        var modal = new bootstrap.Modal(document.getElementById('modal_preview_foto'));
+        var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_preview_foto'));
         modal.show();
     }
 
@@ -335,94 +391,80 @@
                 let form = document.getElementById('form_delete_penghargaan');
                 form.action = `/penghargaan/delete/${id}`;
 
-                sessionStorage.setItem('flash_delete_success', `${nama} berhasil dihapus`);
                 form.submit();
             }
         });
     }
 
-    // 5. Inisialisasi DataTables & Pop-Up SweetAlert
-    $(document).ready(function() {
-        var table = $('#kt_table_penghargaan').DataTable({
-            "info": false,
-            'order': [],
-            'pageLength': 10
-        });
+    // 5. Pop-up notifikasi (hijau = berhasil, merah = gagal)
+    function tampilPopup(opsi) {
+        if (typeof Swal === 'undefined') { alert(opsi.text || opsi.title); return; }
+        Swal.fire(Object.assign({
+            confirmButtonText: 'OK',
+            buttonsStyling: false,
+            customClass: {
+                popup: 'rounded-4',
+                confirmButton: 'btn fw-bold px-6 ' + (opsi.icon === 'error' ? 'btn-danger' : 'btn-success')
+            }
+        }, opsi));
+    }
 
-        $('#search_penghargaan').on('keyup', function() {
-            table.search(this.value).draw();
-        });
+    // Dijalankan setelah SEMUA script halaman (jQuery, DataTables, SweetAlert) selesai dimuat
+    document.addEventListener('DOMContentLoaded', function () {
 
-        // --- Cek Notifikasi Setelah Delete (Merah) ---
-        let deleteMsg = sessionStorage.getItem('flash_delete_success');
-        if (deleteMsg) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Berhasil Dihapus',
-                text: deleteMsg,
-                confirmButtonText: 'OK',
-                customClass: {
-                    confirmButton: 'btn btn-danger fw-bold px-6'
-                },
-                buttonsStyling: false
-            });
-            sessionStorage.removeItem('flash_delete_success');
-        }
-
-        // --- Pop-Up Tambah Data Berhasil (Centang Hijau) ---
-        @if(session('success_store'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Berhasil menambahkan data',
-                confirmButtonText: 'OK',
-                customClass: {
-                    confirmButton: 'btn btn-success fw-bold px-6'
-                },
-                buttonsStyling: false
-            });
+        @if (session('success_store'))
+            tampilPopup({ icon: 'success', title: 'Berhasil', text: 'Berhasil menambahkan data' });
         @endif
 
-        // --- Pop-Up Edit Data Berhasil (Centang Hijau) ---
-        @if(session('success_update') || session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Edit data telah berhasil',
-                confirmButtonText: 'OK',
-                customClass: {
-                    confirmButton: 'btn btn-success fw-bold px-6'
-                },
-                buttonsStyling: false
-            });
+        @if (session('success_update') || session('success'))
+            tampilPopup({ icon: 'success', title: 'Berhasil', text: 'Edit data telah berhasil' });
         @endif
 
-        // --- Pop-Up Error Validasi / Database ---
+        @if (session('success_delete'))
+            tampilPopup({ icon: 'success', title: 'Berhasil Dihapus', text: @json(session('success_delete')) });
+        @endif
+
         @if ($errors->any())
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Simpan Data',
-                html: '{!! implode("<br>", $errors->all()) !!}',
-                confirmButtonText: 'OK',
-                customClass: {
-                    confirmButton: 'btn btn-danger fw-bold px-6'
-                },
-                buttonsStyling: false
-            });
+            tampilPopup({ icon: 'error', title: 'Gagal Simpan Data', html: @json(implode('<br>', array_map('e', $errors->all()))) });
         @endif
 
         @if (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal',
-                text: '{{ session("error") }}',
-                confirmButtonText: 'OK',
-                customClass: {
-                    confirmButton: 'btn btn-danger fw-bold px-6'
-                },
-                buttonsStyling: false
-            });
+            tampilPopup({ icon: 'error', title: 'Gagal', text: @json(session('error')) });
         @endif
+
+        // Isi dropdown wilayah
+        isiKec(document.getElementById('filter_kecamatan'), 'Semua Kecamatan');
+        isiKec(document.getElementById('add_kecamatan_id'), 'Pilih Kecamatan');
+        isiKec(document.getElementById('edit_kecamatan_id'), 'Pilih Kecamatan');
+
+        document.getElementById('filter_kecamatan').addEventListener('change', function () {
+            isiKel(document.getElementById('filter_kelurahan'), this.value, 'Semua Kelurahan');
+            terapkanFilter();
+        });
+        document.getElementById('filter_kelurahan').addEventListener('change', terapkanFilter);
+        document.getElementById('filter_tahun').addEventListener('change', terapkanFilter);
+
+        document.getElementById('add_kecamatan_id').addEventListener('change', function () {
+            isiKel(document.getElementById('add_kelurahan_id'), this.value, 'Pilih Kelurahan');
+        });
+        document.getElementById('edit_kecamatan_id').addEventListener('change', function () {
+            isiKel(document.getElementById('edit_kelurahan_id'), this.value, 'Pilih Kelurahan');
+        });
+
+        // Tabel + pencarian
+        try {
+            var punyaData = document.querySelectorAll('#kt_table_penghargaan tbody tr td[colspan]').length === 0;
+            if (window.jQuery && $.fn.DataTable && punyaData) {
+                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                    if (settings.nTable.id !== 'kt_table_penghargaan') return true;
+                    return cocokFilter(settings.aoData[dataIndex].nTr);
+                });
+                tabelPenghargaan = $('#kt_table_penghargaan').DataTable({ "info": false, 'order': [], 'pageLength': 10 });
+                $('#search_penghargaan').on('keyup', function () { tabelPenghargaan.search(this.value).draw(); });
+            } else {
+                document.getElementById('search_penghargaan').addEventListener('input', terapkanFilter);
+            }
+        } catch (e) { console.error(e); }
     });
 </script>
 @endsection
