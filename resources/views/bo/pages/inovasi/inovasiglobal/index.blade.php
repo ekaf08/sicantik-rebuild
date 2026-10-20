@@ -724,7 +724,7 @@
                         Batal
                     </button>
                     <button type="button" id="btn-submit-modal" class="btn btn-success text-white fw-bold px-4 rounded-3 shadow-sm small">
-                        Simpan Inovasi
+                        Simpan
                     </button>
                 </div>
             </form>
@@ -1572,3 +1572,4 @@
     fetchDataFromServer();
 </script>
 @endsection
+
