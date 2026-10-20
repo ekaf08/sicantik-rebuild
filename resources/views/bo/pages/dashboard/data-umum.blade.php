@@ -81,8 +81,10 @@
                 <td>6</td>
                 <td class="agregat-trigger fw-bold" data-field="Lainnya" data-kecamatan="Tegalsari" data-value="45">45</td>
                 <td>45</td>
-                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="189">189</td>
-                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
+
+                <td class="agregat-trigger" data-id="1" data-kec-nama="ASEMROWO">8</td>
+                <td class="agregat-trigger" data-id="2" data-kec-nama="ASEMROWO">45</td>
+
                 <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="18">18</td>
                 <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="1.245">1.245</td>
                 <td class="agregat-trigger fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>

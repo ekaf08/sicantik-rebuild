@@ -2043,19 +2043,17 @@
 </div>
 <!--end::Row--> --}}
 
-<! --begin::Modal - Agregat-->
-<div class="modal fade" id="kt_modal_agregat" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold text-uppercase" id="modalAgregatTitle">Agregate</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-6">
-                <input type="text" class="form-control form-control-solid fs-3 text-gray-430" id="modalAgregatValue" readonly>
-            </div>
-        </div>
+<! --begin::Modal - Dinamis-->
+<div class="modal fade" id="modalDinamis" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalJudul"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalIsi"></div>
     </div>
+  </div>
 </div>
 
 @push('js')

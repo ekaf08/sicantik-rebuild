@@ -13,6 +13,7 @@ use App\Http\Controllers\Bo\KebijakanController;
 use App\Http\Controllers\Bo\LaporanKegiatanController;
 use App\Http\Controllers\Bo\LaporanTahunanController;
 use App\Http\Controllers\Bo\PenghargaanController;
+use App\Http\Controllers\ModalController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -30,6 +31,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/modal/{id}', [ModalController::class, 'show']);
 
     //Mpasi
     Route::get('/mpasi', [MpasiController::class, 'index'])->name('mpasi.index');
