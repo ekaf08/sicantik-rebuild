@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Bo\AuthController;
-use App\Http\Middleware\CheckMenuPermission; 
+use App\Http\Middleware\CheckMenuPermission;
 use App\Http\Controllers\Bo\DashboardController;
 use App\Http\Controllers\Bo\InovasiController;
 use App\Http\Controllers\Bo\UserController;
@@ -9,13 +9,15 @@ use App\Http\Controllers\Bo\PermissionController;
 use App\Http\Controllers\Bo\MenuController;
 use App\Http\Controllers\Bo\RoleController;
 use App\Http\Controllers\Bo\MpasiController;
-use App\Http\Controllers\Bo\KebijakanController;
 use App\Http\Controllers\Bo\LaporanKegiatanController;
 use App\Http\Controllers\Bo\LaporanTahunanController;
 use App\Http\Controllers\Bo\PenghargaanController;
 use App\Http\Controllers\ModalController;
+use App\Http\Controllers\MakanKetanController;
+use App\Http\Controllers\PisangDanorController;
+use App\Http\Controllers\PmtController;
+use App\Http\Controllers\Bo\KebijakanController;
 use Illuminate\Support\Facades\Route;
-
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -33,7 +35,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/modal/{id}', [ModalController::class, 'show']);
 
-    //Mpasi
+    // Mpasi
     Route::get('/mpasi', [MpasiController::class, 'index'])->name('mpasi.index');
     Route::post('/mpasi', [MpasiController::class, 'store'])->name('mpasi.store');
     Route::get('/mpasi/{id}', [MpasiController::class, 'show'])->name('mpasi.show')->whereUuid('id');
@@ -44,15 +46,11 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/inovasi/global', [InovasiController::class, 'global'])->name('inovasi.global');
     Route::match(['get', 'post'], '/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
 
-    // Route::get('/inovasi-global/get-data', [InovasiController::class, 'getGlobalData'])->name('inovasi.global.getData');
-    // Route::post('/inovasi-global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
-    // Route::delete('/inovasi-global/destroy/{id}', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
-
-    Route::get('/inovasi/global/get-data', [InovasiController::class, 'getGlobalData'])->name('inovasi.global.getData');
+    Route::get('/inovasi/global/get-data', [InovasiController::class, 'getData'])->name('inovasi.global.getData');
     Route::post('/inovasi/global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
-    Route::delete('/inovasi/global/destroy/{id}', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
-    
-    //Kebijakan SK 
+    Route::delete('/inovasi/global/destroy', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
+
+    //Kebijakan SK
     Route::get('/kebijakan', [KebijakanController::class, 'index'])->name('kebijakan.index');
     Route::get('//kebijakan/data', [KebijakanController::class, 'getData'])->name('kebijakan.data');
     Route::post('/kebijakan/store', [KebijakanController::class, 'store'])->name('kebijakan.store');
@@ -100,7 +98,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     // Laporan
     Route::get('laporan/kegiatan', [RoleController::class, 'laporanKegiatan'])->name('laporan.kegiatan');
     Route::get('laporan/tahunan', [LaporanTahunanController::class, 'index'])->name('laporan.tahunan');
-    
+
     Route::get('laporan-kegiatan', [LaporanKegiatanController::class, 'index'])->name('laporan-kegiatan.index');
     Route::post('laporan-kegiatan', [LaporanKegiatanController::class, 'store'])->name('laporan-kegiatan.store');
     Route::get('laporan-kegiatan/wilayah/kecamatan', [LaporanKegiatanController::class, 'kecamatan'])->name('laporan-kegiatan.kecamatan');
@@ -118,11 +116,39 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::delete('/laporan-tahunan/{id}', [LaporanTahunanController::class, 'destroy'])->name('laporan-tahunan.destroy');
 
     // Penghargaan
-        Route::get('/penghargaan', [PenghargaanController::class, 'index'])->name('penghargaan.index');
-        Route::post('/penghargaan/store', [PenghargaanController::class, 'store'])->name('penghargaan.store');
-        Route::put('/penghargaan/update/{id}', [PenghargaanController::class, 'update'])->name('penghargaan.update');
-        Route::delete('/penghargaan/delete/{id}', [PenghargaanController::class, 'destroy'])->name('penghargaan.destroy');
+    Route::get('/penghargaan', [PenghargaanController::class, 'index'])->name('penghargaan.index');
+    Route::get('/get-kelurahan/{kecamatan_id}', [PenghargaanController::class, 'getKelurahan'])->name('penghargaan.kelurahan');
+    Route::post('/penghargaan/store', [PenghargaanController::class, 'store'])->name('penghargaan.store');
+    Route::put('/penghargaan/update/{id}', [PenghargaanController::class, 'update'])->name('penghargaan.update');
+    Route::delete('/penghargaan/delete/{id}', [PenghargaanController::class, 'destroy'])->name('penghargaan.destroy');
+
+    // Makan Ketan
+    Route::get('/makan-ketan/wilayah', [MakanKetanController::class, 'wilayah']);
+    Route::get('/makan-ketan', [MakanKetanController::class, 'index']);
+    Route::post('/makan-ketan', [MakanKetanController::class, 'store']);
+    Route::post('/makan-ketan/{id}', [MakanKetanController::class, 'update']);
+
+    // Pisang Danor
+    Route::get('/pisang-danor/wilayah', [PisangDanorController::class, 'wilayah']);
+
+    Route::get('/pisang-danor/bsi', [PisangDanorController::class, 'indexBsi']);
+    Route::post('/pisang-danor/bsi', [PisangDanorController::class, 'storeBsi']);
+    Route::post('/pisang-danor/bsi/{id}', [PisangDanorController::class, 'updateBsi']);
+    Route::delete('/pisang-danor/bsi/{id}', [PisangDanorController::class, 'destroyBsi']);
+
+    Route::get('/pisang-danor/organik', [PisangDanorController::class, 'indexOrganik']);
+    Route::post('/pisang-danor/organik', [PisangDanorController::class, 'storeOrganik']);
+    Route::post('/pisang-danor/organik/{id}', [PisangDanorController::class, 'updateOrganik']);
+    Route::delete('/pisang-danor/organik/{id}', [PisangDanorController::class, 'destroyOrganik']);
+
+
+    // PMT
+     Route::get('/pmt-data/wilayah', [PmtController::class, 'wilayah']);
+     Route::get('/pmt-data', [PmtController::class, 'index']);
+     Route::post('/pmt-data', [PmtController::class, 'store']);
+     Route::post('/pmt-data/{id}', [PmtController::class, 'update']);
+     Route::delete('/pmt-data/{id}', [PmtController::class, 'destroy']);
 
     // CATCH-ALL: harus paling bawah
-    Route::get('/{slug}', [MenuController::class, 'handleDynamicPage'])->name('menu.dynamic');
+    Route::get('/{slug}', [MenuController::class, 'handleDynamicPage']) ->where('slug', '.*')->name('menu.dynamic');
 });
