@@ -8,7 +8,7 @@
         min-height: 180px;
         position: relative;
         overflow: hidden;
-        border-radius: 12px;
+        border-radius: 12px;a
     }
     .banner-silhouette-bg {
         position: absolute;
@@ -52,7 +52,6 @@
         border-color: #0f5847 !important;
         color: #ffffff !important;
     }
-
     .btn-action-icon {
         width: 32px;
         height: 32px;
@@ -63,7 +62,11 @@
         border: 1px solid transparent;
         transition: all 0.2s ease;
         background: #f8f9fa;
-        cursor: pointer;
+        cursor: pointer !important;
+        pointer-events: auto !important;
+    }
+    .btn-action-icon svg {
+        pointer-events: none;
     }
     .btn-action-pdf {
         background: #d1f2e4;
@@ -92,24 +95,21 @@
         border-color: #fda4af;
         transform: translateY(-1px);
     }
-    .suggestion-item:hover {
-        background-color: #f1f5f9;
-    }
 </style>
 
 <div class="d-flex flex-column gap-5 w-100">
     <div class="card card-flush shadow-sm banner-kebijakan-card border-0">
         <div class="card-body p-6 p-md-8 d-flex flex-column flex-md-row justify-content-between align-items-md-center position-relative z-index-2 gap-4">
             <div class="text-white">
-                <h1 class="fs-2x fw-bolder text-white mb-2 tracking-wide">KEBIJAKAN</h1>
+                <h1 class="fs-2x fw-bolder text-white mb-2 tracking-wide">Data Lampiran SK</h1>
                 <p class="fs-6 text-white text-opacity-80 mb-0">
-                    Berikut adalah data kebijakan yang telah diinputkan
+                    Berikut adalah data lampiran SK yang telah diinputkan.
                 </p>
             </div>
             <div class="d-flex align-items-center">
                 <button type="button" class="btn btn-tambah-sk fw-bold px-5 py-3 rounded-3 shadow-sm d-flex align-items-center gap-2" onclick="bukaModalTambahKebijakan()">
                     <span class="fs-4 lh-1 fw-bold">+</span>
-                    <span class="fs-7 fw-bolder text-uppercase">Tambah SK</span>
+                    <span class="fs-7 fw-bolder text-uppercase">Tambah Lampiran SK</span>
                 </button>
             </div>
         </div>
@@ -128,28 +128,11 @@
                     <select id="filter_kebijakan_id_kec" class="form-select form-select-sm compact-select" style="width: 140px;" onchange="handleFilterKecamatanChange()">
                         <option value="all" selected>Pilih Kecamatan</option>
                     </select>
-                    <div class="position-relative" style="width: 175px;">
-                        <input type="text" 
-                               id="input_filter_kelurahan" 
-                               class="form-control form-control-sm compact-select pe-6" 
-                               placeholder="Cari Kelurahan..." 
-                               autocomplete="off"
-                               onkeyup="handleKelurahanSearchInput(this.value)">
-                        
-                        <button type="button" 
-                                id="btn_clear_kelurahan" 
-                                class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y me-1 d-none text-gray-500 hover-text-danger" 
-                                style="width: 20px; height: 20px; border: none; background: transparent;" 
-                                onclick="resetFilterKelurahan()" 
-                                title="Reset">
-                            ✕
-                        </button>
 
-                        <div id="kelurahan_suggestions" 
-                             class="position-absolute bg-white border border-gray-300 rounded-2 shadow-sm w-100 mt-1 d-none" 
-                             style="max-height: 220px; overflow-y: auto; z-index: 1050; font-size: 12px;">
-                        </div>
-                    </div>
+                    <select id="filter_kebijakan_id_kel" class="form-select form-select-sm compact-select" style="width: 140px;" onchange="handleFilterKelurahanChange()">
+                        <option value="all" selected>Pilih Kelurahan</option>
+                    </select>
+
                     <select id="filter_kebijakan_tahun" class="form-select form-select-sm compact-select" style="width: 110px;" onchange="fetchTableKebijakan(1)">
                         <option value="all" selected>Semua Tahun</option>
                         <option value="2026">2026</option>
@@ -182,6 +165,7 @@
                     <input type="text" id="kebijakan_search" class="form-control form-control-solid form-control-sm w-150px w-sm-200px" placeholder="Cari nomor SK / perihal..." onkeyup="searchKebijakanTable()">
                 </div>
             </div>
+
             <div class="table-responsive">
                 <table class="table table-bordered table-row-dashed gy-3 align-middle fs-7 mb-0">
                     <thead class="bg-light-secondary text-gray-700 fw-bold">
@@ -205,6 +189,7 @@
                     </tbody>
                 </table>
             </div>
+
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 pt-4">
                 <div id="kebijakan_info_records" class="fs-7 text-gray-600 text-center text-sm-start">
                     Showing 0 to 0 of 0 records
@@ -214,6 +199,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="modalKebijakan" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered mw-650px">
         <div class="modal-content">
@@ -223,7 +209,7 @@
             </div>
             <form id="formKebijakan" onsubmit="submitFormKebijakan(event)">
                 @csrf
-                <input type="hidden" id="kebijakan_id" name="id">
+                <input type="hidden" id="kebijakan_hash" name="hash" value="">
                 <div class="modal-body py-5 px-lg-8">
                     <div class="mb-4">
                         <label class="required form-label fw-semibold fs-7 mb-1">No SK</label>
@@ -237,8 +223,23 @@
 
                     <div class="row g-4 mb-4">
                         <div class="col-12 col-md-6">
+                            <label class="required form-label fw-semibold fs-7 mb-1">Kecamatan</label>
+                            <select id="kebijakan_id_kec" name="id_kec" class="form-select form-select-sm form-select-solid" onchange="handleModalKecamatanChange()">
+                                <option value="">Pilih Kecamatan</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="required form-label fw-semibold fs-7 mb-1">Kelurahan</label>
+                            <select id="kebijakan_id_kel" name="id_kel" class="form-select form-select-sm form-select-solid" onchange="handleModalKelurahanChange()">
+                                <option value="">Pilih Kelurahan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-12 col-md-6">
                             <label class="required form-label fw-semibold fs-7 mb-1">Tanggal Mulai</label>
-                            <input type="date" id="kebijakan_tgl_mulai" name="tgl_mulai" class="form-control form-control-sm form-control-solid" required>
+                            <input type="date" id="kebijakan_tgl_mulai" name="tgl_mulai" class="form-control form-control-sm form-control-solid" required onchange="handleTanggalMulaiChange()">
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label fw-semibold fs-7 mb-1">Tanggal Selesai</label>
@@ -246,28 +247,23 @@
                         </div>
                     </div>
 
-                    <div class="row g-4 mb-4">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label fw-semibold fs-7 mb-1">Tahun</label>
-                            <input type="number" id="kebijakan_tahun" name="tahun" class="form-control form-control-sm form-control-solid" placeholder="Otomatis dari tanggal mulai">
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label fw-semibold fs-7 mb-1">Pokja</label>
-                            <select id="kebijakan_pokja" name="pokja" class="form-select form-select-sm form-select-solid">
-                                <option value="">Pilih Pokja</option>
-                                <option value="Sekretaris">Sekretaris</option>
-                                <option value="Pokja 1">Pokja 1</option>
-                                <option value="Pokja 2">Pokja 2</option>
-                                <option value="Pokja 3">Pokja 3</option>
-                                <option value="Pokja 4">Pokja 4</option>
-                            </select>
-                        </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold fs-7 mb-1">Pokja</label>
+                        <select id="kebijakan_pokja" name="pokja" class="form-select form-select-sm form-select-solid">
+                            <option value="">Pilih Pokja</option>
+                            <option value="Sekretaris">Sekretaris</option>
+                            <option value="Pokja 1">Pokja 1</option>
+                            <option value="Pokja 2">Pokja 2</option>
+                            <option value="Pokja 3">Pokja 3</option>
+                            <option value="Pokja 4">Pokja 4</option>
+                        </select>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label fw-semibold fs-7 mb-1">File SK (Wajib PDF Asli, Maks. 2MB)</label>
+                        <label class="form-label fw-semibold fs-7 mb-1">File SK</label>
                         <input type="file" id="kebijakan_file_sk" name="file_sk" class="form-control form-control-sm form-control-solid" accept="application/pdf" onchange="validasiFilePdf(this)">
-                        <div id="file_error_msg" class="text-danger fs-8 mt-1 d-none">File wajib format .PDF dan ukuran maksimal 2MB.</div>
+                        <div class="text-danger fs-8 mt-1">File harus di bawah 2MB dan berformat pdf.</div>
+                        <div id="file_sk_sebelumnya" class="fs-8 text-primary mt-1 d-none"></div>
                     </div>
 
                     <div class="mb-2">
@@ -287,6 +283,38 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalKonfirmasiHapus" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered mw-400px">
+        <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
+            <div class="modal-body p-0">
+                <div class="mb-4 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 72px; height: 72px; background-color: #fee2e2;">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </div>
+
+                <h3 class="fw-bolder text-gray-900 fs-4 mb-2">Hapus Lmapiran Dokumen SK?</h3>
+                <p class="text-gray-600 fs-7 mb-6">
+                    Apakah Anda yakin ingin menghapus data SK ini?.
+                </p>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-light btn-sm fw-semibold px-5 rounded-3" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="button" id="btnKonfirmasiHapus" class="btn btn-danger btn-sm fw-semibold px-5 rounded-3 d-flex align-items-center justify-content-center" style="min-width: 100px;">
+                        <span id="btnHapusSpinner" class="spinner-border spinner-border-sm align-middle me-2 d-none" role="status"></span>
+                        <span id="btnHapusText">Ya, Hapus</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modalPreviewPdf" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered mw-900px" style="height: 90vh;">
         <div class="modal-content h-100">
@@ -301,74 +329,205 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalNotifikasiPesan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-350px">
+        <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
+            <div class="modal-body p-0">
+                <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background-color: #d1fae5;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h4 class="fw-bolder text-gray-900 fs-5 mb-2" id="notifikasiPesanTitle">Sukses</h4>
+                <p class="text-gray-600 fs-7 mb-5" id="notifikasiPesanText">Data berhasil diproses</p>
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary btn-sm fw-semibold px-6 rounded-3" style="background-color: #0f5847; border-color: #0f5847;" data-bs-dismiss="modal">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     const ROUTES_KEBIJAKAN = {
         data: "{{ route('kebijakan.data') }}",
         store: "{{ route('kebijakan.store') }}",
-        // show: "{{ url('kebijakan-show') }}",
-        // update: "{{ url('kebijakan-update') }}",
-        // destroy: "{{ url('kebijakan-destroy') }}",
-        show: "{{ url('kebijakan/show') }}",
-        update: "{{ url('kebijakan/update') }}",
-        destroy: "{{ url('kebijakan/destroy') }}",
+        show: "{{ url('/kebijakan/show') }}",
+        update: "{{ url('/kebijakan/update') }}",
+        destroy: "{{ url('/kebijakan/destroy') }}",
         csrfToken: "{{ csrf_token() }}",
         uploadBaseUrl: "{{ asset('uploads/file-surat-keputusan') }}"
     };
 
-    const dataWilayahSurabaya = {
-        '1': { nama: 'ASEMROWO', kelurahan: { '101': 'Asem Rowo', '102': 'Genting Kalianak', '103': 'Tambak Sarioso' } },
-        '2': { nama: 'BENOWO', kelurahan: { '201': 'Kandangan', '202': 'Romokalisari', '203': 'Sememi', '204': 'Tambak Osowilangon' } },
-        '3': { nama: 'BUBUTAN', kelurahan: { '301': 'Alun-Alun Contong', '302': 'Bubutan', '303': 'Gundih', '304': 'Jepara', '305': 'Tembok Dukuh' } },
-        '4': { nama: 'BULAK', kelurahan: { '401': 'Bulak', '402': 'Kedung Cowek', '403': 'Kenjeran', '404': 'Sukolilo Baru' } },
-        '5': { nama: 'DUKUH PAKIS', kelurahan: { '501': 'Dukuh Kupang', '502': 'Dukuh Pakis', '503': 'Gunung Sari', '504': 'Pradah Kalikendal' } },
-        '6': { nama: 'GAYUNGAN', kelurahan: { '601': 'Dukuh Menanggal', '602': 'Gayungan', '603': 'Ketintang', '604': 'Menanggal' } },
-        '7': { nama: 'GENTENG', kelurahan: { '701': 'Embong Kaliasin', '702': 'Genteng', '703': 'Kapasari', '704': 'Ketabang', '705': 'Peneleh' } },
-        '8': { nama: 'GUBENG', kelurahan: { '801': 'Airlangga', '802': 'Baratajaya', '803': 'Gubeng', '804': 'Kertajaya', '805': 'Mojo', '806': 'Pucang Sewu' } },
-        '9': { nama: 'GUNUNG ANYAR', kelurahan: { '901': 'Gunung Anyar', '902': 'Gunung Anyar Tambak', '903': 'Rungkut Menanggal', '904': 'Rungkut Tengah' } },
-        '10': { nama: 'JAMBANGAN', kelurahan: { '1001': 'Jambangan', '1002': 'Karah', '1003': 'Kebonsari', '1004': 'Pagesangan' } },
-        '11': { nama: 'KARANG PILANG', kelurahan: { '1101': 'Karang Pilang', '1102': 'Kebraon', '1103': 'Kedurus', '1104': 'Warugunung' } },
-        '12': { nama: 'KENJERAN', kelurahan: { '1201': 'Bulak Banteng', '1202': 'Tambak Wedi', '1203': 'Tanah Kali Kedinding', '1204': 'Sidotopo Wetan' } },
-        '13': { nama: 'KREMBANGAN', kelurahan: { '1301': 'Dupak', '1302': 'Kemayoran', '1303': 'Krembangan Selatan', '1304': 'Morokrembangan', '1305': 'Perak Barat' } },
-        '14': { nama: 'LAKARSANTRI', kelurahan: { '1401': 'Bangkingan', '1402': 'Jeruk', '1403': 'Lakarsantri', '1404': 'Lidah Kulon', '1405': 'Lidah Wetan', '1406': 'Sumur Welut' } },
-        '15': { nama: 'MULYOREJO', kelurahan: { '1501': 'Dukuh Sutorejo', '1502': 'Kalijudan', '1503': 'Kalisari', '1504': 'Kejawan Putih Tambak', '1505': 'Manyar Sabrangan', '1506': 'Mulyorejo' } },
-        '16': { nama: 'PABEAN CANTIKAN', kelurahan: { '1601': 'Bongkaran', '1602': 'Krembangan Utara', '1603': 'Nyamplungan', '1604': 'Perak Timur', '1605': 'Perak Utara' } },
-        '17': { nama: 'PAKAL', kelurahan: { '1701': 'Babat Jerawat', '1702': 'Benowo', '1703': 'Pakal', '1704': 'Sumberejo' } },
-        '18': { nama: 'RUNGKUT', kelurahan: { '1801': 'Kali Rungkut', '1802': 'Kedung Baruk', '1803': 'Medokan Ayu', '1804': 'Penjaringansari', '1805': 'Rungkut Kidul', '1806': 'Wonorejo' } },
-        '19': { nama: 'SAMBIKEREP', kelurahan: { '1901': 'Bringin', '1902': 'Made', '1903': 'Lontar', '1904': 'Sambikerep' } },
-        '20': { nama: 'SAWAHAN', kelurahan: { '2001': 'Banyu Urip', '2002': 'Kupang Krajan', '2003': 'Pakis', '2004': 'Petemon', '2005': 'Putat Jaya', '2006': 'Sawahan' } },
-        '21': { nama: 'SEMAMPIR', kelurahan: { '2101': 'Ampel', '2102': 'Pegirian', '2103': 'Sidotopo', '2104': 'Ujung', '2105': 'Wonokusumo' } },
-        '22': { nama: 'SIMOKERTO', kelurahan: { '2201': 'Kapasan', '2202': 'Sidodadi', '2203': 'Simokerto', '2204': 'Simolawang', '2205': 'Tambakrejo' } },
-        '23': { nama: 'SUKOLILO', kelurahan: { '2301': 'Gebang Putih', '2302': 'Keputih', '2303': 'Klampis Ngasem', '2304': 'Medokan Semampir', '2305': 'Menur Pumpungan', '2306': 'Nginden Jangkungan', '2307': 'Semolowaru' } },
-        '24': { nama: 'SUKOMANUNGGAL', kelurahan: { '2401': 'Putat Gede', '2402': 'Simomulyo', '2403': 'Simomulyo Baru', '2404': 'Sukomanunggal', '2405': 'Sonokwijenan', '2406': 'Tanjungsari' } },
-        '25': { nama: 'TAMBAKSARI', kelurahan: { '2501': 'Dukuh Setro', '2502': 'Gading', '2503': 'Kapasmadya Baru', '2504': 'Pacar Kembang', '2505': 'Pacar Keling', '2506': 'Ploso', '2507': 'Rangkah', '2508': 'Tambaksari' } },
-        '26': { nama: 'TANDES', kelurahan: { '2601': 'Balongsari', '2602': 'Banjar Sugihan', '2603': 'Karang Poh', '2604': 'Manukan Kulon', '2605': 'Manukan Wetan', '2606': 'Tandes' } },
-        '27': { nama: 'TEGALSARI', kelurahan: { '2701': 'Dr. Soetomo', '2702': 'Kedungdoro', '2703': 'Keputran', '2704': 'Tegalsari', '2705': 'Wonorejo' } },
-        '28': { nama: 'TENGGILIS MEJOYO', kelurahan: { '2801': 'Kendangsari', '2802': 'Kutisari', '2803': 'Panjang Jiwo', '2804': 'Prapen', '2805': 'Tenggilis Mejoyo' } },
-        '29': { nama: 'WIYUNG', kelurahan: { '2901': 'Babatan', '2902': 'Balasklumprik', '2903': 'Jajar Tunggal', '2904': 'Wiyung' } },
-        '30': { nama: 'WONOCOLO', kelurahan: { '3001': 'Bendul Merisi', '3002': 'Jemur Wonosari', '3003': 'Margorejo', '3004': 'Sidosermo', '3005': 'Siwalankerto' } },
-        '31': { nama: 'WONOKROMO', kelurahan: { '3101': 'Darmo', '3102': 'Jagir', '3103': 'Ngagel', '3104': 'Ngagelrejo', '3105': 'Sawunggaling', '3106': 'Wonokromo' } }
-    };
-
-    const daftarKelurahanSurabaya = [];
-    Object.keys(dataWilayahSurabaya).forEach(idKec => {
-        const kec = dataWilayahSurabaya[idKec];
-        Object.keys(kec.kelurahan).forEach(idKel => {
-            daftarKelurahanSurabaya.push({
-                id_kel: idKel,
-                id_kec: idKec,
-                nama_kel: kec.kelurahan[idKel],
-                nama_kec: kec.nama
-            });
-        });
-    });
+    const daftarKelurahanSurabaya = [
+        { id_kel: '101', id_kec: '1', nama_kel: 'Asem Rowo', nama_kec: 'ASEMROWO' },
+        { id_kel: '102', id_kec: '1', nama_kel: 'Genting Kalianak', nama_kec: 'ASEMROWO' },
+        { id_kel: '103', id_kec: '1', nama_kel: 'Tambak Sarioso', nama_kec: 'ASEMROWO' },
+        { id_kel: '201', id_kec: '2', nama_kel: 'Kandangan', nama_kec: 'BENOWO' },
+        { id_kel: '202', id_kec: '2', nama_kel: 'Romokalisari', nama_kec: 'BENOWO' },
+        { id_kel: '203', id_kec: '2', nama_kel: 'Sememi', nama_kec: 'BENOWO' },
+        { id_kel: '204', id_kec: '2', nama_kel: 'Tambak Osowilangon', nama_kec: 'BENOWO' },
+        { id_kel: '301', id_kec: '3', nama_kel: 'Alun-Alun Contong', nama_kec: 'BUBUTAN' },
+        { id_kel: '302', id_kec: '3', nama_kel: 'Bubutan', nama_kec: 'BUBUTAN' },
+        { id_kel: '303', id_kec: '3', nama_kel: 'Gundih', nama_kec: 'BUBUTAN' },
+        { id_kel: '304', id_kec: '3', nama_kel: 'Jepara', nama_kec: 'BUBUTAN' },
+        { id_kel: '305', id_kec: '3', nama_kel: 'Tembok Dukuh', nama_kec: 'BUBUTAN' },
+        { id_kel: '401', id_kec: '4', nama_kel: 'Bulak', nama_kec: 'BULAK' },
+        { id_kel: '402', id_kec: '4', nama_kel: 'Kedung Cowek', nama_kec: 'BULAK' },
+        { id_kel: '403', id_kec: '4', nama_kel: 'Kenjeran', nama_kec: 'BULAK' },
+        { id_kel: '404', id_kec: '4', nama_kel: 'Sukolilo Baru', nama_kec: 'BULAK' },
+        { id_kel: '501', id_kec: '5', nama_kel: 'Dukuh Kupang', nama_kec: 'DUKUH PAKIS' },
+        { id_kel: '502', id_kec: '5', nama_kel: 'Dukuh Pakis', nama_kec: 'DUKUH PAKIS' },
+        { id_kel: '503', id_kec: '5', nama_kel: 'Gunung Sari', nama_kec: 'DUKUH PAKIS' },
+        { id_kel: '504', id_kec: '5', nama_kel: 'Pradah Kalikendal', nama_kec: 'DUKUH PAKIS' },
+        { id_kel: '601', id_kec: '6', nama_kel: 'Dukuh Menanggal', nama_kec: 'GAYUNGAN' },
+        { id_kel: '602', id_kec: '6', nama_kel: 'Gayungan', nama_kec: 'GAYUNGAN' },
+        { id_kel: '603', id_kec: '6', nama_kel: 'Ketintang', nama_kec: 'GAYUNGAN' },
+        { id_kel: '604', id_kec: '6', nama_kel: 'Menanggal', nama_kec: 'GAYUNGAN' },
+        { id_kel: '701', id_kec: '7', nama_kel: 'Embong Kaliasin', nama_kec: 'GENTENG' },
+        { id_kel: '702', id_kec: '7', nama_kel: 'Genteng', nama_kec: 'GENTENG' },
+        { id_kel: '703', id_kec: '7', nama_kel: 'Kapasari', nama_kec: 'GENTENG' },
+        { id_kel: '704', id_kec: '7', nama_kel: 'Ketabang', nama_kec: 'GENTENG' },
+        { id_kel: '705', id_kec: '7', nama_kel: 'Peneleh', nama_kec: 'GENTENG' },
+        { id_kel: '801', id_kec: '8', nama_kel: 'Airlangga', nama_kec: 'GUBENG' },
+        { id_kel: '802', id_kec: '8', nama_kel: 'Baratajaya', nama_kec: 'GUBENG' },
+        { id_kel: '803', id_kec: '8', nama_kel: 'Gubeng', nama_kec: 'GUBENG' },
+        { id_kel: '804', id_kec: '8', nama_kel: 'Kertajaya', nama_kec: 'GUBENG' },
+        { id_kel: '805', id_kec: '8', nama_kel: 'Mojo', nama_kec: 'GUBENG' },
+        { id_kel: '806', id_kec: '8', nama_kel: 'Pucang Sewu', nama_kec: 'GUBENG' },
+        { id_kel: '901', id_kec: '9', nama_kel: 'Gunung Anyar', nama_kec: 'GUNUNG ANYAR' },
+        { id_kel: '902', id_kec: '9', nama_kel: 'Gunung Anyar Tambak', nama_kec: 'GUNUNG ANYAR' },
+        { id_kel: '903', id_kec: '9', nama_kel: 'Rungkut Menanggal', nama_kec: 'GUNUNG ANYAR' },
+        { id_kel: '904', id_kec: '9', nama_kel: 'Rungkut Tengah', nama_kec: 'GUNUNG ANYAR' },
+        { id_kel: '1001', id_kec: '10', nama_kel: 'Jambangan', nama_kec: 'JAMBANGAN' },
+        { id_kel: '1002', id_kec: '10', nama_kel: 'Karah', nama_kec: 'JAMBANGAN' },
+        { id_kel: '1003', id_kec: '10', nama_kel: 'Kebonsari', nama_kec: 'JAMBANGAN' },
+        { id_kel: '1004', id_kec: '10', nama_kel: 'Pagesangan', nama_kec: 'JAMBANGAN' },
+        { id_kel: '1101', id_kec: '11', nama_kel: 'Karang Pilang', nama_kec: 'KARANG PILANG' },
+        { id_kel: '1102', id_kec: '11', nama_kel: 'Kebraon', nama_kec: 'KARANG PILANG' },
+        { id_kel: '1103', id_kec: '11', nama_kel: 'Kedurus', nama_kec: 'KARANG PILANG' },
+        { id_kel: '1104', id_kec: '11', nama_kel: 'Warugunung', nama_kec: 'KARANG PILANG' },
+        { id_kel: '1201', id_kec: '12', nama_kel: 'Bulak Banteng', nama_kec: 'KENJERAN' },
+        { id_kel: '1202', id_kec: '12', nama_kel: 'Tambak Wedi', nama_kec: 'KENJERAN' },
+        { id_kel: '1203', id_kec: '12', nama_kel: 'Tanah Kali Kedinding', nama_kec: 'KENJERAN' },
+        { id_kel: '1204', id_kec: '12', nama_kel: 'Sidotopo Wetan', nama_kec: 'KENJERAN' },
+        { id_kel: '1301', id_kec: '13', nama_kel: 'Dupak', nama_kec: 'KREMBANGAN' },
+        { id_kel: '1302', id_kec: '13', nama_kel: 'Kemayoran', nama_kec: 'KREMBANGAN' },
+        { id_kel: '1303', id_kec: '13', nama_kel: 'Krembangan Selatan', nama_kec: 'KREMBANGAN' },
+        { id_kel: '1304', id_kec: '13', nama_kel: 'Morokrembangan', nama_kec: 'KREMBANGAN' },
+        { id_kel: '1305', id_kec: '13', nama_kel: 'Perak Barat', nama_kec: 'KREMBANGAN' },
+        { id_kel: '1401', id_kec: '14', nama_kel: 'Bangkingan', nama_kec: 'LAKARSANTRI' },
+        { id_kel: '1402', id_kec: '14', nama_kel: 'Jeruk', nama_kec: 'LAKARSANTRI' },
+        { id_kel: '1403', id_kec: '14', nama_kel: 'Lakarsantri', nama_kec: 'LAKARSANTRI' },
+        { id_kel: '1404', id_kec: '14', nama_kel: 'Lidah Kulon', nama_kec: 'LAKARSANTRI' },
+        { id_kel: '1405', id_kec: '14', nama_kel: 'Lidah Wetan', nama_kec: 'LAKARSANTRI' },
+        { id_kel: '1406', id_kec: '14', nama_kel: 'Sumur Welut', nama_kec: 'LAKARSANTRI' },
+        { id_kel: '1501', id_kec: '15', nama_kel: 'Dukuh Sutorejo', nama_kec: 'MULYOREJO' },
+        { id_kel: '1502', id_kec: '15', nama_kel: 'Kalijudan', nama_kec: 'MULYOREJO' },
+        { id_kel: '1503', id_kec: '15', nama_kel: 'Kalisari', nama_kec: 'MULYOREJO' },
+        { id_kel: '1504', id_kec: '15', nama_kel: 'Kejawan Putih Tambak', nama_kec: 'MULYOREJO' },
+        { id_kel: '1505', id_kec: '15', nama_kel: 'Manyar Sabrangan', nama_kec: 'MULYOREJO' },
+        { id_kel: '1506', id_kec: '15', nama_kel: 'Mulyorejo', nama_kec: 'MULYOREJO' },
+        { id_kel: '1601', id_kec: '16', nama_kel: 'Bongkaran', nama_kec: 'PABEAN CANTIKAN' },
+        { id_kel: '1602', id_kec: '16', nama_kel: 'Krembangan Utara', nama_kec: 'PABEAN CANTIKAN' },
+        { id_kel: '1603', id_kec: '16', nama_kel: 'Nyamplungan', nama_kec: 'PABEAN CANTIKAN' },
+        { id_kel: '1604', id_kec: '16', nama_kel: 'Perak Timur', nama_kec: 'PABEAN CANTIKAN' },
+        { id_kel: '1605', id_kec: '16', nama_kel: 'Perak Utara', nama_kec: 'PABEAN CANTIKAN' },
+        { id_kel: '1701', id_kec: '17', nama_kel: 'Babat Jerawat', nama_kec: 'PAKAL' },
+        { id_kel: '1702', id_kec: '17', nama_kel: 'Benowo', nama_kec: 'PAKAL' },
+        { id_kel: '1703', id_kec: '17', nama_kel: 'Pakal', nama_kec: 'PAKAL' },
+        { id_kel: '1704', id_kec: '17', nama_kel: 'Sumberejo', nama_kec: 'PAKAL' },
+        { id_kel: '1801', id_kec: '18', nama_kel: 'Kali Rungkut', nama_kec: 'RUNGKUT' },
+        { id_kel: '1802', id_kec: '18', nama_kel: 'Kedung Baruk', nama_kec: 'RUNGKUT' },
+        { id_kel: '1803', id_kec: '18', nama_kel: 'Medokan Ayu', nama_kec: 'RUNGKUT' },
+        { id_kel: '1804', id_kec: '18', nama_kel: 'Penjaringansari', nama_kec: 'RUNGKUT' },
+        { id_kel: '1805', id_kec: '18', nama_kel: 'Rungkut Kidul', nama_kec: 'RUNGKUT' },
+        { id_kel: '1806', id_kec: '18', nama_kel: 'Wonorejo', nama_kec: 'RUNGKUT' },
+        { id_kel: '1901', id_kec: '19', nama_kel: 'Bringin', nama_kec: 'SAMBIKEREP' },
+        { id_kel: '1902', id_kec: '19', nama_kel: 'Made', nama_kec: 'SAMBIKEREP' },
+        { id_kel: '1903', id_kec: '19', nama_kel: 'Lontar', nama_kec: 'SAMBIKEREP' },
+        { id_kel: '1904', id_kec: '19', nama_kel: 'Sambikerep', nama_kec: 'SAMBIKEREP' },
+        { id_kel: '2001', id_kec: '20', nama_kel: 'Banyu Urip', nama_kec: 'SAWAHAN' },
+        { id_kel: '2002', id_kec: '20', nama_kel: 'Kupang Krajan', nama_kec: 'SAWAHAN' },
+        { id_kel: '2003', id_kec: '20', nama_kel: 'Pakis', nama_kec: 'SAWAHAN' },
+        { id_kel: '2004', id_kec: '20', nama_kel: 'Petemon', nama_kec: 'SAWAHAN' },
+        { id_kel: '2005', id_kec: '20', nama_kel: 'Putat Jaya', nama_kec: 'SAWAHAN' },
+        { id_kel: '2006', id_kec: '20', nama_kel: 'Sawahan', nama_kec: 'SAWAHAN' },
+        { id_kel: '2101', id_kec: '21', nama_kel: 'Ampel', nama_kec: 'SEMAMPIR' },
+        { id_kel: '2102', id_kec: '21', nama_kel: 'Pegirian', nama_kec: 'SEMAMPIR' },
+        { id_kel: '2103', id_kec: '21', nama_kel: 'Sidotopo', nama_kec: 'SEMAMPIR' },
+        { id_kel: '2104', id_kec: '21', nama_kel: 'Ujung', nama_kec: 'SEMAMPIR' },
+        { id_kel: '2105', id_kec: '21', nama_kel: 'Wonokusumo', nama_kec: 'SEMAMPIR' },
+        { id_kel: '2201', id_kec: '22', nama_kel: 'Kapasan', nama_kec: 'SIMOKERTO' },
+        { id_kel: '2202', id_kec: '22', nama_kel: 'Sidodadi', nama_kec: 'SIMOKERTO' },
+        { id_kel: '2203', id_kec: '22', nama_kel: 'Simokerto', nama_kec: 'SIMOKERTO' },
+        { id_kel: '2204', id_kec: '22', nama_kel: 'Simolawang', nama_kec: 'SIMOKERTO' },
+        { id_kel: '2205', id_kec: '22', nama_kel: 'Tambakrejo', nama_kec: 'SIMOKERTO' },
+        { id_kel: '2301', id_kec: '23', nama_kel: 'Gebang Putih', nama_kec: 'SUKOLILO' },
+        { id_kel: '2302', id_kec: '23', nama_kel: 'Keputih', nama_kec: 'SUKOLILO' },
+        { id_kel: '2303', id_kec: '23', nama_kel: 'Klampis Ngasem', nama_kec: 'SUKOLILO' },
+        { id_kel: '2304', id_kec: '23', nama_kel: 'Medokan Semampir', nama_kec: 'SUKOLILO' },
+        { id_kel: '2305', id_kec: '23', nama_kel: 'Menur Pumpungan', nama_kec: 'SUKOLILO' },
+        { id_kel: '2306', id_kec: '23', nama_kel: 'Nginden Jangkungan', nama_kec: 'SUKOLILO' },
+        { id_kel: '2307', id_kec: '23', nama_kel: 'Semolowaru', nama_kec: 'SUKOLILO' },
+        { id_kel: '2401', id_kec: '24', nama_kel: 'Putat Gede', nama_kec: 'SUKOMANUNGGAL' },
+        { id_kel: '2402', id_kec: '24', nama_kel: 'Simomulyo', nama_kec: 'SUKOMANUNGGAL' },
+        { id_kel: '2403', id_kec: '24', nama_kel: 'Simomulyo Baru', nama_kec: 'SUKOMANUNGGAL' },
+        { id_kel: '2404', id_kec: '24', nama_kel: 'Sukomanunggal', nama_kec: 'SUKOMANUNGGAL' },
+        { id_kel: '2405', id_kec: '24', nama_kel: 'Sonokwijenan', nama_kec: 'SUKOMANUNGGAL' },
+        { id_kel: '2406', id_kec: '24', nama_kel: 'Tanjungsari', nama_kec: 'SUKOMANUNGGAL' },
+        { id_kel: '2501', id_kec: '25', nama_kel: 'Dukuh Setro', nama_kec: 'TAMBAKSARI' },
+        { id_kel: '2502', id_kec: '25', nama_kel: 'Gading', nama_kec: 'TAMBAKSARI' },
+        { id_kel: '2503', id_kec: '25', nama_kel: 'Kapasmadya Baru', nama_kec: 'TAMBAKSARI' },
+        { id_kel: '2504', id_kec: '25', nama_kel: 'Pacar Kembang', nama_kec: 'TAMBAKSARI' },
+        { id_kel: '2505', id_kec: '25', nama_kel: 'Pacar Keling', nama_kec: 'TAMBAKSARI' },
+        { id_kel: '2506', id_kec: '25', nama_kel: 'Ploso', nama_kec: 'TAMBAKSARI' },
+        { id_kel: '2507', id_kec: '25', nama_kel: 'Rangkah', nama_kec: 'TAMBAKSARI' },
+        { id_kel: '2508', id_kec: '25', nama_kel: 'Tambaksari', nama_kec: 'TAMBAKSARI' },
+        { id_kel: '2601', id_kec: '26', nama_kel: 'Balongsari', nama_kec: 'TANDES' },
+        { id_kel: '2602', id_kec: '26', nama_kel: 'Banjar Sugihan', nama_kec: 'TANDES' },
+        { id_kel: '2603', id_kec: '26', nama_kel: 'Karang Poh', nama_kec: 'TANDES' },
+        { id_kel: '2604', id_kec: '26', nama_kel: 'Manukan Kulon', nama_kec: 'TANDES' },
+        { id_kel: '2605', id_kec: '26', nama_kel: 'Manukan Wetan', nama_kec: 'TANDES' },
+        { id_kel: '2606', id_kec: '26', nama_kel: 'Tandes', nama_kec: 'TANDES' },
+        { id_kel: '2701', id_kec: '27', nama_kel: 'Dr. Soetomo', nama_kec: 'TEGALSARI' },
+        { id_kel: '2702', id_kec: '27', nama_kel: 'Kedungdoro', nama_kec: 'TEGALSARI' },
+        { id_kel: '2703', id_kec: '27', nama_kel: 'Keputran', nama_kec: 'TEGALSARI' },
+        { id_kel: '2704', id_kec: '27', nama_kel: 'Tegalsari', nama_kec: 'TEGALSARI' },
+        { id_kel: '2705', id_kec: '27', nama_kel: 'Wonorejo', nama_kec: 'TEGALSARI' },
+        { id_kel: '2801', id_kec: '28', nama_kel: 'Kendangsari', nama_kec: 'TENGGILIS MEJOYO' },
+        { id_kel: '2802', id_kec: '28', nama_kel: 'Kutisari', nama_kec: 'TENGGILIS MEJOYO' },
+        { id_kel: '2803', id_kec: '28', nama_kel: 'Panjang Jiwo', nama_kec: 'TENGGILIS MEJOYO' },
+        { id_kel: '2804', id_kec: '28', nama_kel: 'Prapen', nama_kec: 'TENGGILIS MEJOYO' },
+        { id_kel: '2805', id_kec: '28', nama_kel: 'Tenggilis Mejoyo', nama_kec: 'TENGGILIS MEJOYO' },
+        { id_kel: '2901', id_kec: '29', nama_kel: 'Babatan', nama_kec: 'WIYUNG' },
+        { id_kel: '2902', id_kec: '29', nama_kel: 'Balasklumprik', nama_kec: 'WIYUNG' },
+        { id_kel: '2903', id_kec: '29', nama_kel: 'Jajar Tunggal', nama_kec: 'WIYUNG' },
+        { id_kel: '2904', id_kec: '29', nama_kel: 'Wiyung', nama_kec: 'WIYUNG' },
+        { id_kel: '3001', id_kec: '30', nama_kel: 'Bendul Merisi', nama_kec: 'WONOCOLO' },
+        { id_kel: '3002', id_kec: '30', nama_kel: 'Jemur Wonosari', nama_kec: 'WONOCOLO' },
+        { id_kel: '3003', id_kec: '30', nama_kel: 'Margorejo', nama_kec: 'WONOCOLO' },
+        { id_kel: '3004', id_kec: '30', nama_kel: 'Sidosermo', nama_kec: 'WONOCOLO' },
+        { id_kel: '3005', id_kec: '30', nama_kel: 'Siwalankerto', nama_kec: 'WONOCOLO' },
+        { id_kel: '3101', id_kec: '31', nama_kel: 'Darmo', nama_kec: 'WONOKROMO' },
+        { id_kel: '3102', id_kec: '31', nama_kel: 'Jagir', nama_kec: 'WONOKROMO' },
+        { id_kel: '3103', id_kec: '31', nama_kel: 'Ngagel', nama_kec: 'WONOKROMO' },
+        { id_kel: '3104', id_kec: '31', nama_kel: 'Ngagelrejo', nama_kec: 'WONOKROMO' },
+        { id_kel: '3105', id_kec: '31', nama_kel: 'Sawunggaling', nama_kec: 'WONOKROMO' },
+        { id_kel: '3106', id_kec: '31', nama_kel: 'Wonokromo', nama_kec: 'WONOKROMO' }
+    ];
 
     let kebijakanCurrentPage = 1;
     let kebijakanPageSize = 10;
     let kebijakanTotalPages = 1;
     let kebijakanSearchQuery = '';
     let kebijakanSearchTimer = null;
-    let filterKelurahanAktif = '';
-    let isWilayahValid = true;
+    let mapDataKebijakan = new Map();
+    let targetHashHapus = null;
+    let urlFileSebelumnya = '';
+    let urlPreviewBaru = null;
 
     const svgPdfIcon = `
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f6345" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
@@ -377,11 +536,13 @@
             <path d="M9.5 16.5c-1.5 0-2-.8-2-1.5 0-1.2 1.8-1.5 3.5-1.5s2.5.8 2.5 1.8c0 1.2-1.2 1.2-2.5 1.2-1.5 0-3-1-3-3 0-1.8 1.2-3.5 2.5-3.5 1 0 1.5.8 1.5 1.5 0 2.2-2.5 4.5-4 5"/>
         </svg>
     `;
+
     const svgEditIcon = `
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
         </svg>
     `;
+
     const svgDeleteIcon = `
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"></polyline>
@@ -391,207 +552,265 @@
         </svg>
     `;
 
+    function tampilkanPopUpNotifikasi(judul, pesan) {
+        const titleEl = document.getElementById('notifikasiPesanTitle');
+        const textEl = document.getElementById('notifikasiPesanText');
+        if (titleEl) titleEl.textContent = judul;
+        if (textEl) textEl.textContent = pesan;
+
+        const modalEl = document.getElementById('modalNotifikasiPesan');
+        if (modalEl) {
+            const notifModal = new bootstrap.Modal(modalEl);
+            notifModal.show();
+        }
+    }
+
     function inisialisasiDropdownKecamatan() {
         const filterKec = document.getElementById('filter_kebijakan_id_kec');
-        if (!filterKec) return;
-        Object.keys(dataWilayahSurabaya).forEach(idKec => {
+        const modalKec = document.getElementById('kebijakan_id_kec');
+
+        const kecamatanUnik = [];
+        const mapKec = new Map();
+
+        daftarKelurahanSurabaya.forEach(item => {
+            if (!mapKec.has(item.id_kec)) {
+                mapKec.set(item.id_kec, true);
+                kecamatanUnik.push({
+                    id_kec: item.id_kec,
+                    nama_kec: item.nama_kec
+                });
+            }
+        });
+
+        kecamatanUnik.sort((a, b) => a.nama_kec.localeCompare(b.nama_kec));
+
+        if (filterKec) {
+            filterKec.innerHTML = '<option value="all" selected>Pilih Kecamatan</option>';
+            kecamatanUnik.forEach(kec => {
+                const opt = document.createElement('option');
+                opt.value = kec.nama_kec;
+                opt.setAttribute('data-id-kec', kec.id_kec);
+                opt.textContent = kec.nama_kec;
+                filterKec.appendChild(opt);
+            });
+        }
+
+        if (modalKec) {
+            modalKec.innerHTML = '<option value="">Pilih Kecamatan</option>';
+            kecamatanUnik.forEach(kec => {
+                const opt = document.createElement('option');
+                opt.value = kec.nama_kec;
+                opt.setAttribute('data-id-kec', kec.id_kec);
+                opt.textContent = kec.nama_kec;
+                modalKec.appendChild(opt);
+            });
+        }
+    }
+
+    function inisialisasiDropdownKelurahan(idKec = 'all') {
+    const filterKel = document.getElementById('filter_kebijakan_id_kel');
+    if (!filterKel) return;
+
+    filterKel.innerHTML = '<option value="all" selected>Pilih Kelurahan</option>';
+
+    let dataFiltered = daftarKelurahanSurabaya;
+    
+    if (idKec !== 'all' && idKec !== '') {
+        dataFiltered = daftarKelurahanSurabaya.filter(item => 
+            String(item.id_kec) === String(idKec) || 
+            item.nama_kec.toUpperCase() === String(idKec).toUpperCase()
+        );
+    }
+
+    dataFiltered.sort((a, b) => a.nama_kel.localeCompare(b.nama_kel));
+
+    dataFiltered.forEach(kel => {
+        const opt = document.createElement('option');
+        opt.value = kel.nama_kel; 
+        opt.setAttribute('data-id-kel', kel.id_kel);
+        opt.textContent = kel.nama_kel;
+        filterKel.appendChild(opt);
+    });
+}
+
+    function inisialisasiModalKelurahan(idKec = '', namaKec = '') {
+        const modalKel = document.getElementById('kebijakan_id_kel');
+        if (!modalKel) return;
+
+        modalKel.innerHTML = '<option value="">Pilih Kelurahan</option>';
+
+        let dataFiltered = daftarKelurahanSurabaya;
+        if (idKec) {
+            dataFiltered = daftarKelurahanSurabaya.filter(item => String(item.id_kec) === String(idKec));
+        } else if (namaKec) {
+            dataFiltered = daftarKelurahanSurabaya.filter(item => item.nama_kec.toUpperCase() === namaKec.toUpperCase());
+        }
+
+        dataFiltered.sort((a, b) => a.nama_kel.localeCompare(b.nama_kel));
+
+        dataFiltered.forEach(kel => {
             const opt = document.createElement('option');
-            opt.value = idKec;
-            opt.textContent = dataWilayahSurabaya[idKec].nama;
-            filterKec.appendChild(opt);
+            opt.value = kel.nama_kel;
+            opt.setAttribute('data-id-kec', kel.id_kec);
+            opt.setAttribute('data-nama-kec', kel.nama_kec);
+            opt.textContent = kel.nama_kel;
+            modalKel.appendChild(opt);
         });
     }
 
     function handleFilterKecamatanChange() {
-        const idKec = document.getElementById('filter_kebijakan_id_kec')?.value;
-        const inputKel = document.getElementById('input_filter_kelurahan');
-        const box = document.getElementById('kelurahan_suggestions');
-
-        if (inputKel) inputKel.value = '';
-        if (box) box.classList.add('d-none');
-        filterKelurahanAktif = '';
-        isWilayahValid = true;
-
-        fetchTableKebijakan(1);
-    }
-
-    function handleKelurahanSearchInput(query) {
-        const box = document.getElementById('kelurahan_suggestions');
-        const clearBtn = document.getElementById('btn_clear_kelurahan');
-        const idKecTerpilih = document.getElementById('filter_kebijakan_id_kec')?.value || 'all';
-        const cleanQuery = query.trim().toLowerCase();
-
-        if (!cleanQuery) {
-            box.classList.add('d-none');
-            clearBtn.classList.add('d-none');
-            filterKelurahanAktif = '';
-            isWilayahValid = true;
-            fetchTableKebijakan(1);
-            return;
-        }
-
-        clearBtn.classList.remove('d-none');
-        let dataset = daftarKelurahanSurabaya;
-        if (idKecTerpilih !== 'all') {
-            dataset = dataset.filter(item => item.id_kec === idKecTerpilih);
-        }
-
-        const matches = dataset.filter(item => 
-            item.nama_kel.toLowerCase().includes(cleanQuery) || 
-            item.nama_kec.toLowerCase().includes(cleanQuery)
-        );
-
-        box.innerHTML = '';
-
-        if (matches.length === 0) {
-            box.innerHTML = `<div class="p-3 text-danger fw-semibold text-center fs-8">Wilayah tidak ditemukan</div>`;
-            box.classList.remove('d-none');
-            isWilayahValid = false;
-            filterKelurahanAktif = cleanQuery;
-            fetchTableKebijakan(1);
-            return;
-        }
-
-        isWilayahValid = true;
-        filterKelurahanAktif = cleanQuery;
-
-        matches.slice(0, 8).forEach(item => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'suggestion-item px-3 py-2 border-bottom text-gray-700 cursor-pointer d-flex justify-content-between align-items-center';
-            itemDiv.style.cursor = 'pointer';
-            itemDiv.innerHTML = `
-                <span class="fw-bold">${item.nama_kel}</span>
-                <span class="text-muted fs-8">Kec. ${item.nama_kec}</span>
-            `;
-            
-            itemDiv.addEventListener('mousedown', function() {
-                pilihKelurahanDariRekomendasi(item);
-            });
-            box.appendChild(itemDiv);
-        });
-
-        box.classList.remove('d-none');
-        fetchTableKebijakan(1);
-    }
-
-    function pilihKelurahanDariRekomendasi(item) {
-        const input = document.getElementById('input_filter_kelurahan');
-        const box = document.getElementById('kelurahan_suggestions');
         const filterKec = document.getElementById('filter_kebijakan_id_kec');
-        
-        input.value = item.nama_kel;
-        filterKelurahanAktif = item.nama_kel;
-        isWilayahValid = true;
-        box.classList.add('d-none');
+        const selectedKec = filterKec ? filterKec.value : 'all';
 
-        if (filterKec && item.id_kec) {
-            filterKec.value = item.id_kec;
+        inisialisasiDropdownKelurahan(selectedKec);
+        fetchTableKebijakan(1);
+    }
+
+    function handleFilterKelurahanChange() {
+        const filterKel = document.getElementById('filter_kebijakan_id_kel');
+        const filterKec = document.getElementById('filter_kebijakan_id_kec');
+        const selectedKel = filterKel ? filterKel.value : 'all';
+
+        if (selectedKel !== 'all') {
+            const foundKel = daftarKelurahanSurabaya.find(item => item.nama_kel.toLowerCase() === selectedKel.toLowerCase());
+            if (foundKel && filterKec && (filterKec.value === 'all' || filterKec.value.toUpperCase() !== foundKel.nama_kec.toUpperCase())) {
+                filterKec.value = foundKel.nama_kec;
+                inisialisasiDropdownKelurahan(foundKel.nama_kec);
+                if (filterKel) filterKel.value = foundKel.nama_kel;
+            }
         }
 
         fetchTableKebijakan(1);
     }
 
-    function resetFilterKelurahan() {
-        const input = document.getElementById('input_filter_kelurahan');
-        const box = document.getElementById('kelurahan_suggestions');
-        const clearBtn = document.getElementById('btn_clear_kelurahan');
+    function handleModalKecamatanChange() {
+        const modalKec = document.getElementById('kebijakan_id_kec');
+        const selectedOpt = modalKec ? modalKec.options[modalKec.selectedIndex] : null;
+        const idKec = selectedOpt ? selectedOpt.getAttribute('data-id-kec') : '';
+        const namaKec = modalKec ? modalKec.value : '';
 
-        input.value = '';
-        filterKelurahanAktif = '';
-        isWilayahValid = true;
-        box.classList.add('d-none');
-        clearBtn.classList.add('d-none');
-
-        fetchTableKebijakan(1);
+        inisialisasiModalKelurahan(idKec, namaKec);
     }
 
-    document.addEventListener('click', function(e) {
-        const input = document.getElementById('input_filter_kelurahan');
-        const box = document.getElementById('kelurahan_suggestions');
-        if (input && box && !input.contains(e.target) && !box.contains(e.target)) {
+    function handleModalKelurahanChange() {
+        const modalKec = document.getElementById('kebijakan_id_kec');
+        const modalKel = document.getElementById('kebijakan_id_kel');
+        const selectedOpt = modalKel ? modalKel.options[modalKel.selectedIndex] : null;
+        const namaKec = selectedOpt ? selectedOpt.getAttribute('data-nama-kec') : '';
+
+        if (namaKec && modalKec) {
+            modalKec.value = namaKec;
+        }
+    }
+
+    function handleTanggalMulaiChange() {
+        const tglMulai = document.getElementById('kebijakan_tgl_mulai')?.value;
+        const tglSelesaiInput = document.getElementById('kebijakan_tgl_selesai');
+        if (tglMulai && tglSelesaiInput) {
+            tglSelesaiInput.min = tglMulai;
+            if (tglSelesaiInput.value && tglSelesaiInput.value < tglMulai) {
+                tglSelesaiInput.value = tglMulai;
+            }
+        }
+    }
+
+    function tampilkanPreviewUpload(url) {
+        const box = document.getElementById('file_sk_sebelumnya');
+        if (!box) return;
+
+        if (!url) {
+            box.innerHTML = '';
             box.classList.add('d-none');
+            return;
         }
-    });
+
+        box.innerHTML = `<iframe src="${url}" width="100%" height="320" style="border: 1px solid #d1d5db; border-radius: 6px;"></iframe>`;
+        box.classList.remove('d-none');
+    }
+
+    function bersihkanPreviewBaru() {
+        if (urlPreviewBaru) {
+            URL.revokeObjectURL(urlPreviewBaru);
+            urlPreviewBaru = null;
+        }
+    }
 
     function validasiFilePdf(input) {
-        const errorEl = document.getElementById('file_error_msg');
+        bersihkanPreviewBaru();
+
         if (input.files && input.files[0]) {
             const file = input.files[0];
             const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-            const isUnder5MB = file.size <= 5 * 1024 * 1024;
+            const isUnder2MB = file.size <= 2 * 1024 * 1024;
 
-            if (!isPdf || !isUnder5MB) {
-                errorEl.classList.remove('d-none');
+            if (!isPdf || !isUnder2MB) {
                 input.value = '';
-            } else {
-                errorEl.classList.add('d-none');
+                tampilkanPreviewUpload(urlFileSebelumnya);
+                return;
             }
-        }
-    }
 
-    function fetchTableKebijakan(page = 1) {
-        if (!isWilayahValid) {
-            renderTableKebijakan({
-                total: 0,
-                current_page: 1,
-                per_page: kebijakanPageSize,
-                last_page: 1,
-                data: []
-            });
+            urlPreviewBaru = URL.createObjectURL(file);
+            tampilkanPreviewUpload(urlPreviewBaru);
             return;
         }
 
-        kebijakanCurrentPage = page;
-        const tbody = document.getElementById('tabel_kebijakan_body');
-        if (!tbody) return;
-
-        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-gray-500"><span class="spinner-border spinner-border-sm me-2"></span>Memuat data...</td></tr>`;
-
-        const idKec = document.getElementById('filter_kebijakan_id_kec')?.value || 'all';
-        const tahun = document.getElementById('filter_kebijakan_tahun')?.value || 'all';
-        const pokja = document.getElementById('filter_kebijakan_pokja')?.value || 'all';
-
-        const params = new URLSearchParams({
-            page: page,
-            limit: kebijakanPageSize,
-            id_kec: idKec,
-            tahun: tahun,
-            pokja: pokja,
-            kelurahan: filterKelurahanAktif,
-            search: kebijakanSearchQuery
-        });
-
-        fetch(`${ROUTES_KEBIJAKAN.data}?${params.toString()}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.json();
-        })
-        .then(data => {
-            renderTableKebijakan(data);
-        })
-        .catch(() => {
-            renderTableKebijakan({
-                total: 0,
-                current_page: 1,
-                per_page: kebijakanPageSize,
-                last_page: 1,
-                data: []
-            });
-        });
+        tampilkanPreviewUpload(urlFileSebelumnya);
     }
 
+    function fetchTableKebijakan(page = 1) {
+    kebijakanCurrentPage = page;
+    const tbody = document.getElementById('tabel_kebijakan_body');
+    if (!tbody) return;
+
+    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-gray-500"><span class="spinner-border spinner-border-sm me-2"></span>Memuat data...</td></tr>`;
+
+    const idKec = document.getElementById('filter_kebijakan_id_kec')?.value || 'all';
+    const idKel = document.getElementById('filter_kebijakan_id_kel')?.value || 'all';
+    const tahun = document.getElementById('filter_kebijakan_tahun')?.value || 'all';
+    const pokja = document.getElementById('filter_kebijakan_pokja')?.value || 'all';
+
+    const params = new URLSearchParams({
+        page: page,
+        limit: kebijakanPageSize,
+        tahun: tahun,
+        pokja: pokja,
+        id_kec: idKec,
+        id_kel: idKel,
+        search: kebijakanSearchQuery
+    });
+
+    fetch(`${ROUTES_KEBIJAKAN.data}?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        renderTableKebijakan(data);
+    })
+    .catch(() => {
+        renderTableKebijakan({
+            total: 0,
+            current_page: 1,
+            per_page: kebijakanPageSize,
+            last_page: 1,
+            data: []
+        });
+    });
+}
     function renderTableKebijakan(res) {
         const tbody = document.getElementById('tabel_kebijakan_body');
         const infoRecords = document.getElementById('kebijakan_info_records');
         if (!tbody) return;
 
         tbody.innerHTML = '';
+        mapDataKebijakan.clear();
+
         const total = res.total || 0;
         const currentPage = res.current_page || 1;
         const perPage = res.per_page || kebijakanPageSize;
@@ -605,6 +824,9 @@
         }
 
         res.data.forEach((row, idx) => {
+            const hash = row.hash;
+            mapDataKebijakan.set(hash, row);
+
             const no = (currentPage - 1) * perPage + (idx + 1);
             const fileBtn = row.file_sk 
                 ? `<button type="button" class="btn-action-icon btn-action-pdf shadow-none" onclick="bukaPreviewPdf('${ROUTES_KEBIJAKAN.uploadBaseUrl}/${row.file_sk}', '${row.no_sk}')" title="Preview Dokumen PDF">
@@ -613,27 +835,82 @@
                 : `<span class="text-muted fs-8">-</span>`;
 
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="text-center text-gray-600">${no}</td>
-                <td class="fw-bold text-gray-800">${row.no_sk || '-'}</td>
-                <td class="text-gray-800">${row.perihal || '-'}</td>
-                <td class="text-gray-800 fw-semibold">${row.pokja || '-'}</td>
-                <td class="text-center text-gray-700">${row.tgl_mulai || '-'}</td>
-                <td class="text-center text-gray-700">${row.tgl_selesai || '-'}</td>
-                <td class="text-center">${fileBtn}</td>
-                <td class="text-gray-700">${row.keterangan || '-'}</td>
-                <td class="text-gray-700">${row.created_by || '-'}</td>
-                <td class="text-center">
-                    <div class="d-flex justify-content-center align-items-center gap-1">
-                        <button type="button" class="btn-action-icon btn-action-edit" title="Edit SK" onclick="bukaModalEditKebijakan(${row.id})">
-                            ${svgEditIcon}
-                        </button>
-                        <button type="button" class="btn-action-icon btn-action-delete" title="Hapus SK" onclick="hapusKebijakan(${row.id})">
-                            ${svgDeleteIcon}
-                        </button>
-                    </div>
-                </td>
-            `;
+            
+            const tdNo = document.createElement('td');
+            tdNo.className = 'text-center text-gray-600';
+            tdNo.textContent = no;
+
+            const tdNoSk = document.createElement('td');
+            tdNoSk.className = 'fw-bold text-gray-800';
+            tdNoSk.textContent = row.no_sk || '-';
+
+            const tdPerihal = document.createElement('td');
+            tdPerihal.className = 'text-gray-800';
+            tdPerihal.textContent = row.perihal || '-';
+
+            const tdPokja = document.createElement('td');
+            tdPokja.className = 'text-gray-800 fw-semibold';
+            tdPokja.textContent = row.pokja || '-';
+
+            const tdTglMulai = document.createElement('td');
+            tdTglMulai.className = 'text-center text-gray-700';
+            tdTglMulai.textContent = row.tgl_mulai || '-';
+
+            const tdTglSelesai = document.createElement('td');
+            tdTglSelesai.className = 'text-center text-gray-700';
+            tdTglSelesai.textContent = row.tgl_selesai || '-';
+
+            const tdFile = document.createElement('td');
+            tdFile.className = 'text-center';
+            tdFile.innerHTML = fileBtn;
+
+            const tdKeterangan = document.createElement('td');
+            tdKeterangan.className = 'text-gray-700';
+            tdKeterangan.textContent = row.keterangan || '-';
+
+            const tdCreatedBy = document.createElement('td');
+            tdCreatedBy.className = 'text-gray-700';
+            tdCreatedBy.textContent = row.created_by || '-';
+
+            const tdAction = document.createElement('td');
+            tdAction.className = 'text-center';
+
+            const actionContainer = document.createElement('div');
+            actionContainer.className = 'd-flex justify-content-center align-items-center gap-1';
+
+            const btnEdit = document.createElement('button');
+            btnEdit.type = 'button';
+            btnEdit.className = 'btn-action-icon btn-action-edit';
+            btnEdit.title = 'Edit SK';
+            btnEdit.innerHTML = svgEditIcon;
+            btnEdit.addEventListener('click', function() {
+                bukaModalEditKebijakan(hash);
+            });
+
+            const btnDelete = document.createElement('button');
+            btnDelete.type = 'button';
+            btnDelete.className = 'btn-action-icon btn-action-delete';
+            btnDelete.title = 'Hapus SK';
+            btnDelete.innerHTML = svgDeleteIcon;
+            btnDelete.addEventListener('click', function() {
+                hapusKebijakan(hash);
+            });
+
+            actionContainer.appendChild(btnEdit);
+            actionContainer.appendChild(btnDelete);
+            tdAction.appendChild(actionContainer);
+
+            tr.appendChild(tdNo);
+            tr.appendChild(tdNoSk);
+            tr.appendChild(tdPerihal);
+            tr.appendChild(tdPokja);
+            tr.appendChild(tdTglMulai);
+            tr.appendChild(tdTglSelesai);
+            tr.appendChild(tdFile);
+            tr.appendChild(tdKeterangan);
+            tr.appendChild(tdCreatedBy);
+            tr.appendChild(tdAction);
+
             tbody.appendChild(tr);
         });
 
@@ -733,37 +1010,193 @@
 
     function bukaModalTambahKebijakan() {
         document.getElementById('formKebijakan').reset();
-        document.getElementById('kebijakan_id').value = '';
+        document.getElementById('kebijakan_hash').value = '';
         document.getElementById('modalKebijakanTitle').textContent = 'Tambah Lampiran SK';
-        document.getElementById('file_error_msg').classList.add('d-none');
+
+        bersihkanPreviewBaru();
+        urlFileSebelumnya = '';
+        tampilkanPreviewUpload('');
+
+        const tglSelesaiInput = document.getElementById('kebijakan_tgl_selesai');
+        if (tglSelesaiInput) tglSelesaiInput.removeAttribute('min');
+
+        inisialisasiModalKelurahan('', '');
         const modal = new bootstrap.Modal(document.getElementById('modalKebijakan'));
         modal.show();
     }
 
-    function bukaModalEditKebijakan(id) {
-        document.getElementById('file_error_msg').classList.add('d-none');
-        fetch(`${ROUTES_KEBIJAKAN.show}/${id}`, {
-            headers: { 'Accept': 'application/json' }
-        })
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('kebijakan_id').value = data.id;
-            document.getElementById('kebijakan_no_sk').value = data.no_sk;
-            document.getElementById('kebijakan_perihal').value = data.perihal;
-            document.getElementById('kebijakan_tgl_mulai').value = data.tgl_mulai;
-            document.getElementById('kebijakan_tgl_selesai').value = data.tgl_selesai || '';
-            document.getElementById('kebijakan_tahun').value = data.tahun || '';
-            document.getElementById('kebijakan_pokja').value = data.pokja || '';
-            document.getElementById('kebijakan_keterangan').value = data.keterangan || '';
-            document.getElementById('modalKebijakanTitle').textContent = 'Ubah Lampiran SK';
+    function normalisasiTanggal(val) {
+        if (!val) return '';
+        const s = String(val).trim();
 
-            const modal = new bootstrap.Modal(document.getElementById('modalKebijakan'));
-            modal.show();
+        let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+
+        m = s.match(/^(\d{2})[-\/](\d{2})[-\/](\d{4})/);
+        if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+        const d = new Date(s);
+        if (!isNaN(d.getTime())) {
+            const y = d.getFullYear();
+            const mo = String(d.getMonth() + 1).padStart(2, '0');
+            const da = String(d.getDate()).padStart(2, '0');
+            return `${y}-${mo}-${da}`;
+        }
+
+        return '';
+    }
+
+    function escapeRegex(teks) {
+        return String(teks).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function gabungDataSk(row, detail) {
+        const hasil = Object.assign({}, row);
+        Object.keys(detail || {}).forEach(key => {
+            const v = detail[key];
+            if (v !== null && v !== undefined && v !== '') {
+                hasil[key] = v;
+            }
+        });
+        return hasil;
+    }
+
+    function cariWilayahSk(data) {
+        const kecRaw = String(data.kecamatan ?? data.nama_kecamatan ?? data.nama_kec ?? data.id_kec ?? '').trim();
+        const kelRaw = String(data.kelurahan ?? data.nama_kelurahan ?? data.nama_kel ?? data.id_kel ?? '').trim();
+
+        let kecamatan = '';
+        let kelurahan = '';
+
+        if (kecRaw) {
+            const foundKec = daftarKelurahanSurabaya.find(item =>
+                String(item.id_kec) === kecRaw || item.nama_kec.toLowerCase() === kecRaw.toLowerCase()
+            );
+            if (foundKec) kecamatan = foundKec.nama_kec;
+        }
+
+        if (kelRaw) {
+            const foundKel = daftarKelurahanSurabaya.find(item =>
+                (String(item.id_kel) === kelRaw || item.nama_kel.toLowerCase() === kelRaw.toLowerCase()) &&
+                (!kecamatan || item.nama_kec === kecamatan)
+            );
+            if (foundKel) {
+                kelurahan = foundKel.nama_kel;
+                kecamatan = foundKel.nama_kec;
+            }
+        }
+
+        const teksGabungan = (data.perihal || '') + ' ' + (data.keterangan || '');
+
+        if (!kelurahan) {
+            const kandidat = kecamatan
+                ? daftarKelurahanSurabaya.filter(item => item.nama_kec === kecamatan)
+                : daftarKelurahanSurabaya;
+            for (let i = 0; i < kandidat.length; i++) {
+                const pattern = new RegExp('\\b' + escapeRegex(kandidat[i].nama_kel) + '\\b', 'i');
+                if (pattern.test(teksGabungan)) {
+                    kelurahan = kandidat[i].nama_kel;
+                    kecamatan = kandidat[i].nama_kec;
+                    break;
+                }
+            }
+        }
+
+        if (!kecamatan) {
+            for (let i = 0; i < daftarKelurahanSurabaya.length; i++) {
+                const pattern = new RegExp('\\b' + escapeRegex(daftarKelurahanSurabaya[i].nama_kec) + '\\b', 'i');
+                if (pattern.test(teksGabungan)) {
+                    kecamatan = daftarKelurahanSurabaya[i].nama_kec;
+                    break;
+                }
+            }
+        }
+
+        return { kecamatan, kelurahan };
+    }
+
+    function bukaModalEditKebijakan(hash) {
+        if (!hash || hash === 'undefined') return;
+
+        const row = mapDataKebijakan.get(hash) || {};
+
+        fetch(`${ROUTES_KEBIJAKAN.show}/${encodeURIComponent(hash)}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(json => {
+            const detail = json && json.data && typeof json.data === 'object' && !Array.isArray(json.data) ? json.data : json;
+            isiFormModalEdit(hash, gabungDataSk(row, detail));
         })
         .catch(err => {
             console.error(err);
-            alert('Gagal mengambil data SK.');
+            if (Object.keys(row).length > 0) {
+                isiFormModalEdit(hash, row);
+            } else {
+                alert('Gagal mengambil data SK.');
+            }
         });
+    }
+
+    function isiFormModalEdit(hash, data) {
+        document.getElementById('kebijakan_hash').value = hash;
+        document.getElementById('kebijakan_no_sk').value = data.no_sk || '';
+        document.getElementById('kebijakan_perihal').value = data.perihal || '';
+
+        const wilayah = cariWilayahSk(data);
+
+        const modalKec = document.getElementById('kebijakan_id_kec');
+        if (modalKec) {
+            modalKec.value = wilayah.kecamatan;
+            const selectedOpt = modalKec.options[modalKec.selectedIndex];
+            const idKec = selectedOpt ? selectedOpt.getAttribute('data-id-kec') : '';
+            inisialisasiModalKelurahan(idKec, wilayah.kecamatan);
+        }
+
+        const modalKel = document.getElementById('kebijakan_id_kel');
+        if (modalKel) {
+            modalKel.value = wilayah.kelurahan;
+        }
+
+        const tglMulaiVal = normalisasiTanggal(data.tgl_mulai);
+        document.getElementById('kebijakan_tgl_mulai').value = tglMulaiVal;
+
+        const tglSelesaiInput = document.getElementById('kebijakan_tgl_selesai');
+        if (tglSelesaiInput) {
+            if (tglMulaiVal) {
+                tglSelesaiInput.min = tglMulaiVal;
+            } else {
+                tglSelesaiInput.removeAttribute('min');
+            }
+            tglSelesaiInput.value = normalisasiTanggal(data.tgl_selesai);
+        }
+
+        const modalPokja = document.getElementById('kebijakan_pokja');
+        if (modalPokja) {
+            const pokjaVal = String(data.pokja || '').trim();
+            const opsiPokja = Array.from(modalPokja.options).find(o => o.value.toLowerCase() === pokjaVal.toLowerCase());
+            modalPokja.value = opsiPokja ? opsiPokja.value : '';
+        }
+
+        document.getElementById('kebijakan_keterangan').value = data.keterangan || '';
+
+        const inputFile = document.getElementById('kebijakan_file_sk');
+        if (inputFile) inputFile.value = '';
+
+        bersihkanPreviewBaru();
+        urlFileSebelumnya = data.file_sk ? `${ROUTES_KEBIJAKAN.uploadBaseUrl}/${data.file_sk}` : '';
+        tampilkanPreviewUpload(urlFileSebelumnya);
+
+        document.getElementById('modalKebijakanTitle').textContent = 'Ubah Lampiran SK';
+
+        const modal = new bootstrap.Modal(document.getElementById('modalKebijakan'));
+        modal.show();
     }
 
     function bukaPreviewPdf(url, noSk) {
@@ -778,22 +1211,39 @@
     function submitFormKebijakan(e) {
         e.preventDefault();
         const form = e.target;
-        const id = document.getElementById('kebijakan_id').value;
+        
+        const hashInput = document.getElementById('kebijakan_hash');
+        const hash = hashInput && hashInput.value ? hashInput.value.trim() : '';
+
         const btn = document.getElementById('btnSimpanKebijakan');
         const spinner = document.getElementById('btnSimpanSpinner');
         const btnText = document.getElementById('btnSimpanText');
+
+        const inputKec = document.getElementById('kebijakan_id_kec')?.value || '';
+        const inputKel = document.getElementById('kebijakan_id_kel')?.value || '';
+        const tglMulai = document.getElementById('kebijakan_tgl_mulai')?.value || '';
+        const tglSelesai = document.getElementById('kebijakan_tgl_selesai')?.value || '';
+
+        if (tglMulai && tglSelesai && tglSelesai < tglMulai) {
+            alert('Tanggal selesai tidak boleh kurang dari tanggal mulai.');
+            return;
+        }
 
         spinner.classList.remove('d-none');
         btnText.textContent = 'Menyimpan...';
         btn.disabled = true;
 
         const formData = new FormData(form);
-        const postUrl = id ? `${ROUTES_KEBIJAKAN.update}/${id}` : ROUTES_KEBIJAKAN.store;
+        const isUpdate = Boolean(hash && hash !== 'undefined');
+        const postUrl = isUpdate 
+            ? `${ROUTES_KEBIJAKAN.update}/${encodeURIComponent(hash)}` 
+            : ROUTES_KEBIJAKAN.store;
 
         fetch(postUrl, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': ROUTES_KEBIJAKAN.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
             },
             body: formData
@@ -813,7 +1263,29 @@
             
             const filterTahun = document.getElementById('filter_kebijakan_tahun');
             if (filterTahun) filterTahun.value = 'all';
+
+            const filterPokja = document.getElementById('filter_kebijakan_pokja');
+            if (filterPokja) filterPokja.value = 'all';
+
+            const filterKec = document.getElementById('filter_kebijakan_id_kec');
+            if (filterKec) filterKec.value = 'all';
+
+            const filterKel = document.getElementById('filter_kebijakan_id_kel');
+            if (filterKel) {
+                inisialisasiDropdownKelurahan('all');
+                filterKel.value = 'all';
+            }
+
+            const searchInput = document.getElementById('kebijakan_search');
+            if (searchInput) searchInput.value = '';
+            kebijakanSearchQuery = '';
             
+            if (isUpdate) {
+                tampilkanPopUpNotifikasi('Sukses', 'Data terupdate');
+            } else {
+                tampilkanPopUpNotifikasi('Sukses', 'Data tersimpan');
+            }
+
             fetchTableKebijakan(1);
         })
         .catch(err => {
@@ -827,14 +1299,32 @@
         });
     }
 
-    function hapusKebijakan(id) {
-        if (!confirm('Apakah Anda yakin ingin menghapus data SK ini?')) return;
+    function hapusKebijakan(hash) {
+        if (!hash || hash === 'undefined') return;
+        targetHashHapus = hash;
 
-        fetch(`${ROUTES_KEBIJAKAN.destroy}/${id}`, {
+        const modalEl = document.getElementById('modalKonfirmasiHapus');
+        const modalHapus = new bootstrap.Modal(modalEl);
+        modalHapus.show();
+    }
+
+    document.getElementById('btnKonfirmasiHapus')?.addEventListener('click', function() {
+        if (!targetHashHapus) return;
+
+        const btn = document.getElementById('btnKonfirmasiHapus');
+        const spinner = document.getElementById('btnHapusSpinner');
+        const btnText = document.getElementById('btnHapusText');
+
+        btn.disabled = true;
+        spinner.classList.remove('d-none');
+        btnText.textContent = 'Menghapus...';
+
+        fetch(`${ROUTES_KEBIJAKAN.destroy}/${encodeURIComponent(targetHashHapus)}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': ROUTES_KEBIJAKAN.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
@@ -850,17 +1340,38 @@
             return res.json();
         })
         .then(() => {
+            const modalEl = document.getElementById('modalKonfirmasiHapus');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+            
+            targetHashHapus = null;
+            tampilkanPopUpNotifikasi('Sukses', 'Data telah dihapus');
             fetchTableKebijakan(kebijakanCurrentPage);
         })
         .catch(err => {
             console.error(err);
             alert(err.message || 'Terjadi kesalahan saat menghapus data.');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            spinner.classList.add('d-none');
+            btnText.textContent = 'Ya, Hapus';
         });
-    }
+    });
 
     document.addEventListener('DOMContentLoaded', function() {
         inisialisasiDropdownKecamatan();
+        inisialisasiDropdownKelurahan('all');
         fetchTableKebijakan(1);
+
+        const modalKebijakanEl = document.getElementById('modalKebijakan');
+        if (modalKebijakanEl) {
+            modalKebijakanEl.addEventListener('hidden.bs.modal', function() {
+                bersihkanPreviewBaru();
+                urlFileSebelumnya = '';
+                tampilkanPreviewUpload('');
+            });
+        }
     });
 
     window.fetchTableKebijakan = fetchTableKebijakan;
@@ -873,7 +1384,10 @@
     window.hapusKebijakan = hapusKebijakan;
     window.validasiFilePdf = validasiFilePdf;
     window.handleFilterKecamatanChange = handleFilterKecamatanChange;
-    window.handleKelurahanSearchInput = handleKelurahanSearchInput;
-    window.resetFilterKelurahan = resetFilterKelurahan;
+    window.handleFilterKelurahanChange = handleFilterKelurahanChange;
+    window.handleModalKecamatanChange = handleModalKecamatanChange;
+    window.handleModalKelurahanChange = handleModalKelurahanChange;
+    window.handleTanggalMulaiChange = handleTanggalMulaiChange;
+    window.tampilkanPopUpNotifikasi = tampilkanPopUpNotifikasi;
 </script>
 @endsection

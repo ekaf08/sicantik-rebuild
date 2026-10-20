@@ -52,7 +52,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
 
     //Kebijakan SK
     Route::get('/kebijakan', [KebijakanController::class, 'index'])->name('kebijakan.index');
-    Route::get('//kebijakan/data', [KebijakanController::class, 'getData'])->name('kebijakan.data');
+    Route::get('/kebijakan/data', [KebijakanController::class, 'getData'])->name('kebijakan.data');
     Route::post('/kebijakan/store', [KebijakanController::class, 'store'])->name('kebijakan.store');
     Route::get('/kebijakan/show/{id}', [KebijakanController::class, 'show'])->name('kebijakan.show');
     Route::post('/kebijakan/update/{id}', [KebijakanController::class, 'update'])->name('kebijakan.update');

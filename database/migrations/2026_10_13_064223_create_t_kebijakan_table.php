@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('no_sk')->index();
             $table->string('perihal');
+            $table->string('id_kec')->nullable();
+            $table->string('id_kel')->nullable();
             $table->date('tgl_mulai');
             $table->date('tgl_selesai')->nullable();
             $table->string('file_sk')->nullable();
