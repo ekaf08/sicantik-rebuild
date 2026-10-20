@@ -17,6 +17,7 @@ use App\Http\Controllers\MakanKetanController;
 use App\Http\Controllers\PisangDanorController;
 use App\Http\Controllers\PmtController;
 use App\Http\Controllers\Bo\KebijakanController;
+use App\Http\Controllers\DataUmumController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -34,6 +35,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/modal/{id}', [ModalController::class, 'show']);
+    Route::get('/data-umum', [DataUmumController::class, 'index']);
 
     // Mpasi
     Route::get('/mpasi', [MpasiController::class, 'index'])->name('mpasi.index');

@@ -73,63 +73,38 @@
         </thead>
         <!--end::Table head-->
         <!--begin::Table body-->
+        <!--begin::Table body-->
         <tbody>
-            <tr>
-                <td>1</td>
-                <td class="text-start text-success fw-bold text-uppercase">Tegalsari</td>
-                <td>0</td>
-                <td>6</td>
-                <td class="agregat-trigger fw-bold" data-field="Lainnya" data-kecamatan="Tegalsari" data-value="45">45</td>
-                <td>45</td>
+            @foreach ($kecamatan as $i => $kec)
+                <tr>
+                    <td>{{ $i + 1 }}</td>
+                    <td class="text-start text-success fw-bold text-uppercase">{{ $kec->nama_kec }}</td>
 
-                <td class="agregat-trigger" data-id="1" data-kec-nama="ASEMROWO">8</td>
-                <td class="agregat-trigger" data-id="2" data-kec-nama="ASEMROWO">45</td>
+                    @foreach ($kolom as $k)
+                        <td @class(['agregat-trigger fw-bold' => !$k->is_disable])
+                            @unless ($k->is_disable)
+                                data-id="{{ $k->id }}"
+                                data-kec-id="{{ $kec->id_kec }}"
+                                data-kec-nama="{{ $kec->nama_kec }}"
+                            @endunless>
+                            {{ number_format($data[$kec->id_kec]->{$k->alias} ?? 0, 0, ',', '.') }}
+                        </td>
+                    @endforeach
 
-                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="18">18</td>
-                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="1.245">1.245</td>
-                <td class="agregat-trigger fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
-                <td class="agregat-trigger fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td class="agregat-trigger fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
-                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
-                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
-                <td class="agregat-trigger fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
-                <td class="agregat-trigger fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td>24.112</td>
-                <td>125</td>
-                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger text-success fw-bold" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td>28</td>
-            </tr>
+                    <td>{{ $data[$kec->id_kec]->keterangan ?? 0 }}</td>
+                </tr>
+            @endforeach
         </tbody>
+        <!--end::Table body-->
         <!--end::Table body-->
         <!--begin::Table foot (Total)-->
         <tfoot>
             <tr class="fw-bold fs-6 bg-light-success text-dark">
                 <td colspan="2" class="text-center">JUMLAH SELURUHNYA</td>
-                <td>0</td>
-                <td>42</td>
-                <td>342</td>
-                <td>342</td>
-                <td>342</td>
-                <td>1.393</td>
-                <td>984</td>
-                <td>8.030</td>
-                <td>7.003</td>
-                <td>146.280</td>
-                <td>149.647</td>
-                <td>769</td>
-                <td>827</td>
-                <td>200</td>
-                <td>175</td>
-                <td>0</td>
-                <td>42</td>
-                <td>342</td>
-                <td>342</td>
-                <td>342</td>
-                <td>1.393</td>
-                <td>984</td>
+                @foreach ($kolom as $k)
+                    <td>{{ number_format($data->sum($k->alias), 0, ',', '.') }}</td>
+                @endforeach
+                <td></td>
             </tr>
         </tfoot>
         <!--end::Table foot-->
