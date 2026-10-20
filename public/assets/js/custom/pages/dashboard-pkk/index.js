@@ -14,7 +14,8 @@ document.querySelectorAll('.agregat-trigger').forEach(el => {
 });
 
 function tampilkan(hasil, kecNama) {
-  document.getElementById('modalJudul').textContent = `${hasil.judul} - ${kecNama}`;
+  document.getElementById('modalJudul').textContent =
+  `DETAIL ${hasil.judul.replace(/_/g, ' ')} - ${kecNama}`;
   const isi = document.getElementById('modalIsi');
 
   if (hasil.jenis_form == 1) {
@@ -25,7 +26,7 @@ function tampilkan(hasil, kecNama) {
     const kolom = Object.keys(hasil.rows[0] ?? {});
     isi.innerHTML = `
       <table class="table table-bordered">
-        <thead><tr><th>NO</th>${kolom.map(k => `<th>${k.toUpperCase()}</th>`).join('')}</tr></thead>
+        <thead><tr><th>NO</th>${kolom.map(k => `<th>${k.replace(/_/g, ' ').toUpperCase()}</th>`).join('')}</tr></thead>
         <tbody>${hasil.rows.map((r, i) =>
           `<tr><td>${i + 1}</td>${kolom.map(k => `<td>${r[k] ?? ''}</td>`).join('')}</tr>`
         ).join('')}</tbody>
