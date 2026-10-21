@@ -42,7 +42,13 @@
         transform: translateX(120%);
         transition: transform .25s ease;
     }
+    /* Teks tabel hitam: judul kolom tetap tebal, isi tabel tetap tipis */
+    #mk-table thead th { color: #000 !important; }
+    #mk-table tbody td { color: #000 !important; }
     .mk-toast.show { transform: translateX(0); }
+    .mk-card-tahun { cursor: pointer; transition: box-shadow .2s ease, transform .15s ease; }
+    .mk-card-tahun:hover { transform: translateY(-2px); }
+    .mk-card-aktif { box-shadow: 0 0 0 3px rgba(0,0,0,.18), 0 10px 24px -8px rgba(0,0,0,.25) !important; transform: translateY(-2px); }
     .mk-toast-icon {
         width: 34px; height: 34px; border-radius: 50%;
         background: #22c55e; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -87,7 +93,7 @@
 <!-- 3. Stat Cards: Total Data per Tahun (dihitung otomatis dari data) -->
 <div class="row g-4 mb-6">
     <div class="col-12 col-md-4">
-        <div class="card card-flush h-100 shadow-sm border-start border-4 border-primary">
+        <div class="card card-flush h-100 shadow-sm border-start border-4 border-primary mk-card-tahun" id="mk-card-2024" onclick="mkFilterTahun('2024')">
             <div class="card-body p-5 d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-gray-500 fw-semibold fs-7 d-block mb-1">TOTAL DATA</span>
@@ -104,7 +110,7 @@
     </div>
 
     <div class="col-12 col-md-4">
-        <div class="card card-flush h-100 shadow-sm border-start border-4" style="border-color: #7239ea !important;">
+        <div class="card card-flush h-100 shadow-sm border-start border-4 mk-card-tahun" id="mk-card-2025" onclick="mkFilterTahun('2025')" style="border-color: #7239ea !important;">
             <div class="card-body p-5 d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-gray-500 fw-semibold fs-7 d-block mb-1">TOTAL DATA</span>
@@ -121,7 +127,7 @@
     </div>
 
     <div class="col-12 col-md-4">
-        <div class="card card-flush h-100 shadow-sm border-start border-4 border-success">
+        <div class="card card-flush h-100 shadow-sm border-start border-4 border-success mk-card-tahun" id="mk-card-2026" onclick="mkFilterTahun('2026')">
             <div class="card-body p-5 d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-gray-500 fw-semibold fs-7 d-block mb-1">TOTAL DATA</span>
@@ -166,7 +172,7 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table align-middle table-row-dashed fs-6 gy-4">
+            <table class="table align-middle table-row-dashed fs-6 gy-4" id="mk-table">
                 <thead>
                     <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
                         <th>NO</th>
@@ -521,6 +527,9 @@
         const kec = filterKecamatan.value;
         const kel = filterKelurahan.value;
         const tahun = filterTahun.value;
+        ['2024', '2025', '2026'].forEach(function (t) {
+            document.getElementById('mk-card-' + t).classList.toggle('mk-card-aktif', tahun === t);
+        });
 
         const filtered = allData.filter(function (row) {
             if (kec && row.kecamatan !== kec) return false;
@@ -567,6 +576,14 @@
             btn.addEventListener('click', function () { hapusData(btn.dataset.id, btn.dataset.nama); });
         });
     }
+
+    // Klik kartu tahun: tabel di bawah hanya menampilkan tahun itu. Klik lagi untuk kembali ke semua tahun.
+    window.mkFilterTahun = function (tahun) {
+        filterTahun.value = (filterTahun.value === tahun) ? '' : tahun;
+        renderTable();
+        const kartuTabel = document.getElementById('mk-tbody').closest('.card');
+        if (kartuTabel && filterTahun.value) kartuTabel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
     filterKecamatan.addEventListener('change', renderTable);
     filterKelurahan.addEventListener('change', renderTable);
@@ -669,7 +686,6 @@
 
         const id = document.getElementById('mk-edit-id').value;
         const formData = new FormData();
-        formData.append('_method', 'PUT');
         formData.append('kecamatan', document.getElementById('mk-edit-kecamatan').value);
         formData.append('kelurahan', document.getElementById('mk-edit-kelurahan').value);
         formData.append('nama_dasa_wisma', document.getElementById('mk-edit-nama').value);

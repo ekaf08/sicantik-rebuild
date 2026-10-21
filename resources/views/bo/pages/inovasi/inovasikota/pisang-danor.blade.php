@@ -61,6 +61,9 @@
     }
 
     /* Preview foto & checkbox organik */
+    /* Teks tabel hitam: judul kolom tetap tebal, isi tabel tetap tipis */
+    #thead-danor th { color: #000 !important; }
+    #tbody-danor td { color: #000 !important; }
     .pd-photo-box {
         border: 1px solid #e4e6ef; border-radius: .75rem; background: #f8f9fb;
         display: flex; align-items: center; justify-content: center; overflow: hidden; height: 150px;
@@ -479,6 +482,29 @@
 
 <!-- ================================================================= -->
 <!-- MODAL TAMBAH / EDIT DATA ORGANIK -->
+<!-- MODAL LIHAT FOTO (POPUP) -->
+<div class="modal fade" id="modal_foto_danor" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h3 class="modal-title fw-bold text-gray-900 fs-4" id="pd-foto-title">Foto Dokumentasi</h3>
+                <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <i class="ki-outline ki-cross fs-1"></i>
+                </button>
+            </div>
+            <div class="modal-body py-6 px-8">
+                <div class="row g-4">
+                    <div class="col-6"><div class="pd-photo-box" style="height: 320px;" id="pd-foto-1"></div></div>
+                    <div class="col-6"><div class="pd-photo-box" style="height: 320px;" id="pd-foto-2"></div></div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light fw-bold px-6" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ================================================================= -->
 <div class="modal fade" id="modal_organik_danor" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -855,14 +881,8 @@
                 // Tombol Lihat Foto
                 let btnFoto = '<span class="text-muted fs-8">-</span>';
                 if (r.upload_file_1_url || r.upload_file_2_url) {
-                    btnFoto = '<div class="d-flex justify-content-center gap-1">';
-                    if (r.upload_file_1_url) {
-                        btnFoto += '<a href="' + esc(r.upload_file_1_url) + '" target="_blank" class="btn btn-sm btn-icon btn-light-info" title="Lihat Foto 1"><i class="ki-outline ki-eye fs-5"></i></a>';
-                    }
-                    if (r.upload_file_2_url) {
-                        btnFoto += '<a href="' + esc(r.upload_file_2_url) + '" target="_blank" class="btn btn-sm btn-icon btn-light-success" title="Lihat Foto 2"><i class="ki-outline ki-eye fs-5"></i></a>';
-                    }
-                    btnFoto += '</div>';
+                    btnFoto = '<a href="javascript:void(0)" class="text-primary fw-bold text-hover-primary text-decoration-underline d-inline-flex align-items-center gap-1 pd-btn-foto" data-id="' + r.id + '">' +
+                        '<i class="ki-outline ki-file fs-5 text-primary"></i> Lihat Foto</a>';
                 }
 
                 if (kategori === 'anorganik') {
@@ -907,6 +927,8 @@
     $('tbody-danor').addEventListener('click', function (e) {
         const edit = e.target.closest('.pd-btn-edit');
         const hapus = e.target.closest('.pd-btn-hapus');
+        const foto = e.target.closest('.pd-btn-foto');
+        if (foto) bukaFoto(foto.dataset.id);
         if (edit) bukaEdit(edit.dataset.id);
         if (hapus) konfirmasiHapus(hapus.dataset.id);
     });
@@ -929,6 +951,17 @@
         });
     });
     function fotoHtml(url) { return url ? '<img src="' + esc(url) + '" alt="foto">' : EMPTY_IMG; }
+
+    // Popup "Lihat Foto" (tidak lagi membuka jendela baru)
+    function bukaFoto(id) {
+        const r = (kategori === 'anorganik' ? dataBsi : dataOrganik).find(function (d) { return String(d.id) === String(id); });
+        if (!r) return;
+        const nama = kategori === 'anorganik' ? r.nama_bsi : (r.kelurahan + ' RW ' + (r.rw || '-') + ' RT ' + (r.rt || '-'));
+        $('pd-foto-title').textContent = 'Foto Dokumentasi - ' + nama;
+        $('pd-foto-1').innerHTML = fotoHtml(r.upload_file_1_url);
+        $('pd-foto-2').innerHTML = fotoHtml(r.upload_file_2_url);
+        modal('modal_foto_danor').show();
+    }
 
     window.openTambahDanor = function () {
         if (kategori === 'anorganik') {
@@ -1013,7 +1046,6 @@
         btn.disabled = true;
 
         const fd = new FormData(this);
-        fd.append('_method', 'PUT');
 
         api('/pisang-danor/bsi/' + $('edit-id-danor').value, { method: 'POST', body: fd })
             .then(function (res) {
@@ -1046,7 +1078,7 @@
         document.querySelectorAll('.po-metode:checked').forEach(function (cb) { fd.append('metode_pengolahan[]', cb.value); });
 
         let url = '/pisang-danor/organik';
-        if (id) { url += '/' + id; fd.append('_method', 'PUT'); }
+        if (id) { url += '/' + id; }
 
         api(url, { method: 'POST', body: fd })
             .then(function (res) {

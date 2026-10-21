@@ -272,6 +272,26 @@
     </div>
 </div>
 
+<!-- MODAL LIHAT FOTO (POPUP) -->
+<div class="modal fade" id="modal_foto_pmt" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h3 class="modal-title fw-bold text-gray-900 fs-4" id="pmt-foto-title">Foto Dokumentasi</h3>
+                <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <i class="ki-outline ki-cross fs-1"></i>
+                </button>
+            </div>
+            <div class="modal-body py-6 px-8">
+                <div class="pmt-photo-box" style="height: 420px;" id="pmt-foto-box"></div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light fw-bold px-6" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 (function () {
     let wilayah = {};
@@ -400,7 +420,7 @@
         } else {
             $('tbody-pmt').innerHTML = tampil.map(function (r, i) {
                 const foto = r.foto_url
-                    ? '<a href="' + esc(r.foto_url) + '" target="_blank" class="btn btn-sm btn-icon btn-light-info" title="Lihat Foto"><i class="ki-outline ki-eye fs-5"></i></a>'
+                    ? '<a href="javascript:void(0)" class="text-primary fw-bold text-hover-primary text-decoration-underline d-inline-flex align-items-center gap-1 pmt-btn-foto" data-id="' + r.id + '"><i class="ki-outline ki-file fs-5 text-primary"></i> Lihat Foto</a>'
                     : '<span class="text-muted fs-8">-</span>';
                 const aksi =
                     '<button class="btn btn-sm btn-icon btn-light-primary rounded-circle me-1 pmt-btn-edit" data-id="' + r.id + '" title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>' +
@@ -466,11 +486,22 @@
     $('tbody-pmt').addEventListener('click', function (e) {
         const edit = e.target.closest('.pmt-btn-edit');
         const hapus = e.target.closest('.pmt-btn-hapus');
+        const foto = e.target.closest('.pmt-btn-foto');
+        if (foto) bukaFoto(foto.dataset.id);
         if (edit) bukaEdit(edit.dataset.id);
         if (hapus) konfirmasiHapus(hapus.dataset.id);
     });
 
     // ---------- Form ----------
+    // Popup "Lihat Foto" (tidak lagi membuka jendela baru)
+    function bukaFoto(id) {
+        const r = semuaData.find(function (d) { return String(d.id) === String(id); });
+        if (!r) return;
+        $('pmt-foto-title').textContent = 'Foto Dokumentasi - ' + (r.nama_balita || '');
+        $('pmt-foto-box').innerHTML = r.foto_url ? '<img src="' + esc(r.foto_url) + '" alt="foto">' : EMPTY_IMG;
+        bootstrap.Modal.getOrCreateInstance($('modal_foto_pmt')).show();
+    }
+
     function resetForm() {
         $('form-tambah-pmt').reset();
         $('pmt-id').value = '';
@@ -552,7 +583,7 @@
 
         const fd = new FormData(this);
         let url = '/pmt-data';
-        if (id) { url += '/' + id; fd.append('_method', 'PUT'); }
+        if (id) { url += '/' + id; }
 
         api(url, { method: 'POST', body: fd })
             .then(function (res) {
