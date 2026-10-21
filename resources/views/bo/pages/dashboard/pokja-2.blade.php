@@ -90,147 +90,42 @@
                 <td>22</td>
                 <td>23</td>
                 <td>24</td>
+                <td>25</td>
+                <td>26</td>
+                <td>27</td>
+                <td>28</td>
+                <td>29</td>
+                <td>30</td>
+                <td>31</td>
+                <td>32</td>
+                <td>33</td>
+                <td>34</td>
+                <td>35</td>
+                <td>36</td>
             </tr>
         </thead>
         <!--end::Table head-->
         <!--begin::Table body-->
         <tbody>
+        @foreach ($kecamatan as $i => $kec)
             <tr>
-                <td>1</td>
-                <td class="text-start fw-bold">Tegalsari</td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_detail_buta"
-                    data-field="Jml Warga Masih Buta"
-                    data-kecamatan="Asemrowo"
-                    style="cursor: pointer;">
-                    0
-                </td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Jml_KLP_Belajar"
-                    data-field="Paket A Klp Belajar"
-                    data-kecamatan="Asemrowo"
-                    style="cursor: pointer;">
-                    0
-                </td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Warga_Belajar"
-                    data-field="Paket A Warga Belajar"
-                    data-kecamatan="Asemrowo"
-                    style="cursor: pointer;">
-                    45
-                </td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Jml_KLP_Belajar"
-                    data-field="Paket B Klp Belajar"
-                    data-kecamatan="Asemrowo"
-                    style="cursor: pointer;">
-                    0
-                </td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Warga_Belajar"
-                    data-field="Paket B Warga Belajar"
-                    data-kecamatan="Asemrowo"
-                    style="cursor: pointer;">
-                    189
-                </td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Warga_Belajar"
-                    data-field="Paket C Warga Belajar"
-                    data-kecamatan="Asemrowo"
-                    style="cursor: pointer;">
-                    135
-                </td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Warga_Belajar"
-                    data-field="Paket C Warga Belajar"
-                    data-kecamatan="Asemrowo"
-                    style="cursor: pointer;">
-                    18
-                </td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.245">1.245</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Paud_Sejenis"
-                    data-field="Paud"
-                    data-kecamatan="Tegalsari"
-                    data-value="24.112"
-                    style="cursor: pointer;">
-                    24.112
-                </td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Bkb_Jml_Kelp"
-                    data-field="Bkb Jml Kelp"
-                    data-kecamatan="Tegalsari"
-                    style="cursor: pointer;">
-                    125
-                </td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Bkb_Jml_Ibu"
-                    data-field="Bkb Jml Ibu"
-                    data-kecamatan="Tegalsari"
-                    style="cursor: pointer;">
-                    135
-                </td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Bkb_Jml_Ape"
-                    data-field="Bkb Jml Ape"
-                    data-kecamatan="Tegalsari"
-                    style="cursor: pointer;">
-                    32
-                </td>
-                <td>28</td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Tutor_KF"
-                    data-field="Kader Khusus Tutor KF"
-                    data-kecamatan="Tegalsari"
-                    style="cursor: pointer;">
-                    1.087
-                </td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Bkb_Khusus"
-                    data-field="Kader Khusus BKB"
-                    data-kecamatan="Tegalsari"
-                    style="cursor: pointer;">
-                    24.112
-                </td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Tutor_KF"
-                    data-field="Kader Khusus Koperasi"
-                    data-kecamatan="Tegalsari"
-                    style="cursor: pointer;">
-                    125
-                </td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Tutor_KF"
-                    data-field="Kader Khusus Ketrampilan "
-                    data-kecamatan="Tegalsari"
-                    style="cursor: pointer;">
-                    135
-                </td>
-                <td data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_Lp3_Pkk"
-                    data-field="Kader Khusus Lp3 Pkk Kota"
-                    data-kecamatan="Tegalsari"
-                    style="cursor: pointer;">
-                    32
-                </td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">23.456</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td class="agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
+                <td>{{ $i + 1 }}</td>
+                <td class="text-start fw-bold text-uppercase">{{ $kec->nama_kec }}</td>
+
+                @foreach ($kolomPokja2 as $k)
+                    <td @class(['agregat-trigger fw-bold' => !$k->is_disable])
+                        @unless ($k->is_disable)
+                            data-id="{{ $k->id }}"
+                            data-kec-id="{{ $kec->id_kec }}"
+                            data-kec-nama="{{ $kec->nama_kec }}"
+                        @endunless>
+                        {{ number_format($dataPokja2[$kec->id_kec]->{$k->alias} ?? 0, 0, ',', '.') }}
+                    </td>
+                @endforeach
+
+                <td>{{ $dataPokja2[$kec->id_kec]->keterangan ?? 0 }}</td>
             </tr>
+        @endforeach
         </tbody>
         <!--end::Table body-->
         <!--begin::Table foot (Total)-->
@@ -251,6 +146,25 @@
                 <td>769</td>
                 <td>827</td>
                 <td>200</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
+                <td>175</td>
                 <td>175</td>
             </tr>
         </tfoot>
