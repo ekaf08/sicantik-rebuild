@@ -25,6 +25,17 @@ class DashboardController extends Controller
             ->get()
             ->keyBy('id_kec');
 
-        return view('bo.pages.dashboard', compact('kolom', 'kecamatan', 'data'));
+        $kolomPokja2 = DB::table('m_pertanyaan_dashboard_2026')
+            ->where('tb_dashboard', 'd_pokja_2_2026')
+            ->whereNull('deleted_at')
+            ->orderBy('urutan')
+            ->get();
+
+        $dataPokja2 = DB::table('d_pokja_2_2026')
+            ->where('periode', 2026)
+            ->get()
+            ->keyBy('id_kec');
+
+        return view('bo.pages.dashboard', compact('kolom', 'kecamatan', 'data', 'kolomPokja2', 'dataPokja2'));
     }
 }
