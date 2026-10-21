@@ -130,11 +130,11 @@
                                                 <td class="text-end">
                                                     <button type="button"
                                                         class="btn btn-icon btn-light-primary btn-sm me-1"
-                                                        onclick="editPenghargaan({{ json_encode($item) }})">
+                                                        onclick="editPenghargaan({{ json_encode(array_merge($item->toArray(), ['id' => \App\Support\IdCipher::encode($item->id)])) }})">
                                                         <i class="ki-outline ki-pencil fs-2"></i>
                                                     </button>
                                                     <button type="button" class="btn btn-icon btn-light-danger btn-sm"
-                                                        onclick="hapusPenghargaan('{{ $item->id }}', '{{$item->nama_penghargaan }}')">
+                                                        onclick="hapusPenghargaan('{{ \App\Support\IdCipher::encode($item->id) }}', '{{ $item->nama_penghargaan }}')">
                                                         <i class="ki-outline ki-trash fs-2"></i>
                                                     </button>
                                                 </td>

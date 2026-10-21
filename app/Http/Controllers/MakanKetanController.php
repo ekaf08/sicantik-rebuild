@@ -6,6 +6,7 @@ use App\Models\MakanKetan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Support\IdCipher;
 
 class MakanKetanController extends Controller
 {
@@ -28,7 +29,10 @@ class MakanKetanController extends Controller
         $data = MakanKetan::orderByDesc('created_at')->get()->map(function ($row) {
             $row->foto_1_url = $row->foto_1 ? asset('storage/' . $row->foto_1) : null;
             $row->foto_2_url = $row->foto_2 ? asset('storage/' . $row->foto_2) : null;
-            return $row;
+            // Ubah ke array dulu: model otomatis mengubah 'id' jadi angka, sehingga token akan terbaca 0
+            $item = $row->toArray();
+            $item['id'] = IdCipher::encode($row->id);
+            return $item;
         });
 
         return response()->json($data);
@@ -56,13 +60,14 @@ class MakanKetanController extends Controller
             $validated['foto_2'] = $request->file('foto_2')->store('makan-ketan', 'public');
         }
 
-        $item = MakanKetan::create($validated);
+        MakanKetan::create($validated);
 
-        return response()->json(['message' => 'Data berhasil ditambahkan', 'data' => $item]);
+        return response()->json(['message' => 'Data berhasil ditambahkan']);
     }
 
-    public function update(Request $request, int $id)
+    public function update(Request $request, string $id)
     {
+        $id = IdCipher::decodeOrFail($id);
         $item = MakanKetan::findOrFail($id);
 
         $validated = $request->validate([
@@ -93,6 +98,19 @@ class MakanKetanController extends Controller
 
         $item->update($validated);
 
-        return response()->json(['message' => 'Data berhasil diubah', 'data' => $item]);
+        return response()->json(['message' => 'Data berhasil diubah']);
+    }
+
+    /**
+     * Hapus data (soft delete: baris tetap ada di database, hanya ditandai deleted_at)
+     */
+    public function destroy(string $id)
+    {
+        $id = IdCipher::decodeOrFail($id);
+
+        $item = MakanKetan::findOrFail($id);
+        $item->delete();
+
+        return response()->json(['message' => 'Data berhasil dihapus']);
     }
 }

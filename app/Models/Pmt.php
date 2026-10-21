@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Pmt extends Model
 {
+    use SoftDeletes;
     protected $table = 'pmt';
 
     protected $fillable = [

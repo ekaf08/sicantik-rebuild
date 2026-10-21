@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use App\Support\IdCipher;
 
 class PmtController extends Controller
 {
@@ -33,7 +34,10 @@ class PmtController extends Controller
     {
         $data = Pmt::orderByDesc('created_at')->get()->map(function ($row) {
             $row->foto_url = $row->foto ? asset('storage/' . $row->foto) : null;
-            return $row;
+            // Ubah ke array dulu: model otomatis mengubah 'id' jadi angka, sehingga token akan terbaca 0
+            $item = $row->toArray();
+            $item['id'] = IdCipher::encode($row->id);
+            return $item;
         });
 
         return response()->json($data);
@@ -82,11 +86,12 @@ class PmtController extends Controller
 
         $item = Pmt::create($validated);
 
-        return response()->json(['message' => 'Data berhasil ditambahkan', 'data' => $item]);
+        return response()->json(['message' => 'Data berhasil ditambahkan']);
     }
 
-    public function update(Request $request, int $id)
+    public function update(Request $request, string $id)
     {
+        $id = IdCipher::decodeOrFail($id);
         $item = Pmt::findOrFail($id);
         $validated = $request->validate($this->rules($id, false));
 
@@ -105,17 +110,15 @@ class PmtController extends Controller
 
         $item->update($validated);
 
-        return response()->json(['message' => 'Data berhasil diubah', 'data' => $item]);
+        return response()->json(['message' => 'Data berhasil diubah']);
     }
 
-    public function destroy(int $id)
+    public function destroy(string $id)
     {
+        $id = IdCipher::decodeOrFail($id);
         $item = Pmt::findOrFail($id);
 
-        if ($item->foto) {
-            Storage::disk('public')->delete($item->foto);
-        }
-
+        // Soft delete: file foto dibiarkan agar data bisa dipulihkan
         $item->delete();
 
         return response()->json(['message' => 'Data berhasil dihapus']);

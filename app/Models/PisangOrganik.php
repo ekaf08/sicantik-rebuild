@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PisangOrganik extends Model
 {
+    use SoftDeletes;
     protected $table = 'pisang_organik';
 
     protected $fillable = [

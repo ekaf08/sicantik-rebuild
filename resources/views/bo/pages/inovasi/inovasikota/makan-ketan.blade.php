@@ -2,7 +2,7 @@
     Makan Ketan — Pemanfaatan Pekarangan untuk Ketahanan Pangan
     Dipanggil dari index.blade.php lewat @includeIf('bo.pages.inovasi.inovasikota.makan-ketan')
 
-    Tambah/Edit sudah TERSAMBUNG ke database (tabel makan_ketan), termasuk upload foto.
+    Tambah/Edit/Hapus sudah TERSAMBUNG ke database (tabel makan_ketan), termasuk upload foto.
     Supaya ini jalan, pastikan sudah:
     1. Migration tabel makan_ketan sudah dijalankan (php artisan migrate)
     2. Model MakanKetan ada di app/Models/
@@ -326,80 +326,6 @@
     </div>
 </div>
 
-<!-- MODAL DETAIL INOVASI (TOMBOL MATA) -->
-<div class="modal fade" id="modal_detail_makan_ketan" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content rounded-4">
-            <div class="modal-header border-0 pb-0">
-                <h3 class="modal-title fw-bold text-gray-900 fs-4">Detail Kegiatan Makan Ketan</h3>
-                <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                    <i class="ki-outline ki-cross fs-1"></i>
-                </button>
-            </div>
-            <div class="modal-body py-6 px-8">
-                <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Kecamatan</label>
-                        <span class="fw-bolder text-gray-800 fs-6" id="mk-detail-kecamatan">-</span>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Kelurahan</label>
-                        <span class="fw-bolder text-gray-800 fs-6" id="mk-detail-kelurahan">-</span>
-                    </div>
-                </div>
-                <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Nama Dasawisma</label>
-                        <span class="fw-bolder text-gray-800 fs-6" id="mk-detail-nama">-</span>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Jumlah Rumah</label>
-                        <span class="fw-bolder text-gray-800 fs-6" id="mk-detail-jumlah-rumah">-</span>
-                    </div>
-                </div>
-                <div class="row g-4 mb-4">
-                    <div class="col-md-4">
-                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">RT</label>
-                        <span class="fw-bolder text-gray-800 fs-6" id="mk-detail-rt">-</span>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">RW</label>
-                        <span class="fw-bolder text-gray-800 fs-6" id="mk-detail-rw">-</span>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Tahun</label>
-                        <span class="badge badge-light-primary fw-bold" id="mk-detail-tahun">-</span>
-                    </div>
-                </div>
-                <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-1">Juara</label>
-                        <span class="badge badge-light-success fw-bold" id="mk-detail-juara">-</span>
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <label class="fw-bold text-gray-500 fs-8 text-uppercase d-block mb-3">File Dokumentasi</label>
-                    <div class="row g-4">
-                        <div class="col-6">
-                            <div class="mk-photo-box" style="height: 200px;" id="mk-detail-foto-1">
-                                <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="mk-photo-box" style="height: 200px;" id="mk-detail-foto-2">
-                                <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-light fw-bold px-6" data-bs-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- MODAL EDIT INOVASI (TOMBOL PENSIL) -->
 <div class="modal fade" id="modal_edit_makan_ketan" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -625,20 +551,20 @@
                 '</td>' +
                 '<td>' + (row.juara ? '<span class="badge badge-light-success fw-bold">' + escapeHtml(row.juara) + '</span>' : '-') + '</td>' +
                 '<td class="text-end">' +
-                    '<button type="button" class="btn btn-sm btn-icon btn-light-primary me-1 mk-btn-detail" data-id="' + row.id + '"><i class="ki-outline ki-eye fs-5"></i></button>' +
-                    '<button type="button" class="btn btn-sm btn-icon btn-light-warning mk-btn-edit" data-id="' + row.id + '"><i class="ki-outline ki-pencil fs-5"></i></button>' +
+                    '<button type="button" class="btn btn-sm btn-icon btn-light-warning me-1 mk-btn-edit" data-id="' + row.id + '"><i class="ki-outline ki-pencil fs-5"></i></button>' +
+                    '<button type="button" class="btn btn-sm btn-icon btn-light-danger mk-btn-hapus" data-id="' + row.id + '" data-nama="' + escapeHtml(row.nama_dasa_wisma || '') + '"><i class="ki-outline ki-trash fs-5"></i></button>' +
                 '</td>' +
             '</tr>';
         }).join('');
 
-        document.querySelectorAll('.mk-btn-detail').forEach(function (btn) {
-            btn.addEventListener('click', function () { openDetail(btn.dataset.id); });
-        });
         document.querySelectorAll('.mk-btn-foto').forEach(function (btn) {
             btn.addEventListener('click', function () { openFoto(btn.dataset.id); });
         });
         document.querySelectorAll('.mk-btn-edit').forEach(function (btn) {
             btn.addEventListener('click', function () { openEdit(btn.dataset.id); });
+        });
+        document.querySelectorAll('.mk-btn-hapus').forEach(function (btn) {
+            btn.addEventListener('click', function () { hapusData(btn.dataset.id, btn.dataset.nama); });
         });
     }
 
@@ -656,25 +582,6 @@
         document.getElementById('mk-foto-2').innerHTML = photoBoxHtml(row.foto_2_url);
 
         bsModal('modal_foto_makan_ketan').show();
-    }
-
-    // ===================== Detail modal =====================
-    function openDetail(id) {
-        const row = allData.find(function (d) { return String(d.id) === String(id); });
-        if (!row) return;
-
-        document.getElementById('mk-detail-kecamatan').textContent = row.kecamatan;
-        document.getElementById('mk-detail-kelurahan').textContent = row.kelurahan;
-        document.getElementById('mk-detail-nama').textContent = row.nama_dasa_wisma;
-        document.getElementById('mk-detail-jumlah-rumah').textContent = (row.jumlah_rumah ?? '-') + ' Rumah';
-        document.getElementById('mk-detail-rt').textContent = row.rt || '-';
-        document.getElementById('mk-detail-rw').textContent = row.rw || '-';
-        document.getElementById('mk-detail-tahun').textContent = row.tahun;
-        document.getElementById('mk-detail-juara').textContent = row.juara || 'Belum ada';
-        document.getElementById('mk-detail-foto-1').innerHTML = photoBoxHtml(row.foto_1_url);
-        document.getElementById('mk-detail-foto-2').innerHTML = photoBoxHtml(row.foto_2_url);
-
-        bsModal('modal_detail_makan_ketan').show();
     }
 
     // ===================== Edit modal =====================
@@ -795,6 +702,57 @@
                 alert('Gagal menyimpan perubahan. ' + (err.message || 'Cek kembali isian form.'));
             });
     });
+
+    // ===================== Hapus (popup sama seperti Penghargaan) =====================
+    function kirimHapus(id, nama) {
+        fetch('/makan-ketan/' + id, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
+        })
+            .then(function (res) {
+                if (!res.ok) return res.json().then(function (err) { throw err; });
+                return res.json();
+            })
+            .then(function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: nama + ' berhasil dihapus',
+                    confirmButtonText: 'OK',
+                    customClass: { confirmButton: 'btn btn-success fw-bold px-6' },
+                    buttonsStyling: false
+                });
+                loadData();
+            })
+            .catch(function (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Gagal menghapus data. ' + ((err && err.message) || ''),
+                    confirmButtonText: 'OK',
+                    customClass: { confirmButton: 'btn btn-danger fw-bold px-6' },
+                    buttonsStyling: false
+                });
+            });
+    }
+
+    function hapusData(id, nama) {
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: 'Apakah Anda yakin menghapus ' + nama + '?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yakin',
+            cancelButtonText: 'Batal',
+            customClass: {
+                confirmButton: 'btn btn-danger fw-bold px-6 me-2',
+                cancelButton: 'btn btn-success fw-bold px-6'
+            },
+            buttonsStyling: false
+        }).then(function (result) {
+            if (result.isConfirmed) kirimHapus(id, nama);
+        });
+    }
 
     // ===================== Reset modal Tambah tiap dibuka =====================
     document.getElementById('mk-btn-tambah').addEventListener('click', function () {

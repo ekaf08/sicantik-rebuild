@@ -8,6 +8,7 @@ use App\Models\PisangOrganik;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Support\IdCipher;
 
 class PisangDanorController extends Controller
 {
@@ -36,7 +37,10 @@ class PisangDanorController extends Controller
         $data = PisangBsi::orderByDesc('created_at')->get()->map(function ($row) {
             $row->upload_file_1_url = $row->upload_file_1 ? asset('storage/' . $row->upload_file_1) : null;
             $row->upload_file_2_url = $row->upload_file_2 ? asset('storage/' . $row->upload_file_2) : null;
-            return $row;
+            // Ubah ke array dulu: model otomatis mengubah 'id' jadi angka, sehingga token akan terbaca 0
+            $item = $row->toArray();
+            $item['id'] = IdCipher::encode($row->id);
+            return $item;
         });
 
         return response()->json($data);
@@ -64,11 +68,12 @@ class PisangDanorController extends Controller
 
         $item = PisangBsi::create($validated);
 
-        return response()->json(['message' => 'Data berhasil ditambahkan', 'data' => $item]);
+        return response()->json(['message' => 'Data berhasil ditambahkan']);
     }
 
-    public function updateBsi(Request $request, int $id)
+    public function updateBsi(Request $request, string $id)
     {
+        $id = IdCipher::decodeOrFail($id);
         $item = PisangBsi::findOrFail($id);
 
         $validated = $request->validate([
@@ -96,19 +101,15 @@ class PisangDanorController extends Controller
 
         $item->update($validated);
 
-        return response()->json(['message' => 'Data berhasil diubah', 'data' => $item]);
+        return response()->json(['message' => 'Data berhasil diubah']);
     }
 
-    public function destroyBsi(int $id)
+    public function destroyBsi(string $id)
     {
+        $id = IdCipher::decodeOrFail($id);
         $item = PisangBsi::findOrFail($id);
 
-        foreach (['upload_file_1', 'upload_file_2'] as $field) {
-            if ($item->$field) {
-                Storage::disk('public')->delete($item->$field);
-            }
-        }
-
+        // Soft delete: file foto dibiarkan agar data bisa dipulihkan
         $item->delete();
 
         return response()->json(['message' => 'Data berhasil dihapus']);
@@ -139,7 +140,10 @@ class PisangDanorController extends Controller
         $data = PisangOrganik::orderByDesc('created_at')->get()->map(function ($row) {
             $row->upload_file_1_url = $row->upload_file_1 ? asset('storage/' . $row->upload_file_1) : null;
             $row->upload_file_2_url = $row->upload_file_2 ? asset('storage/' . $row->upload_file_2) : null;
-            return $row;
+            // Ubah ke array dulu: model otomatis mengubah 'id' jadi angka, sehingga token akan terbaca 0
+            $item = $row->toArray();
+            $item['id'] = IdCipher::encode($row->id);
+            return $item;
         });
 
         return response()->json($data);
@@ -158,11 +162,12 @@ class PisangDanorController extends Controller
 
         $item = PisangOrganik::create($validated);
 
-        return response()->json(['message' => 'Data berhasil ditambahkan', 'data' => $item]);
+        return response()->json(['message' => 'Data berhasil ditambahkan']);
     }
 
-    public function updateOrganik(Request $request, int $id)
+    public function updateOrganik(Request $request, string $id)
     {
+        $id = IdCipher::decodeOrFail($id);
         $item = PisangOrganik::findOrFail($id);
 
         $validated = $request->validate($this->organikRules());
@@ -181,19 +186,15 @@ class PisangDanorController extends Controller
 
         $item->update($validated);
 
-        return response()->json(['message' => 'Data berhasil diubah', 'data' => $item]);
+        return response()->json(['message' => 'Data berhasil diubah']);
     }
 
-    public function destroyOrganik(int $id)
+    public function destroyOrganik(string $id)
     {
+        $id = IdCipher::decodeOrFail($id);
         $item = PisangOrganik::findOrFail($id);
 
-        foreach (['upload_file_1', 'upload_file_2'] as $field) {
-            if ($item->$field) {
-                Storage::disk('public')->delete($item->$field);
-            }
-        }
-
+        // Soft delete: file foto dibiarkan agar data bisa dipulihkan
         $item->delete();
 
         return response()->json(['message' => 'Data berhasil dihapus']);

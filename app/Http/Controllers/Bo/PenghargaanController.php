@@ -7,6 +7,7 @@ use App\Models\Penghargaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Support\IdCipher;
 
 class PenghargaanController extends Controller
 {
@@ -107,8 +108,9 @@ class PenghargaanController extends Controller
     /**
      * Update Data Penghargaan
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, string $id)
     {
+        $id = IdCipher::decodeOrFail($id);
         $request->validate([
             'nama_penghargaan'      => 'required|string|max:255',
             'deskripsi_penghargaan' => 'required|string',
@@ -163,19 +165,15 @@ class PenghargaanController extends Controller
     /**
      * Hapus Data Penghargaan
      */
-    public function destroy(int $id)
+    public function destroy(string $id)
     {
+        $id = IdCipher::decodeOrFail($id);
         try {
             $penghargaan = Penghargaan::find($id);
             $nama = $penghargaan->nama_penghargaan ?? 'Data';
 
             if ($penghargaan) {
-                if ($penghargaan->foto && Storage::disk('public')->exists($penghargaan->foto)) {
-                    Storage::disk('public')->delete($penghargaan->foto);
-                }
-                if ($penghargaan->file && Storage::disk('public')->exists($penghargaan->file)) {
-                    Storage::disk('public')->delete($penghargaan->file);
-                }
+                // Soft delete: file foto/dokumen dibiarkan agar data bisa dipulihkan
                 $penghargaan->delete();
             }
 

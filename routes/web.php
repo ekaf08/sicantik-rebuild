@@ -139,6 +139,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/makan-ketan', [MakanKetanController::class, 'index']);
     Route::post('/makan-ketan', [MakanKetanController::class, 'store']);
     Route::post('/makan-ketan/{id}', [MakanKetanController::class, 'update']);
+    Route::delete('/makan-ketan/{id}', [MakanKetanController::class, 'destroy']);
 
     // Pisang Danor
     Route::get('/pisang-danor/wilayah', [PisangDanorController::class, 'wilayah']);
