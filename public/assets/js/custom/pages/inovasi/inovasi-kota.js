@@ -111,59 +111,53 @@ const listKecamatanSoth = [
 let chartElearningInstance = null;
 let chartRemajaInstance = null;
 let chartOrangTuaInstance = null;
-let chartSothInstance = null;
-let sothCurrentPage = 1;
-let sothPageSize = 10;
-let sothTotalPages = 1;
 let selectedKecamatanAktif = 'Genteng';
 
 function populateInovasiOptions(selectedPokja = 'semua') {
-    const inovasiSelect = document.getElementById('select-filter-inovasi');
-    if (!inovasiSelect) {
-        console.warn("Elemen #select-filter-inovasi tidak ditemukan di DOM!");
-        return;
-    }
+    const $select = $('#select-filter-inovasi');
+    const nativeSelect = document.getElementById('select-filter-inovasi');
+    if (!nativeSelect) return;
 
     const pokjaKey = (selectedPokja || 'semua').toString().trim().toLowerCase();
-    inovasiSelect.innerHTML = '';
+
+    if (window.jQuery && $select.data('select2')) {
+        $select.empty();
+    } else {
+        nativeSelect.innerHTML = '';
+    }
 
     if (pokjaKey === 'sekretaris') {
-        const opt = document.createElement('option');
-        opt.value = 'empty-sekretaris';
-        opt.textContent = 'Data Inovasi tidak ditemukan';
-        opt.selected = true;
-        opt.disabled = true;
-        inovasiSelect.appendChild(opt);
-
-        if (window.jQuery && $(inovasiSelect).data('select2')) {
-            $(inovasiSelect).val('empty-sekretaris').trigger('change.select2');
-        }
+        const opt = new Option('Data Inovasi tidak ditemukan', 'empty-sekretaris', true, true);
+        $(opt).prop('disabled', true);
+        $select.append(opt);
+        if ($select.data('select2')) $select.trigger('change');
         return;
     }
 
-    const defaultOpt = document.createElement('option');
-    defaultOpt.value = '';
-    defaultOpt.textContent = 'Pilih salah satu inovasi...';
-    defaultOpt.selected = true;
-    defaultOpt.disabled = true;
-    inovasiSelect.appendChild(defaultOpt);
+    const defaultOpt = new Option('Pilih salah satu inovasi...', '', true, true);
+    $(defaultOpt).prop('disabled', true);
+    $select.append(defaultOpt);
 
-    const filtered = (typeof daftarInovasiKota !== 'undefined' ? daftarInovasiKota : []).filter(item => {
+    // 1. Filter item berdasarkan pokja
+    let items = (typeof daftarInovasiKota !== 'undefined' ? daftarInovasiKota : []).filter(item => {
         const itemPokja = (item.pokja || '').toString().trim().toLowerCase();
         if (itemPokja === 'sekretaris') return false;
         return pokjaKey === 'semua' || itemPokja === pokjaKey;
     });
 
-    filtered.forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item.key;
-        opt.textContent = item.title;
-        inovasiSelect.appendChild(opt);
+    // 2. URUTKAN SESUAI ABJAD A - Z BERDASARKAN TITLE
+    items.sort((a, b) => {
+        return a.title.localeCompare(b.title, 'id', { sensitivity: 'base' });
     });
 
-    // Sinkronisasi pembaruan Select2
-    if (window.jQuery && $(inovasiSelect).data('select2')) {
-        $(inovasiSelect).val('').trigger('change.select2');
+    // 3. Masukkan opsi yang sudah urut abjad ke dalam dropdown
+    items.forEach(item => {
+        const newOption = new Option(item.title, item.key, false, false);
+        $select.append(newOption);
+    });
+
+    if (window.jQuery && $select.data('select2')) {
+        $select.val('').trigger('change.select2');
     }
 }
 
@@ -184,7 +178,10 @@ function handleInovasiChange() {
 
     if (selectedKey && selectedKey !== 'empty-sekretaris') {
         if (emptyState) emptyState.classList.add('d-none');
-        if (detailState) detailState.classList.remove('d-none');
+        if (detailState) {
+            detailState.classList.remove('d-none');
+            detailState.style.display = 'block';
+        }
 
         if (subtitleBanner && inovasiSelect.selectedIndex >= 0) {
             const selectedText = inovasiSelect.options[inovasiSelect.selectedIndex].text;
@@ -194,6 +191,7 @@ function handleInovasiChange() {
         const activeContent = document.getElementById('content-' + selectedKey);
         if (activeContent) {
             activeContent.classList.remove('d-none');
+            activeContent.style.display = 'block';
 
             if (selectedKey === 'kemanggi') {
                 setTimeout(() => {
@@ -211,10 +209,18 @@ function handleInovasiChange() {
             }
 
             if (selectedKey === 'soth') {
-                setTimeout(() => {
-                    initSoth();
-                }, 150);
+        setTimeout(() => {
+            if (typeof initChartSoth === 'function') {
+                initChartSoth();
             }
+            if (typeof fetchTableSoth === 'function') {
+                fetchTableSoth(1);
+            }
+            if (typeof fetchChartSoth === 'function') {
+                fetchChartSoth();
+            }
+        }, 150);
+    }
 
             if (selectedKey === 'kampung-asi') {
                 setTimeout(() => {
@@ -231,7 +237,7 @@ function handleInovasiChange() {
                     }
                 }, 150);
             }
-            
+
         } else {
             console.error('Elemen tidak ditemukan untuk ID: content-' + selectedKey);
         }
@@ -619,387 +625,51 @@ if (document.readyState === 'loading') {
     initInovasi();
 }
 
-function initSoth() { 
-    renderGrafikSoth();
-    fetchTableSoth(1);
-}
+let sothCurrentPage = 1;
+let sothPageSize = 10;
+let sothChartInstance = null;
+let sothModal = null;
+let sothModalHapus = null;
+let sothNotifModal = null;
+let targetHashHapusSoth = null;
 
-function filterSothKecamatan() {
-    const filterEl = document.getElementById('filter_soth_kecamatan');
-    const kec = filterEl ? filterEl.value : 'all';
+function tampilkanPopUpSoth(judul, pesan) {
+    const titleEl = document.getElementById('notifikasiSothTitle');
+    const textEl = document.getElementById('notifikasiSothText');
+    if (titleEl) titleEl.textContent = judul;
+    if (textEl) textEl.textContent = pesan;
 
-    if (kec === 'all') {
-        renderGrafikSoth();
-    } else {
-        renderGrafikSoth([kec], [45.20], [115.80]);
-    }
-    sothCurrentPage = 1;
-    fetchTableSoth(1);
-}
-
-function renderGrafikSoth(customLabels = null, customPre = null, customPost = null) {
-    const canvas = document.getElementById('chartSothNilai');
-    if (!canvas || typeof Chart === 'undefined') return;
-
-    const labels = customLabels || listKecamatanSoth;
-    const dataPre = customPre || new Array(labels.length).fill(0);
-    const dataPost = customPost || new Array(labels.length).fill(0);
-
-    if (chartSothInstance) {
-        chartSothInstance.destroy();
-    }
-
-    const sothLabelsPlugin = {
-        id: 'sothLabelsPlugin',
-        afterDatasetsDraw(chart) {
-            const { ctx } = chart;
-            chart.data.datasets.forEach((dataset, i) => {
-                const meta = chart.getDatasetMeta(i);
-                if (!meta || !meta.data) return;
-
-                meta.data.forEach((point, index) => {
-                    if (!point || isNaN(point.x) || isNaN(point.y)) return;
-                    const val = dataset.data[index];
-                    
-                    if (val && Number(val) > 0) {
-                        ctx.save();
-                        ctx.fillStyle = i === 0 ? '#0284c7' : '#e11d48';
-                        ctx.font = 'bold 9px sans-serif';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'bottom';
-                        ctx.fillText(Number(val).toFixed(2), point.x, point.y - 4);
-                        ctx.restore();
-                    }
-                });
-            });
+    const modalEl = document.getElementById('modalNotifikasiSoth');
+    if (modalEl) {
+        if (!sothNotifModal) {
+            sothNotifModal = new bootstrap.Modal(modalEl);
         }
-    };
-
-    chartSothInstance = new Chart(canvas.getContext('2d'), {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Pretest',
-                    data: dataPre,
-                    borderColor: '#38bdf8',
-                    backgroundColor: '#38bdf8',
-                    borderWidth: 2,
-                    tension: 0,
-                    pointRadius: 2,
-                    pointHoverRadius: 4
-                },
-                {
-                    label: 'Posttest',
-                    data: dataPost,
-                    borderColor: '#fb7185',
-                    backgroundColor: '#fb7185',
-                    borderWidth: 2,
-                    tension: 0,
-                    pointRadius: 2,
-                    pointHoverRadius: 4
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: false,
-            interaction: { mode: 'index', intersect: false },
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y}`
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    min: 0,
-                    max: 160,
-                    ticks: { stepSize: 20, color: '#64748b', font: { size: 10 } },
-                    grid: { color: '#f1f5f9' }
-                },
-                x: {
-                    ticks: { color: '#64748b', font: { size: 8.5 }, maxRotation: 45, minRotation: 45 },
-                    grid: { display: false }
-                }
-            }
-        },
-        plugins: [sothLabelsPlugin]
-    });
-
-    chartSothInstance.resize();
+        sothNotifModal.show();
+    }
 }
 
-function fetchTableSoth(page = 1) {
-    sothCurrentPage = page;
-    const filterEl = document.getElementById('filter_soth_kecamatan');
-    const kec = filterEl ? filterEl.value : 'all';
-    const tbody = document.getElementById('tabel_soth_body');
-    if (!tbody) return;
-
-    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-gray-400">Memuat data...</td></tr>`;
-
-    fetch(`/inovasi-kota/api/soth/data?page=${page}&limit=${sothPageSize}&kecamatan=${encodeURIComponent(kec)}`)
-        .then(response => response.json())
-        .then(res => {
-            renderTableSoth(res);
-        })
-        .catch(err => {
-            console.error(err);
-            tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-danger">Gagal memuat data</td></tr>`;
-        });
-}
-
-function renderTableSoth(res) {
-    const tbody = document.getElementById('tabel_soth_body');
-    const infoRecords = document.getElementById('soth_info_records');
-    const paginationEl = document.getElementById('soth_pagination');
-    if (!tbody) return;
-
-    tbody.innerHTML = '';
-
-    const total = res.total || 0;
-    const currentPage = res.current_page || 1;
-    const perPage = res.per_page || sothPageSize;
-    sothTotalPages = res.last_page || 1;
-
-    if (!res.data || res.data.length === 0 || total === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-gray-400">Data tidak ditemukan</td></tr>`;
-        if (infoRecords) infoRecords.textContent = 'Showing 0 to 0 of 0 records';
-        if (paginationEl) paginationEl.innerHTML = '';
-        return;
-    }
-
-    res.data.forEach((row, idx) => {
-        const no = (currentPage - 1) * perPage + (idx + 1);
-        const rowJson = encodeURIComponent(JSON.stringify(row));
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td class="text-center text-gray-400">${no}</td>
-            <td class="fw-bold text-gray-800">${row.nama}</td>
-            <td class="text-gray-600">${row.alamat}</td>
-            <td class="text-center">${row.rt}</td>
-            <td>${row.kelurahan}</td>
-            <td>${row.kecamatan}</td>
-            <td class="text-center fw-semibold">${row.rata_rata_pre}</td>
-            <td class="text-center fw-semibold">${row.rata_rata_post}</td>
-            <td class="text-center fw-bold text-dark">${row.total_peserta}</td>
-            <td class="text-center">
-                <div class="d-flex justify-content-center gap-2">
-                    <button type="button" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" onclick="bukaModalEditSoth('${rowJson}')">
-                        <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
-                    </button>
-                    <button type="button" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm" onclick="hapusDataSoth(${row.id})">
-                        <i class="ki-duotone ki-trash fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-                    </button>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-
-    const start = (currentPage - 1) * perPage + 1;
-    const end = Math.min(currentPage * perPage, total);
-    if (infoRecords) {
-        infoRecords.textContent = `Showing ${start} to ${end} of ${total} records`;
-    }
-
-    renderPaginationSoth(currentPage, sothTotalPages);
-}
-
-function renderPaginationSoth(currentPage, totalPages) {
-    const el = document.getElementById('soth_pagination');
-    if (!el) return;
-    el.innerHTML = '';
-
-    if (totalPages <= 1) return;
-
-    const prevLi = document.createElement('li');
-    prevLi.className = `page-item previous ${currentPage === 1 ? 'disabled' : ''}`;
-    const prevLink = document.createElement('a');
-    prevLink.className = 'page-link';
-    prevLink.href = 'javascript:void(0)';
-    prevLink.innerHTML = '<i class="previous"></i>';
-    if (currentPage > 1) {
-        prevLink.addEventListener('click', () => fetchTableSoth(currentPage - 1));
-    }
-    prevLi.appendChild(prevLink);
-    el.appendChild(prevLi);
-
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, currentPage + 2);
-
-    if (startPage > 1) {
-        el.appendChild(createPageItem(1, currentPage));
-        if (startPage > 2) {
-            el.appendChild(createDotsItem(Math.max(1, currentPage - 5)));
-        }
-    }
-
-    for (let p = startPage; p <= endPage; p++) {
-        el.appendChild(createPageItem(p, currentPage));
-    }
-
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-            el.appendChild(createDotsItem(Math.min(totalPages, currentPage + 5)));
-        }
-        el.appendChild(createPageItem(totalPages, currentPage));
-    }
-
-    const nextLi = document.createElement('li');
-    nextLi.className = `page-item next ${currentPage === totalPages ? 'disabled' : ''}`;
-    const nextLink = document.createElement('a');
-    nextLink.className = 'page-link';
-    nextLink.href = 'javascript:void(0)';
-    nextLink.innerHTML = '<i class="next"></i>';
-    if (currentPage < totalPages) {
-        nextLink.addEventListener('click', () => fetchTableSoth(currentPage + 1));
-    }
-    nextLi.appendChild(nextLink);
-    el.appendChild(nextLi);
-}
-
-function createPageItem(page, currentPage) {
-    const li = document.createElement('li');
-    li.className = `page-item ${page === currentPage ? 'active' : ''}`;
-    const link = document.createElement('a');
-    link.className = 'page-link';
-    link.href = 'javascript:void(0)';
-    link.textContent = page;
-    if (page !== currentPage) {
-        link.addEventListener('click', () => fetchTableSoth(page));
-    }
-    li.appendChild(link);
-    return li;
-}
-
-function createDotsItem(targetPage) {
-    const li = document.createElement('li');
-    li.className = 'page-item';
-    const link = document.createElement('a');
-    link.className = 'page-link';
-    link.href = 'javascript:void(0)';
-    link.textContent = '...';
-    link.addEventListener('click', () => fetchTableSoth(targetPage));
-    li.appendChild(link);
-    return li;
-}
-
-function changeSothPageSize() {
-    const sizeSelect = document.getElementById('soth_page_size');
-    if (sizeSelect) {
-        sothPageSize = parseInt(sizeSelect.value, 10);
-    }
-    fetchTableSoth(1);
-}
-
-function bukaModalTambahSoth() {
+function initSothModule() {
     const modalEl = document.getElementById('modalFormSoth');
-    if (!modalEl) return;
+    if (modalEl && !sothModal) {
+        sothModal = new bootstrap.Modal(modalEl);
+    }
 
-    const form = document.getElementById('form_modal_soth');
-    if (form) form.reset();
+    const modalHapusEl = document.getElementById('modalKonfirmasiHapusSoth');
+    if (modalHapusEl && !sothModalHapus) {
+        sothModalHapus = new bootstrap.Modal(modalHapusEl);
+    }
 
-    const idInput = document.getElementById('soth_form_id');
-    if (idInput) idInput.value = '';
+    const modalNotifEl = document.getElementById('modalNotifikasiSoth');
+    if (modalNotifEl && !sothNotifModal) {
+        sothNotifModal = new bootstrap.Modal(modalNotifEl);
+    }
 
-    const modalTitle = document.getElementById('modalFormSothTitle');
-    if (modalTitle) modalTitle.textContent = 'Input Data SOTH';
-
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.show();
+    initChartSoth();
+    fetchTableSoth(1);
+    fetchChartSoth();
 }
 
-function bukaModalEditSoth(rowJson) {
-    const data = JSON.parse(decodeURIComponent(rowJson));
-    const modalEl = document.getElementById('modalFormSoth');
-    if (!modalEl) return;
-
-    document.getElementById('soth_form_id').value = data.id;
-    document.getElementById('soth_form_nama').value = data.nama;
-    document.getElementById('soth_form_alamat').value = data.alamat;
-    document.getElementById('soth_form_kecamatan').value = data.kecamatan;
-    document.getElementById('soth_form_kelurahan').value = data.kelurahan;
-    document.getElementById('soth_form_rt').value = data.rt;
-    document.getElementById('soth_form_pre').value = data.rata_rata_pre;
-    document.getElementById('soth_form_post').value = data.rata_rata_post;
-    document.getElementById('soth_form_total').value = data.total_peserta;
-
-    const modalTitle = document.getElementById('modalFormSothTitle');
-    if (modalTitle) modalTitle.textContent = 'Edit Data SOTH';
-
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.show();
-}
-
-function handleFormSothSubmit(e) {
-    e.preventDefault();
-
-    const id = document.getElementById('soth_form_id').value;
-    const isEdit = id !== '';
-    const url = isEdit ? `/inovasi-kota/api/soth/${id}` : '/inovasi-kota/api/soth';
-    const method = isEdit ? 'PUT' : 'POST';
-
-    const payload = {
-        nama: document.getElementById('soth_form_nama').value,
-        alamat: document.getElementById('soth_form_alamat').value,
-        kecamatan: document.getElementById('soth_form_kecamatan').value,
-        kelurahan: document.getElementById('soth_form_kelurahan').value,
-        rt: document.getElementById('soth_form_rt').value,
-        rata_rata_pre: document.getElementById('soth_form_pre').value,
-        rata_rata_post: document.getElementById('soth_form_post').value,
-        total_peserta: document.getElementById('soth_form_total').value
-    };
-
-    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-    fetch(url, {
-        method: method,
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': token || ''
-        },
-        body: JSON.stringify(payload)
-    })
-    .then(r => r.json())
-    .then(res => {
-        const modalEl = document.getElementById('modalFormSoth');
-        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-        if (modalInstance) modalInstance.hide();
-
-        fetchTableSoth(sothCurrentPage);
-    })
-    .catch(err => {
-        console.error(err);
-        alert('Gagal menyimpan data.');
-    });
-}
-
-function hapusDataSoth(id) {
-    if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
-    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-    fetch(`/inovasi-kota/api/soth/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': token || ''
-        }
-    })
-    .then(r => r.json())
-    .then(res => {
-        fetchTableSoth(sothCurrentPage);
-    })
-    .catch(err => console.error(err));
-}
-
-const listKecamatanKampungAsi = [
+const listKecamatanSothMaster = [
     'ASEMROWO', 'BENOWO', 'BUBUTAN', 'BULAK', 'DUKUH PAKIS', 'GAYUNGAN', 'GENTENG',
     'GUBENG', 'GUNUNG ANYAR', 'JAMBANGAN', 'KARANG PILANG', 'KENJERAN', 'KREMBANGAN',
     'LAKAR SANTRI', 'MULYOREJO', 'PABEAN CANTIAN', 'PAKAL', 'RUNGKUT',
@@ -1008,6 +678,429 @@ const listKecamatanKampungAsi = [
     'WIYUNG', 'WONOCOLO', 'WONOKROMO'
 ];
 
+function initChartSoth() {
+    const ctx = document.getElementById('chartSothNilai');
+    if (!ctx) return;
+
+    if (sothChartInstance) {
+        sothChartInstance.destroy();
+        sothChartInstance = null;
+    }
+
+    sothChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: listKecamatanSothMaster,
+            datasets: [
+                {
+                    label: 'Pretest',
+                    data: new Array(listKecamatanSothMaster.length).fill(0),
+                    borderColor: '#38bdf8',
+                    backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                    borderWidth: 4,               
+                    borderDash: [6, 6],           
+                    tension: 0,
+                    pointRadius: 5.5,             
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#38bdf8',
+                    pointBorderWidth: 3,         
+                    fill: false
+                },
+                {
+                    label: 'Posttest',
+                    data: new Array(listKecamatanSothMaster.length).fill(0),
+                    borderColor: '#fb7185',
+                    backgroundColor: 'rgba(251, 113, 133, 0.12)',
+                    borderWidth: 4,               
+                    borderDash: [6, 6],          
+                    tension: 0,
+                    pointRadius: 5.5,             
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#fb7185',
+                    pointBorderWidth: 3,         
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                datalabels: { display: false },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    padding: 10,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y}%`
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    min: 0,
+                    max: 100,
+                    ticks: {
+                        stepSize: 10,
+                        callback: (v) => v + '%',
+                        color: '#64748b',
+                        font: { size: 10 }
+                    },
+                    grid: { color: '#f1f5f9' }
+                },
+                x: {
+                    ticks: {
+                        color: '#64748b',
+                        font: { size: 9, weight: '600' },
+                        maxRotation: 45,
+                        minRotation: 45
+                    },
+                    grid: { color: '#f8fafc' }
+                }
+            }
+        }
+    });
+}
+
+function fetchChartSoth() {
+    const kec = document.getElementById('filter_soth_kecamatan')?.value || 'all';
+    const chartUrl = window.ROUTES_SOTH?.chart || '/inovasi/soth/chart';
+
+    fetch(`${chartUrl}?kecamatan=${encodeURIComponent(kec)}`, {
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!sothChartInstance || !sothChartInstance.ctx) return;
+
+        if (kec !== 'all') {
+            sothChartInstance.data.labels = [kec];
+            sothChartInstance.data.datasets[0].data = data.pretest || [0];
+            sothChartInstance.data.datasets[1].data = data.posttest || [0];
+            sothChartInstance.update();
+            return;
+        }
+
+        const apiLabels = (data.labels || []).map(l => l.toUpperCase().replace(/\s+/g, ''));
+        const apiPre = data.pretest || [];
+        const apiPost = data.posttest || [];
+
+        const mappedPre = listKecamatanSothMaster.map(k => {
+            const clean = k.replace(/\s+/g, '');
+            const idx = apiLabels.indexOf(clean);
+            return idx !== -1 ? apiPre[idx] : 0;
+        });
+
+        const mappedPost = listKecamatanSothMaster.map(k => {
+            const clean = k.replace(/\s+/g, '');
+            const idx = apiLabels.indexOf(clean);
+            return idx !== -1 ? apiPost[idx] : 0;
+        });
+
+        sothChartInstance.data.labels = listKecamatanSothMaster;
+        sothChartInstance.data.datasets[0].data = mappedPre;
+        sothChartInstance.data.datasets[1].data = mappedPost;
+        sothChartInstance.update();
+    })
+    .catch(err => console.error("Gagal load chart SOTH:", err));
+}
+
+function filterSothKecamatan() {
+    fetchTableSoth(1);
+    fetchChartSoth();
+}
+
+function changeSothPageSize() {
+    const sel = document.getElementById('soth_page_size');
+    sothPageSize = parseInt(sel.value, 10) || 10;
+    fetchTableSoth(1);
+}
+
+function fetchTableSoth(page = 1) {
+    sothCurrentPage = page;
+    const tbody = document.getElementById('tabel_soth_body');
+    if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-gray-400">Memuat data...</td></tr>`;
+    }
+
+    const kec = document.getElementById('filter_soth_kecamatan')?.value || 'all';
+    const dataUrl = window.ROUTES_SOTH?.data || '/inovasi/soth/data';
+    const params = new URLSearchParams({
+        page: page,
+        limit: sothPageSize,
+        kecamatan: kec
+    });
+
+    fetch(`${dataUrl}?${params.toString()}`, {
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.json())
+    .then(data => renderTableSoth(data))
+    .catch(err => {
+        console.error("Gagal load tabel SOTH:", err);
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-gray-400">Gagal memuat data</td></tr>`;
+        }
+    });
+}
+
+function renderTableSoth(res) {
+    const tbody = document.getElementById('tabel_soth_body');
+    if (!tbody) return;
+
+    const items = res.data || [];
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-gray-400">Data tidak ditemukan</td></tr>`;
+        updatePaginationInfo(0, 0, 0, 1, 1);
+        return;
+    }
+
+    let html = '';
+    const startNo = ((res.current_page - 1) * res.per_page) + 1;
+
+    items.forEach((item, index) => {
+        const no = startNo + index;
+        const refId = item.hash || item.id;
+        html += `
+            <tr>
+                <td class="text-center">${no}</td>
+                <td>${item.nama ?? '-'}</td>
+                <td>${item.alamat ?? '-'}</td>
+                <td class="text-center">${item.rt ?? '-'}</td>
+                <td class="text-center">${item.rw ?? '-'}</td>
+                <td>${item.kelurahan ?? '-'}</td>
+                <td>${item.kecamatan ?? '-'}</td>
+                <td class="text-center">${parseFloat(item.rata_pre ?? item.rata_rata_pre ?? 0).toFixed(2)}</td>
+                <td class="text-center">${parseFloat(item.rata_post ?? item.rata_rata_post ?? 0).toFixed(2)}</td>
+                <td class="text-center">${item.total_peserta ?? 0}</td>
+                <td class="text-center">
+                    <div class="d-flex justify-content-center gap-1">
+                        <button type="button" class="btn btn-icon btn-light-success btn-sm" onclick="editDataSoth('${refId}')">
+                            <i class="ki-outline ki-pencil fs-4"></i>
+                        </button>
+                        <button type="button" class="btn btn-icon btn-light-danger btn-sm" onclick="konfirmasiHapusSoth('${refId}')">
+                            <i class="ki-outline ki-trash fs-4"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
+    const from = res.from || 0;
+    const to = res.to || 0;
+    const total = res.total || 0;
+    updatePaginationInfo(from, to, total, res.current_page, res.last_page);
+}
+
+function updatePaginationInfo(from, to, total, current, last) {
+    const info = document.getElementById('soth_info_records');
+    if (info) {
+        info.textContent = `Showing ${from} to ${to} of ${total} records`;
+    }
+
+    const pag = document.getElementById('soth_pagination');
+    if (!pag) return;
+
+    if (last <= 1) {
+        pag.innerHTML = '';
+        return;
+    }
+
+    let pagHtml = '';
+
+    // Tombol Sebelumnya (<)
+    pagHtml += `
+        <li class="page-item previous ${current <= 1 ? 'disabled' : ''}">
+            <a class="page-link" href="javascript:void(0)" onclick="${current > 1 ? `fetchTableSoth(${current - 1})` : ''}">&lt;</a>
+        </li>
+    `;
+
+    // Tombol Angka Halaman (1, 2, 3, dst)
+    for (let i = 1; i <= last; i++) {
+        pagHtml += `
+            <li class="page-item ${i === current ? 'active' : ''}">
+                <a class="page-link" href="javascript:void(0)" onclick="fetchTableSoth(${i})">${i}</a>
+            </li>
+        `;
+    }
+
+    // Tombol Selanjutnya (>)
+    pagHtml += `
+        <li class="page-item next ${current >= last ? 'disabled' : ''}">
+            <a class="page-link" href="javascript:void(0)" onclick="${current < last ? `fetchTableSoth(${current + 1})` : ''}">&gt;</a>
+        </li>
+    `;
+
+    pag.innerHTML = pagHtml;
+}
+
+function bukaModalTambahSoth() {
+    document.getElementById('form_modal_soth').reset();
+    document.getElementById('soth_form_id').value = '';
+    document.getElementById('modalFormSothTitle').textContent = 'Input Data SOTH';
+    if (!sothModal) {
+        sothModal = new bootstrap.Modal(document.getElementById('modalFormSoth'));
+    }
+    sothModal.show();
+}
+
+function editDataSoth(hash) {
+    const showUrl = window.ROUTES_SOTH?.show || '/inovasi/soth/show';
+    fetch(`${showUrl}/${encodeURIComponent(hash)}`, {
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.json())
+    .then(res => {
+        const d = res.data;
+        document.getElementById('soth_form_id').value = d.hash || d.id;
+        document.getElementById('soth_form_nama').value = d.nama;
+        document.getElementById('soth_form_alamat').value = d.alamat;
+        document.getElementById('soth_form_rt').value = d.rt;
+        document.getElementById('soth_form_rw').value = d.rw || '';
+        document.getElementById('soth_form_kelurahan').value = d.kelurahan;
+        document.getElementById('soth_form_kecamatan').value = d.kecamatan;
+        document.getElementById('soth_form_pre').value = d.rata_pre ?? d.rata_rata_pre;
+        document.getElementById('soth_form_post').value = d.rata_post ?? d.rata_rata_post;
+        document.getElementById('soth_form_total').value = d.total_peserta;
+
+        document.getElementById('modalFormSothTitle').textContent = 'Edit Data SOTH';
+        if (!sothModal) {
+            sothModal = new bootstrap.Modal(document.getElementById('modalFormSoth'));
+        }
+        sothModal.show();
+    })
+    .catch(() => alert('Gagal memuat detail data.'));
+}
+
+function handleFormSothSubmit(e) {
+    e.preventDefault();
+
+    const hash = document.getElementById('soth_form_id').value;
+    const isEdit = Boolean(hash);
+    const token = window.ROUTES_SOTH?.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    const payload = {
+        nama: document.getElementById('soth_form_nama').value,
+        alamat: document.getElementById('soth_form_alamat').value,
+        rt: document.getElementById('soth_form_rt').value,
+        rw: document.getElementById('soth_form_rw').value,
+        kelurahan: document.getElementById('soth_form_kelurahan').value,
+        kecamatan: document.getElementById('soth_form_kecamatan').value,
+        rata_pre: document.getElementById('soth_form_pre').value,
+        rata_post: document.getElementById('soth_form_post').value,
+        total_peserta: document.getElementById('soth_form_total').value,
+        _token: token
+    };
+
+    const updateUrl = window.ROUTES_SOTH?.update || '/inovasi/soth/update';
+    const storeUrl = window.ROUTES_SOTH?.store || '/inovasi/soth/store';
+    const targetUrl = isEdit ? `${updateUrl}/${encodeURIComponent(hash)}` : storeUrl;
+    const btn = document.getElementById('btn_submit_soth');
+    btn.disabled = true;
+
+    fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': token
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Terjadi kesalahan saat menyimpan');
+        return data;
+    })
+    .then(res => {
+        if (sothModal) sothModal.hide();
+        fetchTableSoth(sothCurrentPage);
+        fetchChartSoth();
+        
+        tampilkanPopUpSoth(
+            'Sukses', 
+            isEdit ? 'Data Inovasi SOTH berhasil diperbarui!' : 'Data Inovasi SOTH berhasil ditambahkan!'
+        );
+    })
+    .catch(err => {
+        alert(err.message || 'Gagal menyimpan data');
+    })
+    .finally(() => {
+        btn.disabled = false;
+    });
+}
+
+function konfirmasiHapusSoth(hash) {
+    if (!hash) return;
+    targetHashHapusSoth = hash;
+    const modalEl = document.getElementById('modalKonfirmasiHapusSoth');
+    if (!sothModalHapus && modalEl) {
+        sothModalHapus = new bootstrap.Modal(modalEl);
+    }
+    if (sothModalHapus) sothModalHapus.show();
+}
+
+document.getElementById('btnProsesHapusSoth')?.addEventListener('click', function() {
+    if (!targetHashHapusSoth) return;
+
+    const btn = document.getElementById('btnProsesHapusSoth');
+    const spinner = document.getElementById('btnHapusSothSpinner');
+    const btnText = document.getElementById('btnHapusSothText');
+    const token = window.ROUTES_SOTH?.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+    btnText.textContent = 'Menghapus...';
+
+    const destroyUrl = window.ROUTES_SOTH?.destroy || '/inovasi/soth/destroy';
+    fetch(`${destroyUrl}/${encodeURIComponent(targetHashHapusSoth)}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            _token: token,
+            _method: 'DELETE'
+        })
+    })
+    .then(async (res) => {
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message || 'Gagal menghapus data.');
+        }
+        return res.json();
+    })
+    .then(() => {
+        if (sothModalHapus) sothModalHapus.hide();
+
+        targetHashHapusSoth = null;
+        fetchTableSoth(sothCurrentPage);
+        fetchChartSoth();
+
+        tampilkanPopUpSoth('Sukses', 'Data Inovasi SOTH berhasil dihapus!');
+    })
+    .catch(err => {
+        alert(err.message || 'Terjadi kesalahan saat menghapus data.');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+        btnText.textContent = 'Ya, Hapus';
+    });
+});
+
+    
 let chartKampungAsiInstance = null;
 let kampungAsiCurrentPage = 1;
 let kampungAsiPageSize = 10;
@@ -1287,39 +1380,6 @@ function submitFormKampungAsi(e) {
     });
 }
 
-window.handleInovasiChange = function() {
-    const $select =$('#select-filter-inovasi');
-    const rawSelect = document.getElementById('select-filter-inovasi');
-    const selectedKey = ($select.length ? $select.val() : rawSelect?.value) || '';
-
-    const emptyState = document.getElementById('state-placeholder-empty');
-    const detailState = document.getElementById('state-detail-content');
-
-    document.querySelectorAll('.inovasi-item-view').forEach(el => el.classList.add('d-none'));
-
-    if (!selectedKey || selectedKey === 'empty-sekretaris') {
-        if (emptyState) emptyState.classList.remove('d-none');
-        if (detailState) detailState.classList.add('d-none');
-        return;
-    }
-
-    if (emptyState) emptyState.classList.add('d-none');
-    if (detailState) {
-        detailState.classList.remove('d-none');
-        detailState.style.display = 'block';
-    }
-
-    const targetElement = document.getElementById('content-' + selectedKey);
-    if (targetElement) {
-        targetElement.classList.remove('d-none');
-        targetElement.style.display = 'block';
-
-        if (selectedKey === 'kampung-asi') {
-            initKampungAsi();
-        }
-    }
-};
-
 window.addEventListener('resize', () => {
     if (chartKampungAsiInstance) {
         const isMobile = window.innerWidth < 768;
@@ -1328,27 +1388,6 @@ window.addEventListener('resize', () => {
         chartKampungAsiInstance.resize();
     }
 });
-
-$(document).ready(function() {$(document).on('change select2:select', '#select-filter-inovasi', function() {
-        window.handleInovasiChange();
-    });
-});
-
-window.initKampungAsi = initKampungAsi;
-window.filterKampungAsiKecamatanTop = filterKampungAsiKecamatanTop;
-window.renderGrafikKampungAsi = renderGrafikKampungAsi;
-window.fetchTableKampungAsi = fetchTableKampungAsi;
-window.changeKampungAsiPageSize = changeKampungAsiPageSize;
-window.searchKampungAsiTable = searchKampungAsiTable;
-window.submitFormKampungAsi = submitFormKampungAsi;
-
-
-let chartSurabayaEmasInstance = null;
-let surabayaEmasCurrentPage = 1;
-let surabayaEmasPageSize = 10;
-let surabayaEmasTotalPages = 1;
-let surabayaEmasSearchQuery = '';
-let surabayaEmasSearchTimer = null;
 
 const listKecamatanSurabayaEmas = [
     'ASEMROWO', 'BENOWO', 'BUBUTAN', 'BULAK', 'DUKUH PAKIS', 'GAYUNGAN', 'GENTENG',
@@ -1359,46 +1398,88 @@ const listKecamatanSurabayaEmas = [
     'WIYUNG', 'WONOCOLO', 'WONOKROMO'
 ];
 
+const kelurahanPerKecamatanDummy = {
+    'ASEMROWO': ['Asem Rowo', 'Genting Kalianak', 'Tambak Sarioso'],
+    'BENOWO': ['Sememi', 'Tambak Osowilangon', 'Romokalisari', 'Kandangan'],
+    'BUBUTAN': ['Bubutan', 'Alun-Alun Contong', 'Gundih', 'Jepara', 'Tembok Dukuh'],
+    'RUNGKUT': ['Kali Rungkut', 'Rungkut Kidul', 'Rungkut Tengah', 'Kedung Baruk', 'Wonorejo']
+};
+
+const masterBalitaSurabayaEmasDummy = [
+    { nik: '3578012304210001', nama: 'MUHAMMAD AL FATIH', tgl_lahir: '12-04-2024', jk: 'Laki-laki', alamat: 'Jl. Asem Rowo No. 12', kelurahan: 'Asem Rowo', kecamatan: 'ASEMROWO', tpk: 'TPK 01', tahun: '2026' },
+    { nik: '3578021405220002', nama: 'AISYAH AQILA PUTRI', tgl_lahir: '14-05-2024', jk: 'Perempuan', alamat: 'Jl. Sememi Jaya V No. 8', kelurahan: 'Sememi', kecamatan: 'BENOWO', tpk: 'TPK 03', tahun: '2026' },
+    { nik: '3578031109200003', nama: 'KENZO ARKANANTA', tgl_lahir: '11-09-2023', jk: 'Laki-laki', alamat: 'Jl. Gundih Timur No. 4', kelurahan: 'Gundih', kecamatan: 'BUBUTAN', tpk: 'TPK 02', tahun: '2025' },
+    { nik: '3578042512210004', nama: 'ZAHRA SHANUM', tgl_lahir: '25-12-2024', jk: 'Perempuan', alamat: 'Jl. Rungkut Tengah No. 15', kelurahan: 'Rungkut Tengah', kecamatan: 'RUNGKUT', tpk: 'TPK 05', tahun: '2026' },
+    { nik: '3578051701220005', nama: 'RAYYAN ALFARIZI', tgl_lahir: '17-01-2024', jk: 'Laki-laki', alamat: 'Jl. Genteng Kali No. 22', kelurahan: 'Genteng', kecamatan: 'GENTENG', tpk: 'TPK 01', tahun: '2026' }
+];
+
+const riwayatTimbangPerBalita = {
+    '3578012304210001': [
+        { no: 1, tgl: '12-01-2026', tb: '74 cm', bb: '9.2 kg', lila: '14.5 cm', tbu: 'Normal', bbu: 'Normal', bbtb: 'Normal', gizi: 'Baik' },
+        { no: 2, tgl: '14-02-2026', tb: '75.2 cm', bb: '9.5 kg', lila: '14.7 cm', tbu: 'Normal', bbu: 'Normal', bbtb: 'Normal', gizi: 'Baik' },
+        { no: 3, tgl: '16-03-2026', tb: '76.0 cm', bb: '9.7 kg', lila: '14.8 cm', tbu: 'Normal', bbu: 'Normal', bbtb: 'Normal', gizi: 'Baik' },
+        { no: 4, tgl: '15-04-2026', tb: '77.1 cm', bb: '10.1 kg', lila: '15.0 cm', tbu: 'Normal', bbu: 'Normal', bbtb: 'Normal', gizi: 'Baik' },
+        { no: 5, tgl: '18-05-2026', tb: '78.0 cm', bb: '10.4 kg', lila: '15.2 cm', tbu: 'Normal', bbu: 'Normal', bbtb: 'Normal', gizi: 'Baik' }
+    ]
+};
+
+let chartSurabayaEmasInstance = null;
+let chartDetailBalitaInstance = null;
+let surabayaEmasCurrentPage = 1;
+let surabayaEmasPageSize = 10;
+let surabayaEmasTotalPages = 1;
+let surabayaEmasSearchQuery = '';
+let surabayaEmasSearchTimer = null;
+
 function initSurabayaEmas() {
-    renderGrafikSurabayaEmas();
-    fetchTableSurabayaEmas(1);
+    setTimeout(() => {
+        renderGrafikSurabayaEmas(null, new Array(listKecamatanSurabayaEmas.length).fill(0));
+        fetchTableSurabayaEmas(1);
+    }, 150);
 }
 
 function handleSurabayaEmasKecamatanChange() {
-    const kec = document.getElementById('filter_surabaya_emas_kecamatan')?.value;
-    const kelSelect = document.getElementById('filter_surabaya_emas_kelurahan');
-    if (!kelSelect) return;
+    const kec = document.getElementById('filter_surabaya_emas_kecamatan')?.value || '';
+    const selKel = document.getElementById('filter_surabaya_emas_kelurahan');
+    if (!selKel) return;
 
-    kelSelect.innerHTML = '<option value="Semua" selected>Semua</option>';
-    if (kec) {
-        kelSelect.innerHTML += `<option value="Kelurahan ${kec} 1">Kelurahan ${kec} 1</option>`;
-        kelSelect.innerHTML += `<option value="Kelurahan ${kec} 2">Kelurahan ${kec} 2</option>`;
+    selKel.innerHTML = '<option value="all" selected>Semua</option>';
+    if (kec && kelurahanPerKecamatanDummy[kec]) {
+        kelurahanPerKecamatanDummy[kec].forEach(kel => {
+            const opt = document.createElement('option');
+            opt.value = kel;
+            opt.textContent = kel;
+            selKel.appendChild(opt);
+        });
     }
 }
 
 function terapkanFilterSurabayaEmas() {
-    const kec = document.getElementById('filter_surabaya_emas_kecamatan')?.value;
-    if (kec) {
-        renderGrafikSurabayaEmas([kec], [14]);
+    const kec = document.getElementById('filter_surabaya_emas_kecamatan')?.value || 'all';
+
+    if (kec === 'all' || !kec) {
+        renderGrafikSurabayaEmas(null, new Array(listKecamatanSurabayaEmas.length).fill(0));
     } else {
-        renderGrafikSurabayaEmas();
+        const dummyVal = [75, 82, 68, 90, 85, 78, 92, 88][Math.floor(Math.random() * 8)];
+        renderGrafikSurabayaEmas([kec], [dummyVal]);
     }
+
     fetchTableSurabayaEmas(1);
 }
 
 function resetFilterSurabayaEmas() {
-    const kec = document.getElementById('filter_surabaya_emas_kecamatan');
-    const kel = document.getElementById('filter_surabaya_emas_kelurahan');
-    const thn = document.getElementById('filter_surabaya_emas_tahun');
-    const search = document.getElementById('surabaya_emas_search');
+    const selKec = document.getElementById('filter_surabaya_emas_kecamatan');
+    const selKel = document.getElementById('filter_surabaya_emas_kelurahan');
+    const selThn = document.getElementById('filter_surabaya_emas_tahun');
+    const searchInput = document.getElementById('surabaya_emas_search');
 
-    if (kec) kec.value = '';
-    if (kel) kel.innerHTML = '<option value="Semua" selected>Semua</option>';
-    if (thn) thn.value = 'Semua';
-    if (search) search.value = '';
+    if (selKec) selKec.value = 'all';
+    if (selKel) selKel.innerHTML = '<option value="all" selected>Semua</option>';
+    if (selThn) selThn.value = 'all';
+    if (searchInput) searchInput.value = '';
 
     surabayaEmasSearchQuery = '';
-    renderGrafikSurabayaEmas();
+    renderGrafikSurabayaEmas(null, new Array(listKecamatanSurabayaEmas.length).fill(0));
     fetchTableSurabayaEmas(1);
 }
 
@@ -1407,36 +1488,30 @@ function renderGrafikSurabayaEmas(customLabels = null, customData = null) {
     if (!canvas || typeof Chart === 'undefined') return;
 
     const labels = customLabels || listKecamatanSurabayaEmas;
-    let dataValues = customData;
-    
-    if (!dataValues) {
-        dataValues = new Array(labels.length).fill(0);
-        // Simulasi titik data sesuai tampilan gambar (Asemrowo = 14)
-        if (labels.length > 1) {
-            dataValues[0] = 14;
-            dataValues[1] = 22;
-            dataValues[29] = 20;
-        }
-    }
+    const dataValues = customData || new Array(labels.length).fill(0);
+    const isMobile = window.innerWidth < 768;
 
     if (chartSurabayaEmasInstance) {
         chartSurabayaEmasInstance.destroy();
     }
 
-    chartSurabayaEmasInstance = new Chart(canvas.getContext('2d'), {
+    const ctx = canvas.getContext('2d');
+    chartSurabayaEmasInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Balita',
+                label: 'Presentase Surabaya Emas',
                 data: dataValues,
-                borderColor: '#4361ee',
-                backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56, 189, 248, 0.12)',
                 borderWidth: 2,
+                borderDash: [4, 4],
                 fill: false,
-                tension: 0.1,
-                pointRadius: 4,
-                pointBackgroundColor: '#4361ee'
+                tension: 0.3,
+                pointRadius: isMobile ? 2 : 3,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#38bdf8'
             }]
         },
         options: {
@@ -1444,33 +1519,33 @@ function renderGrafikSurabayaEmas(customLabels = null, customData = null) {
             maintainAspectRatio: false,
             animation: false,
             plugins: {
-                legend: {
-                    display: true,
-                    position: 'top',
-                    labels: {
-                        boxWidth: 24,
-                        boxHeight: 12
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => ` Presentase: ${ctx.parsed.y}%`
                     }
                 }
             },
             scales: {
                 y: {
                     min: 0,
-                    max: 70,
+                    max: 100,
                     ticks: {
                         stepSize: 10,
-                        color: '#64748b'
+                        callback: (v) => v + '%',
+                        color: '#64748b',
+                        font: { size: isMobile ? 9 : 10 }
                     },
-                    grid: { color: '#e2e8f0' }
+                    grid: { color: '#f1f5f9' }
                 },
                 x: {
                     ticks: {
                         color: '#64748b',
-                        font: { size: 9 },
-                        maxRotation: 45,
-                        minRotation: 45
+                        font: { size: isMobile ? 7.5 : 8.5 },
+                        maxRotation: isMobile ? 70 : 45,
+                        minRotation: isMobile ? 70 : 45
                     },
-                    grid: { color: '#f1f5f9' }
+                    grid: { color: '#f8fafc' }
                 }
             }
         }
@@ -1484,34 +1559,56 @@ function fetchTableSurabayaEmas(page = 1) {
     const tbody = document.getElementById('tabel_surabaya_emas_body');
     if (!tbody) return;
 
-    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-gray-400">Memuat data...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-gray-500"><span class="spinner-border spinner-border-sm me-2"></span>Memuat data...</td></tr>`;
 
-    const kec = document.getElementById('filter_surabaya_emas_kecamatan')?.value || 'Semua';
-    const kel = document.getElementById('filter_surabaya_emas_kelurahan')?.value || 'Semua';
-    const thn = document.getElementById('filter_surabaya_emas_tahun')?.value || 'Semua';
+    const kec = document.getElementById('filter_surabaya_emas_kecamatan')?.value || 'all';
+    const kel = document.getElementById('filter_surabaya_emas_kelurahan')?.value || 'all';
+    const tahun = document.getElementById('filter_surabaya_emas_tahun')?.value || 'all';
 
-    // Ambil URL dinamis dari Blade (dengan fallback jika objek belum ada)
     const baseUrl = window.API_ROUTES?.surabayaEmas || '/inovasi-kota/api/surabaya-emas/data';
-    const url = `${baseUrl}?page=${page}&limit=${surabayaEmasPageSize}&kecamatan=${encodeURIComponent(kec)}&kelurahan=${encodeURIComponent(kel)}&tahun=${encodeURIComponent(thn)}&search=${encodeURIComponent(surabayaEmasSearchQuery)}`;
+    const params = new URLSearchParams({
+        page: page,
+        limit: surabayaEmasPageSize,
+        kecamatan: kec,
+        kelurahan: kel,
+        tahun: tahun,
+        search: surabayaEmasSearchQuery
+    });
 
-    fetch(url, {
-        headers: { 'Accept': 'application/json' }
+    fetch(`${baseUrl}?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
     })
     .then(res => {
-        if (!res.ok) throw new Error('Status Error: ' + res.status);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
     })
     .then(data => {
         renderTableSurabayaEmas(data);
     })
-    .catch(err => {
-        console.error("Gagal load Surabaya Emas:", err);
+    .catch(() => {
+        let filtered = masterBalitaSurabayaEmasDummy.filter(item => {
+            const matchKec = (kec === 'all' || !kec) || (item.kecamatan.toUpperCase() === kec.toUpperCase());
+            const matchKel = (kel === 'all' || !kel) || (item.kelurahan.toUpperCase() === kel.toUpperCase());
+            const matchThn = (tahun === 'all' || !tahun) || (item.tahun === tahun);
+            const query = surabayaEmasSearchQuery.toLowerCase();
+            const matchSearch = !query || 
+                item.nama.toLowerCase().includes(query) || 
+                item.nik.includes(query) ||
+                item.alamat.toLowerCase().includes(query);
+
+            return matchKec && matchKel && matchThn && matchSearch;
+        });
+
         renderTableSurabayaEmas({
-            total: 0,
+            total: filtered.length,
             current_page: 1,
             per_page: surabayaEmasPageSize,
-            last_page: 1,
-            data: []
+            last_page: Math.ceil(filtered.length / surabayaEmasPageSize) || 1,
+            data: filtered.slice(0, surabayaEmasPageSize)
         });
     });
 }
@@ -1529,7 +1626,7 @@ function renderTableSurabayaEmas(res) {
     surabayaEmasTotalPages = res.last_page || 1;
 
     if (!res.data || res.data.length === 0 || total === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-gray-400">Belum ada data</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-gray-400">Data tidak ditemukan</td></tr>`;
         if (infoRecords) infoRecords.textContent = 'Menampilkan 0 sampai 0 dari 0 data';
         if (paginationEl) paginationEl.innerHTML = '';
         return;
@@ -1540,17 +1637,17 @@ function renderTableSurabayaEmas(res) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="text-center text-gray-600">${no}</td>
-            <td class="fw-bold text-gray-800">${row.nama_balita || '-'}</td>
-            <td>${row.tanggal_lahir || '-'}</td>
-            <td>${row.jenis_kelamin || '-'}</td>
-            <td>${row.alamat_domisili || '-'}</td>
-            <td>${row.kelurahan_domisili || '-'}</td>
-            <td>${row.kecamatan_domisili || '-'}</td>
-            <td>${row.tpk || '-'}</td>
-            <td>${row.tahun || '-'}</td>
+            <td class="fw-bold text-gray-800">${row.nama}</td>
+            <td class="text-gray-700">${row.tgl_lahir}</td>
+            <td class="text-center text-gray-700">${row.jk}</td>
+            <td class="text-gray-700">${row.alamat}</td>
+            <td class="text-gray-700">${row.kelurahan}</td>
+            <td class="text-gray-700">${row.kecamatan}</td>
+            <td class="text-center text-gray-700">${row.tpk}</td>
+            <td class="text-center text-gray-700">${row.tahun}</td>
             <td class="text-center">
-                <button type="button" class="btn btn-sm btn-icon btn-warning rounded-3" onclick="detailSurabayaEmas('${row.id || no}')" title="Detail">
-                    <i class="ki-duotone ki-pencil fs-4 text-white"><span class="path1"></span><span class="path2"></span></i>
+                <button type="button" class="btn btn-sm btn-icon btn-light-primary" onclick="bukaModalDetailBalita('${row.nik}', '${row.nama}')" title="Detail Balita">
+                    <i class="ki-duotone ki-eye fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                 </button>
             </td>
         `;
@@ -1568,9 +1665,11 @@ function renderTableSurabayaEmas(res) {
 
 function renderPaginationSurabayaEmas(currentPage, totalPages) {
     const el = document.getElementById('surabaya_emas_pagination');
-    if (!el) return;
+    if (!el || totalPages <= 1) {
+        if (el) el.innerHTML = '';
+        return;
+    }
     el.innerHTML = '';
-    if (totalPages <= 1) return;
 
     const prevLi = document.createElement('li');
     prevLi.className = `page-item previous ${currentPage === 1 ? 'disabled' : ''}`;
@@ -1580,7 +1679,10 @@ function renderPaginationSurabayaEmas(currentPage, totalPages) {
     }
     el.appendChild(prevLi);
 
-    for (let p = 1; p <= totalPages; p++) {
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, currentPage + 2);
+
+    for (let p = startPage; p <= endPage; p++) {
         const li = document.createElement('li');
         li.className = `page-item ${p === currentPage ? 'active' : ''}`;
         li.innerHTML = `<a class="page-link" href="javascript:void(0)">${p}</a>`;
@@ -1610,43 +1712,146 @@ function changeSurabayaEmasPageSize() {
 function searchSurabayaEmasTable() {
     clearTimeout(surabayaEmasSearchTimer);
     surabayaEmasSearchTimer = setTimeout(() => {
-        const searchInput = document.getElementById('surabaya_emas_search');
-        surabayaEmasSearchQuery = searchInput ? searchInput.value.trim() : '';
+        const input = document.getElementById('surabaya_emas_search');
+        surabayaEmasSearchQuery = input ? input.value.trim() : '';
         fetchTableSurabayaEmas(1);
     }, 400);
 }
 
-function detailSurabayaEmas(id) {
-    alert('Detail data balita ID: ' + id);
+function bukaModalDetailBalita(nik, nama) {
+    document.getElementById('detail_balita_nik').textContent = nik;
+    document.getElementById('detail_balita_nama').textContent = nama;
+
+    const tbody = document.getElementById('tabel_detail_balita_body');
+    const dataRiwayat = riwayatTimbangPerBalita[nik] || riwayatTimbangPerBalita['3578012304210001'];
+    
+    if (tbody) {
+        tbody.innerHTML = '';
+        dataRiwayat.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="text-gray-500">${item.no}</td>
+                <td>${item.tgl}</td>
+                <td>${item.tb}</td>
+                <td>${item.bb}</td>
+                <td>${item.lila}</td>
+                <td>${item.tbu}</td>
+                <td>${item.bbu}</td>
+                <td>${item.bbtb}</td>
+                <td><span class="badge badge-light-success fw-bold">${item.gizi}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    const modalEl = document.getElementById('modalDetailBalita');
+    const modalInstance = new bootstrap.Modal(modalEl);
+    modalInstance.show();
+
+    modalEl.addEventListener('shown.bs.modal', function () {
+        renderGrafikDetailBalita();
+    }, { once: true });
 }
 
-// Ekspos seluruh fungsi ke scope window
+function renderGrafikDetailBalita() {
+    const canvas = document.getElementById('chartDetailRiwayatBalita');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    if (chartDetailBalitaInstance) {
+        chartDetailBalitaInstance.destroy();
+    }
+
+    const ctx = canvas.getContext('2d');
+    chartDetailBalitaInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+            datasets: [{
+                label: 'Berat Badan (kg)',
+                data: [8.5, 8.8, 9.2, 9.5, 9.7, 10.1, 10.4, 10.6, 10.9, 11.2, 11.4, 11.7],
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.25,
+                pointRadius: 3,
+                pointHoverRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    min: 6,
+                    max: 14,
+                    ticks: {
+                        stepSize: 2,
+                        callback: (v) => v + ' kg',
+                        font: { size: 9 },
+                        color: '#64748b'
+                    },
+                    grid: { color: '#f1f5f9' }
+                },
+                x: {
+                    ticks: { font: { size: 9 }, color: '#64748b' },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    chartDetailBalitaInstance.resize();
+}
+
+window.addEventListener('resize', () => {
+    if (chartSurabayaEmasInstance) {
+        const isMobile = window.innerWidth < 768;
+        chartSurabayaEmasInstance.options.scales.x.ticks.maxRotation = isMobile ? 70 : 45;
+        chartSurabayaEmasInstance.options.scales.x.ticks.minRotation = isMobile ? 70 : 45;
+        chartSurabayaEmasInstance.resize();
+    }
+});
+
+// Window Exports
 window.populateInovasiOptions = populateInovasiOptions;
 window.handlePokjaChange = handlePokjaChange;
 window.handleInovasiChange = handleInovasiChange;
 window.updateElearningTimestamp = updateElearningTimestamp;
-window.initSoth = initSoth;
+window.initSothModule = initSothModule;
+window.initChartSoth = initChartSoth;
+window.fetchChartSoth = fetchChartSoth;
 window.filterSothKecamatan = filterSothKecamatan;
-window.renderGrafikSoth = renderGrafikSoth;
 window.fetchTableSoth = fetchTableSoth;
 window.changeSothPageSize = changeSothPageSize;
 window.bukaModalTambahSoth = bukaModalTambahSoth;
-window.bukaModalEditSoth = bukaModalEditSoth;
+window.editDataSoth = editDataSoth;
 window.handleFormSothSubmit = handleFormSothSubmit;
+window.konfirmasiHapusSoth = konfirmasiHapusSoth;
+window.initKampungAsi = initKampungAsi;
+window.filterKampungAsiKecamatanTop = filterKampungAsiKecamatanTop;
+window.renderGrafikKampungAsi = renderGrafikKampungAsi;
+window.fetchTableKampungAsi = fetchTableKampungAsi;
+window.changeKampungAsiPageSize = changeKampungAsiPageSize;
+window.searchKampungAsiTable = searchKampungAsiTable;
+window.submitFormKampungAsi = submitFormKampungAsi;
 window.initSurabayaEmas = initSurabayaEmas;
 window.handleSurabayaEmasKecamatanChange = handleSurabayaEmasKecamatanChange;
 window.terapkanFilterSurabayaEmas = terapkanFilterSurabayaEmas;
 window.resetFilterSurabayaEmas = resetFilterSurabayaEmas;
 window.changeSurabayaEmasPageSize = changeSurabayaEmasPageSize;
 window.searchSurabayaEmasTable = searchSurabayaEmasTable;
-window.detailSurabayaEmas = detailSurabayaEmas;
+window.bukaModalDetailBalita = bukaModalDetailBalita;
 
-if (window.jQuery) {
-    $(document).ready(function() {$('#select-filter-inovasi').on('change select2:select', function() {
-            handleInovasiChange();
-        });
-        $('#select-filter-pokja').on('change select2:select', function() {
-            handlePokjaChange();
-        });
+$(document).ready(function() {
+    handlePokjaChange();
+
+    $('#select-filter-pokja').on('change select2:select', function() {
+        handlePokjaChange();
     });
-}
+
+    $('#select-filter-inovasi').on('change select2:select', function() {
+        handleInovasiChange();
+    });
+});

@@ -51,12 +51,12 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::match(['get', 'post'], '/inovasi/kota', [InovasiController::class, 'kota'])->name('inovasi.kota');
 
     //soth
-    Route::get('/inovasi-soth/data', [InovasiSothController::class, 'getData'])->name('soth.data');
-    Route::get('/inovasi-soth/chart', [InovasiSothController::class, 'getChartData'])->name('soth.chart');
-    Route::post('/inovasi-soth/store', [InovasiSothController::class, 'store'])->name('soth.store');
-    Route::get('/inovasi-soth/show/{id}', [InovasiSothController::class, 'show'])->name('soth.show');
-    Route::post('/inovasi-soth/update/{id}', [InovasiSothController::class, 'update'])->name('soth.update');
-    Route::delete('/inovasi-soth/destroy/{id}', [InovasiSothController::class, 'destroy'])->name('soth.destroy');
+    Route::get('/inovasi/soth/data', [InovasiController::class, 'getSothData'])->name('soth.data');
+    Route::get('/inovasi/soth/chart', [InovasiController::class, 'getSothChart'])->name('soth.chart');
+    Route::post('/inovasi/soth/store', [InovasiController::class, 'storeSoth'])->name('soth.store');
+    Route::get('/inovasi/soth/show/{id}', [InovasiController::class, 'showSoth'])->name('soth.show');
+    Route::post('/inovasi/soth/update/{id}', [InovasiController::class, 'updateSoth'])->name('soth.update');
+    Route::delete('/inovasi/soth/destroy/{id}', [InovasiController::class, 'destroySoth'])->name('soth.destroy');
 
     Route::get('/inovasi/global/get-data', [InovasiController::class, 'getData'])->name('inovasi.global.getData');
     Route::post('/inovasi/global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');

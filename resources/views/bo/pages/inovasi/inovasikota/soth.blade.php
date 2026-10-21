@@ -98,6 +98,7 @@
                             <th class="min-w-150px">NAMA</th>
                             <th class="min-w-180px">ALAMAT</th>
                             <th class="text-center min-w-50px">RT</th>
+                            <th class="text-center min-w-50px">RW</th>
                             <th class="min-w-120px">KELURAHAN</th>
                             <th class="min-w-120px">KECAMATAN</th>
                             <th class="text-center min-w-100px">RATA-RATA PRE</th>
@@ -108,7 +109,7 @@
                     </thead>
                     <tbody id="tabel_soth_body" class="fs-7 fw-semibold text-gray-700">
                         <tr>
-                            <td colspan="10" class="text-center py-8 text-gray-400">Memuat data...</td>
+                            <td colspan="11" class="text-center py-8 text-gray-400">Memuat data...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -155,21 +156,25 @@
                     </div>
 
                     <div class="row g-4 mb-4">
-                        <div class="col-4">
+                        <div class="col-3">
                             <label class="required fs-7 fw-bold text-gray-700 mb-2">RT</label>
-                            <input type="text" id="soth_form_rt" class="form-control form-control-solid" placeholder="Contoh: 01" required>
+                            <input type="text" id="soth_form_rt" class="form-control form-control-solid" placeholder="01" required>
                         </div>
-                        <div class="col-4">
+                        <div class="col-3">
+                            <label class="required fs-7 fw-bold text-gray-700 mb-2">RW</label>
+                            <input type="text" id="soth_form_rw" class="form-control form-control-solid" placeholder="03" required>
+                        </div>
+                        <div class="col-3">
                             <label class="required fs-7 fw-bold text-gray-700 mb-2">Kelurahan</label>
-                            <input type="text" id="soth_form_kelurahan" class="form-control form-control-solid" placeholder="Nama Kelurahan" required>
+                            <input type="text" id="soth_form_kelurahan" class="form-control form-control-solid" placeholder="Kelurahan" required>
                         </div>
-                        <div class="col-4">
+                        <div class="col-3">
                             <label class="required fs-7 fw-bold text-gray-700 mb-2">Kecamatan</label>
-                            <input type="text" id="soth_form_kecamatan" class="form-control form-control-solid" placeholder="Nama Kecamatan" required>
+                            <input type="text" id="soth_form_kecamatan" class="form-control form-control-solid" placeholder="Kecamatan" required>
                         </div>
                     </div>
 
-                    <div class="row g-4 mb-6">
+                    <div class="row g-4 mb-4">
                         <div class="col-4">
                             <label class="required fs-7 fw-bold text-gray-700 mb-2">Rata-rata Pre</label>
                             <input type="number" step="0.01" id="soth_form_pre" class="form-control form-control-solid" placeholder="0.00" required>
@@ -186,9 +191,62 @@
 
                     <div class="d-flex justify-content-end gap-3 pt-4 border-top border-gray-200">
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" id="btn_submit_soth" class="btn btn-primary">Simpan Data</button>
+                        <button type="submit" id="btn_submit_soth" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalKonfirmasiHapusSoth" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered mw-400px">
+        <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
+            <div class="modal-body p-0">
+                <div class="mb-4 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 72px; height: 72px; background-color: #fee2e2;">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </div>
+
+                <h3 class="fw-bolder text-gray-900 fs-4 mb-2">Hapus Data SOTH?</h3>
+                <p class="text-gray-600 fs-7 mb-6">
+                    Apakah Anda yakin ingin menghapus data ini? Data yang telah dihapus tidak dapat dipulihkan kembali.
+                </p>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-light btn-sm fw-semibold px-5 rounded-3" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="button" id="btnProsesHapusSoth" class="btn btn-danger btn-sm fw-semibold px-5 rounded-3 d-flex align-items-center justify-content-center" style="min-width: 100px;">
+                        <span id="btnHapusSothSpinner" class="spinner-border spinner-border-sm align-middle me-2 d-none" role="status"></span>
+                        <span id="btnHapusSothText">Ya, Hapus</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNotifikasiSoth" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-350px">
+        <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
+            <div class="modal-body p-0">
+                <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background-color: #d1fae5;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h4 class="fw-bolder text-gray-900 fs-5 mb-2" id="notifikasiSothTitle">Sukses</h4>
+                <p class="text-gray-600 fs-7 mb-5" id="notifikasiSothText">Data berhasil diproses</p>
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary btn-sm fw-semibold px-6 rounded-3" style="background-color: #0f5847; border-color: #0f5847;" data-bs-dismiss="modal">
+                        Tutup
+                    </button>
+                </div>
             </div>
         </div>
     </div>

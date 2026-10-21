@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Bo;
 
 use App\Http\Controllers\Controller;
+use App\Support\IdCipher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class InovasiController extends Controller
@@ -322,7 +323,7 @@ class InovasiController extends Controller
             $query->where('kecamatan', 'ilike', trim($kecamatan));
         }
 
-        $total = $query->count();
+        $total  = $query->count();
         $offset = ($page - 1) * $limit;
 
         $items = $query->orderBy('id', 'desc')
@@ -330,7 +331,7 @@ class InovasiController extends Controller
             ->limit($limit)
             ->get()
             ->map(function ($row) {
-                $row->hash = $this->encRef($row->id);
+                $row->hash = IdCipher::encode($row->id);
                 unset($row->id);
                 return $row;
             });
@@ -388,6 +389,7 @@ class InovasiController extends Controller
             'nama'          => 'required|string|max:255',
             'alamat'        => 'required|string|max:255',
             'rt'            => 'required|string|max:20',
+            'rw'            => 'nullable|string|max:20',
             'kelurahan'     => 'required|string|max:255',
             'kecamatan'     => 'required|string|max:255',
             'rata_pre'      => 'required|numeric|min:0|max:100',
@@ -408,6 +410,7 @@ class InovasiController extends Controller
             'nama'          => $request->nama,
             'alamat'        => $request->alamat,
             'rt'            => $request->rt,
+            'rw'            => $request->rw ?? '-',
             'kelurahan'     => $request->kelurahan,
             'kecamatan'     => strtoupper($request->kecamatan),
             'rata_pre'      => $request->rata_pre,
@@ -426,7 +429,7 @@ class InovasiController extends Controller
 
     public function showSoth($id)
     {
-        $realId = $this->decRef($id);
+        $realId = IdCipher::decode($id);
         if (!$realId) {
             return response()->json(['status' => 'error', 'message' => 'Data tidak valid'], 400);
         }
@@ -440,7 +443,7 @@ class InovasiController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan'], 404);
         }
 
-        $data->hash = $this->encRef($data->id);
+        $data->hash = IdCipher::encode($data->id);
         unset($data->id);
 
         return response()->json([
@@ -451,7 +454,7 @@ class InovasiController extends Controller
 
     public function updateSoth(Request $request, $id)
     {
-        $realId = $this->decRef($id);
+        $realId = IdCipher::decode($id);
         if (!$realId) {
             return response()->json(['status' => 'error', 'message' => 'Data tidak valid'], 400);
         }
@@ -460,6 +463,7 @@ class InovasiController extends Controller
             'nama'          => 'required|string|max:255',
             'alamat'        => 'required|string|max:255',
             'rt'            => 'required|string|max:20',
+            'rw'            => 'nullable|string|max:20',
             'kelurahan'     => 'required|string|max:255',
             'kecamatan'     => 'required|string|max:255',
             'rata_pre'      => 'required|numeric|min:0|max:100',
@@ -482,6 +486,7 @@ class InovasiController extends Controller
                 'nama'          => $request->nama,
                 'alamat'        => $request->alamat,
                 'rt'            => $request->rt,
+                'rw'            => $request->rw ?? '-',
                 'kelurahan'     => $request->kelurahan,
                 'kecamatan'     => strtoupper($request->kecamatan),
                 'rata_pre'      => $request->rata_pre,
@@ -500,7 +505,7 @@ class InovasiController extends Controller
     public function destroySoth(Request $request, $id = null)
     {
         $target = $id ?? $request->input('id');
-        $realId = $this->decRef($target);
+        $realId = IdCipher::decode($target);
 
         if (!$realId) {
             return response()->json(['status' => 'error', 'message' => 'ID data tidak valid'], 400);
