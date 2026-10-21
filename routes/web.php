@@ -20,6 +20,7 @@ use App\Http\Controllers\Bo\InovasiSothController;
 use App\Http\Controllers\Bo\KebijakanController;
 use App\Http\Controllers\DataUmumController;
 use App\Http\Controllers\Bo\DaftarKetuaPkkController;
+use App\Http\Controllers\KemangiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -162,10 +163,17 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
      Route::post('/pmt-data/{id}', [PmtController::class, 'update']);
      Route::delete('/pmt-data/{id}', [PmtController::class, 'destroy']);
 
-     //Daftar-Ketua-PKK 
+     //Daftar-Ketua-PKK
     Route::get('/daftar-ketua-pkk', [DaftarKetuaPkkController::class, 'index'])->name('ketua-pkk.index');
     Route::post('/daftar-ketua-pkk/upload', [DaftarKetuaPkkController::class, 'upload'])->name('ketua-pkk.upload');
     Route::delete('/daftar-ketua-pkk/destroy/{id}', [DaftarKetuaPkkController::class, 'destroy'])->name('ketua-pkk.destroy');
+
+    // Kemangi
+    Route::get('/kemangi-data/wilayah', [KemangiController::class, 'wilayah']);
+    Route::get('/kemangi-data', [KemangiController::class, 'index']);
+    Route::post('/kemangi-data', [KemangiController::class, 'store']);
+    Route::post('/kemangi-data/{id}', [KemangiController::class, 'update']);
+    Route::delete('/kemangi-data/{id}', [KemangiController::class, 'destroy']);
 
     // CATCH-ALL: harus paling bawah
     Route::get('/{slug}', [MenuController::class, 'handleDynamicPage']) ->where('slug', '.*')->name('menu.dynamic');
