@@ -12,6 +12,7 @@ class DaftarKetuaPkk extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 't_daftar_ketua_pkk';
+    public $timestamps = false;
 
     protected $fillable = [
         'file_pdf',

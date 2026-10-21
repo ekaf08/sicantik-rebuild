@@ -9,15 +9,25 @@ use Illuminate\Support\Facades\Crypt;
 
 class DaftarKetuaPkkController extends Controller
 {
+    private function safeEncrypt($id)
+    {
+        $encrypted = Crypt::encryptString((string)$id);
+        return rtrim(strtr(base64_encode($encrypted), '+/', '-_'), '=');
+    }
+
     private function safeDecrypt($hash)
     {
-        $base64 = str_replace(['-', '_'], ['+', '/'], $hash);
-        $remainder = strlen($base64) % 4;
-        if ($remainder) {
-            $base64 .= str_repeat('=', 4 - $remainder);
+        try {
+            $base64 = strtr($hash, '-_', '+/');
+            $remainder = strlen($base64) % 4;
+            if ($remainder) {
+                $base64 .= str_repeat('=', 4 - $remainder);
+            }
+            $decrypted = base64_decode($base64);
+            return Crypt::decryptString($decrypted);
+        } catch (\Exception $e) {
+            return null;
         }
-        $decrypted = base64_decode($base64);
-        return Crypt::decryptString($decrypted);
     }
 
     public function index()
@@ -33,7 +43,12 @@ class DaftarKetuaPkkController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'file_dokumen' => 'required|file|mimes:pdf|max:5120',
+            'file_dokumen' => 'required|file|mimes:pdf|mimetypes:application/pdf|max:5120',
+        ], [
+            'file_dokumen.required'  => 'Dokumen wajib diunggah.',
+            'file_dokumen.mimes'     => 'Format dokumen harus berupa PDF.',
+            'file_dokumen.mimetypes' => 'Format dokumen harus berupa PDF.',
+            'file_dokumen.max'       => 'Ukuran dokumen maksimal adalah 5 MB.',
         ]);
 
         if ($request->hasFile('file_dokumen')) {
@@ -56,10 +71,12 @@ class DaftarKetuaPkkController extends Controller
                 'created_by'    => $userLogin,
             ]);
 
+            $hash = $this->safeEncrypt($data->id);
+
             return response()->json([
                 'status'        => 'success',
                 'message'       => 'Dokumen berhasil diunggah',
-                'hash'          => $data->hash,
+                'hash'          => $hash,
                 'original_name' => $originalName,
                 'pdf_url'       => asset('uploads/file-ketua-pkk/' . $fileName),
             ], 200);
@@ -75,6 +92,13 @@ class DaftarKetuaPkkController extends Controller
     {
         try {
             $realId = $this->safeDecrypt($id);
+            if (!$realId) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Token dokumen tidak valid.',
+                ], 400);
+            }
+
             $doc = DaftarKetuaPkk::findOrFail($realId);
 
             $filePath = public_path('uploads/file-ketua-pkk/' . $doc->file_pdf);

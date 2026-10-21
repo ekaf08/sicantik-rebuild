@@ -6,15 +6,16 @@
         <form id="formUploadKetuaPkk" onsubmit="handleUploadPdf(event)" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
-                <label class="form-label fw-bold text-gray-800 fs-6 mb-2">Upload Dokumen (PDF)</label>
+                <label class="form-label fw-bold text-gray-800 fs-6 mb-2">Upload Dokumen</label>
                 <div class="d-flex flex-column gap-1">
                     <input type="file" 
                            id="file_dokumen" 
                            name="file_dokumen" 
                            class="form-control form-control-solid border border-gray-300" 
-                           accept="application/pdf" 
+                           accept=".pdf,application/pdf" 
+                           onchange="handleDokumenFileChange(this)"
                            required>
-                    <span class="text-danger fs-8">maks 5mb, format pdf</span>
+                    <span class="text-danger fs-8">File harus di bawah 5MB dan berformat pdf.</span>
                 </div>
             </div>
 
@@ -122,6 +123,39 @@
     let currentDocHash = "{{ $latestDoc ? $latestDoc->hash : '' }}";
     let targetHashHapus = null;
 
+    function handleDokumenFileChange(input) {
+        const label = document.getElementById('file_dokumen_label');
+        const file = input.files && input.files[0];
+
+        if (!file) {
+            label.textContent = 'Belum ada file yang dipilih';
+            label.className = 'text-muted fs-8 fw-semibold mt-1';
+            return;
+        }
+
+        const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+        if (!isPdf) {
+            alert('Format berkas wajib PDF.');
+            input.value = '';
+            label.textContent = 'Format berkas tidak sesuai (wajib PDF)';
+            label.className = 'text-danger fs-8 fw-semibold mt-1';
+            return;
+        }
+
+        const maxSizeInBytes = 5 * 1024 * 1024;
+        if (file.size > maxSizeInBytes) {
+            alert('Ukuran file maksimal adalah 5MB.');
+            input.value = '';
+            label.textContent = 'Ukuran berkas melebihi batas 5 MB';
+            label.className = 'text-danger fs-8 fw-semibold mt-1';
+            return;
+        }
+
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        label.textContent = `File terpilih: ${file.name} (${sizeMB} MB)`;
+        label.className = 'text-success fs-8 fw-bold mt-1';
+    }
+
     function tampilkanPopUpNotifikasi(judul, pesan) {
         const titleEl = document.getElementById('notifikasiPesanTitle');
         const textEl = document.getElementById('notifikasiPesanText');
@@ -140,6 +174,7 @@
 
         const fileInput = document.getElementById('file_dokumen');
         const file = fileInput.files[0];
+        const label = document.getElementById('file_dokumen_label');
 
         if (!file) {
             alert('Pilih file PDF terlebih dahulu.');
@@ -149,12 +184,20 @@
         if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
             alert('Format berkas wajib PDF.');
             fileInput.value = '';
+            if (label) {
+                label.textContent = 'Format berkas tidak sesuai (wajib PDF)';
+                label.className = 'text-danger fs-8 fw-semibold mt-1';
+            }
             return;
         }
 
         if (file.size > 5 * 1024 * 1024) {
             alert('Ukuran file maksimal adalah 5MB.');
             fileInput.value = '';
+            if (label) {
+                label.textContent = 'Ukuran berkas melebihi batas 5 MB';
+                label.className = 'text-danger fs-8 fw-semibold mt-1';
+            }
             return;
         }
 
@@ -199,6 +242,10 @@
             }
 
             fileInput.value = '';
+            if (label) {
+                label.textContent = 'Belum ada file yang dipilih';
+                label.className = 'text-muted fs-8 fw-semibold mt-1';
+            }
             tampilkanPopUpNotifikasi('Sukses', 'Dokumen berhasil diunggah');
         })
         .catch(err => {
