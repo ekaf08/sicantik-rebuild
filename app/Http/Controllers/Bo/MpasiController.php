@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Mpasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class MpasiController extends Controller
 {
@@ -29,15 +31,7 @@ class MpasiController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk menambah resep.');
         }
 
-        $request->validate([
-            'judul'         => 'required|string|max:255',
-            'kategori_usia' => 'required|string',
-            'deskripsi'     => 'nullable|string',
-            'bahan'         => 'required|string',
-            'langkah'       => 'required|string',
-            'mpasi_foto'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'url_video'     => 'nullable|url',
-        ]);
+        $request->validate($this->rules());
 
         $gambarPath = null;
         if ($request->hasFile('mpasi_foto')) {
@@ -76,41 +70,42 @@ class MpasiController extends Controller
     public function update(Request $request, $id)
     {
         if (!Access::can('mpasi', 'update')) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Anda tidak memiliki hak akses untuk mengedit resep.'
-            ], 403);
+            abort(403, 'Anda tidak memiliki hak akses untuk mengedit resep.');
         }
 
         $mpasi = Mpasi::where('uuid', $id)->firstOrFail();
 
-        $request->validate([
-            'judul'         => 'required|string|max:255',
-            'kategori_usia' => 'required|string',
-            'deskripsi'     => 'nullable|string',
-            'bahan'         => 'required|string',
-            'langkah'       => 'required|string',
-            'mpasi_foto'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'url_video'     => 'nullable|url',
-        ]);
+        $request->validate($this->rules());
 
         $gambarPath = $mpasi->mpasi_foto;
+        $fotoLama   = null;
+
         if ($request->hasFile('mpasi_foto')) {
-            if ($mpasi->mpasi_foto && Storage::disk('public')->exists($mpasi->mpasi_foto)) {
-                Storage::disk('public')->delete($mpasi->mpasi_foto);
-            }
+            $fotoLama   = $mpasi->mpasi_foto;
             $gambarPath = $request->file('mpasi_foto')->store('mpasi', 'public');
         }
 
-        $mpasi->update([
-            'judul'         => $request->judul,
-            'kategori_usia' => $request->kategori_usia,
-            'deskripsi'     => $request->deskripsi,
-            'bahan'         => $request->bahan,
-            'langkah'       => $request->langkah,
-            'mpasi_foto'    => $gambarPath,
-            'url_video'     => $request->url_video,
-        ]);
+        try {
+            $mpasi->update([
+                'judul'         => $request->judul,
+                'kategori_usia' => $request->kategori_usia,
+                'deskripsi'     => $request->deskripsi,
+                'bahan'         => $request->bahan,
+                'langkah'       => $request->langkah,
+                'mpasi_foto'    => $gambarPath,
+                'url_video'     => $request->url_video,
+            ]);
+        } catch (\Throwable $e) {
+            if ($fotoLama) {
+                Storage::disk('public')->delete($gambarPath);
+            }
+            Log::error('Update MPASI gagal: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal memperbarui data MPASI.');
+        }
+
+        if ($fotoLama) {
+            Storage::disk('public')->delete($fotoLama);
+        }
 
         return redirect()->route('mpasi.index')->with('success', 'Data MPASI berhasil diperbarui!');
     }
@@ -120,14 +115,23 @@ class MpasiController extends Controller
         if (!Access::can('mpasi', 'delete')) {
             abort(403, 'Anda tidak memiliki hak akses untuk menghapus resep.');
         }
+
         $mpasi = Mpasi::where('uuid', $id)->firstOrFail();
-
-        if ($mpasi->mpasi_foto && Storage::disk('public')->exists($mpasi->mpasi_foto)) {
-            Storage::disk('public')->delete($mpasi->mpasi_foto);
-        }
-
         $mpasi->delete();
 
         return redirect()->route('mpasi.index')->with('success', 'Data MPASI berhasil dihapus!');
+    }
+
+    private function rules(): array
+    {
+        return [
+            'judul'         => 'required|string|max:255',
+            'kategori_usia' => ['required', 'string', Rule::in(array_keys(Mpasi::listKategoriUsia()))],
+            'deskripsi'     => 'nullable|string',
+            'bahan'         => 'required|string',
+            'langkah'       => 'required|string',
+            'mpasi_foto'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'url_video'     => 'nullable|url',
+        ];
     }
 }

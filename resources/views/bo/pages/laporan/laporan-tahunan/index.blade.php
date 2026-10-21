@@ -190,7 +190,6 @@
         <form method="GET" action="{{ route('laporan-tahunan.index') }}" class="mb-6">
             <div class="row g-3 align-items-end">
                 <div class="col-lg-4">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1">Cari</label>
                     <div class="position-relative">
                         <i class="ki-outline ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle-y ms-4"></i>
                         <input type="text" name="q" value="{{ request('q') }}"
@@ -200,44 +199,31 @@
                 </div>
 
                 <div class="col-lg-2 col-md-4">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1">Jenis Laporan</label>
                     <select name="jenis" class="form-select form-select-solid" onchange="this.form.submit()">
-                        <option value="">Semua</option>
+                        <option value="">Jenis Laporan</option>
                         <option value="laporan_tahunan" @selected(request('jenis') === 'laporan_tahunan')>Laporan Tahunan</option>
                         <option value="memori_pj" @selected(request('jenis') === 'memori_pj')>Memori PJ Ketua</option>
                     </select>
                 </div>
 
                 <div class="col-lg-2 col-md-4">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1">Tahun Periode</label>
                     <select name="tahun" class="form-select form-select-solid" onchange="this.form.submit()">
-                        <option value="">Semua</option>
+                        <option value="">Tahun Periode</option>
                         @foreach($tahunList as $th)
-                            <option value="{{ $th }}" @selected((string) request('tahun') === (string) $th)>{{ $th }}</option>
+                            <option value="{{ $th }}" @selected((string) request(('tahun') === (string) $th)>{{ $th }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="col-lg-2 col-md-4">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1">Tingkat Wilayah</label>
                     <select name="wilayah" class="form-select form-select-solid" onchange="this.form.submit()">
-                        <option value="">Semua</option>
+                        <option value="">Tingkat Wilayah</option>
                         <option value="kota" @selected(request('wilayah') === 'kota')>Kota</option>
                         <option value="kecamatan" @selected(request('wilayah') === 'kecamatan')>Kecamatan</option>
                         <option value="kelurahan" @selected(request('wilayah') === 'kelurahan')>Kelurahan</option>
                     </select>
                 </div>
 
-                <!-- <div class="col-lg-2 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary fw-bold flex-grow-1">
-                        <i class="ki-outline ki-filter fs-4 me-1"></i> Terapkan
-                    </button>
-                    @if($filterAktif)
-                        <a href="{{ route('laporan-tahunan.index') }}" class="btn btn-light fw-bold" title="Reset filter">
-                            <i class="ki-outline ki-cross fs-3 p-0"></i>
-                        </a>
-                    @endif
-                </div> -->
             </div>
 
             

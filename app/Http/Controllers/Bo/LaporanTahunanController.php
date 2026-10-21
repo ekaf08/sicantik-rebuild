@@ -46,7 +46,7 @@ class LaporanTahunanController extends Controller
         return view('bo.pages.laporan.laporan-tahunan.index', compact('dataLaporan', 'tahunList'));
     }
 
-    public function store(Request $request)
+  public function store(Request $request)
     {
         if (!Access::can('laporan-tahunan', 'create')) {
             abort(403, 'Akses Ditolak.');
@@ -63,7 +63,23 @@ class LaporanTahunanController extends Controller
             $this->messages($fields)
         );
 
+        if (!collect($fields)->contains(fn ($f) => $request->hasFile($f))) {
+            return back()->withInput()->withErrors(['file' => 'Unggah minimal satu file laporan.']);
+        }
+
         $user = auth()->user();
+
+        $sudahAda = LapTahunan::where('jenis_laporan', $jenis)
+            ->where('tahun_periode', $request->tahun_periode)
+            ->where('id_kecamatan', $user->id_kecamatan)
+            ->where('id_kelurahan', $user->id_kelurahan)
+            ->exists();
+
+        if ($sudahAda) {
+            return back()->withInput()->withErrors([
+                'tahun_periode' => 'Laporan untuk jenis, tahun, dan wilayah ini sudah ada. Gunakan menu edit.',
+            ]);
+        }
 
         $levelWilayah = 'kota';
         if ($user->id_kelurahan) {
@@ -82,27 +98,35 @@ class LaporanTahunanController extends Controller
         ];
 
         $folder = $jenis === 'memori_pj' ? 'laporan/memori_pj' : 'laporan/tahunan';
+        $tersimpan = [];
 
-        foreach ($fields as $field) {
-            if ($request->hasFile($field)) {
-                $payload[$field] = $request->file($field)->store($folder, 'public');
+        try {
+            foreach ($fields as $field) {
+                if ($request->hasFile($field)) {
+                    $payload[$field] = $request->file($field)->store($folder, 'public');
+                    $tersimpan[] = $payload[$field];
+                }
             }
-        }
 
-        LapTahunan::create($payload);
+            LapTahunan::create($payload);
+        } catch (\Throwable $e) {
+            // DB gagal: buang file yang sudah terlanjur tersimpan
+            Storage::disk('public')->delete($tersimpan);
+            Log::error('Simpan laporan tahunan gagal: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal menyimpan laporan.');
+        }
 
         return redirect()->back()->with('success', 'Data laporan berhasil disimpan.');
     }
 
-    public function update(Request $request, $id)
+  public function update(Request $request, $id)
     {
         if (!Access::can('laporan-tahunan', 'update')) {
             abort(403, 'Akses Ditolak.');
         }
 
         $laporan = LapTahunan::filterWilayahUser(auth()->user())->findOrFail($id);
-
-        $fields = $laporan->fileFields();
+        $fields  = $laporan->fileFields();
 
         $request->validate(
             array_merge([
@@ -111,19 +135,47 @@ class LaporanTahunanController extends Controller
             $this->messages($fields)
         );
 
-        $folder  = $laporan->jenis_laporan === 'memori_pj' ? 'laporan/memori_pj' : 'laporan/tahunan';
-        $payload = ['tahun_periode' => $request->tahun_periode];
+        if ((string) $request->tahun_periode !== (string) $laporan->tahun_periode) {
+            $bentrok = LapTahunan::where('jenis_laporan', $laporan->jenis_laporan)
+                ->where('tahun_periode', $request->tahun_periode)
+                ->where('id_kecamatan', $laporan->id_kecamatan)
+                ->where('id_kelurahan', $laporan->id_kelurahan)
+                ->where($laporan->getKeyName(), '!=', $laporan->getKey())
+                ->exists();
 
-        foreach ($fields as $field) {
-            if ($request->hasFile($field)) {
-                if ($laporan->{$field}) {
-                    Storage::disk('public')->delete($laporan->{$field});
-                }
-                $payload[$field] = $request->file($field)->store($folder, 'public');
+            if ($bentrok) {
+                return back()->withInput()->withErrors([
+                    'tahun_periode' => 'Laporan untuk tahun ini sudah ada.',
+                ]);
             }
         }
 
-        $laporan->update($payload);
+        $folder   = $laporan->jenis_laporan === 'memori_pj' ? 'laporan/memori_pj' : 'laporan/tahunan';
+        $payload  = ['tahun_periode' => $request->tahun_periode];
+        $baru     = [];
+        $lama     = [];
+
+        try {
+            foreach ($fields as $field) {
+                if ($request->hasFile($field)) {
+                    if ($laporan->{$field}) {
+                        $lama[] = $laporan->{$field};
+                    }
+                    $payload[$field] = $request->file($field)->store($folder, 'public');
+                    $baru[] = $payload[$field];
+                }
+            }
+
+            $laporan->update($payload);
+        } catch (\Throwable $e) {
+            Storage::disk('public')->delete($baru);
+            Log::error('Update laporan tahunan gagal: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal memperbarui laporan.');
+        }
+
+        if ($lama) {
+            Storage::disk('public')->delete($lama);
+        }
 
         return redirect()->back()->with('success', 'Laporan berhasil diperbarui.');
     }
