@@ -210,7 +210,7 @@
                     <select name="tahun" class="form-select form-select-solid" onchange="this.form.submit()">
                         <option value="">Tahun Periode</option>
                         @foreach($tahunList as $th)
-                            <option value="{{ $th }}" @selected((string) request(('tahun') === (string) $th)>{{ $th }}</option>
+                            <option value="{{ $th }}" @selected((string) request('tahun') === (string) $th)>{{ $th }}</option>
                         @endforeach
                     </select>
                 </div>
