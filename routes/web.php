@@ -21,6 +21,7 @@ use App\Http\Controllers\Bo\KebijakanController;
 use App\Http\Controllers\DataUmumController;
 use App\Http\Controllers\Bo\DaftarKetuaPkkController;
 use App\Http\Controllers\KemangiController;
+use App\Http\Controllers\BumilController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -174,6 +175,11 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::post('/kemangi-data', [KemangiController::class, 'store']);
     Route::post('/kemangi-data/{id}', [KemangiController::class, 'update']);
     Route::delete('/kemangi-data/{id}', [KemangiController::class, 'destroy']);
+
+    // Pendampingan Ibu Hamil
+    Route::get('/bumil-data/wilayah', [BumilController::class, 'wilayah']);
+    Route::get('/bumil-data', [BumilController::class, 'index']);
+    Route::get('/bumil-data/{id}/riwayat', [BumilController::class, 'riwayat']);
 
     // CATCH-ALL: harus paling bawah
     Route::get('/{slug}', [MenuController::class, 'handleDynamicPage']) ->where('slug', '.*')->name('menu.dynamic');

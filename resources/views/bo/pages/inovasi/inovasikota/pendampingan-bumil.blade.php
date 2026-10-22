@@ -23,11 +23,34 @@
         color: #ffffff !important;
         box-shadow: 0 4px 12px rgba(246, 78, 96, 0.3);
     }
+    .nav-pills-custom .nav-link.active-kek {
+        background: #8b5cf6 !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
     .nav-pills-custom .nav-link.active-nifas {
         background: #e83e8c !important;
         color: #ffffff !important;
         box-shadow: 0 4px 12px rgba(232, 62, 140, 0.3);
     }
+    /* Teks tabel hitam: judul kolom tebal, isi tabel tipis */
+    #bm-table thead th { color: #000 !important; }
+    #bm-table tbody td { color: #000 !important; }
+
+    /* Popup Lihat (riwayat) */
+    .bm-hero { background: linear-gradient(135deg, #6d28d9 0%, #ec4899 100%); color: #fff; border-radius: 16px; padding: 20px 24px; }
+    .bm-avatar { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; flex-shrink: 0; }
+    .bm-chip { background: rgba(255,255,255,.2); border-radius: 999px; padding: 4px 12px; font-size: .78rem; font-weight: 700; white-space: nowrap; }
+    .bm-info-item label { font-size: .68rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 2px; }
+    .bm-info-item span { font-weight: 700; color: #1e293b; font-size: .9rem; }
+    .bm-riwayat { border-radius: 16px; overflow: hidden; border: 1px solid #e5e7eb; }
+    .bm-riwayat-head { color: #fff; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .bm-riwayat-a { background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); }
+    .bm-riwayat-b { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+    .bm-mini-table { width: 100%; font-size: .82rem; }
+    .bm-mini-table thead th { background: #f1f5f9; color: #000; font-weight: 800; text-align: center; padding: 10px 12px; white-space: nowrap; text-transform: uppercase; font-size: .7rem; letter-spacing: .03em; }
+    .bm-mini-table tbody td { color: #000; text-align: center; padding: 10px 12px; border-top: 1px dashed #e5e7eb; white-space: nowrap; font-weight: 600; }
+    .bm-mini-table tbody tr:hover td { background: #f8fafc; }
 </style>
 
 <!-- Banner Informasi Inovasi dengan Style Gradasi Modern -->
@@ -43,15 +66,15 @@
     </div>
 </div>
 
-<!-- KPI Metric Cards (Statistik Ringkas) -->
+<!-- KPI Metric Cards (dihitung otomatis dari data) -->
 <div class="row g-4 mb-6">
     <div class="col-12 col-sm-6 col-xl-4">
         <div class="card card-flush h-100 card-kpi bg-white p-5 rounded-4">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">TOTAL IBU HAMIL</span>
-                    <div class="fs-2hx fw-bolder text-gray-900 mt-1" id="kpi-total-hamil">4.280</div>
-                    <span class="badge badge-light-primary fw-semibold fs-8 mt-2">Data Terverifikasi</span>
+                    <div class="fs-2hx fw-bolder text-gray-900 mt-1" id="bm-kpi-hamil">0</div>
+                    <span class="badge badge-light-primary fw-semibold fs-8 mt-2">Data Terdaftar</span>
                 </div>
                 <div class="w-50px h-50px rounded-circle bg-light-primary d-flex align-items-center justify-content-center">
                     <i class="ki-outline ki-profile-user fs-1 text-primary"></i>
@@ -64,7 +87,7 @@
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">IBU HAMIL RESTI (RISIKO TINGGI)</span>
-                    <div class="fs-2hx fw-bolder text-danger mt-1" id="kpi-total-resti">1.428</div>
+                    <div class="fs-2hx fw-bolder text-danger mt-1" id="bm-kpi-resti">0</div>
                     <span class="badge badge-light-danger fw-semibold fs-8 mt-2">Butuh Pendampingan Extra</span>
                 </div>
                 <div class="w-50px h-50px rounded-circle bg-light-danger d-flex align-items-center justify-content-center">
@@ -78,7 +101,7 @@
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">TOTAL IBU NIFAS</span>
-                    <div class="fs-2hx fw-bolder mt-1" style="color: #e83e8c;" id="kpi-total-nifas">1.825</div>
+                    <div class="fs-2hx fw-bolder mt-1" style="color: #e83e8c;" id="bm-kpi-nifas">0</div>
                     <span class="badge badge-light-warning fw-semibold fs-8 mt-2">Pemantauan Pasca Melahirkan</span>
                 </div>
                 <div class="w-50px h-50px rounded-circle d-flex align-items-center justify-content-center" style="background-color: #fde6f2;">
@@ -93,15 +116,18 @@
 <div class="card card-flush border-0 shadow-sm rounded-4 mb-6">
     <div class="card-header align-items-center border-0 pt-6 px-6">
         <div>
-            <h3 class="card-title fw-bolder text-gray-900 fs-3 m-0">Inovasi Ibu Hamil & Nifas</h3>
-            <span class="text-gray-500 fs-8 fw-semibold">Pemetaan sebaran data di 31 Kecamatan Kota Surabaya</span>
+            <h3 class="card-title fw-bolder text-gray-900 fs-3 m-0">Inovasi Ibu Hamil &amp; Nifas</h3>
+            <span class="text-gray-500 fs-8 fw-semibold">Pemetaan sebaran data di Kecamatan Kota Surabaya</span>
         </div>
         <div class="card-toolbar">
-            <div class="d-flex align-items-center gap-2 nav-pills-custom">
-                <button type="button" class="btn fw-bold fs-7 nav-link active-hamil" id="tab-btn-hamil" onclick="switchTabBumil('hamil')">
-                    <i class="ki-outline ki-element-plus fs-5 me-1"></i> Ibu Hamil
+            <div class="d-flex flex-wrap align-items-center gap-2 nav-pills-custom">
+                <button type="button" class="btn fw-bold fs-7 nav-link active-kek" id="bm-tab-kek" onclick="bmSwitchTab('kek')">
+                    <i class="ki-outline ki-element-plus fs-5 me-1"></i> Ibu Hamil KEK
                 </button>
-                <button type="button" class="btn fw-bold fs-7 nav-link" id="tab-btn-nifas" onclick="switchTabBumil('nifas')">
+                <button type="button" class="btn fw-bold fs-7 nav-link" id="bm-tab-resti" onclick="bmSwitchTab('resti')">
+                    <i class="ki-outline ki-shield-cross fs-5 me-1"></i> Ibu Hamil Resti
+                </button>
+                <button type="button" class="btn fw-bold fs-7 nav-link" id="bm-tab-nifas" onclick="bmSwitchTab('nifas')">
                     <i class="ki-outline ki-heart fs-5 me-1"></i> Ibu Nifas
                 </button>
             </div>
@@ -112,17 +138,16 @@
         <div class="p-6 rounded-4" style="background-color: #f8fafc; border: 1px solid #edf2f7;">
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-6">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="w-8px h-24px rounded-2" id="indicator-bar" style="background-color: #f64e60;"></span>
-                    <h5 class="fw-bolder text-gray-800 m-0 fs-5 tracking-wide" id="title-grafik-bumil">IBU HAMIL RESTI</h5>
+                    <span class="w-8px h-24px rounded-2" id="bm-indicator" style="background-color: #8b5cf6;"></span>
+                    <h5 class="fw-bolder text-gray-800 m-0 fs-5 tracking-wide" id="bm-judul">IBU HAMIL KEK/TIDAK KEK</h5>
                 </div>
 
-                <!-- Dropdown Filter Grafik -->
                 <div class="d-flex flex-wrap align-items-center gap-2">
-                    <select class="form-select form-select-solid form-select-sm w-160px fs-8 fw-bold" id="filter-kecamatan-chart-bumil" onchange="updateChartBumil()">
+                    <select class="form-select form-select-solid form-select-sm w-160px fs-8 fw-bold" id="bm-filter-kecamatan">
                         <option value="">Semua Kecamatan</option>
                     </select>
 
-                    <select class="form-select form-select-solid form-select-sm w-120px fs-8 fw-bold" id="filter-bulan-bumil" onchange="updateChartBumil()">
+                    <select class="form-select form-select-solid form-select-sm w-120px fs-8 fw-bold" id="bm-filter-bulan">
                         <option value="">Bulan</option>
                         <option value="1">Januari</option>
                         <option value="2">Februari</option>
@@ -138,17 +163,17 @@
                         <option value="12">Desember</option>
                     </select>
 
-                    <select class="form-select form-select-solid form-select-sm w-100px fs-8 fw-bold" id="filter-tahun-chart-bumil" onchange="updateChartBumil()">
-                        <option value="2026" selected>2026</option>
-                        <option value="2025">2025</option>
-                        <option value="2024">2024</option>
+                    <select class="form-select form-select-solid form-select-sm w-100px fs-8 fw-bold" id="bm-filter-tahun">
+                        <option value="">Tahun</option>
+                        @for ($t = 2030; $t >= 2024; $t--)
+                            <option value="{{ $t }}">{{ $t }}</option>
+                        @endfor
                     </select>
                 </div>
             </div>
 
-            <!-- Canvas Tempat Grafik Chart.js -->
             <div class="position-relative w-100" style="min-height: 380px;">
-                <canvas id="chartIbuHamilResti"></canvas>
+                <canvas id="bm-chart"></canvas>
             </div>
         </div>
     </div>
@@ -157,288 +182,417 @@
 <!-- Section Tabel Data Detail -->
 <div class="card card-flush border-0 shadow-sm rounded-4">
     <div class="card-body p-6">
-        <!-- Controls Filter Tabel & Search -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-6">
             <div class="d-flex align-items-center gap-2">
-                <span class="text-gray-600 fs-7 fw-semibold">Tampilkan</span>
-                <select class="form-select form-select-solid w-75px fs-7 fw-bold">
+                <select class="form-select form-select-solid w-75px fs-7 fw-bold" id="bm-table-length">
                     <option value="10">10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
                 </select>
             </div>
 
-            <div class="d-flex align-items-center position-relative ms-auto">
-                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-3 text-gray-500"></i>
-                <input type="text" class="form-control form-control-solid ps-10 w-225px fs-7 fw-semibold" placeholder="Cari data NIK / Nama..." />
+            <div class="d-flex align-items-center ms-auto">
+                <label class="fs-7 fw-semibold text-gray-700 me-2">Search:</label>
+                <input type="text" id="bm-input-search" class="form-control form-control-solid w-225px fs-7 fw-semibold" />
             </div>
         </div>
 
-        <!-- Tabel Data Dinamis -->
         <div class="table-responsive">
-            <table class="table align-middle table-row-dashed fs-7 gy-4 gs-4">
+            <table class="table align-middle table-row-dashed fs-7 gy-4 gs-4" id="bm-table">
                 <thead>
-                    <tr class="fw-bolder text-gray-700 bg-light-subtle text-uppercase border-bottom">
+                    <tr class="fw-bolder bg-light-subtle text-uppercase border-bottom">
                         <th class="w-50px text-center">NO</th>
-                        <th id="th-col-1">NIK</th>
-                        <th id="th-col-2">NAMA LENGKAP</th>
-                        <th id="th-col-3">USIA</th>
-                        <th id="th-col-4">ALAMAT DOMISILI</th>
-                        <th id="th-col-5">STATUS RISIKO</th>
+                        <th>NO KK</th>
+                        <th>NIK</th>
+                        <th>NAMA</th>
+                        <th>ALAMAT DOMISILI</th>
                         <th class="text-center">AKSI</th>
                     </tr>
                 </thead>
-                <tbody class="fw-semibold text-gray-600" id="tb-tabel-bumil">
-                    <!-- Dynamic Rows via JavaScript -->
+                <tbody class="fw-semibold" id="bm-tbody">
+                    <tr><td colspan="6" class="text-center py-5 text-gray-500">Memuat data...</td></tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4">
+            <span class="text-gray-600 fs-8 fw-semibold" id="bm-info"></span>
+            <ul class="pagination pagination-outline mb-0" id="bm-pagination"></ul>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Lihat Detail (riwayat ibu) -->
+<div class="modal fade" id="modal_detail_bumil" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header border-0 pb-0 pt-5 px-7">
+                <h3 class="modal-title fw-bolder text-gray-900 fs-3" id="bm-detail-judul">Riwayat Ibu Hamil</h3>
+                <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <i class="ki-outline ki-cross fs-1"></i>
+                </button>
+            </div>
+            <div class="modal-body py-5 px-7" id="bm-detail-isi"></div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light fw-bold px-6" data-bs-dismiss="modal">Tutup</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-const dataWilayahSurabayaBumil = {
-    "ASEM ROWO": ["ASEM ROWO", "GENTING KALIANAK", "TAMBAK SARIOSO"],
-    "BENOWO": ["KANDANGAN", "ROMOKALISARI", "SEMEMI", "TAMBAK OSO WILANGUN"],
-    "BUBUTAN": ["ALUN-ALUN CONTONG", "BUBUTAN", "GUNDIH", "JEPARA", "TEMBOK DUKUH"],
-    "BULAK": ["BULAK", "KEDUNG COWEK", "KENJERAN", "SUKOLILO BARU"],
-    "DUKUH PAKIS": ["DUKUH KUPANG", "DUKUH PAKIS", "GUNUNG SARI", "PRADAH KALIKENDAL"],
-    "GAYUNGAN": ["DUKUH MENANGGAL", "GAYUNGAN", "KETINTANG", "MENANGGAL"],
-    "GENTENG": ["EMBONG KALIASIN", "GENTENG", "KAPASARI", "KETABANG", "PENELEH"],
-    "GUBENG": ["AIRLANGGA", "BARATAJAYA", "GUBENG", "KERTAJAYA", "MOJO", "PUCANG SEWU"],
-    "GUNUNG ANYAR": ["GUNUNG ANYAR", "GUNUNG ANYAR TAMBAK", "RUNGKUT MENANGGAL", "RUNGKUT TENGAH"],
-    "JAMBANGAN": ["JAMBANGAN", "KARAH", "KEBONSARI", "PAGESANGAN"],
-    "KARANG PILANG": ["KARANG PILANG", "KEBRAON", "KEDURUS", "WARU GUNUNG"],
-    "KENJERAN": ["BULAK BANTENG", "SIDOTOPO WETAN", "TAMBAK WEDI", "TANAH KALI KEDINDING"],
-    "KREMBANGAN": ["DUPAK", "KEMAYORAN", "KREMBANGAN SELATAN", "MOROKREMBANGAN", "PERAK BARAT"],
-    "LAKARSANTRI": ["BANGKINGAN", "JERUK", "LAKARSANTRI", "LIDAH KULON", "LIDAH WETAN", "SUMURWELUT"],
-    "MULYOREJO": ["DUKUH SUTOREJO", "KALIJUDAN", "KALISARI", "KEJAWAAN PUTIH TAMBAK", "MANYAR SABRANGAN", "MULYOREJO"],
-    "PABEAN CANTIAN": ["BONGKARAN", "KREMBANGAN UTARA", "NYAMPLUNGAN", "TANJUNG PERAK"],
-    "PAKAL": ["BABAT JERAWAT", "BENOWO", "PAKAL", "SUMBER REJO"],
-    "RUNGKUT": ["KALIRUNGKUT", "KEDUNG BARUK", "MEDOKAN AYU", "PENJARINGANSARI", "RUNGKUT KIDUL", "WONOREJO"],
-    "SAMBIKEREP": ["BERINGIN", "LONTAR", "MADE", "SAMBIKEREP"],
-    "SAWAHAN": ["BANYU URIP", "KUPANG KRAJAN", "PAKIS", "PETEMON", "PUTAT JAYA", "SAWAHAN"],
-    "SEMAMPIR": ["AMPEL", "PEGIRIAN", "SIDOTOPO", "UJUNG", "WONOKUSUMO"],
-    "SIMOKERTO": ["KAPASAN", "SIDODADI", "SIMOKERTO", "SIMOLAWANG", "TAMBAKREJO"],
-    "SUKOLILO": ["GEBANG PUTIH", "KEPUTIH", "KLAMPIS NGASEM", "MEDOKAN SEMAMPIR", "MENUR PUMPUNGAN", "NGINDEN JANGKUNGAN", "SEMOLOWARU"],
-    "SUKOMANUNGGAL": ["PUTAT GEDE", "SIMOMULYO", "SIMOMULYO BARU", "SONOKWIJENAN", "SUKOMANUNGGAL", "TANJUNGSARI"],
-    "TAMBAKSARI": ["DUKUH SETRO", "GADING", "KAPASMADYA BARU", "PACARKELING", "PACARKEMBANG", "PLOSO", "RANGKAH", "TAMBAKSARI"],
-    "TANDES": ["BALONGSARI", "BANJAR SUGIHAN", "KARANG POH", "MANUKAN KULON", "MANUKAN WETAN", "TANDES"],
-    "TEGALSARI": ["DR. SOETOMO", "KEDUNGDORO", "KEPUTRAN", "TEGALSARI", "WONOREJO"],
-    "TENGGILIS MEJOYO": ["KENDANGSARI", "KUTISARI", "PANJANG JIWO", "TENGGILIS MEJOYO"],
-    "WIYUNG": ["BABATAN", "BALAS KLUMPRIK", "JAJAR TUNGGAL", "WIYUNG"],
-    "WONOCOLO": ["BENDUL MERISI", "JEMUR WONOSARI", "MARGOREJO", "SIDOSERMO", "SIWALANKERTO"],
-    "WONOKROMO": ["DARMO", "JAGIR", "NGAGEL", "NGAGEL REJO", "SAWUNGGALING", "WONOKROMO"]
-};
+(function () {
+    const $ = function (id) { return document.getElementById(id); };
+    const KOLOM = 6;
 
-// Data Grafik Semua Nilai Diubah Jadi 0
-const dataHamilValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-const dataNifasValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let wilayah = {};
+    let semuaData = [];
+    let mode = 'kek';          // kek | resti | nifas
+    let page = 1;
+    let chart = null;
+    let pluginTerdaftar = false;
 
-let activeTabMode = 'hamil';
-let myChartBumil = null;
+    const TAB = {
+        kek:   { judul: 'IBU HAMIL KEK/TIDAK KEK',     warna: '#8b5cf6', kelas: 'active-kek',   tombol: 'bm-tab-kek' },
+        resti: { judul: 'IBU HAMIL RESTI/TIDAK RESTI', warna: '#f64e60', kelas: 'active-hamil', tombol: 'bm-tab-resti' },
+        nifas: { judul: 'IBU NIFAS',                   warna: '#e83e8c', kelas: 'active-nifas', tombol: 'bm-tab-nifas' }
+    };
 
-function initDropdownsBumil() {
-    const kecList = Object.keys(dataWilayahSurabayaBumil);
-    const chartKec = document.getElementById('filter-kecamatan-chart-bumil');
-    if (chartKec) {
-        chartKec.innerHTML = '<option value="">Semua Kecamatan</option>';
-        kecList.forEach(kec => chartKec.appendChild(new Option(kec, kec)));
+    function esc(v) {
+        if (v === null || v === undefined) return '';
+        return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
-}
+    function norm(v) { return String(v || '').trim().toUpperCase(); }
+    function angka(v) { return (Number(v) || 0).toLocaleString('id-ID'); }
 
-function renderChartBumil() {
-    const canvas = document.getElementById('chartIbuHamilResti');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    if (typeof ChartDataLabels !== 'undefined') {
-        Chart.register(ChartDataLabels);
+    // ---------- Filter dasar (kecamatan, bulan, tahun) ----------
+    function lolosFilter(r) {
+        const kec = $('bm-filter-kecamatan').value;
+        const bln = $('bm-filter-bulan').value;
+        const thn = $('bm-filter-tahun').value;
+        if (kec && norm(r.kecamatan) !== norm(kec)) return false;
+        if (bln || thn) {
+            const t = String(r.tanggal || '').substring(0, 10).split('-');
+            if (t.length !== 3) return false;
+            if (thn && t[0] !== thn) return false;
+            if (bln && parseInt(t[1], 10) !== parseInt(bln, 10)) return false;
+        }
+        return true;
     }
 
-    if (myChartBumil) myChartBumil.destroy();
+    // ---------- KPI ----------
+    function updateKpi() {
+        const hamil = semuaData.filter(function (r) { return r.kategori === 'hamil'; });
+        $('bm-kpi-hamil').textContent = angka(hamil.length);
+        $('bm-kpi-resti').textContent = angka(hamil.filter(function (r) { return r.resti; }).length);
+        $('bm-kpi-nifas').textContent = angka(semuaData.filter(function (r) { return r.kategori === 'nifas'; }).length);
+    }
 
-    const isHamil = activeTabMode === 'hamil';
-    const mainColor = isHamil ? '#f64e60' : '#e83e8c';
-    const labelText = isHamil ? 'Ibu Hamil Resiko Tinggi' : 'Ibu Nifas';
-    const currentValues = isHamil ? dataHamilValues : dataNifasValues;
+    // ---------- Grafik ----------
+    function labelGrafik() {
+        const kec = $('bm-filter-kecamatan').value;
+        if (kec) return { judul: 'Kelurahan di Kecamatan ' + kec, daftar: (wilayah[kec] || []).slice().sort(), kunci: 'kelurahan' };
+        return { judul: 'Kecamatan Surabaya', daftar: Object.keys(wilayah).sort(), kunci: 'kecamatan' };
+    }
 
-    // Custom SVG Point Icon Kotak Pink Presisi
-    const iconSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="${encodeURIComponent(mainColor)}" rx="2" stroke="%23ffffff" stroke-width="1.5"/></svg>`;
-    const pointIcon = new Image(10, 10);
-    pointIcon.src = iconSvg;
+    function hitung(daftar, kunci, saring) {
+        return daftar.map(function (nama) {
+            return semuaData.filter(function (r) {
+                return lolosFilter(r) && saring(r) && norm(r[kunci]) === norm(nama);
+            }).length;
+        });
+    }
 
-    myChartBumil = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: Object.keys(dataWilayahSurabayaBumil),
-            datasets: [{
-                label: labelText,
-                data: currentValues,
-                borderColor: mainColor,
-                backgroundColor: 'transparent',
-                borderWidth: 2,
-                borderDash: [5, 5],
+    function garis(label, data, warna, putus) {
+        return {
+            label: label, data: data, borderColor: warna, backgroundColor: 'transparent',
+            borderWidth: putus ? 2 : 3, borderDash: putus ? [6, 4] : [], tension: 0.4, fill: false,
+            pointStyle: 'circle', pointRadius: 4, pointHoverRadius: 6,
+            pointBackgroundColor: '#ffffff', pointBorderColor: warna, pointBorderWidth: 2
+        };
+    }
 
-                pointStyle: pointIcon,
-                pointRadius: 6,
-                pointHoverRadius: 8,
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: mainColor,
-                pointBorderWidth: 2,
+    function renderChart() {
+        const canvas = $('bm-chart');
+        if (!canvas || typeof Chart === 'undefined') return;
 
-                fill: false
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: true, position: 'top', labels: { usePointStyle: true, font: { weight: 'bold' } } },
-                datalabels: {
-                    align: 'top',
-                    anchor: 'end',
-                    backgroundColor: '#ffffff',
-                    borderColor: mainColor,
-                    borderRadius: 4,
-                    borderWidth: 1,
-                    color: mainColor,
-                    font: { size: 9, weight: 'bold' },
-                    padding: { top: 2, bottom: 2, left: 4, right: 4 },
-                    formatter: function(value) {
-                        return value + '%';
+        if (!pluginTerdaftar && typeof ChartDataLabels !== 'undefined') {
+            Chart.register(ChartDataLabels);
+            pluginTerdaftar = true;
+        }
+        if (chart) chart.destroy();
+
+        const g = labelGrafik();
+        let dataset = [];
+        if (mode === 'kek') {
+            const hamil = function (r) { return r.kategori === 'hamil'; };
+            dataset = [
+                garis('Ibu Hamil KEK', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.status_kek === 'KEK'; }), '#8b5cf6', false),
+                garis('Ibu Hamil Tidak KEK', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.status_kek !== 'KEK'; }), '#2ec4b6', true)
+            ];
+        } else if (mode === 'resti') {
+            const hamil = function (r) { return r.kategori === 'hamil'; };
+            dataset = [
+                garis('Ibu Hamil Resti', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.resti; }), '#f64e60', false),
+                garis('Ibu Hamil Tidak Resti', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && !r.resti; }), '#3b82f6', true)
+            ];
+        } else {
+            dataset = [garis('Ibu Nifas', hitung(g.daftar, g.kunci, function (r) { return r.kategori === 'nifas'; }), '#e83e8c', false)];
+        }
+
+        chart = new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: { labels: g.daftar.map(function (n) { return n.toUpperCase(); }), datasets: dataset },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: g.judul, font: { size: 18, weight: 'bold' }, color: '#6b7280' },
+                    legend: { display: true, position: 'top', labels: { usePointStyle: true, font: { weight: 'bold' } } },
+                    datalabels: {
+                        display: function (ctx) { return Number(ctx.dataset.data[ctx.dataIndex]) > 0; },
+                        align: 'top', anchor: 'end',
+                        backgroundColor: '#ffffff',
+                        borderColor: function (ctx) { return ctx.dataset.borderColor; },
+                        borderRadius: 4, borderWidth: 1,
+                        color: function (ctx) { return ctx.dataset.borderColor; },
+                        font: { size: 9, weight: 'bold' },
+                        padding: { top: 2, bottom: 2, left: 4, right: 4 }
                     }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { color: '#f1f5f9' },
-                    ticks: { font: { size: 9, weight: '600' }, maxRotation: 45 }
                 },
-                y: {
-                    grid: { color: '#f1f5f9' },
-                    min: 0,
-                    max: 100,
-                    ticks: {
-                        callback: function(value) {
-                            return value + '%';
-                        }
-                    }
+                scales: {
+                    x: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 9, weight: '600' }, maxRotation: 45, autoSkip: false } },
+                    y: { grid: { color: '#f1f5f9' }, beginAtZero: true, suggestedMax: 10, ticks: { precision: 0 } }
                 }
             }
+        });
+    }
+
+    // ---------- Tabel ----------
+    function dataTabel() {
+        const q = $('bm-input-search').value.trim().toLowerCase();
+        return semuaData.filter(function (r) {
+            if (mode === 'nifas' ? r.kategori !== 'nifas' : r.kategori !== 'hamil') return false;
+            if (mode === 'resti' && !r.resti) return false;
+            if (!lolosFilter(r)) return false;
+            if (q) {
+                const teks = [r.no_kk, r.nik, r.nama, r.alamat, r.kecamatan, r.kelurahan].join(' ').toLowerCase();
+                if (teks.indexOf(q) === -1) return false;
+            }
+            return true;
+        });
+    }
+
+    function renderTabel() {
+        const rows = dataTabel();
+        const perPage = parseInt($('bm-table-length').value, 10) || 10;
+        const totalPage = Math.max(1, Math.ceil(rows.length / perPage));
+        if (page > totalPage) page = totalPage;
+        const mulai = (page - 1) * perPage;
+        const tampil = rows.slice(mulai, mulai + perPage);
+
+        if (!tampil.length) {
+            $('bm-tbody').innerHTML = '<tr><td colspan="' + KOLOM + '" class="text-center py-5 text-gray-500">Belum ada data tersedia</td></tr>';
+        } else {
+            $('bm-tbody').innerHTML = tampil.map(function (r, i) {
+                return '<tr>' +
+                    '<td class="text-center fw-bold">' + (mulai + i + 1) + '</td>' +
+                    '<td>' + esc(r.no_kk || '-') + '</td>' +
+                    '<td>' + esc(r.nik || '-') + '</td>' +
+                    '<td class="fw-bold">' + esc(r.nama) + '</td>' +
+                    '<td>' + esc(r.alamat || '-') + '</td>' +
+                    '<td class="text-center"><button class="btn btn-sm btn-icon btn-light-primary rounded-circle bm-btn-lihat" data-id="' + esc(r.id) + '" title="Lihat"><i class="ki-outline ki-eye fs-5"></i></button></td>' +
+                    '</tr>';
+            }).join('');
         }
+
+        $('bm-info').textContent = rows.length
+            ? 'Menampilkan ' + (mulai + 1) + ' - ' + (mulai + tampil.length) + ' dari ' + rows.length + ' data'
+            : 'Tidak ada data';
+
+        let pg = '<li class="page-item ' + (page === 1 ? 'disabled' : '') + '"><a class="page-link bm-page" href="#" data-page="' + (page - 1) + '">Sebelumnya</a></li>';
+        for (let p = 1; p <= totalPage; p++) {
+            pg += '<li class="page-item ' + (p === page ? 'active' : '') + '"><a class="page-link bm-page" href="#" data-page="' + p + '">' + p + '</a></li>';
+        }
+        pg += '<li class="page-item ' + (page === totalPage ? 'disabled' : '') + '"><a class="page-link bm-page" href="#" data-page="' + (page + 1) + '">Berikutnya</a></li>';
+        $('bm-pagination').innerHTML = pg;
+    }
+
+    // ---------- Popup lihat (riwayat ibu) ----------
+    function fmtAngka(v, maks) {
+        if (v === null || v === undefined || v === '') return null;
+        const n = parseFloat(v);
+        if (isNaN(n)) return null;
+        return n.toLocaleString('id-ID', { maximumFractionDigits: maks === undefined ? 1 : maks });
+    }
+    function satuan(v, unit, maks) {
+        const s = fmtAngka(v, maks);
+        return s === null ? '-' : s + ' ' + unit;
+    }
+    function fmtTgl(v) {
+        const p = String(v || '').substring(0, 10).split('-');
+        return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : '-';
+    }
+    function hitungImt(r) {
+        if (r.imt !== null && r.imt !== undefined && r.imt !== '') return fmtAngka(r.imt, 2) || '-';
+        const bb = parseFloat(r.bb), tb = parseFloat(r.tb);
+        if (!bb || !tb) return '-';
+        return (bb / Math.pow(tb / 100, 2)).toLocaleString('id-ID', { maximumFractionDigits: 2 });
+    }
+    function inisial(nama) {
+        const p = String(nama || '?').trim().split(/\s+/);
+        return ((p[0] || '?').charAt(0) + (p.length > 1 ? p[p.length - 1].charAt(0) : '')).toUpperCase();
+    }
+    function itemInfo(label, nilai) {
+        return '<div class="col-6 col-md-3 bm-info-item mb-3"><label>' + label + '</label><span>' + (nilai || '-') + '</span></div>';
+    }
+    function tabelMini(kolom, rows, pesanKosong) {
+        let h = '<div class="table-responsive"><table class="bm-mini-table"><thead><tr><th>No</th>' +
+            kolom.map(function (k) { return '<th>' + k.judul + '</th>'; }).join('') + '</tr></thead><tbody>';
+        if (!rows.length) {
+            h += '<tr><td colspan="' + (kolom.length + 1) + '" class="text-gray-500 py-5">' + pesanKosong + '</td></tr>';
+        } else {
+            h += rows.map(function (r, i) {
+                return '<tr><td>' + (i + 1) + '.</td>' + kolom.map(function (k) { return '<td>' + k.nilai(r) + '</td>'; }).join('') + '</tr>';
+            }).join('');
+        }
+        return h + '</tbody></table></div>';
+    }
+    function kartuRiwayat(kelas, ikon, judul, jumlah, isi) {
+        return '<div class="bm-riwayat mb-5"><div class="bm-riwayat-head ' + kelas + '">' +
+            '<div class="d-flex align-items-center gap-2"><i class="ki-outline ' + ikon + ' fs-2 text-white"></i><span class="fw-bolder fs-5">' + judul + '</span></div>' +
+            '<span class="bm-chip">' + jumlah + ' catatan</span></div><div class="p-4">' + isi + '</div></div>';
+    }
+
+    const KOLOM_KEHAMILAN = [
+        { judul: 'Tanggal',         nilai: function (r) { return esc(fmtTgl(r.tanggal)); } },
+        { judul: 'Usia Kehamilan',  nilai: function (r) { return satuan(r.usia_kehamilan, 'minggu', 0); } },
+        { judul: 'HB',              nilai: function (r) { return satuan(r.hb, 'g/dL'); } },
+        { judul: 'BB',              nilai: function (r) { return satuan(r.bb, 'kg'); } },
+        { judul: 'TB',              nilai: function (r) { return satuan(r.tb, 'cm'); } },
+        { judul: 'IMT',             nilai: function (r) { return esc(hitungImt(r)); } },
+        { judul: 'LILA',            nilai: function (r) { return satuan(r.lila, 'cm'); } },
+        { judul: 'Tensi',           nilai: function (r) { return esc(r.tensi ? String(r.tensi).replace('/', ' / ') : '-'); } },
+        { judul: 'TFU',             nilai: function (r) { return satuan(r.tfu, 'cm'); } },
+        { judul: 'DJJ',             nilai: function (r) { return satuan(r.djj, 'x/menit', 0); } }
+    ];
+    const KOLOM_CATIN = [
+        { judul: 'NIK',               nilai: function (r) { return esc(r.nik || '-'); } },
+        { judul: 'Tanggal',           nilai: function (r) { return esc(fmtTgl(r.tanggal)); } },
+        { judul: 'Hasil Pemeriksaan', nilai: function (r) { return esc(r.hasil_pemeriksaan || '-'); } },
+        { judul: 'BB',                nilai: function (r) { return satuan(r.bb, 'kg'); } },
+        { judul: 'TB',                nilai: function (r) { return satuan(r.tb, 'cm'); } },
+        { judul: 'LILA',              nilai: function (r) { return satuan(r.lila, 'cm'); } },
+        { judul: 'IMT',               nilai: function (r) { return esc(hitungImt(r)); } }
+    ];
+
+    function lihat(id) {
+        const r = semuaData.find(function (d) { return String(d.id) === String(id); });
+        if (!r) return;
+        const hamil = r.kategori === 'hamil';
+        const nama = String(r.nama || '').toUpperCase();
+
+        $('bm-detail-judul').textContent = (hamil ? 'Riwayat Ibu Hamil ' : 'Riwayat Ibu Nifas ') + nama;
+
+        const chips = [];
+        if (hamil) {
+            chips.push(r.status_kek === 'KEK' ? 'KEK' : 'Tidak KEK');
+            chips.push(r.resti ? 'Resti (Risiko Tinggi)' : 'Risiko Normal');
+        } else {
+            chips.push('Masa Nifas');
+        }
+
+        $('bm-detail-isi').innerHTML =
+            '<div class="bm-hero mb-5"><div class="d-flex align-items-center gap-4 flex-wrap">' +
+                '<div class="bm-avatar">' + esc(inisial(r.nama)) + '</div>' +
+                '<div class="flex-grow-1"><div class="fw-bold fs-7" style="opacity:.85;">NIK ' + esc(r.nik || '-') + ' &nbsp;|&nbsp; No KK ' + esc(r.no_kk || '-') + '</div>' +
+                '<div class="d-flex flex-wrap gap-2 mt-2">' + chips.map(function (c) { return '<span class="bm-chip">' + esc(c) + '</span>'; }).join('') + '</div></div>' +
+            '</div></div>' +
+            '<div class="row mb-2">' +
+                itemInfo('Usia', r.usia ? esc(r.usia) + ' Tahun' : '') +
+                itemInfo('Kecamatan', esc(r.kecamatan)) +
+                itemInfo('Kelurahan', esc(r.kelurahan)) +
+                itemInfo('RW / RT', esc((r.rw || '-') + ' / ' + (r.rt || '-'))) +
+                '<div class="col-12 bm-info-item mb-3"><label>Alamat Domisili</label><span>' + esc(r.alamat || '-') + '</span></div>' +
+            '</div>' +
+            '<div id="bm-riwayat-isi"><div class="text-center text-gray-500 py-8"><span class="spinner-border spinner-border-sm me-2"></span>Memuat riwayat...</div></div>';
+
+        bootstrap.Modal.getOrCreateInstance($('modal_detail_bumil')).show();
+
+        ambil('/bumil-data/' + r.id + '/riwayat')
+            .then(function (res) {
+                const kh = res.kehamilan || [];
+                const cp = res.calon_pengantin || [];
+                $('bm-riwayat-isi').innerHTML =
+                    kartuRiwayat('bm-riwayat-a', 'ki-heart', 'Riwayat Kehamilan Ibu', kh.length, tabelMini(KOLOM_KEHAMILAN, kh, 'Belum ada riwayat kehamilan')) +
+                    kartuRiwayat('bm-riwayat-b', 'ki-profile-user', 'Riwayat Calon Pengantin', cp.length, tabelMini(KOLOM_CATIN, cp, 'Belum ada riwayat calon pengantin'));
+            })
+            .catch(function () {
+                $('bm-riwayat-isi').innerHTML = '<div class="text-center text-danger py-6">Gagal memuat riwayat.</div>';
+            });
+    }
+
+    // ---------- Tab + filter ----------
+    function perbaruiSemua() { page = 1; renderChart(); renderTabel(); }
+
+    window.bmSwitchTab = function (m) {
+        mode = m;
+        Object.keys(TAB).forEach(function (k) {
+            $(TAB[k].tombol).className = 'btn fw-bold fs-7 nav-link' + (k === m ? ' ' + TAB[k].kelas : '');
+        });
+        $('bm-judul').textContent = TAB[m].judul;
+        $('bm-indicator').style.backgroundColor = TAB[m].warna;
+        perbaruiSemua();
+    };
+
+    ['bm-filter-bulan', 'bm-filter-tahun', 'bm-filter-kecamatan'].forEach(function (id) {
+        $(id).addEventListener('change', perbaruiSemua);
     });
-}
+    $('bm-table-length').addEventListener('change', function () { page = 1; renderTabel(); });
+    $('bm-input-search').addEventListener('input', function () { page = 1; renderTabel(); });
 
-function renderTableBumil() {
-    const th1 = document.getElementById('th-col-1');
-    const th2 = document.getElementById('th-col-2');
-    const th3 = document.getElementById('th-col-3');
-    const th4 = document.getElementById('th-col-4');
-    const th5 = document.getElementById('th-col-5');
-    const tbContainer = document.getElementById('tb-tabel-bumil');
-    if (!tbContainer) return;
+    $('bm-pagination').addEventListener('click', function (e) {
+        const a = e.target.closest('.bm-page');
+        if (!a) return;
+        e.preventDefault();
+        const p = parseInt(a.dataset.page, 10);
+        if (p >= 1) { page = p; renderTabel(); }
+    });
+    $('bm-tbody').addEventListener('click', function (e) {
+        const b = e.target.closest('.bm-btn-lihat');
+        if (b) lihat(b.dataset.id);
+    });
 
-    if (activeTabMode === 'hamil') {
-        th1.textContent = 'NIK';
-        th2.textContent = 'NAMA IBU HAMIL';
-        th3.textContent = 'USIA';
-        th4.textContent = 'ALAMAT DOMISILI';
-        th5.textContent = 'STATUS RISIKO';
-
-        tbContainer.innerHTML = `
-            <tr>
-                <td class="text-center fw-bold">1</td>
-                <td class="fw-bold text-gray-800">3578015502980001</td>
-                <td>
-                    <div class="d-flex align-items-center">
-                        <div class="symbol symbol-30px symbol-circle me-2 bg-light-danger d-flex align-items-center justify-content-center text-danger fw-bold fs-8">SM</div>
-                        <span class="fw-bold text-gray-800">Siti Maryam</span>
-                    </div>
-                </td>
-                <td>28 Tahun</td>
-                <td>Jl. Embong Malang No. 15, Genteng</td>
-                <td><span class="badge badge-light-danger fw-bold px-3 py-2">Resti (Risiko Tinggi)</span></td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-icon btn-light-primary rounded-circle"><i class="ki-outline ki-eye fs-5"></i></button>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center fw-bold">2</td>
-                <td class="fw-bold text-gray-800">3578016211950003</td>
-                <td>
-                    <div class="d-flex align-items-center">
-                        <div class="symbol symbol-30px symbol-circle me-2 bg-light-success d-flex align-items-center justify-content-center text-success fw-bold fs-8">DL</div>
-                        <span class="fw-bold text-gray-800">Dewi Lestari</span>
-                    </div>
-                </td>
-                <td>31 Tahun</td>
-                <td>Jl. Kedungdoro No. 88, Tegalsari</td>
-                <td><span class="badge badge-light-success fw-bold px-3 py-2">Normal</span></td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-icon btn-light-primary rounded-circle"><i class="ki-outline ki-eye fs-5"></i></button>
-                </td>
-            </tr>
-        `;
-    } else { // Mode Ibu Nifas
-        th1.textContent = 'NO KK';
-        th2.textContent = 'NIK';
-        th3.textContent = 'NAMA IBU NIFAS';
-        th4.textContent = 'ALAMAT DOMISILI';
-        th5.textContent = 'STATUS NIFAS';
-
-        tbContainer.innerHTML = `
-            <tr>
-                <td class="text-center fw-bold">1</td>
-                <td class="fw-bold text-gray-800">3578011204100005</td>
-                <td class="fw-bold text-gray-800">3578014506990002</td>
-                <td>
-                    <div class="d-flex align-items-center">
-                        <div class="symbol symbol-30px symbol-circle me-2 d-flex align-items-center justify-content-center fw-bold fs-8" style="background-color: #fde6f2; color: #e83e8c;">AR</div>
-                        <span class="fw-bold text-gray-800">Anisa Rahmawati</span>
-                    </div>
-                </td>
-                <td>Jl. Kedungdoro No. 42, Sawahan</td>
-                <td><span class="badge badge-light-warning fw-bold px-3 py-2">Masa Nifas (Hari ke-14)</span></td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-icon btn-light-primary rounded-circle"><i class="ki-outline ki-eye fs-5"></i></button>
-                </td>
-            </tr>
-        `;
-    }
-}
-
-function switchTabBumil(mode) {
-    activeTabMode = mode;
-
-    const btnHamil = document.getElementById('tab-btn-hamil');
-    const btnNifas = document.getElementById('tab-btn-nifas');
-    const title = document.getElementById('title-grafik-bumil');
-    const indicator = document.getElementById('indicator-bar');
-
-    if (mode === 'hamil') {
-        btnHamil.className = 'btn fw-bold fs-7 nav-link active-hamil';
-        btnNifas.className = 'btn fw-bold fs-7 nav-link';
-        if (title) title.textContent = 'IBU HAMIL RESTI';
-        if (indicator) indicator.style.backgroundColor = '#f64e60';
-    } else {
-        btnNifas.className = 'btn fw-bold fs-7 nav-link active-nifas';
-        btnHamil.className = 'btn fw-bold fs-7 nav-link';
-        if (title) title.textContent = 'IBU NIFAS';
-        if (indicator) indicator.style.backgroundColor = '#e83e8c';
+    // ---------- Ambil data ----------
+    function ambil(url) {
+        return fetch(url, { headers: { 'Accept': 'application/json' } }).then(function (res) {
+            if (!res.ok) throw new Error('Gagal memuat ' + url);
+            return res.json();
+        });
     }
 
-    renderChartBumil();
-    renderTableBumil();
-}
+    function mulaiHalaman() {
+        ambil('/bumil-data/wilayah')
+            .then(function (data) { wilayah = data; })
+            .catch(function () { wilayah = {}; })
+            .then(function () {
+                const sel = $('bm-filter-kecamatan');
+                sel.innerHTML = '<option value="">Semua Kecamatan</option>';
+                Object.keys(wilayah).sort().forEach(function (k) { sel.appendChild(new Option(k, k)); });
+                return ambil('/bumil-data');
+            })
+            .then(function (data) { semuaData = data; })
+            .catch(function () {
+                semuaData = [];
+                $('bm-tbody').innerHTML = '<tr><td colspan="' + KOLOM + '" class="text-center text-danger py-5">Gagal memuat data. Pastikan migrasi sudah dijalankan dan route sudah ditambahkan.</td></tr>';
+            })
+            .then(function () {
+                updateKpi();
+                renderChart();
+                if (semuaData.length || !$('bm-tbody').textContent.includes('Gagal')) renderTabel();
+            });
+    }
 
-function updateChartBumil() {
-    if (myChartBumil) myChartBumil.update();
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    initDropdownsBumil();
-    renderTableBumil();
-    setTimeout(renderChartBumil, 300);
-});
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(mulaiHalaman, 300); });
+})();
 </script>
