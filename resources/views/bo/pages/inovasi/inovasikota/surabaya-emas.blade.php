@@ -56,7 +56,15 @@
                 <div class="col-12 col-md-3">
                     <label class="form-label fw-bold text-gray-700 fs-7 mb-2">Kelurahan</label>
                     <select id="filter_surabaya_emas_kelurahan" class="form-select form-select-solid fw-semibold">
-                        <option value="all" selected>Semua</option>
+                        <option value="all" selected>Semua Kelurahan</option>
+                        @php
+                            $listKel = isset($kelurahan) && count($kelurahan) > 0 
+                                ? $kelurahan 
+                                : \Illuminate\Support\Facades\DB::table('m_kelurahan')->orderBy('nama_kel', 'asc')->get();
+                        @endphp
+                        @foreach($listKel as $k)
+                            <option value="{{ $k->nama_kel }}">{{ $k->nama_kel }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="col-12 col-md-2">

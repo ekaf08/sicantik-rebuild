@@ -1,6 +1,6 @@
 const daftarInovasiKota = [
     { key: 'elearning-puspaga', pokja: 'pokja 1', title: 'E-learning Puspaga PKK' },
-    { key: 'kemanggi', pokja: 'pokja 1', title: 'Kemanggi (Kelas Remaja dan Orang Tua Tangguh, Kreatif, dan Mandiri)' },
+    { key: 'kemanggi', pokja: 'pokja 1', title: 'Kemangi (Kelas Remaja dan Orang Tua Tangguh, Kreatif, dan Mandiri)' },
     { key: 'selantang', pokja: 'pokja 2', title: 'Selantang' },
     { key: 'soth', pokja: 'pokja 2', title: 'SOTH (Sekolah Orang Tua Hebat)' },
     { key: 'empty-sekretaris', pokja: 'sekretaris', title: 'Data Inovasi tidak ditemukan' },
@@ -778,33 +778,36 @@ function fetchChartSoth() {
     .then(data => {
         if (!sothChartInstance || !sothChartInstance.ctx) return;
 
+        const cleanName = (str) => (str || '').toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
+
         if (kec !== 'all') {
             sothChartInstance.data.labels = [kec];
-            sothChartInstance.data.datasets[0].data = data.pretest || [0];
-            sothChartInstance.data.datasets[1].data = data.posttest || [0];
+            sothChartInstance.data.datasets[0].data = [(parseFloat(data.pretest?.[0]) || 0)];
+            sothChartInstance.data.datasets[1].data = [(parseFloat(data.posttest?.[0]) || 0)];
             sothChartInstance.update();
             return;
         }
 
-        const apiLabels = (data.labels || []).map(l => l.toUpperCase().replace(/\s+/g, ''));
-        const apiPre = data.pretest || [];
-        const apiPost = data.posttest || [];
+        const rawLabels = data.labels || [];
+        const rawPre = data.pretest || [];
+        const rawPost = data.posttest || [];
 
-        const mappedPre = listKecamatanSothMaster.map(k => {
-            const clean = k.replace(/\s+/g, '');
-            const idx = apiLabels.indexOf(clean);
-            return idx !== -1 ? apiPre[idx] : 0;
+        const mappedPre = listKecamatanSothMaster.map(masterKec => {
+            const masterClean = cleanName(masterKec);
+            const foundIndex = rawLabels.findIndex(l => cleanName(l) === masterClean);
+            return foundIndex !== -1 ? (parseFloat(rawPre[foundIndex]) || 0) : 0;
         });
 
-        const mappedPost = listKecamatanSothMaster.map(k => {
-            const clean = k.replace(/\s+/g, '');
-            const idx = apiLabels.indexOf(clean);
-            return idx !== -1 ? apiPost[idx] : 0;
+        const mappedPost = listKecamatanSothMaster.map(masterKec => {
+            const masterClean = cleanName(masterKec);
+            const foundIndex = rawLabels.findIndex(l => cleanName(l) === masterClean);
+            return foundIndex !== -1 ? (parseFloat(rawPost[foundIndex]) || 0) : 0;
         });
 
         sothChartInstance.data.labels = listKecamatanSothMaster;
         sothChartInstance.data.datasets[0].data = mappedPre;
         sothChartInstance.data.datasets[1].data = mappedPost;
+        
         sothChartInstance.update();
     })
     .catch(err => console.error("Gagal load chart SOTH:", err));
@@ -1100,7 +1103,16 @@ document.getElementById('btnProsesHapusSoth')?.addEventListener('click', functio
     });
 });
 
-    
+// KAMPUNG ASI 
+const listKecamatanKampungAsiMaster = [
+    'ASEMROWO', 'BENOWO', 'BUBUTAN', 'BULAK', 'DUKUH PAKIS', 'GAYUNGAN', 'GENTENG',
+    'GUBENG', 'GUNUNG ANYAR', 'JAMBANGAN', 'KARANG PILANG', 'KENJERAN', 'KREMBANGAN',
+    'LAKAR SANTRI', 'MULYOREJO', 'PABEAN CANTIAN', 'PAKAL', 'RUNGKUT',
+    'SAMBI KEREP', 'SAWAHAN', 'SEMAMPIR', 'SIMOKERTO', 'SUKOLILO',
+    'SUKOMANUNGGAL', 'TAMBAKSARI', 'TANDES', 'TEGALSARI', 'TENGGILIS MEJOYO',
+    'WIYUNG', 'WONOCOLO', 'WONOKROMO'
+];
+
 let chartKampungAsiInstance = null;
 let kampungAsiCurrentPage = 1;
 let kampungAsiPageSize = 10;
@@ -1111,60 +1123,57 @@ let kampungAsiSearchTimer = null;
 function initKampungAsi() {
     setTimeout(() => {
         renderGrafikKampungAsi();
+        fetchChartKampungAsi();
         fetchTableKampungAsi(1);
     }, 150);
 }
 
 function filterKampungAsiKecamatanTop() {
-    const val = document.getElementById('filter_kampung_asi_kecamatan_top')?.value || 'all';
-    
-    if (val === 'all') {
-        renderGrafikKampungAsi();
-    } else {
-        renderGrafikKampungAsi([val], [0]);
-    }
-
+    fetchChartKampungAsi();
     fetchTableKampungAsi(1);
 }
 
-function renderGrafikKampungAsi(customLabels = null, customData = null) {
+function renderGrafikKampungAsi() {
     const canvas = document.getElementById('chartKampungAsiPersentase');
     if (!canvas || typeof Chart === 'undefined') return;
 
-    const labels = customLabels || listKecamatanKampungAsi;
-    const dataValues = customData || new Array(labels.length).fill(0);
-    const isMobile = window.innerWidth < 768;
-
     if (chartKampungAsiInstance) {
         chartKampungAsiInstance.destroy();
+        chartKampungAsiInstance = null;
     }
 
     const ctx = canvas.getContext('2d');
     chartKampungAsiInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels,
+            labels: listKecamatanKampungAsiMaster,
             datasets: [{
                 label: 'Presentase Kampung ASI',
-                data: dataValues,
+                data: new Array(listKecamatanKampungAsiMaster.length).fill(0),
                 borderColor: '#38bdf8',
                 backgroundColor: 'rgba(56, 189, 248, 0.12)',
-                borderWidth: 2,
-                borderDash: [4, 4],
-                fill: false,
+                borderWidth: 3.5,
+                borderDash: [6, 6],
                 tension: 0,
-                pointRadius: isMobile ? 2 : 3,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#38bdf8'
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#38bdf8',
+                pointBorderWidth: 2.5,
+                fill: false
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { display: false },
+                datalabels: { display: false },
                 tooltip: {
+                    backgroundColor: '#1f2937',
+                    padding: 10,
+                    cornerRadius: 8,
                     callbacks: {
                         label: (ctx) => ` Presentase: ${ctx.parsed.y}%`
                     }
@@ -1172,44 +1181,78 @@ function renderGrafikKampungAsi(customLabels = null, customData = null) {
             },
             scales: {
                 y: {
+                    beginAtZero: true,
                     min: 0,
                     max: 100,
                     ticks: {
                         stepSize: 10,
                         callback: (v) => v + '%',
                         color: '#64748b',
-                        font: { size: isMobile ? 9 : 10 }
+                        font: { size: 10 }
                     },
                     grid: { color: '#f1f5f9' }
                 },
                 x: {
                     ticks: {
                         color: '#64748b',
-                        font: { size: isMobile ? 7.5 : 8.5 },
-                        maxRotation: isMobile ? 70 : 45,
-                        minRotation: isMobile ? 70 : 45
+                        font: { size: 9, weight: '500' },
+                        maxRotation: 45,
+                        minRotation: 45
                     },
                     grid: { color: '#f8fafc' }
                 }
             }
         }
     });
+}
 
-    chartKampungAsiInstance.resize();
+function fetchChartKampungAsi() {
+    const kec = document.getElementById('filter_kampung_asi_kecamatan_top')?.value || 'all';
+    const chartUrl = window.API_ROUTES?.kampungAsiChart || '/kampung-asi/chart';
+
+    fetch(`${chartUrl}?kecamatan=${encodeURIComponent(kec)}`, {
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!chartKampungAsiInstance || !chartKampungAsiInstance.ctx) return;
+
+        const cleanName = (str) => (str || '').toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+        if (kec !== 'all') {
+            chartKampungAsiInstance.data.labels = [kec];
+            chartKampungAsiInstance.data.datasets[0].data = [(parseFloat(data.data?.[0]) || 0)];
+            chartKampungAsiInstance.update();
+            return;
+        }
+
+        const rawLabels = data.labels || [];
+        const rawValues = data.data || [];
+
+        const mappedValues = listKecamatanKampungAsiMaster.map(masterKec => {
+            const masterClean = cleanName(masterKec);
+            const foundIndex = rawLabels.findIndex(l => cleanName(l) === masterClean);
+            return foundIndex !== -1 ? (parseFloat(rawValues[foundIndex]) || 0) : 0;
+        });
+
+        chartKampungAsiInstance.data.labels = listKecamatanKampungAsiMaster;
+        chartKampungAsiInstance.data.datasets[0].data = mappedValues;
+        chartKampungAsiInstance.update();
+    })
+    .catch(err => console.error("Gagal load chart Kampung ASI:", err));
 }
 
 function fetchTableKampungAsi(page = 1) {
-    kampungAsiCurrentPage = page;
+    kampungAsiCurrentPage = parseInt(page, 10) || 1;
     const tbody = document.getElementById('tabel_kampung_asi_body');
-    const infoRecords = document.getElementById('kampung_asi_info_records');
     if (!tbody) return;
 
     tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-gray-500"><span class="spinner-border spinner-border-sm me-2"></span>Memuat data...</td></tr>`;
 
     const kec = document.getElementById('filter_kampung_asi_kecamatan_top')?.value || 'all';
-    const baseUrl = window.API_ROUTES?.kampungAsi || '/inovasi-kota/api/kampung-asi/data';
+    const baseUrl = window.API_ROUTES?.kampungAsi || '/kampung-asi/data';
     const params = new URLSearchParams({
-        page: page,
+        page: kampungAsiCurrentPage,
         limit: kampungAsiPageSize,
         kecamatan: kec,
         search: kampungAsiSearchQuery
@@ -1229,14 +1272,11 @@ function fetchTableKampungAsi(page = 1) {
     .then(data => {
         renderTableKampungAsi(data);
     })
-    .catch(() => {
-        renderTableKampungAsi({
-            total: 0,
-            current_page: 1,
-            per_page: kampungAsiPageSize,
-            last_page: 1,
-            data: []
-        });
+    .catch(err => {
+        console.error("Gagal memuat tabel Kampung ASI:", err);
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-gray-400">Gagal memuat data</td></tr>`;
+        }
     });
 }
 
@@ -1247,19 +1287,24 @@ function renderTableKampungAsi(res) {
     if (!tbody) return;
 
     tbody.innerHTML = '';
-    const total = res.total || 0;
-    const currentPage = res.current_page || 1;
-    const perPage = res.per_page || kampungAsiPageSize;
-    kampungAsiTotalPages = res.last_page || 1;
 
-    if (!res.data || res.data.length === 0 || total === 0) {
+    const items = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+    
+    const total = parseInt(res.total ?? items.length, 10);
+    const currentPage = parseInt(res.current_page ?? kampungAsiCurrentPage, 10);
+    const perPage = parseInt(res.per_page ?? kampungAsiPageSize, 10);
+    
+    const calculatedPages = Math.max(1, Math.ceil(total / (perPage || 10)));
+    kampungAsiTotalPages = parseInt(res.last_page ?? calculatedPages, 10);
+
+    if (items.length === 0 || total === 0) {
         tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-gray-400">Data tidak ditemukan</td></tr>`;
         if (infoRecords) infoRecords.textContent = 'Menampilkan 0 sampai 0 dari 0 data';
         if (paginationEl) paginationEl.innerHTML = '';
         return;
     }
 
-    res.data.forEach((row, idx) => {
+    items.forEach((row, idx) => {
         const no = (currentPage - 1) * perPage + (idx + 1);
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -1267,17 +1312,17 @@ function renderTableKampungAsi(res) {
             <td class="text-gray-800">${row.kecamatan || '-'}</td>
             <td class="text-gray-800">${row.kelurahan || '-'}</td>
             <td class="text-gray-800">${row.nama_kampung_asi || '-'}</td>
-            <td class="text-center text-gray-800">${row.jumlah_kader ?? row.kader ?? 0}</td>
-            <td class="text-center text-gray-800">${row.jumlah_toga ?? row.toga ?? 0}</td>
-            <td class="text-center text-gray-800">${row.ibu_hamil ?? row.bumil ?? 0}</td>
-            <td class="text-center text-gray-800">${row.ibu_menyusui ?? row.menyusui ?? 0}</td>
-            <td class="text-center text-gray-800">${row.persentase ? row.persentase + (String(row.persentase).includes('%') ? '' : '%') : '0%'}</td>
+            <td class="text-center text-gray-800">${row.jumlah_kader ?? 0}</td>
+            <td class="text-center text-gray-800">${row.jumlah_toga ?? 0}</td>
+            <td class="text-center text-gray-800">${row.ibu_hamil ?? 0}</td>
+            <td class="text-center text-gray-800">${row.ibu_menyusui ?? 0}</td>
+            <td class="text-center text-gray-800">${row.persentase ? parseFloat(row.persentase).toFixed(2) + '%' : '0%'}</td>
         `;
         tbody.appendChild(tr);
     });
 
-    const start = (currentPage - 1) * perPage + 1;
-    const end = Math.min(currentPage * perPage, total);
+    const start = res.from ?? ((currentPage - 1) * perPage + 1);
+    const end = res.to ?? Math.min(currentPage * perPage, total);
     if (infoRecords) {
         infoRecords.textContent = `Menampilkan ${start} sampai ${end} dari ${total} data`;
     }
@@ -1287,40 +1332,74 @@ function renderTableKampungAsi(res) {
 
 function renderPaginationKampungAsi(currentPage, totalPages) {
     const el = document.getElementById('kampung_asi_pagination');
-    if (!el || totalPages <= 1) {
-        if (el) el.innerHTML = '';
+    if (!el) {
+        console.warn("Elemen #kampung_asi_pagination tidak ditemukan di DOM!");
         return;
     }
+
     el.innerHTML = '';
 
-    const prevLi = document.createElement('li');
-    prevLi.className = `page-item previous ${currentPage === 1 ? 'disabled' : ''}`;
-    prevLi.innerHTML = `<a class="page-link" href="javascript:void(0)">&lt;</a>`;
-    if (currentPage > 1) {
-        prevLi.addEventListener('click', () => fetchTableKampungAsi(currentPage - 1));
-    }
-    el.appendChild(prevLi);
+    currentPage = parseInt(currentPage, 10) || 1;
+    totalPages = parseInt(totalPages, 10) || 1;
+
+    const buatTombol = (label, targetPage, isDisabled, isActive) => {
+        const li = document.createElement('li');
+        li.className = `page-item ${isDisabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`;
+
+        const a = document.createElement('a');
+        a.className = 'page-link';
+        a.href = 'javascript:void(0);';
+        a.style.cursor = isDisabled ? 'default' : 'pointer';
+        a.innerHTML = label;
+
+        if (!isDisabled && !isActive) {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                fetchTableKampungAsi(targetPage);
+            });
+        }
+
+        li.appendChild(a);
+        return li;
+    };
+
+    el.appendChild(buatTombol('&lt;', currentPage - 1, currentPage <= 1, false));
 
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, currentPage + 2);
 
-    for (let p = startPage; p <= endPage; p++) {
-        const li = document.createElement('li');
-        li.className = `page-item ${p === currentPage ? 'active' : ''}`;
-        li.innerHTML = `<a class="page-link" href="javascript:void(0)">${p}</a>`;
-        if (p !== currentPage) {
-            li.addEventListener('click', () => fetchTableKampungAsi(p));
-        }
-        el.appendChild(li);
+    if (currentPage <= 3) {
+        endPage = Math.min(totalPages, 5);
+    }
+    if (currentPage >= totalPages - 2) {
+        startPage = Math.max(1, totalPages - 4);
     }
 
-    const nextLi = document.createElement('li');
-    nextLi.className = `page-item next ${currentPage === totalPages ? 'disabled' : ''}`;
-    nextLi.innerHTML = `<a class="page-link" href="javascript:void(0)">&gt;</a>`;
-    if (currentPage < totalPages) {
-        nextLi.addEventListener('click', () => fetchTableKampungAsi(currentPage + 1));
+    if (startPage > 1) {
+        el.appendChild(buatTombol('1', 1, false, false));
+        if (startPage > 2) {
+            const elipsis = document.createElement('li');
+            elipsis.className = 'page-item disabled';
+            elipsis.innerHTML = '<span class="page-link text-muted">...</span>';
+            el.appendChild(elipsis);
+        }
     }
-    el.appendChild(nextLi);
+
+    for (let p = startPage; p <= endPage; p++) {
+        el.appendChild(buatTombol(p, p, false, p === currentPage));
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const elipsis = document.createElement('li');
+            elipsis.className = 'page-item disabled';
+            elipsis.innerHTML = '<span class="page-link text-muted">...</span>';
+            el.appendChild(elipsis);
+        }
+        el.appendChild(buatTombol(totalPages, totalPages, false, false));
+    }
+
+    el.appendChild(buatTombol('&gt;', currentPage + 1, currentPage >= totalPages, false));
 }
 
 function changeKampungAsiPageSize() {
@@ -1337,59 +1416,10 @@ function searchKampungAsiTable() {
         const input = document.getElementById('kampung_asi_search');
         kampungAsiSearchQuery = input ? input.value.trim() : '';
         fetchTableKampungAsi(1);
-    }, 400);
+    }, 350);
 }
 
-function submitFormKampungAsi(e) {
-    e.preventDefault();
-    const form = e.target;
-    const btn = document.getElementById('btnSimpanKampungAsi');
-    const label = btn.querySelector('.indicator-label');
-    const progress = btn.querySelector('.indicator-progress');
-
-    label.classList.add('d-none');
-    progress.classList.remove('d-none');
-    btn.disabled = true;
-
-    const formData = new FormData(form);
-    const postUrl = window.API_ROUTES?.kampungAsiStore || '/inovasi-kota/api/kampung-asi/store';
-
-    fetch(postUrl, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-            'Accept': 'application/json'
-        },
-        body: formData
-    })
-    .then(res => res.json())
-    .then(() => {
-        const modalEl = document.getElementById('modalTambahKampungAsi');
-        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-        if (modalInstance) modalInstance.hide();
-        form.reset();
-        fetchTableKampungAsi(1);
-    })
-    .catch(err => {
-        console.error("Gagal menyimpan data:", err);
-    })
-    .finally(() => {
-        label.classList.remove('d-none');
-        progress.classList.add('d-none');
-        btn.disabled = false;
-    });
-}
-
-window.addEventListener('resize', () => {
-    if (chartKampungAsiInstance) {
-        const isMobile = window.innerWidth < 768;
-        chartKampungAsiInstance.options.scales.x.ticks.maxRotation = isMobile ? 70 : 45;
-        chartKampungAsiInstance.options.scales.x.ticks.minRotation = isMobile ? 70 : 45;
-        chartKampungAsiInstance.resize();
-    }
-});
-
-const listKecamatanSurabayaEmas = [
+const masterKecamatanSurabayaEmas = [
     'ASEMROWO', 'BENOWO', 'BUBUTAN', 'BULAK', 'DUKUH PAKIS', 'GAYUNGAN', 'GENTENG',
     'GUBENG', 'GUNUNG ANYAR', 'JAMBANGAN', 'KARANG PILANG', 'KENJERAN', 'KREMBANGAN',
     'LAKAR SANTRI', 'MULYOREJO', 'PABEAN CANTIAN', 'PAKAL', 'RUNGKUT',
@@ -1398,33 +1428,9 @@ const listKecamatanSurabayaEmas = [
     'WIYUNG', 'WONOCOLO', 'WONOKROMO'
 ];
 
-const kelurahanPerKecamatanDummy = {
-    'ASEMROWO': ['Asem Rowo', 'Genting Kalianak', 'Tambak Sarioso'],
-    'BENOWO': ['Sememi', 'Tambak Osowilangon', 'Romokalisari', 'Kandangan'],
-    'BUBUTAN': ['Bubutan', 'Alun-Alun Contong', 'Gundih', 'Jepara', 'Tembok Dukuh'],
-    'RUNGKUT': ['Kali Rungkut', 'Rungkut Kidul', 'Rungkut Tengah', 'Kedung Baruk', 'Wonorejo']
-};
-
-const masterBalitaSurabayaEmasDummy = [
-    { nik: '3578012304210001', nama: 'MUHAMMAD AL FATIH', tgl_lahir: '12-04-2024', jk: 'Laki-laki', alamat: 'Jl. Asem Rowo No. 12', kelurahan: 'Asem Rowo', kecamatan: 'ASEMROWO', tpk: 'TPK 01', tahun: '2026' },
-    { nik: '3578021405220002', nama: 'AISYAH AQILA PUTRI', tgl_lahir: '14-05-2024', jk: 'Perempuan', alamat: 'Jl. Sememi Jaya V No. 8', kelurahan: 'Sememi', kecamatan: 'BENOWO', tpk: 'TPK 03', tahun: '2026' },
-    { nik: '3578031109200003', nama: 'KENZO ARKANANTA', tgl_lahir: '11-09-2023', jk: 'Laki-laki', alamat: 'Jl. Gundih Timur No. 4', kelurahan: 'Gundih', kecamatan: 'BUBUTAN', tpk: 'TPK 02', tahun: '2025' },
-    { nik: '3578042512210004', nama: 'ZAHRA SHANUM', tgl_lahir: '25-12-2024', jk: 'Perempuan', alamat: 'Jl. Rungkut Tengah No. 15', kelurahan: 'Rungkut Tengah', kecamatan: 'RUNGKUT', tpk: 'TPK 05', tahun: '2026' },
-    { nik: '3578051701220005', nama: 'RAYYAN ALFARIZI', tgl_lahir: '17-01-2024', jk: 'Laki-laki', alamat: 'Jl. Genteng Kali No. 22', kelurahan: 'Genteng', kecamatan: 'GENTENG', tpk: 'TPK 01', tahun: '2026' }
-];
-
-const riwayatTimbangPerBalita = {
-    '3578012304210001': [
-        { no: 1, tgl: '12-01-2026', tb: '74 cm', bb: '9.2 kg', lila: '14.5 cm', tbu: 'Normal', bbu: 'Normal', bbtb: 'Normal', gizi: 'Baik' },
-        { no: 2, tgl: '14-02-2026', tb: '75.2 cm', bb: '9.5 kg', lila: '14.7 cm', tbu: 'Normal', bbu: 'Normal', bbtb: 'Normal', gizi: 'Baik' },
-        { no: 3, tgl: '16-03-2026', tb: '76.0 cm', bb: '9.7 kg', lila: '14.8 cm', tbu: 'Normal', bbu: 'Normal', bbtb: 'Normal', gizi: 'Baik' },
-        { no: 4, tgl: '15-04-2026', tb: '77.1 cm', bb: '10.1 kg', lila: '15.0 cm', tbu: 'Normal', bbu: 'Normal', bbtb: 'Normal', gizi: 'Baik' },
-        { no: 5, tgl: '18-05-2026', tb: '78.0 cm', bb: '10.4 kg', lila: '15.2 cm', tbu: 'Normal', bbu: 'Normal', bbtb: 'Normal', gizi: 'Baik' }
-    ]
-};
-
 let chartSurabayaEmasInstance = null;
-let chartDetailBalitaInstance = null;
+let chartDetailRiwayatInstance = null;
+
 let surabayaEmasCurrentPage = 1;
 let surabayaEmasPageSize = 10;
 let surabayaEmasTotalPages = 1;
@@ -1432,130 +1438,121 @@ let surabayaEmasSearchQuery = '';
 let surabayaEmasSearchTimer = null;
 
 function initSurabayaEmas() {
-    setTimeout(() => {
-        renderGrafikSurabayaEmas(null, new Array(listKecamatanSurabayaEmas.length).fill(0));
-        fetchTableSurabayaEmas(1);
-    }, 150);
+    initChartSurabayaEmas();
+    fetchTableSurabayaEmas(1);
+    fetchChartSurabayaEmas();
 }
 
 function handleSurabayaEmasKecamatanChange() {
-    const kec = document.getElementById('filter_surabaya_emas_kecamatan')?.value || '';
-    const selKel = document.getElementById('filter_surabaya_emas_kelurahan');
-    if (!selKel) return;
-
-    selKel.innerHTML = '<option value="all" selected>Semua</option>';
-    if (kec && kelurahanPerKecamatanDummy[kec]) {
-        kelurahanPerKecamatanDummy[kec].forEach(kel => {
-            const opt = document.createElement('option');
-            opt.value = kel;
-            opt.textContent = kel;
-            selKel.appendChild(opt);
-        });
+    const kelSelect = document.getElementById('filter_surabaya_emas_kelurahan');
+    if (kelSelect) {
+        kelSelect.value = 'all';
     }
 }
 
 function terapkanFilterSurabayaEmas() {
-    const kec = document.getElementById('filter_surabaya_emas_kecamatan')?.value || 'all';
-
-    if (kec === 'all' || !kec) {
-        renderGrafikSurabayaEmas(null, new Array(listKecamatanSurabayaEmas.length).fill(0));
-    } else {
-        const dummyVal = [75, 82, 68, 90, 85, 78, 92, 88][Math.floor(Math.random() * 8)];
-        renderGrafikSurabayaEmas([kec], [dummyVal]);
-    }
-
+    surabayaEmasCurrentPage = 1;
     fetchTableSurabayaEmas(1);
+    fetchChartSurabayaEmas();
 }
 
 function resetFilterSurabayaEmas() {
-    const selKec = document.getElementById('filter_surabaya_emas_kecamatan');
-    const selKel = document.getElementById('filter_surabaya_emas_kelurahan');
-    const selThn = document.getElementById('filter_surabaya_emas_tahun');
-    const searchInput = document.getElementById('surabaya_emas_search');
+    const kec = document.getElementById('filter_surabaya_emas_kecamatan');
+    const kel = document.getElementById('filter_surabaya_emas_kelurahan');
+    const thn = document.getElementById('filter_surabaya_emas_tahun');
+    const search = document.getElementById('surabaya_emas_search');
 
-    if (selKec) selKec.value = 'all';
-    if (selKel) selKel.innerHTML = '<option value="all" selected>Semua</option>';
-    if (selThn) selThn.value = 'all';
-    if (searchInput) searchInput.value = '';
+    if (kec) kec.value = 'all';
+    if (kel) kel.value = 'all';
+    if (thn) thn.value = 'all';
+    if (search) search.value = '';
 
     surabayaEmasSearchQuery = '';
-    renderGrafikSurabayaEmas(null, new Array(listKecamatanSurabayaEmas.length).fill(0));
+
+    surabayaEmasCurrentPage = 1;
     fetchTableSurabayaEmas(1);
+    fetchChartSurabayaEmas();
 }
 
-function renderGrafikSurabayaEmas(customLabels = null, customData = null) {
+function initChartSurabayaEmas() {
     const canvas = document.getElementById('chartSurabayaEmas');
     if (!canvas || typeof Chart === 'undefined') return;
 
-    const labels = customLabels || listKecamatanSurabayaEmas;
-    const dataValues = customData || new Array(labels.length).fill(0);
-    const isMobile = window.innerWidth < 768;
-
     if (chartSurabayaEmasInstance) {
         chartSurabayaEmasInstance.destroy();
+        chartSurabayaEmasInstance = null;
     }
 
     const ctx = canvas.getContext('2d');
     chartSurabayaEmasInstance = new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: {
-            labels: labels,
+            labels: masterKecamatanSurabayaEmas,
             datasets: [{
-                label: 'Presentase Surabaya Emas',
-                data: dataValues,
-                borderColor: '#38bdf8',
-                backgroundColor: 'rgba(56, 189, 248, 0.12)',
-                borderWidth: 2,
-                borderDash: [4, 4],
-                fill: false,
-                tension: 0.3,
-                pointRadius: isMobile ? 2 : 3,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#38bdf8'
+                label: 'Jumlah Kasus',
+                data: new Array(masterKecamatanSurabayaEmas.length).fill(0),
+                backgroundColor: '#009ef7',
+                borderRadius: 4,
+                borderSkipped: false
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: false,
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    callbacks: {
-                        label: (ctx) => ` Presentase: ${ctx.parsed.y}%`
-                    }
+                    backgroundColor: '#1f2937',
+                    padding: 10,
+                    cornerRadius: 8
                 }
             },
             scales: {
                 y: {
-                    min: 0,
-                    max: 100,
-                    ticks: {
-                        stepSize: 10,
-                        callback: (v) => v + '%',
-                        color: '#64748b',
-                        font: { size: isMobile ? 9 : 10 }
-                    },
+                    beginAtZero: true,
+                    ticks: { color: '#64748b', font: { size: 10 } },
                     grid: { color: '#f1f5f9' }
                 },
                 x: {
                     ticks: {
                         color: '#64748b',
-                        font: { size: isMobile ? 7.5 : 8.5 },
-                        maxRotation: isMobile ? 70 : 45,
-                        minRotation: isMobile ? 70 : 45
+                        font: { size: 9, weight: '500' },
+                        maxRotation: 45,
+                        minRotation: 45
                     },
-                    grid: { color: '#f8fafc' }
+                    grid: { display: false }
                 }
             }
         }
     });
+}
 
-    chartSurabayaEmasInstance.resize();
+function fetchChartSurabayaEmas() {
+    const kec = document.getElementById('filter_surabaya_emas_kecamatan')?.value || 'all';
+    const kel = document.getElementById('filter_surabaya_emas_kelurahan')?.value || 'all';
+    const thn = document.getElementById('filter_surabaya_emas_tahun')?.value || 'all';
+
+    const chartUrl = window.API_ROUTES?.surabayaEmasChart || '/surabaya-emas/chart';
+    const params = new URLSearchParams({ kecamatan: kec, kelurahan: kel, tahun: thn });
+
+    fetch(`${chartUrl}?${params.toString()}`, {
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!chartSurabayaEmasInstance) return;
+
+        if (data.labels && data.data) {
+            chartSurabayaEmasInstance.data.labels = data.labels;
+            chartSurabayaEmasInstance.data.datasets[0].data = data.data;
+            chartSurabayaEmasInstance.update();
+        }
+    })
+    .catch(err => console.error(err));
 }
 
 function fetchTableSurabayaEmas(page = 1) {
-    surabayaEmasCurrentPage = page;
+    surabayaEmasCurrentPage = parseInt(page, 10) || 1;
     const tbody = document.getElementById('tabel_surabaya_emas_body');
     if (!tbody) return;
 
@@ -1563,15 +1560,15 @@ function fetchTableSurabayaEmas(page = 1) {
 
     const kec = document.getElementById('filter_surabaya_emas_kecamatan')?.value || 'all';
     const kel = document.getElementById('filter_surabaya_emas_kelurahan')?.value || 'all';
-    const tahun = document.getElementById('filter_surabaya_emas_tahun')?.value || 'all';
+    const thn = document.getElementById('filter_surabaya_emas_tahun')?.value || 'all';
+    const baseUrl = window.API_ROUTES?.surabayaEmas || '/surabaya-emas/data';
 
-    const baseUrl = window.API_ROUTES?.surabayaEmas || '/inovasi-kota/api/surabaya-emas/data';
     const params = new URLSearchParams({
-        page: page,
+        page: surabayaEmasCurrentPage,
         limit: surabayaEmasPageSize,
         kecamatan: kec,
         kelurahan: kel,
-        tahun: tahun,
+        tahun: thn,
         search: surabayaEmasSearchQuery
     });
 
@@ -1589,27 +1586,9 @@ function fetchTableSurabayaEmas(page = 1) {
     .then(data => {
         renderTableSurabayaEmas(data);
     })
-    .catch(() => {
-        let filtered = masterBalitaSurabayaEmasDummy.filter(item => {
-            const matchKec = (kec === 'all' || !kec) || (item.kecamatan.toUpperCase() === kec.toUpperCase());
-            const matchKel = (kel === 'all' || !kel) || (item.kelurahan.toUpperCase() === kel.toUpperCase());
-            const matchThn = (tahun === 'all' || !tahun) || (item.tahun === tahun);
-            const query = surabayaEmasSearchQuery.toLowerCase();
-            const matchSearch = !query || 
-                item.nama.toLowerCase().includes(query) || 
-                item.nik.includes(query) ||
-                item.alamat.toLowerCase().includes(query);
-
-            return matchKec && matchKel && matchThn && matchSearch;
-        });
-
-        renderTableSurabayaEmas({
-            total: filtered.length,
-            current_page: 1,
-            per_page: surabayaEmasPageSize,
-            last_page: Math.ceil(filtered.length / surabayaEmasPageSize) || 1,
-            data: filtered.slice(0, surabayaEmasPageSize)
-        });
+    .catch(err => {
+        console.error(err);
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-gray-400">Gagal memuat data</td></tr>`;
     });
 }
 
@@ -1620,33 +1599,38 @@ function renderTableSurabayaEmas(res) {
     if (!tbody) return;
 
     tbody.innerHTML = '';
-    const total = res.total || 0;
-    const currentPage = res.current_page || 1;
-    const perPage = res.per_page || surabayaEmasPageSize;
-    surabayaEmasTotalPages = res.last_page || 1;
 
-    if (!res.data || res.data.length === 0 || total === 0) {
+    const items = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+    const total = parseInt(res.total ?? items.length, 10);
+    const currentPage = parseInt(res.current_page ?? surabayaEmasCurrentPage, 10);
+    const perPage = parseInt(res.per_page ?? surabayaEmasPageSize, 10);
+
+    const calculatedPages = Math.max(1, Math.ceil(total / (perPage || 10)));
+    surabayaEmasTotalPages = parseInt(res.last_page ?? calculatedPages, 10);
+
+    if (items.length === 0 || total === 0) {
         tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-gray-400">Data tidak ditemukan</td></tr>`;
         if (infoRecords) infoRecords.textContent = 'Menampilkan 0 sampai 0 dari 0 data';
         if (paginationEl) paginationEl.innerHTML = '';
+        renderPaginationSurabayaEmas(1, 1);
         return;
     }
 
-    res.data.forEach((row, idx) => {
+    items.forEach((row, idx) => {
         const no = (currentPage - 1) * perPage + (idx + 1);
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="text-center text-gray-600">${no}</td>
-            <td class="fw-bold text-gray-800">${row.nama}</td>
-            <td class="text-gray-700">${row.tgl_lahir}</td>
-            <td class="text-center text-gray-700">${row.jk}</td>
-            <td class="text-gray-700">${row.alamat}</td>
-            <td class="text-gray-700">${row.kelurahan}</td>
-            <td class="text-gray-700">${row.kecamatan}</td>
-            <td class="text-center text-gray-700">${row.tpk}</td>
-            <td class="text-center text-gray-700">${row.tahun}</td>
+            <td class="text-gray-800 fw-semibold">${row.nama_balita || '-'}</td>
+            <td class="text-gray-700">${row.tanggal_lahir || '-'}</td>
+            <td class="text-center text-gray-700">${row.jenis_kelamin || '-'}</td>
+            <td class="text-gray-700">${row.alamat_domisili || '-'}</td>
+            <td class="text-gray-700">${row.kelurahan_domisili || '-'}</td>
+            <td class="text-gray-700">${row.kecamatan_domisili || '-'}</td>
+            <td class="text-center text-gray-700">${row.tpk || '-'}</td>
+            <td class="text-center text-gray-700">${row.tahun || '-'}</td>
             <td class="text-center">
-                <button type="button" class="btn btn-sm btn-icon btn-light-primary" onclick="bukaModalDetailBalita('${row.nik}', '${row.nama}')" title="Detail Balita">
+                <button type="button" class="btn btn-icon btn-sm btn-light-primary" title="Lihat Detail" onclick="lihatDetailBalita('${row.id_encrypted || row.id || ''}')">
                     <i class="ki-duotone ki-eye fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                 </button>
             </td>
@@ -1654,8 +1638,8 @@ function renderTableSurabayaEmas(res) {
         tbody.appendChild(tr);
     });
 
-    const start = (currentPage - 1) * perPage + 1;
-    const end = Math.min(currentPage * perPage, total);
+    const start = res.from ?? ((currentPage - 1) * perPage + 1);
+    const end = res.to ?? Math.min(currentPage * perPage, total);
     if (infoRecords) {
         infoRecords.textContent = `Menampilkan ${start} sampai ${end} dari ${total} data`;
     }
@@ -1665,40 +1649,182 @@ function renderTableSurabayaEmas(res) {
 
 function renderPaginationSurabayaEmas(currentPage, totalPages) {
     const el = document.getElementById('surabaya_emas_pagination');
-    if (!el || totalPages <= 1) {
-        if (el) el.innerHTML = '';
-        return;
-    }
+    if (!el) return;
+
     el.innerHTML = '';
 
-    const prevLi = document.createElement('li');
-    prevLi.className = `page-item previous ${currentPage === 1 ? 'disabled' : ''}`;
-    prevLi.innerHTML = `<a class="page-link" href="javascript:void(0)">&lt;</a>`;
-    if (currentPage > 1) {
-        prevLi.addEventListener('click', () => fetchTableSurabayaEmas(currentPage - 1));
-    }
-    el.appendChild(prevLi);
+    currentPage = parseInt(currentPage, 10) || 1;
+    totalPages = parseInt(totalPages, 10) || 1;
+
+    const buatItemPagination = (label, targetPage, isDisabled, isActive) => {
+        const li = document.createElement('li');
+        li.className = `page-item ${isDisabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`;
+
+        const a = document.createElement('a');
+        a.className = 'page-link';
+        a.href = 'javascript:void(0);';
+        a.style.cursor = isDisabled ? 'default' : 'pointer';
+        a.innerHTML = label;
+
+        if (!isDisabled && !isActive) {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                fetchTableSurabayaEmas(targetPage);
+            });
+        }
+
+        li.appendChild(a);
+        return li;
+    };
+
+    el.appendChild(buatItemPagination('&lt;', currentPage - 1, currentPage <= 1, false));
 
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, currentPage + 2);
 
-    for (let p = startPage; p <= endPage; p++) {
-        const li = document.createElement('li');
-        li.className = `page-item ${p === currentPage ? 'active' : ''}`;
-        li.innerHTML = `<a class="page-link" href="javascript:void(0)">${p}</a>`;
-        if (p !== currentPage) {
-            li.addEventListener('click', () => fetchTableSurabayaEmas(p));
-        }
-        el.appendChild(li);
+    if (currentPage <= 3) {
+        endPage = Math.min(totalPages, 5);
+    }
+    if (currentPage >= totalPages - 2) {
+        startPage = Math.max(1, totalPages - 4);
     }
 
-    const nextLi = document.createElement('li');
-    nextLi.className = `page-item next ${currentPage === totalPages ? 'disabled' : ''}`;
-    nextLi.innerHTML = `<a class="page-link" href="javascript:void(0)">&gt;</a>`;
-    if (currentPage < totalPages) {
-        nextLi.addEventListener('click', () => fetchTableSurabayaEmas(currentPage + 1));
+    if (startPage > 1) {
+        el.appendChild(buatItemPagination('1', 1, false, false));
+        if (startPage > 2) {
+            const elipsis = document.createElement('li');
+            elipsis.className = 'page-item disabled';
+            elipsis.innerHTML = '<span class="page-link text-muted">...</span>';
+            el.appendChild(elipsis);
+        }
     }
-    el.appendChild(nextLi);
+
+    for (let p = startPage; p <= endPage; p++) {
+        el.appendChild(buatItemPagination(p, p, false, p === currentPage));
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const elipsis = document.createElement('li');
+            elipsis.className = 'page-item disabled';
+            elipsis.innerHTML = '<span class="page-link text-muted">...</span>';
+            el.appendChild(elipsis);
+        }
+        el.appendChild(buatItemPagination(totalPages, totalPages, false, false));
+    }
+
+    el.appendChild(buatItemPagination('&gt;', currentPage + 1, currentPage >= totalPages, false));
+}
+
+function lihatDetailBalita(id) {
+    if (!id) return;
+
+    const modalEl = document.getElementById('modalDetailBalita');
+    const nikEl = document.getElementById('detail_balita_nik');
+    const namaEl = document.getElementById('detail_balita_nama');
+    const tbody = document.getElementById('tabel_detail_balita_body');
+    const infoEl = document.getElementById('detail_balita_info');
+
+    if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4">Memuat data detail...</td></tr>`;
+
+    const detailUrl = window.API_ROUTES?.surabayaEmasDetail || '/surabaya-emas/detail';
+
+    fetch(`${detailUrl}/${encodeURIComponent(id)}`, {
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.json())
+    .then(res => {
+        const balita = res.balita || {};
+        const riwayat = res.riwayat || [];
+
+        if (nikEl) nikEl.textContent = balita.nik || '-';
+        if (namaEl) namaEl.textContent = balita.nama || '-';
+
+        if (tbody) {
+            tbody.innerHTML = '';
+            if (riwayat.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-gray-400">Belum ada riwayat timbang</td></tr>`;
+            } else {
+                riwayat.forEach((r, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${idx + 1}</td>
+                        <td>${r.tanggal_timbang || '-'}</td>
+                        <td>${r.tinggi_badan ? r.tinggi_badan + ' cm' : '-'}</td>
+                        <td>${r.berat_badan ? r.berat_badan + ' kg' : '-'}</td>
+                        <td>${r.lila ? r.lila + ' cm' : '-'}</td>
+                        <td>${r.tbu || '-'}</td>
+                        <td>${r.bbu || '-'}</td>
+                        <td>${r.bbtb || '-'}</td>
+                        <td><span class="badge badge-light-primary fs-8">${r.status_gizi || '-'}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        if (infoEl) {
+            infoEl.textContent = `Showing 1 to ${riwayat.length} of ${riwayat.length} records`;
+        }
+
+        renderChartDetailRiwayat(res.chart || { labels: [], bb: [], tb: [] });
+
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modalInstance.show();
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-danger">Gagal memuat detail balita</td></tr>`;
+    });
+}
+
+function renderChartDetailRiwayat(chartData) {
+    const canvas = document.getElementById('chartDetailRiwayatBalita');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    if (chartDetailRiwayatInstance) {
+        chartDetailRiwayatInstance.destroy();
+        chartDetailRiwayatInstance = null;
+    }
+
+    const ctx = canvas.getContext('2d');
+    chartDetailRiwayatInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels || ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+            datasets: [
+                {
+                    label: 'Tinggi Badan (cm)',
+                    data: chartData.tb || [0, 0, 0, 0, 0, 0],
+                    borderColor: '#009ef7',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3
+                },
+                {
+                    label: 'Berat Badan (kg)',
+                    data: chartData.bb || [0, 0, 0, 0, 0, 0],
+                    borderColor: '#50cd89',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top', labels: { boxWidth: 12 } }
+            },
+            scales: {
+                y: { beginAtZero: false, ticks: { font: { size: 9 } } },
+                x: { ticks: { font: { size: 9 } } }
+            }
+        }
+    });
 }
 
 function changeSurabayaEmasPageSize() {
@@ -1715,110 +1841,42 @@ function searchSurabayaEmasTable() {
         const input = document.getElementById('surabaya_emas_search');
         surabayaEmasSearchQuery = input ? input.value.trim() : '';
         fetchTableSurabayaEmas(1);
-    }, 400);
+    }, 350);
 }
 
-function bukaModalDetailBalita(nik, nama) {
-    document.getElementById('detail_balita_nik').textContent = nik;
-    document.getElementById('detail_balita_nama').textContent = nama;
-
-    const tbody = document.getElementById('tabel_detail_balita_body');
-    const dataRiwayat = riwayatTimbangPerBalita[nik] || riwayatTimbangPerBalita['3578012304210001'];
-    
-    if (tbody) {
-        tbody.innerHTML = '';
-        dataRiwayat.forEach(item => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="text-gray-500">${item.no}</td>
-                <td>${item.tgl}</td>
-                <td>${item.tb}</td>
-                <td>${item.bb}</td>
-                <td>${item.lila}</td>
-                <td>${item.tbu}</td>
-                <td>${item.bbu}</td>
-                <td>${item.bbtb}</td>
-                <td><span class="badge badge-light-success fw-bold">${item.gizi}</span></td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    const modalEl = document.getElementById('modalDetailBalita');
-    const modalInstance = new bootstrap.Modal(modalEl);
-    modalInstance.show();
-
-    modalEl.addEventListener('shown.bs.modal', function () {
-        renderGrafikDetailBalita();
-    }, { once: true });
-}
-
-function renderGrafikDetailBalita() {
-    const canvas = document.getElementById('chartDetailRiwayatBalita');
-    if (!canvas || typeof Chart === 'undefined') return;
-
-    if (chartDetailBalitaInstance) {
-        chartDetailBalitaInstance.destroy();
-    }
-
-    const ctx = canvas.getContext('2d');
-    chartDetailBalitaInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-            datasets: [{
-                label: 'Berat Badan (kg)',
-                data: [8.5, 8.8, 9.2, 9.5, 9.7, 10.1, 10.4, 10.6, 10.9, 11.2, 11.4, 11.7],
-                borderColor: '#38bdf8',
-                backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                borderWidth: 2,
-                fill: false,
-                tension: 0.25,
-                pointRadius: 3,
-                pointHoverRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    min: 6,
-                    max: 14,
-                    ticks: {
-                        stepSize: 2,
-                        callback: (v) => v + ' kg',
-                        font: { size: 9 },
-                        color: '#64748b'
-                    },
-                    grid: { color: '#f1f5f9' }
-                },
-                x: {
-                    ticks: { font: { size: 9 }, color: '#64748b' },
-                    grid: { display: false }
-                }
-            }
-        }
-    });
-
-    chartDetailBalitaInstance.resize();
-}
-
-window.addEventListener('resize', () => {
-    if (chartSurabayaEmasInstance) {
-        const isMobile = window.innerWidth < 768;
-        chartSurabayaEmasInstance.options.scales.x.ticks.maxRotation = isMobile ? 70 : 45;
-        chartSurabayaEmasInstance.options.scales.x.ticks.minRotation = isMobile ? 70 : 45;
-        chartSurabayaEmasInstance.resize();
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('tabel_surabaya_emas_body')) {
+        initSurabayaEmas();
     }
 });
+
+// Window Kampung ASI
+window.initKampungAsi = initKampungAsi;
+window.filterKampungAsiKecamatanTop = filterKampungAsiKecamatanTop;
+window.renderGrafikKampungAsi = renderGrafikKampungAsi;
+window.fetchChartKampungAsi = fetchChartKampungAsi;
+window.fetchTableKampungAsi = fetchTableKampungAsi;
+window.renderPaginationKampungAsi = renderPaginationKampungAsi;
+window.changeKampungAsiPageSize = changeKampungAsiPageSize;
+window.searchKampungAsiTable = searchKampungAsiTable;
+
+//Window Surabaya Emas
+window.initSurabayaEmas = initSurabayaEmas;
+window.handleSurabayaEmasKecamatanChange = handleSurabayaEmasKecamatanChange;
+window.terapkanFilterSurabayaEmas = terapkanFilterSurabayaEmas;
+window.resetFilterSurabayaEmas = resetFilterSurabayaEmas;
+window.changeSurabayaEmasPageSize = changeSurabayaEmasPageSize;
+window.searchSurabayaEmasTable = searchSurabayaEmasTable;
+window.fetchTableSurabayaEmas = fetchTableSurabayaEmas;
+window.lihatDetailBalita = lihatDetailBalita;
 
 // Window Exports
 window.populateInovasiOptions = populateInovasiOptions;
 window.handlePokjaChange = handlePokjaChange;
 window.handleInovasiChange = handleInovasiChange;
 window.updateElearningTimestamp = updateElearningTimestamp;
+
+//Window Soth
 window.initSothModule = initSothModule;
 window.initChartSoth = initChartSoth;
 window.fetchChartSoth = fetchChartSoth;
@@ -1829,20 +1887,6 @@ window.bukaModalTambahSoth = bukaModalTambahSoth;
 window.editDataSoth = editDataSoth;
 window.handleFormSothSubmit = handleFormSothSubmit;
 window.konfirmasiHapusSoth = konfirmasiHapusSoth;
-window.initKampungAsi = initKampungAsi;
-window.filterKampungAsiKecamatanTop = filterKampungAsiKecamatanTop;
-window.renderGrafikKampungAsi = renderGrafikKampungAsi;
-window.fetchTableKampungAsi = fetchTableKampungAsi;
-window.changeKampungAsiPageSize = changeKampungAsiPageSize;
-window.searchKampungAsiTable = searchKampungAsiTable;
-window.submitFormKampungAsi = submitFormKampungAsi;
-window.initSurabayaEmas = initSurabayaEmas;
-window.handleSurabayaEmasKecamatanChange = handleSurabayaEmasKecamatanChange;
-window.terapkanFilterSurabayaEmas = terapkanFilterSurabayaEmas;
-window.resetFilterSurabayaEmas = resetFilterSurabayaEmas;
-window.changeSurabayaEmasPageSize = changeSurabayaEmasPageSize;
-window.searchSurabayaEmasTable = searchSurabayaEmasTable;
-window.bukaModalDetailBalita = bukaModalDetailBalita;
 
 $(document).ready(function() {
     handlePokjaChange();

@@ -236,7 +236,9 @@ class InovasiController extends Controller
 
     public function kota()
     {
-        return view('bo.pages.inovasi.inovasikota.index');
+        $kelurahan = DB::table('m_kelurahan')->orderBy('nama_kel', 'asc')->get();
+
+        return view('bo.pages.inovasi.inovasikota.index', compact('kelurahan'));
     }
 
     public function getSurabayaEmasData(Request $request)

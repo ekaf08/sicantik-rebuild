@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('nama');
             $table->string('alamat');
             $table->string('rt');
+            $table->string('rw');
             $table->string('kelurahan');
             $table->string('kecamatan')->index();
             $table->decimal('rata_pre', 5, 2)->default(0.00);
