@@ -107,7 +107,31 @@
                         <input type="text" name="name" class="form-control form-control-solid" placeholder="Masukkan nama role..." required />
                     </div>
 
-
+                    <!-- Level Wilayah -->
+                    <div class="mb-8">
+                        <label class="form-label fw-bold required">Level Wilayah</label>
+                        <div class="form-text mb-2">Pilih satu level wilayah untuk role ini.</div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="radio" name="level_wilayah" value="kota" id="add_level_kota" required />
+                                    <label class="form-check-label text-gray-700 fw-semibold" for="add_level_kota">Kota</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="radio" name="level_wilayah" value="kecamatan" id="add_level_kecamatan" required />
+                                    <label class="form-check-label text-gray-700 fw-semibold" for="add_level_kecamatan">Kecamatan</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="radio" name="level_wilayah" value="kelurahan" id="add_level_kelurahan" required />
+                                    <label class="form-check-label text-gray-700 fw-semibold" for="add_level_kelurahan">Kelurahan</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Menu By Role (Dynamic dari Database Navicat m_menu) -->
                     <div class="mb-10">
@@ -166,7 +190,31 @@
                         <input type="text" name="name" id="edit_name" class="form-control form-control-solid" placeholder="Masukkan nama role..." required />
                     </div>
 
-                   
+                    <!-- Level Wilayah -->
+                    <div class="mb-8">
+                        <label class="form-label fw-bold required">Level Wilayah</label>
+                        <div class="form-text mb-2">Pilih satu level wilayah untuk role ini.</div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="radio" name="level_wilayah" value="kota" id="level_kota" required />
+                                    <label class="form-check-label text-gray-700 fw-semibold" for="level_kota">Kota</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="radio" name="level_wilayah" value="kecamatan" id="level_kecamatan" required />
+                                    <label class="form-check-label text-gray-700 fw-semibold" for="level_kecamatan">Kecamatan</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="radio" name="level_wilayah" value="kelurahan" id="level_kelurahan" required />
+                                    <label class="form-check-label text-gray-700 fw-semibold" for="level_kelurahan">Kelurahan</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Menu By Role -->
                     <div class="mb-10">
@@ -217,7 +265,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.edit-menu-checkbox').forEach(cb => cb.checked = false);
             document.querySelectorAll('.edit-permission-checkbox').forEach(cb => cb.checked = false);
 
-                fetch(editUrlTemplate.replace(':id', encodeURIComponent(id)))                .then(res => {
+            fetch(editUrlTemplate.replace(':id', encodeURIComponent(id)))
+                .then(res => {
                     if (!res.ok) throw new Error('Gagal mengambil data');
                     return res.json();
                 })
@@ -226,6 +275,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     document.querySelectorAll('.edit-menu-checkbox').forEach(cb => {
                         cb.checked = data.selected_menus.includes(parseInt(cb.value));
+                    });
+
+                    document.querySelectorAll('#form-edit-role input[name="level_wilayah"]').forEach(radio => {
+                        radio.checked = (radio.value === data.level_wilayah);
                     });
 
                     document.querySelectorAll('.edit-permission-checkbox').forEach(cb => {

@@ -30,14 +30,16 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'          => 'required|string|max:255',
+            'level_wilayah' => 'required|in:kota,kecamatan,kelurahan',
         ]);
 
         DB::beginTransaction();
         try {
             $role = Role::create([
-                'name'       => $request->name,
-                'guard_name' => 'web',
+                'name'          => $request->name,
+                'guard_name'    => 'web',
+                'level_wilayah' => $request->level_wilayah,
             ]);
 
             if ($request->filled('menus')) {
@@ -94,6 +96,7 @@ class RoleController extends Controller
         return response()->json([
             'id'                   => $role->enc_id,
             'name'                 => $role->name,
+            'level_wilayah'        => $role->level_wilayah,
             'selected_menus'       => $selectedMenuIds,
             'selected_permissions' => $selectedPermissionIds,
         ]);
@@ -102,7 +105,8 @@ class RoleController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'          => 'required|string|max:255',
+            'level_wilayah' => 'required|in:kota,kecamatan,kelurahan',
         ]);
 
         $realId = Role::decId($id);
@@ -111,7 +115,8 @@ class RoleController extends Controller
         DB::beginTransaction();
         try {
             $role->update([
-                'name' => $request->name,
+                'name'          => $request->name,
+                'level_wilayah' => $request->level_wilayah,
             ]);
 
             // --- Menu ---
