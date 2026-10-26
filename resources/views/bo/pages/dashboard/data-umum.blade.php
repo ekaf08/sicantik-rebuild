@@ -75,7 +75,7 @@
         <!--begin::Table body-->
         <!--begin::Table body-->
         <tbody>
-            @foreach ($kecamatan as $i => $kec)
+            @foreach ($kecamatan as $i => $kec) 
                 <tr>
                     <td>{{ $i + 1 }}</td>
                     <td class="text-start text-success fw-bold text-uppercase">{{ $kec->nama_kec }}</td>
@@ -111,3 +111,4 @@
     </table>
 </div>
 <!--end::Table Container-->
+

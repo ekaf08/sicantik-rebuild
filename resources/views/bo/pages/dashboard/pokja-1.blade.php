@@ -76,84 +76,44 @@
         <!--end::Table head-->
         <!--begin::Table body-->
         <tbody>
+        @foreach ($kecamatan as $i => $kec)
             <tr>
-                <td>1</td>
-                <td class="text-start fw-bold">Tegalsari</td>
-                <td class="fw-bold detail-pengurus-trigger" data-bs-toggle="modal" data-bs-target="#kt_modal_detail_pengurus" data-kecamatan-id="1" data-kecamatan="Tegalsari" style="cursor: pointer;">21</td>
-                <td class="fw-bold">KEMANGI</td>
-                <td class="fw-bold edit-data-trigger"
-                    data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_edit_data"
-                    data-nama-item="KISAH VOLUME"
-                    style="cursor: pointer;">
-                    21
-                </td>
-                <td class="fw-bold">BELAJAR</td>
-                <td class="fw-bold edit-data-trigger"
-                    data-bs-toggle="modal"
-                    data-bs-target="#kt_modal_edit_data_peserta"
-                    data-nama-item="Kisah Peserta"
-                    style="cursor: pointer;">
-                    12
-                </td>
-                <td class="fw-bold">KEMANGI</td>
-                <td class="fw-bold detail-pengurus-trigger" data-bs-toggle="modal" data-bs-target="#kt_modal_detail_pengurus" data-kecamatan-id="1" data-kecamatan="Tegalsari" style="cursor: pointer;">18</td>
-                <td class="fw-bold">BELAJAR</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="1.087">1.087</td>
-                <td class="fw-bold">KEMANGI</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="24.112">24.112</td>
-                <td class="fw-bold">BELAJAR</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="fw-bold">KEMANGI</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
-                <td class="fw-bold">BELAJAR</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="23.456">10</td>
-                <td class="fw-bold">MONEV BUMIL</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="125">125</td>
-                <td class="fw-bold">PENDAMPINGAN</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="32">32</td>
-                <td class="fw-bold">KEMANGI</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="135">135</td>
-                <td class="fw-bold">BELAJAR</td>
-                <td class="fw-bold agregat-trigger" data-field="Total" data-kecamatan="Tegalsari" data-value="28">28</td>
+                <td>{{ $i + 1 }}</td>
+                <td class="text-start fw-bold text-uppercase">{{ $kec->nama_kec }}</td>
+
+                @foreach ($kolomPokja1 as $k)
+                    @php
+                        $teks = \Illuminate\Support\Str::endsWith($k->alias, ['_kegiatan', '_metode']);
+                        $nilai = $dataPokja1[$kec->id_kec]->{$k->alias} ?? null;
+                    @endphp
+                    <td @class(['agregat-trigger fw-bold' => !$k->is_disable])
+                        @unless ($k->is_disable)
+                            data-id="{{ $k->id }}"
+                            data-kec-id="{{ $kec->id_kec }}"
+                            data-kec-nama="{{ $kec->nama_kec }}"
+                        @endunless>
+                        @if ($teks)
+                            {{ $nilai ?? '' }}
+                        @else
+                            {{ number_format($nilai ?? 0, 0, ',', '.') }}
+                        @endif
+                    </td>
+                @endforeach
             </tr>
+        @endforeach
         </tbody>
         <!--end::Table body-->
         <!--begin::Table foot (Total)-->
         <tfoot>
-            <tr class="fw-bold fs-6 bg-light text-dark">
+            <tr class="fw-bold fs-6 bg-light-success text-dark">
                 <td colspan="2" class="text-center">JUMLAH SELURUHNYA</td>
-                <td>999</td>
-                {{-- Kisah --}}
-                <td></td>
-                <td class="text-center">0</td>
-                <td></td>
-                <td class="text-center">342</td>
-                {{-- Krisan --}}
-                <td></td>
-                <td class="text-center">0</td>
-                <td></td>
-                <td class="text-center">984</td>
-                {{-- Kilas --}}
-                <td></td>
-                <td class="text-center">0</td>
-                <td></td>
-                <td class="text-center">7.003</td>
-                {{-- Kiat --}}
-                <td></td>
-                <td class="text-center">0</td>
-                <td></td>
-                <td class="text-center">14</td>
-                {{-- Kisak --}}
-                <td></td>
-                <td class="text-center">0</td>
-                <td></td>
-                <td class="text-center">984</td>
-                {{-- PKBN --}}
-                <td></td>
-                <td class="text-center">0</td>
-                <td></td>
-                <td class="text-center">7.003</td>
+                @foreach ($kolomPokja1 as $k)
+                    @if (\Illuminate\Support\Str::endsWith($k->alias, ['_kegiatan', '_metode']))
+                        <td></td>
+                    @else
+                        <td>{{ number_format($dataPokja1->sum($k->alias), 0, ',', '.') }}</td>
+                    @endif
+                @endforeach
             </tr>
         </tfoot>
         <!--end::Table foot-->

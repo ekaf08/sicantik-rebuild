@@ -73,6 +73,31 @@
         .nav-line-tabs .nav-item.show .nav-link::after {
             background-color: #3FAAB2 !important;
         }
+        #modalIsi table th,
+        #modalIsi table td {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+        #modalIsi table thead th {
+            background-color: #3b9eff !important;
+            color: #fff !important;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        #modalIsi table tbody td {
+            border-left: 0 !important;
+            border-right: 0 !important;
+        }
+        #modalIsi table thead th {
+        border-left: 0 !important;
+        border-right: 0 !important;
+        }
+        #modalIsi table tbody tr:nth-child(odd) td {
+        background-color: #f1f1f2 !important;
+        }
+        #modalIsi table tbody tr:nth-child(even) td {
+            background-color: #ffffff !important;
+        }
     </style>
 @endpush
 @section('content')
@@ -2043,21 +2068,81 @@
 </div>
 <!--end::Row--> --}}
 
-<! --begin::Modal - Dinamis-->
+<!--begin::Modal - Dinamis-->
 <div class="modal fade" id="modalDinamis" tabindex="-1">
-  <div class="modal-dialog modal-xl">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalJudul"></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body" id="modalIsi"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+      </div>
     </div>
   </div>
 </div>
 
 @push('js')
     <script src="{{ asset('assets/js/custom/pages/dashboard-pkk/index.js') }}"></script>
+    <script>
+const modal = new bootstrap.Modal(document.getElementById('modalDinamis'));
+
+document.addEventListener('click', function (e) {
+  const el = e.target.closest('.agregat-trigger[data-id]');
+  if (!el) return;
+
+  fetch(`/modal/${el.dataset.id}?kec=${el.dataset.kecId}`)
+    .then(r => r.json())
+    .then(hasil => tampilkan(hasil, el.dataset.kecNama));
+});
+
+function tampilkan(hasil, kecNama) {
+  document.getElementById('modalJudul').textContent =
+    `DETAIL ${hasil.judul.replace(/_/g, ' ')} - ${kecNama}`;
+  const isi = document.getElementById('modalIsi');
+
+  if ($.fn.DataTable && $.fn.DataTable.isDataTable('#tabelModal')) {
+    $('#tabelModal').DataTable().destroy();
+  }
+
+  if (hasil.jenis_form == 1) {
+    isi.innerHTML = `<input class="form-control" value="${hasil.rows[0]?.nilai ?? ''}" readonly>`;
+  } else {
+    const kolom = hasil.kolom;
+    const baris = hasil.rows
+      .map((r, i) =>
+        `<tr><td>${i + 1}</td>${kolom.map(k => `<td>${r[k] ?? ''}</td>`).join('')}</tr>`
+      ).join('');
+
+    isi.innerHTML = `
+      <table id="tabelModal" class="table table-bordered table-striped">
+        <thead><tr><th>NO</th>${kolom.map(k => `<th>${k.replace(/_/g, ' ').toUpperCase()}</th>`).join('')}</tr></thead>
+        <tbody>${baris}</tbody>
+      </table>`;
+
+    if ($.fn.DataTable) {
+      $('#tabelModal').DataTable({
+        pageLength: 10,
+        language: {
+            emptyTable: 'Tidak ada data untuk ditampilkan',
+            lengthMenu: '_MENU_',
+            info: 'Showing _START_ to _END_ of _TOTAL_ records',
+            infoEmpty: 'Showing no records',
+            search: 'Search:',
+            paginate: { previous: '‹', next: '›' }
+        },
+        dom:
+            "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>"
+        });
+    }
+  }
+  modal.show();
+}
+</script>
 @endpush
 @include('bo.pages.dashboard.modals.pokja1-modal')
 @include('bo.pages.dashboard.modals.pokja2-modal')

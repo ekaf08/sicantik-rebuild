@@ -130,42 +130,12 @@
         <!--end::Table body-->
         <!--begin::Table foot (Total)-->
         <tfoot>
-            <tr class="fw-bold fs-6 bg-light text-dark">
-                <td colspan="2" class="text-center">TOTAL</td>
-                <td>0</td>
-                <td>42</td>
-                <td>342</td>
-                <td>342</td>
-                <td>342</td>
-                <td>1.393</td>
-                <td>984</td>
-                <td>8.030</td>
-                <td>7.003</td>
-                <td>146.280</td>
-                <td>149.647</td>
-                <td>769</td>
-                <td>827</td>
-                <td>200</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
-                <td>175</td>
+            <tr class="fw-bold fs-6 bg-light-success text-dark">
+                <td colspan="2" class="text-center">JUMLAH SELURUHNYA</td>
+                @foreach ($kolomPokja2 as $k)
+                    <td>{{ number_format($dataPokja2->sum($k->alias), 0, ',', '.') }}</td>
+                @endforeach
+                <td></td>
             </tr>
         </tfoot>
         <!--end::Table foot-->

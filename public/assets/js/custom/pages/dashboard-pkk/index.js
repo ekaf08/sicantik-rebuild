@@ -1,39 +1,5 @@
 /* global bootstrap, Swal, $ */
 
-// ==========================================
-// DATA UMUM
-// ==========================================
-const modal = new bootstrap.Modal(document.getElementById('modalDinamis'));
-
-document.querySelectorAll('.agregat-trigger').forEach(el => {
-  el.addEventListener('click', () => {
-    fetch(`/modal/${el.dataset.id}`)
-      .then(r => r.json())
-      .then(hasil => tampilkan(hasil, el.dataset.kecNama));
-  });
-});
-
-function tampilkan(hasil, kecNama) {
-  document.getElementById('modalJudul').textContent =
-  `DETAIL ${hasil.judul.replace(/_/g, ' ')} - ${kecNama}`;
-  const isi = document.getElementById('modalIsi');
-
-  if (hasil.jenis_form == 1) {
-    // bentuk gambar 2: satu angka
-    isi.innerHTML = `<input class="form-control" value="${hasil.rows[0]?.nilai ?? ''}" readonly>`;
-  } else {
-    // bentuk gambar 1: tabel dari kolom apa pun yang dikirim
-    const kolom = Object.keys(hasil.rows[0] ?? {});
-    isi.innerHTML = `
-      <table class="table table-bordered">
-        <thead><tr><th>NO</th>${kolom.map(k => `<th>${k.replace(/_/g, ' ').toUpperCase()}</th>`).join('')}</tr></thead>
-        <tbody>${hasil.rows.map((r, i) =>
-          `<tr><td>${i + 1}</td>${kolom.map(k => `<td>${r[k] ?? ''}</td>`).join('')}</tr>`
-        ).join('')}</tbody>
-      </table>`;
-  }
-  modal.show();
-}
 
 // ==========================================
 // 1. Pokja 1
@@ -894,9 +860,10 @@ function openGkstbModal(field, kecamatan) {
 // --- Global Event Delegation ---
 document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("click", function (e) {
-        const trigger = e.target.closest(".agregat-trigger");
-        if (trigger) {
-            const field = trigger.getAttribute("data-field") || "";
+    const trigger = e.target.closest(".agregat-trigger");
+    if (trigger) {
+        if (trigger.hasAttribute("data-id")) return;   // <- tambahkan baris ini
+        const field = trigger.getAttribute("data-field") || "";
             const kecamatan = trigger.getAttribute("data-kecamatan") || "";
             const value =
                 trigger.getAttribute("data-value") ||
@@ -1067,6 +1034,7 @@ document.addEventListener("DOMContentLoaded", function () {
         function (e) {
             const trigger = e.target.closest(".agregat-trigger");
             if (!trigger) return;
+            if (trigger.hasAttribute("data-id")) return;
 
             const field = (trigger.getAttribute("data-field") || "").trim();
             const kecamatan = (
@@ -1112,4 +1080,4 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         true, // Jalankan di fase capture agar diproses lebih dulu
     );
-})();
+});
