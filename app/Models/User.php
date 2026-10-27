@@ -51,6 +51,15 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function levelWilayah(): ?string
+    {
+        if (\App\Support\Access::isProtectedUser($this)) {
+            return 'kota';
+        }
+
+        return $this->role?->level_wilayah;
+    }
+
     public function kecamatan()
     {
         return $this->belongsTo(Kecamatan::class, 'id_kec', 'id_kec');

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Access;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -61,16 +62,71 @@ class LapTahunan extends Model
         return [$terisi, count($fields)];
     }
 
+    /** Wilayah user kosong padahal levelnya butuh wilayah. */
+    private static function wilayahKosong($user, ?string $level): bool
+    {
+        return ($level === 'kelurahan' && empty($user->id_kel))
+            || ($level === 'kecamatan' && empty($user->id_kec));
+    }
+
+    /** Data yang BOLEH DILIHAT. */
     public function scopeFilterWilayahUser($query, $user)
     {
-        if ($user->id_kelurahan) {
-            return $query->where('id_kelurahan', $user->id_kelurahan);
-        }
-        if ($user->id_kecamatan) {
-            return $query->where('id_kecamatan', $user->id_kecamatan);
+        $level = $user->levelWilayah();
+
+        if (self::wilayahKosong($user, $level)) {
+            return $query->whereRaw('1 = 0');
         }
 
-        return $query;
+        return match ($level) {
+            'kelurahan' => $query->where('id_kelurahan', $user->id_kel),
+            'kecamatan' => $query->where('id_kecamatan', $user->id_kec),
+            'kota'      => $query,
+            default     => $query->whereRaw('1 = 0'),
+        };
+    }
+
+    /** Data yang BOLEH DIUBAH/DIHAPUS. */
+    public function scopeDikelolaOleh($query, $user)
+    {
+        $level = $user->levelWilayah();
+
+        if (self::wilayahKosong($user, $level)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return match ($level) {
+            'kelurahan' => $query->where('level_wilayah', 'kelurahan')->where('id_kelurahan', $user->id_kel),
+            'kecamatan' => $query->where('level_wilayah', 'kecamatan')->where('id_kecamatan', $user->id_kec),
+            'kota'      => $query->where('level_wilayah', 'kota'),
+            default     => $query->whereRaw('1 = 0'),
+        };
+    }
+
+    public function bisaDikelola($user): bool
+    {
+        $level = $user->levelWilayah();
+
+        if (!$level || self::wilayahKosong($user, $level)) {
+            return false;
+        }
+
+        return $level === $this->level_wilayah
+            && match ($this->level_wilayah) {
+                'kelurahan' => (string) $this->id_kelurahan === (string) $user->id_kel,
+                'kecamatan' => (string) $this->id_kecamatan === (string) $user->id_kec,
+                default     => true,
+            };
+    }
+
+    public function bisaDiubah($user): bool
+    {
+        return Access::can('laporan-tahunan', 'update') && $this->bisaDikelola($user);
+    }
+
+    public function bisaDihapus($user): bool
+    {
+        return Access::can('laporan-tahunan', 'delete') && $this->bisaDikelola($user);
     }
 
     public function creator()

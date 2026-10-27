@@ -214,16 +214,6 @@
                         @endforeach
                     </select>
                 </div>
-
-                <div class="col-lg-2 col-md-4">
-                    <select name="wilayah" class="form-select form-select-solid" onchange="this.form.submit()">
-                        <option value="">Tingkat Wilayah</option>
-                        <option value="kota" @selected(request('wilayah') === 'kota')>Kota</option>
-                        <option value="kecamatan" @selected(request('wilayah') === 'kecamatan')>Kecamatan</option>
-                        <option value="kelurahan" @selected(request('wilayah') === 'kelurahan')>Kelurahan</option>
-                    </select>
-                </div>
-
             </div>
 
             
@@ -236,7 +226,6 @@
                         <th class="ps-4 rounded-start">No</th>
                         <th>Jenis Laporan</th>
                         <th>Tahun Periode</th>
-                        <th>Tingkat Wilayah</th>
                         <th>Kelengkapan File</th>
                         <th>Dibuat Oleh</th>
                         @if($canUpdate || $canDelete)
@@ -268,7 +257,6 @@
                                 @endif
                             </td>
                             <td><span class="text-gray-800 fw-bold">{{ $item->tahun_periode }}</span></td>
-                            <td><span class="text-uppercase badge badge-light-info fs-8">{{ $item->level_wilayah }}</span></td>
                             <td>
                                 <span class="badge {{ $terisi === $total ? 'badge-light-success' : 'badge-light-warning' }} fs-7 fw-bold">
                                     {{ $terisi }} / {{ $total }} file

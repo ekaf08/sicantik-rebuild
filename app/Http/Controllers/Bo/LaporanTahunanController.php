@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LapTahunan;
 use App\Support\Access;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class LaporanTahunanController extends Controller
@@ -46,11 +47,21 @@ class LaporanTahunanController extends Controller
         return view('bo.pages.laporan.laporan-tahunan.index', compact('dataLaporan', 'tahunList'));
     }
 
-  public function store(Request $request)
+    public function store(Request $request)
     {
         if (!Access::can('laporan-tahunan', 'create')) {
             abort(403, 'Akses Ditolak.');
         }
+
+        $user  = auth()->user();
+        $level = $user->levelWilayah();
+
+        if (!$level) {
+            abort(403, 'Role Anda tidak memiliki level wilayah.');
+        }
+
+        $idKecamatan = $level === 'kota' ? null : $user->id_kec;
+        $idKelurahan = $level === 'kelurahan' ? $user->id_kel : null;
 
         $jenis  = $request->input('jenis_laporan');
         $fields = $jenis === 'memori_pj' ? LapTahunan::FILE_MEMORI : LapTahunan::FILE_TAHUNAN;
@@ -67,12 +78,11 @@ class LaporanTahunanController extends Controller
             return back()->withInput()->withErrors(['file' => 'Unggah minimal satu file laporan.']);
         }
 
-        $user = auth()->user();
-
         $sudahAda = LapTahunan::where('jenis_laporan', $jenis)
             ->where('tahun_periode', $request->tahun_periode)
-            ->where('id_kecamatan', $user->id_kecamatan)
-            ->where('id_kelurahan', $user->id_kelurahan)
+            ->where('level_wilayah', $level)
+            ->where('id_kecamatan', $idKecamatan)  
+            ->where('id_kelurahan', $idKelurahan)
             ->exists();
 
         if ($sudahAda) {
@@ -81,23 +91,16 @@ class LaporanTahunanController extends Controller
             ]);
         }
 
-        $levelWilayah = 'kota';
-        if ($user->id_kelurahan) {
-            $levelWilayah = 'kelurahan';
-        } elseif ($user->id_kecamatan) {
-            $levelWilayah = 'kecamatan';
-        }
-
         $payload = [
             'jenis_laporan' => $jenis,
             'tahun_periode' => $request->tahun_periode,
-            'level_wilayah' => $levelWilayah,
-            'id_kecamatan'  => $user->id_kecamatan,
-            'id_kelurahan'  => $user->id_kelurahan,
+            'level_wilayah' => $level,
+            'id_kecamatan'  => $idKecamatan,
+            'id_kelurahan'  => $idKelurahan,
             'created_by'    => $user->id,
         ];
 
-        $folder = $jenis === 'memori_pj' ? 'laporan/memori_pj' : 'laporan/tahunan';
+        $folder    = $jenis === 'memori_pj' ? 'laporan/memori_pj' : 'laporan/tahunan';
         $tersimpan = [];
 
         try {
@@ -110,7 +113,6 @@ class LaporanTahunanController extends Controller
 
             LapTahunan::create($payload);
         } catch (\Throwable $e) {
-            // DB gagal: buang file yang sudah terlanjur tersimpan
             Storage::disk('public')->delete($tersimpan);
             Log::error('Simpan laporan tahunan gagal: ' . $e->getMessage());
             return back()->withInput()->with('error', 'Gagal menyimpan laporan.');
@@ -119,13 +121,13 @@ class LaporanTahunanController extends Controller
         return redirect()->back()->with('success', 'Data laporan berhasil disimpan.');
     }
 
-  public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         if (!Access::can('laporan-tahunan', 'update')) {
             abort(403, 'Akses Ditolak.');
         }
 
-        $laporan = LapTahunan::filterWilayahUser(auth()->user())->findOrFail($id);
+        $laporan = LapTahunan::dikelolaOleh(auth()->user())->findOrFail($id);
         $fields  = $laporan->fileFields();
 
         $request->validate(
@@ -138,6 +140,7 @@ class LaporanTahunanController extends Controller
         if ((string) $request->tahun_periode !== (string) $laporan->tahun_periode) {
             $bentrok = LapTahunan::where('jenis_laporan', $laporan->jenis_laporan)
                 ->where('tahun_periode', $request->tahun_periode)
+                ->where('level_wilayah', $laporan->level_wilayah)
                 ->where('id_kecamatan', $laporan->id_kecamatan)
                 ->where('id_kelurahan', $laporan->id_kelurahan)
                 ->where($laporan->getKeyName(), '!=', $laporan->getKey())
@@ -150,10 +153,10 @@ class LaporanTahunanController extends Controller
             }
         }
 
-        $folder   = $laporan->jenis_laporan === 'memori_pj' ? 'laporan/memori_pj' : 'laporan/tahunan';
-        $payload  = ['tahun_periode' => $request->tahun_periode];
-        $baru     = [];
-        $lama     = [];
+        $folder  = $laporan->jenis_laporan === 'memori_pj' ? 'laporan/memori_pj' : 'laporan/tahunan';
+        $payload = ['tahun_periode' => $request->tahun_periode];
+        $baru    = [];
+        $lama    = [];
 
         try {
             foreach ($fields as $field) {
@@ -186,8 +189,8 @@ class LaporanTahunanController extends Controller
             abort(403, 'Akses Ditolak.');
         }
 
-        $laporan = LapTahunan::filterWilayahUser(auth()->user())->findOrFail($id);
-        $laporan->delete();  
+        $laporan = LapTahunan::dikelolaOleh(auth()->user())->findOrFail($id);
+        $laporan->delete();
 
         return redirect()->back()->with('success', 'Laporan berhasil dihapus.');
     }
@@ -207,8 +210,8 @@ class LaporanTahunanController extends Controller
         $messages = [];
         foreach ($fields as $field) {
             $label = ucwords(str_replace('_', ' ', preg_replace('/^file_/', '', $field)));
-            $messages["$field.mimes"] = "File $label harus berformat PDF.";
-            $messages["$field.max"]   = "File $label maksimal 2MB.";
+            $messages["$field.mimes"]    = "File $label harus berformat PDF.";
+            $messages["$field.max"]      = "File $label maksimal 2MB.";
             $messages["$field.uploaded"] = "File $label gagal diunggah (kemungkinan lebih dari batas server).";
         }
 
