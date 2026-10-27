@@ -40,6 +40,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/modal/{id}', [ModalController::class, 'show']);
     Route::get('/data-umum', [DataUmumController::class, 'index']);
+    Route::get('/data-umum/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->name('data-umum.kelurahan');
 
     // Mpasi
     Route::get('/mpasi', [MpasiController::class, 'index'])->name('mpasi.index');

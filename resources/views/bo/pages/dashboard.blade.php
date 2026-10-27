@@ -142,6 +142,18 @@
         </div>
         <!--end::Filter Periode-->
 
+        
+        @if (($level ?? '') === 'kelurahan')
+            <div class="mb-5 d-flex align-items-center">
+                <a href="{{ route('dashboard') }}"
+                class="btn btn-light btn-sm d-inline-flex align-items-center gap-2 rounded-2 px-4 py-2">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Kembali</span>
+                </a>
+            </div>
+        @endif
+
+
         <!--begin::Tab Content-->
         <div class="tab-content">
             <div id="kt_tab_data_umum" class="tab-pane fade show active">

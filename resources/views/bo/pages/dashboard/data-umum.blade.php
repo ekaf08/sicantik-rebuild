@@ -5,7 +5,13 @@
         <thead>
             <tr class="fw-bold fs-7 text-uppercase bg-light align-middle text-center">
                 <th rowspan="3" class="w-50px bg-dark text-white">NO</th>
-                <th rowspan="3" class="min-w-150px bg-secondary text-dark">Nama Kecamatan</th>
+                <th rowspan="3" class="min-w-150px bg-secondary text-dark">
+                    @if (($level ?? 'kecamatan') === 'kelurahan')
+                        Nama Kelurahan
+                    @else
+                        Nama Kecamatan
+                    @endif
+                </th>
                 <th colspan="2" class="bg-danger text-white">Jumlah TP. PKK</th>
                 <th rowspan="3" class="w-60px bg-secondary text-dark">RW</th>
                 <th colspan="4" class="bg-primary text-white">Jumlah Kelompok</th>
@@ -75,23 +81,34 @@
         <!--begin::Table body-->
         <!--begin::Table body-->
         <tbody>
-            @foreach ($kecamatan as $i => $kec) 
+            @foreach ($baris as $i => $b)
+                @php
+                    $lv   = $level ?? 'kecamatan';
+                    $id   = $lv === 'kelurahan' ? $b->id_kel : $b->id_kec;
+                    $nama = $lv === 'kelurahan' ? $b->nama_kel : $b->nama_kec;
+                @endphp
                 <tr>
                     <td>{{ $i + 1 }}</td>
-                    <td class="text-start text-success fw-bold text-uppercase">{{ $kec->nama_kec }}</td>
+                    <td class="text-start fw-bold text-uppercase">
+                        @if ($lv === 'kecamatan')
+                            <a href="{{ route('data-umum.kelurahan', $b->id_kec) }}" class="text-primary">{{ $nama }}</a>
+                        @else
+                            {{ $nama }}
+                        @endif
+                    </td>
 
                     @foreach ($kolom as $k)
                         <td @class(['agregat-trigger fw-bold' => !$k->is_disable])
                             @unless ($k->is_disable)
                                 data-id="{{ $k->id }}"
-                                data-kec-id="{{ $kec->id_kec }}"
-                                data-kec-nama="{{ $kec->nama_kec }}"
+                                data-kec-id="{{ $lv === 'kelurahan' ? $kec->id_kec : $b->id_kec }}"
+                                data-kec-nama="{{ $nama }}"
                             @endunless>
-                            {{ number_format($data[$kec->id_kec]->{$k->alias} ?? 0, 0, ',', '.') }}
+                            {{ number_format($data[$id]->{$k->alias} ?? 0, 0, ',', '.') }}
                         </td>
                     @endforeach
 
-                    <td>{{ $data[$kec->id_kec]->keterangan ?? 0 }}</td>
+                    <td>{{ $data[$id]->keterangan ?? 0 }}</td>
                 </tr>
             @endforeach
         </tbody>

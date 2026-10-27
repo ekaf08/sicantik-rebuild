@@ -48,6 +48,16 @@ class DashboardController extends Controller
             ->get()
             ->keyBy('id_kec');
 
-        return view('bo.pages.dashboard', compact('kolom', 'kecamatan', 'data', 'kolomPokja1', 'dataPokja1', 'kolomPokja2', 'dataPokja2'));
+        return view('bo.pages.dashboard', [
+            'level'       => 'kecamatan',
+            'baris'       => $kecamatan,
+            'kecamatan'   => $kecamatan,
+            'kolom'       => $kolom,
+            'data'        => $data,
+            'kolomPokja1' => $kolomPokja1,
+            'dataPokja1'  => $dataPokja1,
+            'kolomPokja2' => $kolomPokja2,
+            'dataPokja2'  => $dataPokja2,
+        ]);
     }
 }
