@@ -1,3 +1,4 @@
+{{-- ===== DATA DUMMY: angka peserta dibuat otomatis oleh script di bagian bawah file ini (bukan dari database). Hapus bagian 'DATA DUMMY' di <script> kalau data asli sudah tersedia. ===== --}}
 <!-- Load Library Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -140,7 +141,7 @@
                     <i class="ki-outline ki-people fs-2x" style="color: #0d9488;"></i>
                 </div>
                 <div class="text-end">
-                    <div class="fs-3hx fw-bolder text-gray-900" id="val-total-peserta">1.250</div>
+                    <div class="fs-3hx fw-bolder text-gray-900" id="val-total-peserta">0</div>
                     <span class="fs-8 fw-bold text-gray-500">Orang Lansia Tangguh</span>
                 </div>
             </div>
@@ -176,7 +177,7 @@
                     <i class="ki-outline ki-geolocation fs-2x text-success"></i>
                 </div>
                 <div class="text-end">
-                    <div class="fs-3hx fw-bolder text-success">154</div>
+                    <div class="fs-3hx fw-bolder text-success" id="val-kelurahan">0</div>
                     <span class="fs-8 fw-bold text-gray-500">Kelurahan Terjangkau</span>
                 </div>
             </div>
@@ -247,38 +248,12 @@
                                 <th class="text-end">PERSENTASE</th>
                             </tr>
                         </thead>
-                        <tbody class="fw-semibold text-gray-600">
-                            <tr>
-                                <td><span class="bullet bullet-vertical bg-success h-15px me-2"></span>20 : MANDIRI</td>
-                                <td class="text-center fw-bold text-gray-900">850</td>
-                                <td class="text-end fw-bold text-success">68%</td>
-                            </tr>
-                            <tr>
-                                <td><span class="bullet bullet-vertical bg-warning h-15px me-2"></span>12 - 19 : KETERGANTUNGAN RINGAN</td>
-                                <td class="text-center fw-bold text-gray-900">250</td>
-                                <td class="text-end fw-bold text-warning">20%</td>
-                            </tr>
-                            <tr>
-                                <td><span class="bullet bullet-vertical bg-info h-15px me-2"></span>9 - 11 : KETERGANTUNGAN SEDANG</td>
-                                <td class="text-center fw-bold text-gray-900">100</td>
-                                <td class="text-end fw-bold text-info">8%</td>
-                            </tr>
-                            <tr>
-                                <td><span class="bullet bullet-vertical bg-danger h-15px me-2"></span>5 - 8 : KETERGANTUNGAN BERAT</td>
-                                <td class="text-center fw-bold text-gray-900">35</td>
-                                <td class="text-end fw-bold text-danger">2.8%</td>
-                            </tr>
-                            <tr>
-                                <td><span class="bullet bullet-vertical bg-dark h-15px me-2"></span>0 - 4 : KETERGANTUNGAN TOTAL</td>
-                                <td class="text-center fw-bold text-gray-900">15</td>
-                                <td class="text-end fw-bold text-dark">1.2%</td>
-                            </tr>
-                        </tbody>
+                        <tbody class="fw-semibold text-gray-600" id="adl-tbody"></tbody>
                         <tfoot>
                             <tr class="fw-bolder text-gray-900 bg-light-subtle border-top">
                                 <td>TOTAL</td>
-                                <td class="text-center">1.250</td>
-                                <td class="text-end">100%</td>
+                                <td class="text-center" id="adl-total">0</td>
+                                <td class="text-end" id="adl-total-pct">0%</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -303,28 +278,12 @@
                                 <th class="text-end">PERSENTASE</th>
                             </tr>
                         </thead>
-                        <tbody class="fw-semibold text-gray-600">
-                            <tr>
-                                <td><span class="bullet bullet-vertical bg-success h-15px me-2"></span>9 - 16 : MANDIRI / TAK PERLU BANTUAN</td>
-                                <td class="text-center fw-bold text-gray-900">920</td>
-                                <td class="text-end fw-bold text-success">73.6%</td>
-                            </tr>
-                            <tr>
-                                <td><span class="bullet bullet-vertical bg-warning h-15px me-2"></span>1 - 8 : PERLU BANTUAN</td>
-                                <td class="text-center fw-bold text-gray-900">280</td>
-                                <td class="text-end fw-bold text-warning">22.4%</td>
-                            </tr>
-                            <tr>
-                                <td><span class="bullet bullet-vertical bg-danger h-15px me-2"></span>0 : TIDAK DAPAT MELAKUKAN APA-APA</td>
-                                <td class="text-center fw-bold text-gray-900">50</td>
-                                <td class="text-end fw-bold text-danger">4.0%</td>
-                            </tr>
-                        </tbody>
+                        <tbody class="fw-semibold text-gray-600" id="iadl-tbody"></tbody>
                         <tfoot>
                             <tr class="fw-bolder text-gray-900 bg-light-subtle border-top">
                                 <td>TOTAL</td>
-                                <td class="text-center">1.250</td>
-                                <td class="text-end">100%</td>
+                                <td class="text-center" id="iadl-total">0</td>
+                                <td class="text-end" id="iadl-total-pct">0%</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -346,28 +305,28 @@
             <div class="col-12 col-md-3">
                 <div class="p-5 rounded-4 text-center border border-teal border-opacity-10 h-100 d-flex flex-column justify-content-center" style="background-color: #f0fdf4;">
                     <span class="fs-8 fw-bold text-gray-600 text-uppercase">DOMINASI KATEGORI ADL</span>
-                    <div class="fs-2hx fw-bolder my-2" style="color: #0d9488;">68%</div>
-                    <span class="fs-8 fw-semibold text-gray-700">Mayoritas Peserta Kategori ADL Mandiri</span>
+                    <div class="fs-2hx fw-bolder my-2" style="color: #0d9488;" id="ins-adl-pct">0%</div>
+                    <span class="fs-8 fw-semibold text-gray-700" id="ins-adl-txt">-</span>
                 </div>
             </div>
             <div class="col-12 col-md-3">
                 <div class="p-5 rounded-4 bg-light-success text-center border border-success border-opacity-10 h-100 d-flex flex-column justify-content-center">
                     <span class="fs-8 fw-bold text-gray-600 text-uppercase">DOMINASI KATEGORI IADL</span>
-                    <div class="fs-2hx fw-bolder text-success my-2">73.6%</div>
-                    <span class="fs-8 fw-semibold text-gray-700">Mayoritas Peserta Kategori IADL Mandiri</span>
+                    <div class="fs-2hx fw-bolder text-success my-2" id="ins-iadl-pct">0%</div>
+                    <span class="fs-8 fw-semibold text-gray-700" id="ins-iadl-txt">-</span>
                 </div>
             </div>
             <div class="col-12 col-md-3">
                 <div class="p-5 rounded-4 bg-light-danger text-center border border-danger border-opacity-10 h-100 d-flex flex-column justify-content-center">
                     <span class="fs-8 fw-bold text-gray-600 text-uppercase">DOMINASI GENDER</span>
-                    <div class="fs-2hx fw-bolder text-danger my-2">69.6%</div>
-                    <span class="fs-8 fw-semibold text-gray-700">Peserta Didominasi Oleh Perempuan</span>
+                    <div class="fs-2hx fw-bolder text-danger my-2" id="ins-gender-pct">0%</div>
+                    <span class="fs-8 fw-semibold text-gray-700" id="ins-gender-txt">-</span>
                 </div>
             </div>
             <div class="col-12 col-md-3">
                 <div class="p-5 rounded-4 text-center border border-teal border-opacity-10 h-100 d-flex flex-column justify-content-center" style="background-color: #ccfbf1;">
                     <span class="fs-8 fw-bold text-gray-600 text-uppercase">TOTAL LANSIA TERDATA</span>
-                    <div class="fs-2hx fw-bolder my-2" style="color: #0f766e;">1.250</div>
+                    <div class="fs-2hx fw-bolder my-2" style="color: #0f766e;" id="ins-total">0</div>
                     <span class="fs-8 fw-semibold text-gray-700">Total Peserta Kegiatan SELANTANG</span>
                 </div>
             </div>
@@ -410,108 +369,221 @@ const dataWilayahSurabayaSelantang = {
     "WONOKROMO": ["DARMO", "JAGIR", "NGAGEL", "NGAGEL REJO", "SAWUNGGALING", "WONOKROMO"]
 };
 
+// =====================================================================
+// DATA DUMMY — peserta SELANTANG dibuat otomatis (angka tetap sama setiap
+// halaman dibuka). Hapus bagian ini dan ganti dengan data asli bila sudah ada.
+// =====================================================================
+function mulberry32(a) {
+    return function () {
+        a |= 0; a = a + 0x6D2B79F5 | 0;
+        let t = Math.imul(a ^ a >>> 15, 1 | a);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+}
+
+const ADL_KAT = [
+    { nama: 'Mandiri',                label: '20 : MANDIRI',                  bullet: 'bg-success', teks: 'text-success', warna: '#50cd89', cocok: function (s) { return s >= 20; } },
+    { nama: 'Ketergantungan Ringan',  label: '12 - 19 : KETERGANTUNGAN RINGAN',  bullet: 'bg-warning', teks: 'text-warning', warna: '#ffc700', cocok: function (s) { return s >= 12 && s <= 19; } },
+    { nama: 'Ketergantungan Sedang',  label: '9 - 11 : KETERGANTUNGAN SEDANG',   bullet: 'bg-info',    teks: 'text-info',    warna: '#009ef7', cocok: function (s) { return s >= 9 && s <= 11; } },
+    { nama: 'Ketergantungan Berat',   label: '5 - 8 : KETERGANTUNGAN BERAT',     bullet: 'bg-danger',  teks: 'text-danger',  warna: '#f64e60', cocok: function (s) { return s >= 5 && s <= 8; } },
+    { nama: 'Ketergantungan Total',   label: '0 - 4 : KETERGANTUNGAN TOTAL',     bullet: 'bg-dark',    teks: 'text-dark',    warna: '#181c32', cocok: function (s) { return s <= 4; } }
+];
+const IADL_KAT = [
+    { nama: 'Mandiri / Tak Perlu Bantuan',   label: '9 - 16 : MANDIRI / TAK PERLU BANTUAN', bullet: 'bg-success', teks: 'text-success', warna: '#50cd89', cocok: function (s) { return s >= 9; } },
+    { nama: 'Perlu Bantuan',                 label: '1 - 8 : PERLU BANTUAN',                bullet: 'bg-warning', teks: 'text-warning', warna: '#ffc700', cocok: function (s) { return s >= 1 && s <= 8; } },
+    { nama: 'Tidak Dapat Melakukan Apa-apa', label: '0 : TIDAK DAPAT MELAKUKAN APA-APA',    bullet: 'bg-danger',  teks: 'text-danger',  warna: '#f64e60', cocok: function (s) { return s === 0; } }
+];
+
+const pesertaDummy = (function () {
+    const rnd = mulberry32(20261028);
+    const tahunDummy = [2024, 2025, 2026];
+    const hasil = [];
+
+    function skorAdl() {
+        const r = rnd();
+        if (r < 0.62) return 20;
+        if (r < 0.84) return 12 + Math.floor(rnd() * 8);
+        if (r < 0.93) return 9 + Math.floor(rnd() * 3);
+        if (r < 0.98) return 5 + Math.floor(rnd() * 4);
+        return Math.floor(rnd() * 5);
+    }
+    function skorIadl() {
+        const r = rnd();
+        if (r < 0.74) return 9 + Math.floor(rnd() * 8);
+        if (r < 0.96) return 1 + Math.floor(rnd() * 8);
+        return 0;
+    }
+
+    // Setiap kelurahan punya peserta di SETIAP bulan dan tahun (minimal 1 laki-laki
+    // dan 1 perempuan), jadi filter apa pun tidak pernah menghasilkan angka 0.
+    Object.keys(dataWilayahSurabayaSelantang).forEach(function (kec) {
+        dataWilayahSurabayaSelantang[kec].forEach(function (kel) {
+            tahunDummy.forEach(function (thn) {
+                for (let bln = 1; bln <= 12; bln++) {
+                    const tambahan = Math.floor(rnd() * 5);          // 0 - 4 peserta tambahan
+                    for (let i = 0; i < 2 + tambahan; i++) {
+                        hasil.push({
+                            tahun: String(thn),
+                            bulan: bln,
+                            kecamatan: kec,
+                            kelurahan: kel,
+                            jk: i === 0 ? 'L' : (i === 1 ? 'P' : (rnd() < 0.12 ? 'L' : 'P')),
+                            adl: skorAdl(),
+                            iadl: skorIadl()
+                        });
+                    }
+                }
+            });
+        });
+    });
+    return hasil;
+})();
+// ===================== AKHIR DATA DUMMY =====================
+
 let chartGender = null;
 let chartAdl = null;
 let chartIadl = null;
 
+const $id = function (id) { return document.getElementById(id); };
+const fmt = function (n) { return Number(n).toLocaleString('id-ID'); };
+function persen(n, total) {
+    if (!total) return '0%';
+    return (n / total * 100).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+}
+
 function initDropdownKecamatanSelantang() {
-    const kecSelect = document.getElementById('filter-kecamatan-selantang');
+    const kecSelect = $id('filter-kecamatan-selantang');
     if (kecSelect) {
         kecSelect.innerHTML = '<option value="">Semua Kecamatan</option>';
-        Object.keys(dataWilayahSurabayaSelantang).forEach(kec => {
+        Object.keys(dataWilayahSurabayaSelantang).forEach(function (kec) {
             kecSelect.appendChild(new Option(kec, kec));
         });
     }
 }
 
 function loadKelurahanSelantang(kec) {
-    const kelSelect = document.getElementById('filter-kelurahan-selantang');
+    const kelSelect = $id('filter-kelurahan-selantang');
     if (!kelSelect) return;
     kelSelect.innerHTML = '<option value="">Semua Kelurahan</option>';
     if (kec && dataWilayahSurabayaSelantang[kec]) {
-        dataWilayahSurabayaSelantang[kec].forEach(kel => {
+        dataWilayahSurabayaSelantang[kec].forEach(function (kel) {
             kelSelect.appendChild(new Option(kel, kel));
         });
     }
 }
 
-function renderChartsSelantang() {
-    // 1. Chart Gender (Doughnut) dengan Warna Teal Emerald & Red
-    const ctxGender = document.getElementById('chartGenderSelantang');
-    if (ctxGender) {
-        if (chartGender) chartGender.destroy();
-        chartGender = new Chart(ctxGender, {
-            type: 'doughnut',
-            data: {
-                labels: ['Laki-Laki', 'Perempuan'],
-                datasets: [{
-                    data: [380, 870],
-                    backgroundColor: ['#0d9488', '#f64e60'],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } }
-            }
-        });
-    }
+function dataTersaring() {
+    const kec = $id('filter-kecamatan-selantang').value;
+    const kel = $id('filter-kelurahan-selantang').value;
+    const jk = $id('filter-jk-selantang').value;
+    const bln = $id('filter-bulan-selantang').value;
+    const thn = $id('filter-tahun-selantang').value;
+    return pesertaDummy.filter(function (p) {
+        if (kec && p.kecamatan !== kec) return false;
+        if (kel && p.kelurahan !== kel) return false;
+        if (jk && p.jk !== jk) return false;
+        if (bln && p.bulan !== parseInt(bln, 10)) return false;
+        if (thn && p.tahun !== thn) return false;
+        return true;
+    });
+}
 
-    // 2. Chart ADL (Pie)
-    const ctxAdl = document.getElementById('chartAdlSelantang');
-    if (ctxAdl) {
-        if (chartAdl) chartAdl.destroy();
-        chartAdl = new Chart(ctxAdl, {
-            type: 'pie',
-            data: {
-                labels: ['Mandiri', 'Ketergantungan Ringan', 'Ketergantungan Sedang', 'Ketergantungan Berat', 'Ketergantungan Total'],
-                datasets: [{
-                    data: [850, 250, 100, 35, 15],
-                    backgroundColor: ['#50cd89', '#ffc700', '#009ef7', '#f64e60', '#181c32'],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
-            }
-        });
-    }
+function hitungKategori(daftar, kategori, kunci) {
+    return kategori.map(function (k) {
+        return daftar.filter(function (p) { return k.cocok(p[kunci]); }).length;
+    });
+}
 
-    // 3. Chart IADL (Doughnut)
-    const ctxIadl = document.getElementById('chartIadlSelantang');
-    if (ctxIadl) {
-        if (chartIadl) chartIadl.destroy();
-        chartIadl = new Chart(ctxIadl, {
-            type: 'doughnut',
-            data: {
-                labels: ['Mandiri / Tak Perlu Bantuan', 'Perlu Bantuan', 'Tidak Dapat Melakukan Apa-apa'],
-                datasets: [{
-                    data: [920, 280, 50],
-                    backgroundColor: ['#50cd89', '#ffc700', '#f64e60'],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
-            }
-        });
+function isiTabel(prefix, kategori, jumlah, total) {
+    $id(prefix + '-tbody').innerHTML = kategori.map(function (k, i) {
+        return '<tr>' +
+            '<td><span class="bullet bullet-vertical ' + k.bullet + ' h-15px me-2"></span>' + k.label + '</td>' +
+            '<td class="text-center fw-bold text-gray-900">' + fmt(jumlah[i]) + '</td>' +
+            '<td class="text-end fw-bold ' + k.teks + '">' + persen(jumlah[i], total) + '</td>' +
+            '</tr>';
+    }).join('');
+    $id(prefix + '-total').textContent = fmt(total);
+    $id(prefix + '-total-pct').textContent = total ? '100%' : '0%';
+}
+
+function isiInsight(idPct, idTxt, kategori, jumlah, total, awalan) {
+    if (!total) {
+        $id(idPct).textContent = '0%';
+        $id(idTxt).textContent = 'Belum ada data untuk filter ini';
+        return;
+    }
+    let maks = 0;
+    jumlah.forEach(function (n, i) { if (n > jumlah[maks]) maks = i; });
+    $id(idPct).textContent = persen(jumlah[maks], total);
+    $id(idTxt).textContent = 'Mayoritas Peserta ' + awalan + ' ' + kategori[maks].nama;
+}
+
+function buatChart(lama, canvasId, tipe, label, data, warna, legend) {
+    const el = $id(canvasId);
+    if (!el) return null;
+    if (lama) lama.destroy();
+    return new Chart(el, {
+        type: tipe,
+        data: { labels: label, datasets: [{ data: data, backgroundColor: warna, borderWidth: 2 }] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: legend ? { position: 'bottom' } : { display: false } }
+        }
+    });
+}
+
+function renderSelantang() {
+    const daftar = dataTersaring();
+    const total = daftar.length;
+    const l = daftar.filter(function (p) { return p.jk === 'L'; }).length;
+    const p = total - l;
+    const kelurahan = new Set(daftar.map(function (x) { return x.kecamatan + '|' + x.kelurahan; })).size;
+
+    $id('val-total-peserta').textContent = fmt(total);
+    $id('val-jk-l').textContent = fmt(l);
+    $id('val-jk-p').textContent = fmt(p);
+    $id('pct-jk-l').textContent = persen(l, total);
+    $id('pct-jk-p').textContent = persen(p, total);
+    $id('val-kelurahan').textContent = fmt(kelurahan);
+
+    const adl = hitungKategori(daftar, ADL_KAT, 'adl');
+    const iadl = hitungKategori(daftar, IADL_KAT, 'iadl');
+    isiTabel('adl', ADL_KAT, adl, total);
+    isiTabel('iadl', IADL_KAT, iadl, total);
+
+    isiInsight('ins-adl-pct', 'ins-adl-txt', ADL_KAT, adl, total, 'Kategori ADL');
+    isiInsight('ins-iadl-pct', 'ins-iadl-txt', IADL_KAT, iadl, total, 'Kategori IADL');
+    if (total) {
+        const dominanPerempuan = p >= l;
+        $id('ins-gender-pct').textContent = persen(dominanPerempuan ? p : l, total);
+        $id('ins-gender-txt').textContent = 'Peserta Didominasi Oleh ' + (dominanPerempuan ? 'Perempuan' : 'Laki-Laki');
+    } else {
+        $id('ins-gender-pct').textContent = '0%';
+        $id('ins-gender-txt').textContent = 'Belum ada data untuk filter ini';
+    }
+    $id('ins-total').textContent = fmt(total);
+
+    if (typeof Chart !== 'undefined') {
+        chartGender = buatChart(chartGender, 'chartGenderSelantang', 'doughnut', ['Laki-Laki', 'Perempuan'], [l, p], ['#0d9488', '#f64e60'], true);
+        chartAdl = buatChart(chartAdl, 'chartAdlSelantang', 'pie', ADL_KAT.map(function (k) { return k.nama; }), adl, ADL_KAT.map(function (k) { return k.warna; }), false);
+        chartIadl = buatChart(chartIadl, 'chartIadlSelantang', 'doughnut', IADL_KAT.map(function (k) { return k.nama; }), iadl, IADL_KAT.map(function (k) { return k.warna; }), false);
     }
 }
 
 function applyFilterSelantang(e) {
     e.preventDefault();
-    const thn = document.getElementById('filter-tahun-selantang').value;
-    document.getElementById('label-periode-aktif').textContent = `Tahun ${thn}`;
-    renderChartsSelantang();
+    const thn = $id('filter-tahun-selantang').value;
+    const bln = $id('filter-bulan-selantang');
+    const namaBulan = bln.value ? bln.options[bln.selectedIndex].text + ' ' : '';
+    $id('label-periode-aktif').textContent = (namaBulan ? namaBulan : 'Tahun ') + thn;
+    renderSelantang();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initDropdownKecamatanSelantang();
-    setTimeout(renderChartsSelantang, 300);
+    setTimeout(renderSelantang, 300);
 });
+
 </script>
