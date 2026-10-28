@@ -121,3 +121,9 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.API_ROUTES = window.API_ROUTES || {};
+    window.API_ROUTES.kampungAsi      = "{{ route('kampung-asi.data') }}";
+    window.API_ROUTES.kampungAsiChart = "{{ route('kampung-asi.chart') }}";
+</script>

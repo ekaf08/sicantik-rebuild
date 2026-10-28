@@ -42,6 +42,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/data-umum', [DataUmumController::class, 'index']);
     Route::get('/data-umum/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->name('data-umum.kelurahan');
 
+
     // Mpasi
     Route::get('/mpasi', [MpasiController::class, 'index'])->name('mpasi.index');
     Route::post('/mpasi', [MpasiController::class, 'store'])->name('mpasi.store');
@@ -60,10 +61,6 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/inovasi/soth/show/{id}', [InovasiController::class, 'showSoth'])->name('soth.show');
     Route::post('/inovasi/soth/update/{id}', [InovasiController::class, 'updateSoth'])->name('soth.update');
     Route::delete('/inovasi/soth/destroy/{id}', [InovasiController::class, 'destroySoth'])->name('soth.destroy');
-
-    Route::get('/inovasi/global/get-data', [InovasiController::class, 'getData'])->name('inovasi.global.getData');
-    Route::post('/inovasi/global/store', [InovasiController::class, 'storeOrUpdateGlobal'])->name('inovasi.global.store');
-    Route::delete('/inovasi/global/destroy', [InovasiController::class, 'destroyGlobal'])->name('inovasi.global.destroy');
 
     //Kebijakan SK
     Route::get('/kebijakan', [KebijakanController::class, 'index'])->name('kebijakan.index');
@@ -181,6 +178,15 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/bumil-data/wilayah', [BumilController::class, 'wilayah']);
     Route::get('/bumil-data', [BumilController::class, 'index']);
     Route::get('/bumil-data/{id}/riwayat', [BumilController::class, 'riwayat']);
+
+    // Surabaya Emas
+    Route::get('/surabaya-emas/data', [InovasiController::class, 'getSurabayaEmasData'])->name('surabaya.emas.data');
+    Route::get('/surabaya-emas/chart', [InovasiController::class, 'getSurabayaEmasChart'])->name('surabaya.emas.chart');
+    Route::get('/surabaya-emas/detail/{id}', [InovasiController::class, 'getSurabayaEmasDetail'])->name('surabaya.emas.detail');
+
+    // Kampung Asi
+    Route::get('/kampung-asi/data', [InovasiController::class, 'getKampungAsiData'])->name('kampung-asi.data');
+    Route::get('/kampung-asi/chart', [InovasiController::class, 'getKampungAsiChart'])->name('kampung-asi.chart');
 
     // CATCH-ALL: harus paling bawah
     Route::get('/{slug}', [MenuController::class, 'handleDynamicPage']) ->where('slug', '.*')->name('menu.dynamic');
