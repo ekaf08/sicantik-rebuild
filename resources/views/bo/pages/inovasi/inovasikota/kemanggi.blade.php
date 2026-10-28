@@ -30,10 +30,6 @@
                     </label>
                     <select id="filter_kecamatan" class="form-select form-select-solid fw-semibold">
                         <option value="SEMUA KECAMATAN" selected>SEMUA KECAMATAN</option>
-                        <option value="Genteng">Genteng</option>
-                        <option value="Tegalsari">Tegalsari</option>
-                        <option value="Wonokromo">Wonokromo</option>
-                        <option value="Gubeng">Gubeng</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-6">
@@ -41,7 +37,8 @@
                         Periode
                     </label>
                     <select id="filter_periode" class="form-select form-select-solid fw-semibold">
-                        <option value="2025" selected>2025</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2025">2025</option>
                         <option value="2024">2024</option>
                         <option value="2023">2023</option>
                     </select>
@@ -56,8 +53,8 @@
             <h3 class="card-title fw-bolder text-gray-800 fs-5 text-uppercase m-0">
                 NILAI RATA - RATA REMAJA
             </h3>
-            <span class="badge badge-light-primary fw-bold fs-7 px-3 py-2">
-                Periode: 2025
+            <span class="badge badge-light-primary fw-bold fs-7 px-3 py-2" id="kmg-badge-remaja">
+                Periode: 2026
             </span>
         </div>
         <div class="card-body p-4 p-lg-7">
@@ -85,8 +82,8 @@
             <h3 class="card-title fw-bolder text-gray-800 fs-5 text-uppercase m-0">
                 NILAI RATA - RATA ORANG TUA
             </h3>
-            <span class="badge badge-light-primary fw-bold fs-7 px-3 py-2">
-                Periode: 2025
+            <span class="badge badge-light-primary fw-bold fs-7 px-3 py-2" id="kmg-badge-ortu">
+                Periode: 2026
             </span>
         </div>
         <div class="card-body p-4 p-lg-7">
@@ -114,7 +111,7 @@
             <h3 class="card-title fw-bolder text-gray-900 fs-5 m-0">
                 Tabel Rekapitulasi Nilai &amp; Peserta
             </h3>
-            <button type="button" class="btn btn-success fw-bold fs-7 px-4" onclick="openTambahKemangi()">
+            <button type="button" id="kmg-btn-tambah" class="btn btn-success fw-bold fs-7 px-4" onclick="openTambahKemangi()">
                 <i class="ki-outline ki-plus fs-3 me-1"></i> Tambah Data
             </button>
         </div>
@@ -140,7 +137,7 @@
                 <div class="col-12 col-md-3">
                     <select class="form-select form-select-solid fs-7 fw-semibold" id="kmg-filter-tahun">
                         <option value="">Semua Tahun</option>
-                        @for ($t = 2030; $t >= 2024; $t--)
+                        @for ($t = 2030; $t >= 2023; $t--)
                             <option value="{{ $t }}">{{ $t }}</option>
                         @endfor
                     </select>
@@ -171,7 +168,7 @@
                             <th class="py-3 text-center">Rata-rata Nilai Pre</th>
                             <th class="py-3 text-center">Rata-rata Nilai Post</th>
                             <th class="py-3 text-center">Jumlah Peserta</th>
-                            <th class="pe-5 py-3 text-center">Aksi</th>
+                            <th class="pe-5 py-3 text-center" id="kmg-th-aksi">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold" id="kmg-tbody">
@@ -224,7 +221,7 @@
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">TAHUN <span class="text-danger">*</span></label>
                             <select class="form-select form-select-solid" id="kmg-tahun" name="tahun" required>
                                 <option value="" selected disabled>-- Pilih --</option>
-                                @for ($t = 2024; $t <= 2030; $t++)
+                                @for ($t = 2023; $t <= 2030; $t++)
                                     <option value="{{ $t }}">{{ $t }}</option>
                                 @endfor
                             </select>
@@ -288,7 +285,10 @@
 
     const csrf = document.getElementById('kmg-csrf-token').value;
     const $ = function (id) { return document.getElementById(id); };
-    const KOLOM = 9;
+    // CRUD (Tambah / Edit / Hapus) disembunyikan karena Kemangi tidak memakai CRUD.
+    // Ubah menjadi true kalau tombolnya ingin ditampilkan lagi.
+    const CRUD_AKTIF = false;
+    const KOLOM = CRUD_AKTIF ? 9 : 8;
 
     function esc(v) {
         if (v === null || v === undefined) return '';
@@ -332,6 +332,12 @@
         if (terpilih) select.value = terpilih;
     }
     function initWilayah() {
+        const atas = $('filter_kecamatan');
+        atas.innerHTML = '<option value="SEMUA KECAMATAN" selected>SEMUA KECAMATAN</option>';
+        Object.keys(wilayah).sort().forEach(function (k) { atas.appendChild(new Option(k, k)); });
+        atas.addEventListener('change', renderGrafik);
+        $('filter_periode').addEventListener('change', renderGrafik);
+
         isiKecamatan($('kmg-filter-kecamatan'), 'Semua Kecamatan', false);
         $('kmg-filter-kecamatan').addEventListener('change', function () {
             isiKelurahan($('kmg-filter-kelurahan'), this.value, 'Semua Kelurahan', false);
@@ -342,6 +348,79 @@
         isiKecamatan($('kmg-modal-kecamatan'), 'Pilih Kecamatan', true);
         $('kmg-modal-kecamatan').addEventListener('change', function () {
             isiKelurahan($('kmg-modal-kelurahan'), this.value, 'Pilih Kelurahan', true);
+        });
+    }
+
+    // ---------- Grafik nilai rata-rata (Pretest vs Posttest) ----------
+    let chartRemaja = null;
+    let chartOrtu = null;
+
+    function siapkanChart(fn) {
+        if (typeof Chart !== 'undefined') { fn(); return; }
+        const sc = document.createElement('script');
+        sc.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+        sc.onload = fn;
+        document.head.appendChild(sc);
+    }
+
+    // rata-rata dihitung dengan bobot jumlah peserta
+    function rataTertimbang(daftar, kunci) {
+        let atas = 0, bawah = 0;
+        daftar.forEach(function (r) {
+            const w = Number(r.jumlah_peserta) || 1;
+            atas += (Number(r[kunci]) || 0) * w;
+            bawah += w;
+        });
+        return bawah ? Math.round(atas / bawah * 100) / 100 : null;
+    }
+
+    function dataGrafik(kelompok) {
+        const thn = $('filter_periode').value;
+        const kec = $('filter_kecamatan').value;
+        const dasar = semuaData.filter(function (r) { return r.kelompok === kelompok && String(r.tahun) === thn; });
+        const perKelurahan = kec && kec !== 'SEMUA KECAMATAN';
+        const kunci = perKelurahan ? 'kelurahan' : 'kecamatan';
+        const sumber = perKelurahan ? dasar.filter(function (r) { return r.kecamatan === kec; }) : dasar;
+        const label = Array.from(new Set(sumber.map(function (r) { return r[kunci]; }))).sort();
+        return {
+            label: label,
+            pre: label.map(function (l) { return rataTertimbang(sumber.filter(function (r) { return r[kunci] === l; }), 'nilai_pre'); }),
+            post: label.map(function (l) { return rataTertimbang(sumber.filter(function (r) { return r[kunci] === l; }), 'nilai_post'); })
+        };
+    }
+
+    function gambar(canvasId, lama, d) {
+        const canvas = $(canvasId);
+        if (!canvas) return null;
+        if (lama) lama.destroy();
+        const bawaan = Chart.getChart(canvas);      // jaga-jaga kalau sudah pernah digambar
+        if (bawaan) bawaan.destroy();
+        const garis = function (nama, data, warna) {
+            return { label: nama, data: data, borderColor: warna, backgroundColor: warna, borderWidth: 3, tension: 0.35, pointRadius: 4, pointHoverRadius: 6 };
+        };
+        return new Chart(canvas, {
+            type: 'line',
+            data: { labels: d.label, datasets: [garis('Pretest', d.pre, '#0284c7'), garis('Posttest', d.post, '#f43f5e')] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, suggestedMax: 100, grid: { color: '#f1f5f9' } },
+                    x: { grid: { color: '#f1f5f9' }, ticks: { autoSkip: false, maxRotation: 60, minRotation: 45, font: { size: 9, weight: '600' } } }
+                }
+            }
+        });
+    }
+
+    function renderGrafik() {
+        const thn = $('filter_periode').value;
+        $('kmg-badge-remaja').textContent = 'Periode: ' + thn;
+        $('kmg-badge-ortu').textContent = 'Periode: ' + thn;
+        siapkanChart(function () {
+            chartRemaja = gambar('chartKemanggiRemaja', chartRemaja, dataGrafik('Remaja'));
+            chartOrtu = gambar('chartKemanggiOrangTua', chartOrtu, dataGrafik('Orang Tua'));
         });
     }
 
@@ -387,10 +466,13 @@
                     '<td class="text-center fw-bold" style="color: #0284c7 !important;">' + angka(r.nilai_pre) + '</td>' +
                     '<td class="text-center fw-bold" style="color: #f43f5e !important;">' + angka(r.nilai_post) + '</td>' +
                     '<td class="text-center">' + esc(r.jumlah_peserta) + '</td>' +
-                    '<td class="pe-5 text-center text-nowrap">' +
-                        '<button class="btn btn-sm btn-icon btn-light-warning me-1 kmg-btn-edit" data-id="' + esc(r.id) + '" title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>' +
-                        '<button class="btn btn-sm btn-icon btn-light-danger kmg-btn-hapus" data-id="' + esc(r.id) + '" title="Hapus"><i class="ki-outline ki-trash fs-5"></i></button>' +
-                    '</td></tr>';
+                    (CRUD_AKTIF
+                        ? '<td class="pe-5 text-center text-nowrap">' +
+                            '<button class="btn btn-sm btn-icon btn-light-warning me-1 kmg-btn-edit" data-id="' + esc(r.id) + '" title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>' +
+                            '<button class="btn btn-sm btn-icon btn-light-danger kmg-btn-hapus" data-id="' + esc(r.id) + '" title="Hapus"><i class="ki-outline ki-trash fs-5"></i></button>' +
+                          '</td>'
+                        : '') +
+                    '</tr>';
             }).join('');
         }
 
@@ -399,16 +481,15 @@
             : 'Tidak ada data';
 
         let pg = '<li class="page-item ' + (page === 1 ? 'disabled' : '') + '"><a class="page-link px-3 kmg-page" href="#" data-page="' + (page - 1) + '">&lsaquo;</a></li>';
-        for (let p = 1; p <= totalPage; p++) {
-            pg += '<li class="page-item ' + (p === page ? 'active' : '') + '"><a class="page-link px-3 kmg-page" href="#" data-page="' + p + '">' + p + '</a></li>';
-        }
+        // Hanya tampil nomor halaman yang sedang aktif; ganti halaman dengan panah kiri / kanan
+        pg += '<li class="page-item active"><span class="page-link px-3">' + page + '</span></li>';
         pg += '<li class="page-item ' + (page === totalPage ? 'disabled' : '') + '"><a class="page-link px-3 kmg-page" href="#" data-page="' + (page + 1) + '">&rsaquo;</a></li>';
         $('kmg-pagination').innerHTML = pg;
     }
 
     function loadData() {
         return api('/kemangi-data')
-            .then(function (data) { semuaData = data; render(); })
+            .then(function (data) { semuaData = data; render(); renderGrafik(); })
             .catch(function () {
                 $('kmg-tbody').innerHTML = '<tr><td colspan="' + KOLOM + '" class="text-center text-danger py-5">Gagal memuat data. Pastikan migrasi sudah dijalankan dan route sudah ditambahkan.</td></tr>';
             });
@@ -509,6 +590,10 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        if (!CRUD_AKTIF) {
+            $('kmg-btn-tambah').classList.add('d-none');
+            $('kmg-th-aksi').classList.add('d-none');
+        }
         api('/kemangi-data/wilayah')
             .then(function (data) { wilayah = data; })
             .catch(function () { gagal('Gagal mengambil data kecamatan/kelurahan dari database.'); })
