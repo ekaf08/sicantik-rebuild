@@ -8,7 +8,7 @@
             </div>
             <div style="width: 48px; height: 3px; background-color: #009ef7; border-radius: 2px;" class="mb-3 mb-md-4"></div>
             <p class="text-gray-600 fs-7 fs-md-6 lh-base mb-0">
-                Surabaya Emas merupakan komitmen Pemerintah Kota Surabaya dalam membentuk generasi yang berakhlak mulia, sehat, cerdas, dan berdaya saing.Di bidang kesehatan, program Bersama Wujudkan Surabaya Emas (BWSE) dijalankan untuk mencegah dan menurunkan stunting melalui pendampingan gizi, pola asuh, serta pemantauan kesehatan secara berkelanjutan. Secara keseluruhan, Surabaya Emas mencerminkan upaya nyata pemerintah dalam menciptakan warga Surabaya yang unggul, berprestasi, dan siap menghadapi tantangan masa depan.
+                Surabaya Emas merupakan komitmen Pemerintah Kota Surabaya dalam membentuk generasi yang berakhlak mulia, sehat, cerdas, dan berdaya saing. Di bidang kesehatan, program Bersama Wujudkan Surabaya Emas (BWSE) dijalankan untuk mencegah dan menurunkan stunting melalui pendampingan gizi, pola asuh, serta pemantauan kesehatan secara berkelanjutan. Secara keseluruhan, Surabaya Emas mencerminkan upaya nyata pemerintah dalam menciptakan warga Surabaya yang unggul, berprestasi, dan siap menghadapi tantangan masa depan.
             </p>
         </div>
     </div>
@@ -154,16 +154,21 @@
 </div>
 
 <div class="modal fade" id="modalDetailBalita" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-850px">
-        <div class="modal-content">
-            <div class="modal-header pb-3 border-0">
-                <h2 class="fw-bolder fs-4 text-gray-800 mb-0">Detail Balita</h2>
-                <div class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal">
-                    <i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
-                </div>
-            </div>
-
-            <div class="modal-body pt-0 px-6 px-md-8 pb-6">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-bottom py-3 px-6 px-md-8 justify-content-between align-items-center">
+            <button type="button" 
+            class="btn btn-icon btn-sm btn-color-gray-500 btn-active-color-danger btn-active-light-danger rounded-circle w-32px h-32px transition-all" 
+            data-bs-dismiss="modal" 
+            aria-label="Close"
+            style="transition: all 0.2s ease-in-out;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+</div>
+            <div class="modal-body px-6 px-md-8 py-5">
                 <div class="text-center mb-4">
                     <h5 class="fw-bolder text-gray-800 text-uppercase tracking-wide mb-3">DETAIL RIWAYAT TIMBANG BALITA</h5>
                     <div class="d-inline-block text-start fs-7">
@@ -185,7 +190,7 @@
                         </span>
                     </div>
                     <div class="card-body p-4">
-                        <div style="position: relative; height: 220px; width: 100%;">
+                        <div style="position: relative; height: 320px; width: 100%;">
                             <canvas id="chartDetailRiwayatBalita"></canvas>
                         </div>
                     </div>
@@ -206,25 +211,33 @@
                                 <th class="min-w-70px">STATUS GIZI</th>
                             </tr>
                         </thead>
-                        <tbody id="tabel_detail_balita_body" class="text-center text-gray-800"></tbody>
+                        <tbody id="tabel_detail_balita_body" class="text-center text-gray-800">
+                            <tr>
+                                <td colspan="9" class="text-center py-6 text-gray-400">Memuat data...</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center flex-wrap pt-4">
                     <div id="detail_balita_info" class="fs-8 text-gray-600">
-                        Showing 1 to 5 of 5 records
+                        Showing 0 to 0 of 0 records
                     </div>
-                    <ul id="detail_balita_pagination" class="pagination pagination-sm m-0">
-                        <li class="page-item disabled"><a class="page-link" href="javascript:void(0)">&lt;</a></li>
-                        <li class="page-item active"><a class="page-link" href="javascript:void(0)">1</a></li>
-                        <li class="page-item disabled"><a class="page-link" href="javascript:void(0)">&gt;</a></li>
-                    </ul>
+                    <ul id="detail_balita_pagination" class="pagination pagination-sm m-0"></ul>
                 </div>
             </div>
 
-            <div class="modal-footer border-0 pt-0 px-6 px-md-8 pb-5 justify-content-end">
+            <div class="modal-footer border-top pt-3 px-6 px-md-8 pb-4 justify-content-end">
                 <button type="button" class="btn btn-sm btn-secondary text-gray-700 fw-bold px-5" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+        window.API_ROUTES = {
+            surabayaEmas: "{{ route('surabaya.emas.data') }}",
+            surabayaEmasChart: "{{ route('surabaya.emas.chart') }}",
+            surabayaEmasDetail: "{{ url('/surabaya-emas/detail') }}"
+        };
+</script>

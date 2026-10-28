@@ -241,73 +241,6 @@ class InovasiController extends Controller
         return view('bo.pages.inovasi.inovasikota.index', compact('kelurahan'));
     }
 
-    public function getSurabayaEmasData(Request $request)
-    {
-        $page      = (int) $request->input('page', 1);
-        $limit     = (int) $request->input('limit', 10);
-        $kecamatan = $request->input('kecamatan', 'Semua');
-        $search    = $request->input('search', '');
-
-        $dummyData = [
-            [
-                'id' => 1,
-                'nama_balita' => 'Ahmad Fauzi',
-                'tanggal_lahir' => '12-05-2022',
-                'jenis_kelamin' => 'Laki-laki',
-                'alamat_domisili' => 'Jl. Asem Baru No. 12',
-                'kelurahan_domisili' => 'Asem Rowo',
-                'kecamatan_domisili' => 'ASEMROWO',
-                'tpk' => 'TPK 01',
-                'tahun' => '2024'
-            ],
-            [
-                'id' => 2,
-                'nama_balita' => 'Siti Aisyah',
-                'tanggal_lahir' => '04-09-2023',
-                'jenis_kelamin' => 'Perempuan',
-                'alamat_domisili' => 'Jl. Tambak Sarioso No. 45',
-                'kelurahan_domisili' => 'Tambak Sarioso',
-                'kecamatan_domisili' => 'ASEMROWO',
-                'tpk' => 'TPK 02',
-                'tahun' => '2024'
-            ],
-            [
-                'id' => 3,
-                'nama_balita' => 'Budi Santoso',
-                'tanggal_lahir' => '20-01-2022',
-                'jenis_kelamin' => 'Laki-laki',
-                'alamat_domisili' => 'Jl. Genting Baru No. 8',
-                'kelurahan_domisili' => 'Genting Kalianak',
-                'kecamatan_domisili' => 'ASEMROWO',
-                'tpk' => 'TPK 01',
-                'tahun' => '2024'
-            ]
-        ];
-
-        $filtered = array_filter($dummyData, function ($item) use ($kecamatan, $search) {
-            if ($kecamatan !== 'Semua' && !empty($kecamatan) && strcasecmp($item['kecamatan_domisili'], $kecamatan) !== 0) {
-                return false;
-            }
-            if (!empty($search) && stripos($item['nama_balita'], $search) === false) {
-                return false;
-            }
-            return true;
-        });
-
-        $filtered  = array_values($filtered);
-        $total     = count($filtered);
-        $offset    = ($page - 1) * $limit;
-        $pagedData = array_slice($filtered, $offset, $limit);
-
-        return response()->json([
-            'total'        => $total,
-            'current_page' => $page,
-            'per_page'     => $limit,
-            'last_page'    => max(1, (int) ceil($total / max(1, $limit))),
-            'data'         => $pagedData
-        ]);
-    }
-
     public function soth()
     {
         return view('bo.pages.inovasi_soth.index');
@@ -525,6 +458,353 @@ class InovasiController extends Controller
         return response()->json([
             'status'  => 'success',
             'message' => 'Data SOTH berhasil dihapus'
+        ]);
+    }
+
+    // Kampung Asi
+    public function getKampungAsiData(Request $request)
+    {
+        try {
+            $page      = max(1, (int) $request->input('page', 1));
+            $limit     = max(1, (int) $request->input('limit', 10));
+            $kecamatan = $request->input('kecamatan', 'all');
+            $search    = trim($request->input('search', ''));
+
+            // Menggunakan tabel kampung_asi (tanpa whereNull deleted_at)
+            $query = DB::table('kampung_asi');
+
+            if (!empty($kecamatan) && $kecamatan !== 'all') {
+                $query->where('kecamatan', 'ilike', trim($kecamatan));
+            }
+
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama_kampung_asi', 'ilike', "%{$search}%")
+                      ->orWhere('kelurahan', 'ilike', "%{$search}%")
+                      ->orWhere('kecamatan', 'ilike', "%{$search}%");
+                });
+            }
+
+            $total  = (clone $query)->count();
+            $offset = ($page - 1) * $limit;
+
+            $items = $query->orderBy('id', 'desc')
+                ->offset($offset)
+                ->limit($limit)
+                ->get()
+                ->map(function ($row) {
+                    // Pengecekan aman untuk IdCipher
+                    if (class_exists(\App\Helpers\IdCipher::class)) {
+                        $row->hash = \App\Helpers\IdCipher::encode($row->id);
+                    } elseif (class_exists('IdCipher')) {
+                        $row->hash = \IdCipher::encode($row->id);
+                    } else {
+                        $row->hash = (string) $row->id;
+                    }
+                    unset($row->id);
+                    return $row;
+                });
+
+            return response()->json([
+                'total'        => $total,
+                'current_page' => $page,
+                'per_page'     => $limit,
+                'last_page'    => max(1, (int) ceil($total / $limit)),
+                'from'         => $total > 0 ? $offset + 1 : 0,
+                'to'           => min($offset + $limit, $total),
+                'data'         => $items
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine()
+            ], 500);
+        }
+    }
+
+    public function getKampungAsiChart(Request $request)
+    {
+        try {
+            $kecamatan = $request->input('kecamatan', 'all');
+
+            $query = DB::table('kampung_asi');
+
+            if (!empty($kecamatan) && $kecamatan !== 'all') {
+                $query->where('kecamatan', 'ilike', trim($kecamatan));
+            }
+
+            $data = $query->select(
+                'kecamatan',
+                DB::raw('ROUND(AVG(persentase)::numeric, 2) as avg_persen')
+            )
+            ->groupBy('kecamatan')
+            ->orderBy('kecamatan', 'asc')
+            ->get();
+
+            $labels = [];
+            $values = [];
+
+            foreach ($data as $item) {
+                $labels[] = $item->kecamatan;
+                $values[] = (float) $item->avg_persen;
+            }
+
+            return response()->json([
+                'labels' => $labels,
+                'data'   => $values
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine()
+            ], 500);
+        }
+    }
+
+    public function storeKampungAsi(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'kecamatan'        => 'required|string|max:255',
+            'kelurahan'        => 'required|string|max:255',
+            'nama_kampung_asi' => 'required|string|max:255',
+            'jumlah_kader'     => 'required|integer|min:0',
+            'jumlah_toga'      => 'required|integer|min:0',
+            'ibu_hamil'        => 'required|integer|min:0',
+            'ibu_menyusui'     => 'required|integer|min:0',
+            'persentase'       => 'required|numeric|min:0|max:100',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        DB::table('kampung_asi')->insert([
+            'kecamatan'        => strtoupper(trim($request->kecamatan)),
+            'kelurahan'        => trim($request->kelurahan),
+            'nama_kampung_asi' => trim($request->nama_kampung_asi),
+            'jumlah_kader'     => (int) $request->jumlah_kader,
+            'jumlah_toga'      => (int) $request->jumlah_toga,
+            'ibu_hamil'        => (int) $request->ibu_hamil,
+            'ibu_menyusui'     => (int) $request->ibu_menyusui,
+            'persentase'       => (float) $request->persentase,
+            'tahun'            => 2026,
+            'created_at'       => now(),
+            'updated_at'       => now(),
+        ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data Kampung ASI berhasil ditambahkan'
+        ]);
+    }
+
+    public function showKampungAsi($id)
+    {
+        $realId = IdCipher::decode($id);
+        if (!$realId) {
+            return response()->json(['status' => 'error', 'message' => 'Data tidak valid'], 400);
+        }
+
+        $data = DB::table('kampung_asi')
+            ->where('id', $realId)
+            ->first();
+
+        if (!$data) {
+            return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan'], 404);
+        }
+
+        $data->hash = IdCipher::encode($data->id);
+        unset($data->id);
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $data
+        ]);
+    }
+
+    public function updateKampungAsi(Request $request, $id)
+    {
+        $realId = IdCipher::decode($id);
+        if (!$realId) {
+            return response()->json(['status' => 'error', 'message' => 'Data tidak valid'], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'kecamatan'        => 'required|string|max:255',
+            'kelurahan'        => 'required|string|max:255',
+            'nama_kampung_asi' => 'required|string|max:255',
+            'jumlah_kader'     => 'required|integer|min:0',
+            'jumlah_toga'      => 'required|integer|min:0',
+            'ibu_hamil'        => 'required|integer|min:0',
+            'ibu_menyusui'     => 'required|integer|min:0',
+            'persentase'       => 'required|numeric|min:0|max:100',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        DB::table('kampung_asi')
+            ->where('id', $realId)
+            ->update([
+                'kecamatan'        => strtoupper(trim($request->kecamatan)),
+                'kelurahan'        => trim($request->kelurahan),
+                'nama_kampung_asi' => trim($request->nama_kampung_asi),
+                'jumlah_kader'     => (int) $request->jumlah_kader,
+                'jumlah_toga'      => (int) $request->jumlah_toga,
+                'ibu_hamil'        => (int) $request->ibu_hamil,
+                'ibu_menyusui'     => (int) $request->ibu_menyusui,
+                'persentase'       => (float) $request->persentase,
+                'updated_at'       => now(),
+            ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data Kampung ASI berhasil diperbarui'
+        ]);
+    }
+
+    public function destroyKampungAsi(Request $request, $id = null)
+    {
+        $target = $id ?? $request->input('id');
+        $realId = IdCipher::decode($target);
+
+        if (!$realId) {
+            return response()->json(['status' => 'error', 'message' => 'ID data tidak valid'], 400);
+        }
+
+        DB::table('kampung_asi')
+            ->where('id', $realId)
+            ->delete();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data Kampung ASI berhasil dihapus'
+        ]);
+    }
+    
+    public function getSurabayaEmasData(Request $request)
+    {
+        $query = DB::table('surabaya_emas_balita');
+
+        if ($request->filled('kecamatan') && !in_array($request->kecamatan, ['all', 'Semua'])) {
+            $query->where('kecamatan_domisili', $request->kecamatan);
+        }
+
+        if ($request->filled('kelurahan') && !in_array($request->kelurahan, ['all', 'Semua'])) {
+            $query->where('kelurahan_domisili', $request->kelurahan);
+        }
+
+        if ($request->filled('tahun') && !in_array($request->tahun, ['all', 'Semua'])) {
+            $query->where('tahun', $request->tahun);
+        }
+
+        if ($request->filled('search')) {
+            $keyword = trim($request->search);
+            $query->where(function ($q) use ($keyword) {
+                $q->where('nama_balita', 'ILIKE', "%{$keyword}%")
+                  ->orWhere('nik', 'ILIKE', "%{$keyword}%")
+                  ->orWhere('alamat_domisili', 'ILIKE', "%{$keyword}%")
+                  ->orWhere('tpk', 'ILIKE', "%{$keyword}%");
+            });
+        }
+
+        $limit = $request->input('limit', 10);
+        $data = $query->orderBy('id', 'desc')->paginate($limit);
+
+        return response()->json($data);
+    }
+
+    public function getSurabayaEmasChart(Request $request)
+{
+    $masterKecamatan = [
+        'ASEMROWO', 'BENOWO', 'BUBUTAN', 'BULAK', 'DUKUH PAKIS', 'GAYUNGAN', 'GENTENG',
+        'GUBENG', 'GUNUNG ANYAR', 'JAMBANGAN', 'KARANG PILANG', 'KENJERAN', 'KREMBANGAN',
+        'LAKAR SANTRI', 'MULYOREJO', 'PABEAN CANTIAN', 'PAKAL', 'RUNGKUT',
+        'SAMBI KEREP', 'SAWAHAN', 'SEMAMPIR', 'SIMOKERTO', 'SUKOLILO',
+        'SUKOMANUNGGAL', 'TAMBAKSARI', 'TANDES', 'TEGALSARI', 'TENGGILIS MEJOYO',
+        'WIYUNG', 'WONOCOLO', 'WONOKROMO'
+    ];
+
+    $query = DB::table('surabaya_emas_balita');
+
+    if ($request->filled('tahun') && !in_array($request->tahun, ['all', 'Semua'])) {
+        $query->where('tahun', $request->tahun);
+    }
+
+    if ($request->filled('kelurahan') && !in_array($request->kelurahan, ['all', 'Semua'])) {
+        $query->where('kelurahan_domisili', $request->kelurahan);
+    }
+
+    if ($request->filled('kecamatan') && !in_array($request->kecamatan, ['all', 'Semua'])) {
+        $query->where('kecamatan_domisili', $request->kecamatan);
+    }
+
+    $counts = $query->select('kecamatan_domisili', DB::raw('COUNT(id) as total'))
+        ->groupBy('kecamatan_domisili')
+        ->pluck('total', 'kecamatan_domisili')
+        ->toArray();
+
+    $labels = $masterKecamatan;
+    $data = [];
+
+    foreach ($masterKecamatan as $kec) {
+        $data[] = isset($counts[$kec]) ? (int)$counts[$kec] : 0;
+    }
+
+    return response()->json([
+        'labels' => $labels,
+        'data'   => $data
+    ]);
+}
+
+    public function getSurabayaEmasDetail($id)
+    {
+        $balita = DB::table('surabaya_emas_balita')->where('id', $id)->first();
+
+        if (!$balita) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        $riwayat = DB::table('surabaya_emas_riwayat_timbang')
+            ->where('balita_id', $id)
+            ->orderBy('tanggal_timbang', 'asc')
+            ->get();
+
+        $labels = [];
+        $bb = [];
+        $tb = [];
+
+        foreach ($riwayat as $item) {
+            $labels[] = date('d M Y', strtotime($item->tanggal_timbang));
+            $bb[] = (float) $item->berat_badan;
+            $tb[] = (float) $item->tinggi_badan;
+        }
+
+        return response()->json([
+            'balita' => [
+                'id' => $balita->id,
+                'nik' => $balita->nik,
+                'nama' => $balita->nama_balita,
+                'jenis_kelamin' => $balita->jenis_kelamin,
+                'alamat' => $balita->alamat_domisili,
+            ],
+            'riwayat' => $riwayat,
+            'chart' => [
+                'labels' => $labels,
+                'bb' => $bb,
+                'tb' => $tb
+            ]
         ]);
     }
 }

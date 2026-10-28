@@ -18,7 +18,7 @@ class MenuController extends Controller
     public function data(Request $request)
     {
         $search = $request->input('search.value');
-        $menus = Menu::with(['parent', 'creator']) // Memuat relasi parent dan creator
+        $menus = Menu::with(['parent', 'creator']) 
             ->when($search, function ($query, $search) {
                 return $query->where('nama_menu', 'ilike', '%' . $search . '%');
             })
@@ -165,13 +165,15 @@ class MenuController extends Controller
     }
 
     public function handleDynamicPage($slug)
-    {
-        $menu = Menu::where('url_menu', $slug)->first();
+{
+    $cleanSlug = trim($slug, '/');
 
-        if (!$menu) {
-            abort(404); 
-        }
+    $menu = Menu::whereRaw("TRIM(BOTH '/' FROM url_menu) = ?", [$cleanSlug])->first();
 
-        return view('bo.menu.halaman-dinamis', compact('menu'));
+    if (!$menu) {
+        abort(404, "Menu dengan slug '{$slug}' tidak ditemukan.");
     }
+
+    return view('bo.menu.halaman-dinamis', compact('menu'));
+}
 }
