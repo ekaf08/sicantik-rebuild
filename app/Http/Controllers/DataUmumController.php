@@ -20,13 +20,21 @@ class DataUmumController extends Controller
             ->where('kode_kec_bpjs', $kec->kode_bpjs)
             ->orderBy('nama_kel')->get();
 
+        // BARU: angka per kelurahan, dicocokkan lewat id_kel
+        $data = DB::table('data_umum_2026')
+            ->where('id_kec', $idKec)
+            ->where('periode', 2026)
+            ->whereNotNull('id_kel')
+            ->get()
+            ->keyBy('id_kel');
+
         return view('bo.pages.dashboard', [
             'level'       => 'kelurahan',
             'kec'         => $kec,
             'baris'       => $baris,
             'kecamatan'   => collect(),
             'kolom'       => $kolom,
-            'data'        => collect(),
+            'data'        => $data,   // UBAH: sebelumnya collect()
             'kolomPokja1' => collect(),
             'dataPokja1'  => collect(),
             'kolomPokja2' => collect(),

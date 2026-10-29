@@ -20,11 +20,17 @@ class DashboardController extends Controller
             ->orderBy('nama_kec')
             ->get();
 
+        $sumCols = $kolom->pluck('alias')
+            ->map(fn ($a) => "SUM($a) AS $a")
+            ->implode(', ');
+
         $data = DB::table('data_umum_2026')
+            ->selectRaw("id_kec, $sumCols")
             ->where('periode', 2026)
+            ->groupBy('id_kec')
             ->get()
             ->keyBy('id_kec');
-        
+
         $kolomPokja1 = DB::table('m_pertanyaan_dashboard_2026')
             ->where('tb_dashboard', 'd_pokja_1_2026')
             ->whereNull('deleted_at')
