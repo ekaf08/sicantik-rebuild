@@ -39,6 +39,28 @@ class DataUmumController extends Controller
             'dataPokja1'  => collect(),
             'kolomPokja2' => collect(),
             'dataPokja2'  => collect(),
+            'kolomPokja3' => $this->kolom('d_pokja_3_2026'),
+            'dataPokja3'  => $this->dataKelurahan('d_pokja_3_2026', $idKec),
+            'kolomPokja4' => $this->kolom('d_pokja_4_2026'),
+            'dataPokja4'  => $this->dataKelurahan('d_pokja_4_2026', $idKec),
         ]);
+    }
+
+    private function dataKelurahan(string $tabel, $idKec)
+    {
+        return DB::table($tabel)
+            ->where('id_kec', $idKec)
+            ->where('periode', 2026)
+            ->whereNotNull('id_kel')
+            ->get()
+            ->keyBy('id_kel');
+    }
+
+    private function kolom(string $tbDashboard)
+    {
+        return DB::table('m_pertanyaan_dashboard_2026')
+            ->where('tb_dashboard', $tbDashboard)
+            ->whereNull('deleted_at')
+            ->orderBy('urutan')->get();
     }
 }

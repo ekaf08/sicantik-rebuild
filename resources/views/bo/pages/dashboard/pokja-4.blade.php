@@ -46,157 +46,38 @@
                 <th class="bg-light-primary text-dark">P</th>
             </tr>
             <tr class="fw-semibold fs-8 text-gray bg-secondary text-center">
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-                <td>4</td>
-                <td>5</td>
-                <td>6</td>
-                <td>7</td>
-                <td>8</td>
-                <td>9</td>
-                <td>10</td>
-                <td>11</td>
-                <td>12</td>
-                <td>13</td>
-                <td>14</td>
-                <td>15</td>
-                <td>16</td>
-                <td>17</td>
-                <td>18</td>
-                <td>19</td>
-                <td>20</td>
-                <td>21</td>
-                <td>22</td>
-                <td>23</td>
-                <td>24</td>
-                <td>25</td>
-                <td>26</td>
-                <td>27</td>
-                <td>28</td>
+                @for ($n = 1; $n <= 28; $n++) 
+                    <td>{{ $n }}</td>
+                @endfor
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td class="text-start fw-bold">ASEMROWO</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="KB" data-kecamatan="ASEMROWO" data-value="39">39</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="Kader Surabaya Hebat" data-kecamatan="ASEMROWO" data-value="501">501</td>
-                <td class="fw-bold">0</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="Imunisasi" data-kecamatan="ASEMROWO" data-value="0">0</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="PKG" data-kecamatan="ASEMROWO" data-value="0">0</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="TBC" data-kecamatan="ASEMROWO" data-value="0">0</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Jamban" data-kecamatan="ASEMROWO" data-value="5.892">5.892</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="SPAL" data-kecamatan="ASEMROWO" data-value="1.170">1.170</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Tempat Sampah" data-kecamatan="ASEMROWO" data-value="5.845">5.845</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="MCK" data-kecamatan="ASEMROWO" data-value="0">0</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="PDAM" data-kecamatan="ASEMROWO" data-value="1.271">1.271</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Sumur" data-kecamatan="ASEMROWO" data-value="81">81</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Lain-Lain" data-kecamatan="ASEMROWO" data-value="0">0</td>
-                <td class="fw-bold">15.197</td>
-                <td class="fw-bold">23</td>
-                <td class="fw-bold">4.035</td>
-                <td class="fw-bold">970</td>
-                <td class="fw-bold">0</td>
-                <td class="fw-bold">0</td>
-                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="GKSTB Kesehatan" data-kecamatan="ASEMROWO" data-value="0">0</td>
-                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="GKSTB Lingkungan Hidup" data-kecamatan="ASEMROWO" data-value="0">0</td>
-                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="GKSTB Perencanaan Sehat" data-kecamatan="ASEMROWO" data-value="0">0</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td class="text-start fw-bold">BENOWO</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td class=" text-primary fw-bold agregat-trigger" data-field="KB" data-kecamatan="BENOWO" data-value="65">65</td>
-                <td class=" text-primary fw-bold agregat-trigger" data-field="Kader Surabaya Hebat" data-kecamatan="BENOWO" data-value="707">707</td>
-                <td class=" fw-bold">0</td>
-                <td class=" text-primary fw-bold agregat-trigger" data-field="Imunisasi" data-kecamatan="BENOWO" data-value="0">0</td>
-                <td class=" text-primary fw-bold agregat-trigger" data-field="PKG" data-kecamatan="BENOWO" data-value="0">0</td>
-                <td class=" text-primary fw-bold agregat-trigger" data-field="TBC" data-kecamatan="BENOWO" data-value="0">0</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="Jamban" data-kecamatan="BENOWO" data-value="777">777</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="SPAL" data-kecamatan="BENOWO" data-value="5.772">5.772</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="Tempat Sampah" data-kecamatan="BENOWO" data-value="777">777</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="MCK" data-kecamatan="BENOWO" data-value="0">0</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="PDAM" data-kecamatan="BENOWO" data-value="1.036">1.036</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="Sumur" data-kecamatan="BENOWO" data-value="6">6</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="Lain-Lain" data-kecamatan="BENOWO" data-value="0">0</td>
-                <td class="fw-bold">13.257</td>
-                <td class="fw-bold">23.359</td>
-                <td class="fw-bold">306</td>
-                <td class="fw-bold">7.925</td>
-                <td class="fw-bold">782</td>
-                <td class="fw-bold">0</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="GKSTB Kesehatan" data-kecamatan="BENOWO" data-value="5">5</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="GKSTB Lingkungan Hidup" data-kecamatan="BENOWO" data-value="4">4</td>
-                <td class="text-primary fw-bold agregat-trigger" data-field="GKSTB Perencanaan Sehat" data-kecamatan="BENOWO" data-value="0">0</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td class="text-start fw-bold">BUBUTAN</td>
-                <td class="bg-light">0</td>
-                <td class="bg-light">0</td>
-                <td class="bg-light">0</td>
-                <td class="bg-light">0</td>
-                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="KB" data-kecamatan="BUBUTAN" data-value="92">92</td>
-                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="Kader Surabaya Hebat" data-kecamatan="BUBUTAN" data-value="972">972</td>
-                <td class="bg-light fw-bold">0</td>
-                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="Imunisasi" data-kecamatan="BUBUTAN" data-value="0">0</td>
-                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="PKG" data-kecamatan="BUBUTAN" data-value="0">0</td>
-                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="TBC" data-kecamatan="BUBUTAN" data-value="0">0</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Jamban" data-kecamatan="BUBUTAN" data-value="1.536">1.536</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="SPAL" data-kecamatan="BUBUTAN" data-value="1.554">1.554</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Tempat Sampah" data-kecamatan="BUBUTAN" data-value="2.757">2.757</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="MCK" data-kecamatan="BUBUTAN" data-value="8">8</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="PDAM" data-kecamatan="BUBUTAN" data-value="2.575">2.575</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Sumur" data-kecamatan="BUBUTAN" data-value="98">98</td>
-                <td class="bg-light-info text-primary fw-bold agregat-trigger" data-field="Lain-Lain" data-kecamatan="BUBUTAN" data-value="0">0</td>
-                <td class="fw-bold">13.285</td>
-                <td class="fw-bold">26.535</td>
-                <td class="fw-bold">1.122</td>
-                <td class="fw-bold">12.017</td>
-                <td class="fw-bold">160</td>
-                <td class="fw-bold">0</td>
-                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="GKSTB Kesehatan" data-kecamatan="BUBUTAN" data-value="0">0</td>
-                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="GKSTB Lingkungan Hidup" data-kecamatan="BUBUTAN" data-value="0">0</td>
-                <td class="bg-light text-primary fw-bold agregat-trigger" data-field="GKSTB Perencanaan Sehat" data-kecamatan="BUBUTAN" data-value="0">0</td>
-            </tr>
+            <tbody>
+            @foreach ($kecamatan as $i => $kec)
+                <tr>
+                    <td>{{ $i + 1 }}</td>
+                    <td class="text-start fw-bold text-uppercase">{{ $kec->nama_kec }}</td>
+
+                    @foreach ($kolomPokja4 as $k)
+                        <td @class(['agregat-trigger fw-bold' => !$k->is_disable])
+                            @unless ($k->is_disable)
+                                data-id="{{ $k->id }}"
+                                data-kec-id="{{ $kec->id_kec }}"
+                                data-kec-nama="{{ $kec->nama_kec }}"
+                            @endunless>
+                            {{ number_format($dataPokja4[$kec->id_kec]->{$k->alias} ?? 0, 0, ',', '.') }}
+                        </td>
+                    @endforeach
+                </tr>
+            @endforeach
+            </tbody>
         </tbody>
         <tfoot>
-            <tr class="fw-bold fs-6 bg-light text-dark">
-                <td colspan="2" class="text-center bg-secondary">TOTAL</td>
-                <td class="bg-secondary">0</td>
-                <td class="bg-secondary">0</td>
-                <td class="bg-secondary">0</td>
-                <td class="bg-secondary">0</td>
-                <td class="bg-secondary text-primary">196</td>
-                <td class="bg-secondary">2.180</td>
-                <td class="bg-secondary">0</td>
-                <td class="bg-secondary text-primary">0</td>
-                <td class="bg-secondary text-primary">0</td>
-                <td class="bg-secondary text-primary">0</td>
-                <td class="bg-secondary text-primary">8.205</td>
-                <td class="bg-secondary text-primary">8.496</td>
-                <td class="bg-secondary text-primary">9.379</td>
-                <td class="bg-secondary text-primary">8</td>
-                <td class="bg-secondary text-primary">4.882</td>
-                <td class="bg-secondary text-primary">185</td>
-                <td class="bg-secondary text-primary">0</td>
-                <td class="bg-secondary">35.026</td>
-                <td class="bg-secondary">65.091</td>
-                <td class="bg-secondary">1.451</td>
-                <td class="bg-secondary">23.977</td>
-                <td class="bg-secondary">1.912</td>
-                <td class="bg-secondary">0</td>
-                <td class="bg-secondary text-primary">5</td>
-                <td class="bg-secondary text-primary">4</td>
-                <td class="bg-secondary text-primary">0</td>
+             <tr class="fw-bold fs-6 bg-light-success text-dark">
+                <td colspan="2" class="text-center">JUMLAH SELURUHNYA</td>
+                @foreach ($kolomPokja4 as $k)
+                    <td>{{ number_format($dataPokja4->sum($k->alias), 0, ',', '.') }}</td>
+                @endforeach
             </tr>
         </tfoot>
     </table>
