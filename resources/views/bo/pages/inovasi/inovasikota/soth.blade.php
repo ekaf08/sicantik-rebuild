@@ -9,49 +9,284 @@
             </h4>
             <div class="bg-success rounded-pill mb-4" style="height: 3px; width: 60px;"></div>
             <span class="text-gray-600 fs-6 lh-base mb-0 d-block mt-3">
-                Program Sekolah Orang Tua Hebat, Kolaborasi Pemkot Surabaya, BKKBN, dan PKK untuk meningkatkan kualitas pengasuhan anak melalui pendidikan informal, mencegah stunting, membentuk karakter positif, dan memperkuat hubungan keluarga, dengan fokus pada orang tua balita (0-5 tahun) di setiap RW, melalui 14 materi pengasuhan dan gizi. Harapannya dengan adanya program ini, orang tua yang memiliki balita mendapatkan peningkatan kualitas terkait cara, metode, dan pembentukan karakter yang lebih baik. 
+                Program Sekolah Orang Tua Hebat, Kolaborasi Pemkot Surabaya, BKKBN, dan PKK untuk meningkatkan kualitas pengasuhan anak melalui pendidikan informal, mencegah stunting, membentuk karakter positif, dan memperkuat hubungan keluarga, dengan fokus pada orang tua balita (0-5 tahun) di setiap RW, melalui 14 materi pengasuhan dan gizi.
             </span>
         </div>
     </div>
 
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-5">
-            <div class="col-12 col-md-4">
-                <label class="form-label fw-bold text-gray-700 fs-7">Kecamatan</label>
-                <select id="filter_soth_kecamatan" class="form-select form-select-solid fw-semibold fs-7" onchange="filterSothKecamatan()">
-                    <option value="all" selected>SEMUA KECAMATAN</option>
-                    <option value="ASEMROWO">ASEMROWO</option>
-                    <option value="BENOWO">BENOWO</option>
-                    <option value="BUBUTAN">BUBUTAN</option>
-                    <option value="BULAK">BULAK</option>
-                    <option value="DUKUH PAKIS">DUKUH PAKIS</option>
-                    <option value="GAYUNGAN">GAYUNGAN</option>
-                    <option value="GENTENG">GENTENG</option>
-                    <option value="GUBENG">GUBENG</option>
-                    <option value="GUNUNG ANYAR">GUNUNG ANYAR</option>
-                    <option value="JAMBANGAN">JAMBANGAN</option>
-                    <option value="KARANG PILANG">KARANG PILANG</option>
-                    <option value="KENJERAN">KENJERAN</option>
-                    <option value="KREMBANGAN">KREMBANGAN</option>
-                    <option value="LAKARSANTRI">LAKARSANTRI</option>
-                    <option value="MULYOREJO">MULYOREJO</option>
-                    <option value="PABEAN CANTIAN">PABEAN CANTIAN</option>
-                    <option value="PAKAL">PAKAL</option>
-                    <option value="RUNGKUT">RUNGKUT</option>
-                    <option value="SAMBIKEREP">SAMBIKEREP</option>
-                    <option value="SAWAHAN">SAWAHAN</option>
-                    <option value="SEMAMPIR">SEMAMPIR</option>
-                    <option value="SIMOKERTO">SIMOKERTO</option>
-                    <option value="SUKOLILO">SUKOLILO</option>
-                    <option value="SUKOMANUNGGAL">SUKOMANUNGGAL</option>
-                    <option value="TAMBAKSARI">TAMBAKSARI</option>
-                    <option value="TANDES">TANDES</option>
-                    <option value="TEGALSARI">TEGALSARI</option>
-                    <option value="TENGGILIS MEJOYO">TENGGILIS MEJOYO</option>
-                    <option value="WIYUNG">WIYUNG</option>
-                    <option value="WONOCOLO">WONOCOLO</option>
-                    <option value="WONOKROMO">WONOKROMO</option>
-                </select>
+            <div class="row g-4 align-items-end">
+                <div class="col-12 col-md-5">
+                    <label class="form-label fw-bold text-gray-700 fs-7">Kecamatan</label>
+                    <select id="filter_soth_kecamatan" class="form-select form-select-solid fw-semibold fs-7" onchange="handleSothKecamatanChange()">
+                        <option value="all" selected>SEMUA KECAMATAN</option>
+                        <option value="ASEMROWO">ASEMROWO</option>
+                        <option value="BENOWO">BENOWO</option>
+                        <option value="BUBUTAN">BUBUTAN</option>
+                        <option value="BULAK">BULAK</option>
+                        <option value="DUKUH PAKIS">DUKUH PAKIS</option>
+                        <option value="GAYUNGAN">GAYUNGAN</option>
+                        <option value="GENTENG">GENTENG</option>
+                        <option value="GUBENG">GUBENG</option>
+                        <option value="GUNUNG ANYAR">GUNUNG ANYAR</option>
+                        <option value="JAMBANGAN">JAMBANGAN</option>
+                        <option value="KARANG PILANG">KARANG PILANG</option>
+                        <option value="KENJERAN">KENJERAN</option>
+                        <option value="KREMBANGAN">KREMBANGAN</option>
+                        <option value="LAKARSANTRI">LAKARSANTRI</option>
+                        <option value="MULYOREJO">MULYOREJO</option>
+                        <option value="PABEAN CANTIAN">PABEAN CANTIAN</option>
+                        <option value="PAKAL">PAKAL</option>
+                        <option value="RUNGKUT">RUNGKUT</option>
+                        <option value="SAMBIKEREP">SAMBIKEREP</option>
+                        <option value="SAWAHAN">SAWAHAN</option>
+                        <option value="SEMAMPIR">SEMAMPIR</option>
+                        <option value="SIMOKERTO">SIMOKERTO</option>
+                        <option value="SUKOLILO">SUKOLILO</option>
+                        <option value="SUKOMANUNGGAL">SUKOMANUNGGAL</option>
+                        <option value="TAMBAKSARI">TAMBAKSARI</option>
+                        <option value="TANDES">TANDES</option>
+                        <option value="TEGALSARI">TEGALSARI</option>
+                        <option value="TENGGILIS MEJOYO">TENGGILIS MEJOYO</option>
+                        <option value="WIYUNG">WIYUNG</option>
+                        <option value="WONOCOLO">WONOCOLO</option>
+                        <option value="WONOKROMO">WONOKROMO</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label class="form-label fw-bold text-gray-700 fs-7">Kelurahan</label>
+                    <select id="filter_soth_kelurahan" class="form-select form-select-solid fw-semibold fs-7" onchange="terapkanFilterSoth()">
+                        <option value="all" selected>SEMUA KELURAHAN</option>
+                        
+                        {{-- ASEMROWO --}}
+                        <option value="ASEMROWO" data-kecamatan="ASEMROWO">ASEMROWO</option>
+                        <option value="GENTING KALIANAK" data-kecamatan="ASEMROWO">GENTING KALIANAK</option>
+                        <option value="TAMBAK SARIOSO" data-kecamatan="ASEMROWO">TAMBAK SARIOSO</option>
+
+                        {{-- BENOWO --}}
+                        <option value="KANDANGAN" data-kecamatan="BENOWO">KANDANGAN</option>
+                        <option value="ROMOKALISARI" data-kecamatan="BENOWO">ROMOKALISARI</option>
+                        <option value="SEMIEMI" data-kecamatan="BENOWO">SEMIEMI</option>
+                        <option value="TAMBAK OSOWILANGON" data-kecamatan="BENOWO">TAMBAK OSOWILANGON</option>
+
+                        {{-- BUBUTAN --}}
+                        <option value="ALUN-ALUN CONTONG" data-kecamatan="BUBUTAN">ALUN-ALUN CONTONG</option>
+                        <option value="BUBUTAN" data-kecamatan="BUBUTAN">BUBUTAN</option>
+                        <option value="GUNDIH" data-kecamatan="BUBUTAN">GUNDIH</option>
+                        <option value="JEPARA" data-kecamatan="BUBUTAN">JEPARA</option>
+                        <option value="TEMBOK DUKUH" data-kecamatan="BUBUTAN">TEMBOK DUKUH</option>
+
+                        {{-- BULAK --}}
+                        <option value="BULAK" data-kecamatan="BULAK">BULAK</option>
+                        <option value="KEDUNG COWEK" data-kecamatan="BULAK">KEDUNG COWEK</option>
+                        <option value="KENJERAN" data-kecamatan="BULAK">KENJERAN</option>
+                        <option value="SUKOLILO BARU" data-kecamatan="BULAK">SUKOLILO BARU</option>
+
+                        {{-- DUKUH PAKIS --}}
+                        <option value="DUKUH KUPANG" data-kecamatan="DUKUH PAKIS">DUKUH KUPANG</option>
+                        <option value="DUKUH PAKIS" data-kecamatan="DUKUH PAKIS">DUKUH PAKIS</option>
+                        <option value="GUNUNG SARI" data-kecamatan="DUKUH PAKIS">GUNUNG SARI</option>
+                        <option value="PRADAH KALIKENDAL" data-kecamatan="DUKUH PAKIS">PRADAH KALIKENDAL</option>
+
+                        {{-- GAYUNGAN --}}
+                        <option value="DUKUH MENANGGAL" data-kecamatan="GAYUNGAN">DUKUH MENANGGAL</option>
+                        <option value="GAYUNGAN" data-kecamatan="GAYUNGAN">GAYUNGAN</option>
+                        <option value="KETINTANG" data-kecamatan="GAYUNGAN">KETINTANG</option>
+                        <option value="MENANGGAL" data-kecamatan="GAYUNGAN">MENANGGAL</option>
+
+                        {{-- GENTENG --}}
+                        <option value="EMBONG KALIASIN" data-kecamatan="GENTENG">EMBONG KALIASIN</option>
+                        <option value="GENTENG" data-kecamatan="GENTENG">GENTENG</option>
+                        <option value="KAPASARI" data-kecamatan="GENTENG">KAPASARI</option>
+                        <option value="KETABANG" data-kecamatan="GENTENG">KETABANG</option>
+                        <option value="PENELEH" data-kecamatan="GENTENG">PENELEH</option>
+
+                        {{-- GUBENG --}}
+                        <option value="AIRLANGGA" data-kecamatan="GUBENG">AIRLANGGA</option>
+                        <option value="BARATA JAYA" data-kecamatan="GUBENG">BARATA JAYA</option>
+                        <option value="GUBENG" data-kecamatan="GUBENG">GUBENG</option>
+                        <option value="KERTAJAYA" data-kecamatan="GUBENG">KERTAJAYA</option>
+                        <option value="MOJO" data-kecamatan="GUBENG">MOJO</option>
+
+                        {{-- GUNUNG ANYAR --}}
+                        <option value="GUNUNG ANYAR" data-kecamatan="GUNUNG ANYAR">GUNUNG ANYAR</option>
+                        <option value="GUNUNG ANYAR TAMBAK" data-kecamatan="GUNUNG ANYAR">GUNUNG ANYAR TAMBAK</option>
+                        <option value="RUNGKUT MENANGGAL" data-kecamatan="GUNUNG ANYAR">RUNGKUT MENANGGAL</option>
+                        <option value="RUNGKUT TENGAH" data-kecamatan="GUNUNG ANYAR">RUNGKUT TENGAH</option>
+
+                        {{-- JAMBANGAN --}}
+                        <option value="JAMBANGAN" data-kecamatan="JAMBANGAN">JAMBANGAN</option>
+                        <option value="KARAH" data-kecamatan="JAMBANGAN">KARAH</option>
+                        <option value="KEBONSARI" data-kecamatan="JAMBANGAN">KEBONSARI</option>
+                        <option value="PAGESANGAN" data-kecamatan="JAMBANGAN">PAGESANGAN</option>
+
+                        {{-- KARANG PILANG --}}
+                        <option value="KARANG PILANG" data-kecamatan="KARANG PILANG">KARANG PILANG</option>
+                        <option value="KEDURUS" data-kecamatan="KARANG PILANG">KEDURUS</option>
+                        <option value="KRAKSAAN" data-kecamatan="KARANG PILANG">KRAKSAAN</option>
+                        <option value="WARUGUNUNG" data-kecamatan="KARANG PILANG">WARUGUNUNG</option>
+
+                        {{-- KENJERAN --}}
+                        <option value="BULAK BANTENG" data-kecamatan="KENJERAN">BULAK BANTENG</option>
+                        <option value="TAMBAK WEDI" data-kecamatan="KENJERAN">TAMBAK WEDI</option>
+                        <option value="TANAH KALI KEDINDING" data-kecamatan="KENJERAN">TANAH KALI KEDINDING</option>
+                        <option value="SIDOTOPO WETAN" data-kecamatan="KENJERAN">SIDOTOPO WETAN</option>
+
+                        {{-- KREMBANGAN --}}
+                        <option value="DUPAK" data-kecamatan="KREMBANGAN">DUPAK</option>
+                        <option value="KEMAYORAN" data-kecamatan="KREMBANGAN">KEMAYORAN</option>
+                        <option value="KREMBANGAN SELATAN" data-kecamatan="KREMBANGAN">KREMBANGAN SELATAN</option>
+                        <option value="MOROKREMBANGAN" data-kecamatan="KREMBANGAN">MOROKREMBANGAN</option>
+                        <option value="PERAK BARAT" data-kecamatan="KREMBANGAN">PERAK BARAT</option>
+
+                        {{-- LAKARSANTRI --}}
+                        <option value="BANGKINGAN" data-kecamatan="LAKARSANTRI">BANGKINGAN</option>
+                        <option value="JERUK" data-kecamatan="LAKARSANTRI">JERUK</option>
+                        <option value="LAKARSANTRI" data-kecamatan="LAKARSANTRI">LAKARSANTRI</option>
+                        <option value="LIDAH KULON" data-kecamatan="LAKARSANTRI">LIDAH KULON</option>
+                        <option value="LIDAH WETAN" data-kecamatan="LAKARSANTRI">LIDAH WETAN</option>
+                        <option value="SUMUR WELUT" data-kecamatan="LAKARSANTRI">SUMUR WELUT</option>
+
+                        {{-- MULYOREJO --}}
+                        <option value="DUKUH SUTOREJO" data-kecamatan="MULYOREJO">DUKUH SUTOREJO</option>
+                        <option value="KALICARI" data-kecamatan="MULYOREJO">KALICARI</option>
+                        <option value="KALISARI" data-kecamatan="MULYOREJO">KALISARI</option>
+                        <option value="KEJAWAN PUTIH TAMBAK" data-kecamatan="MULYOREJO">KEJAWAN PUTIH TAMBAK</option>
+                        <option value="MANYAR SABRANGAN" data-kecamatan="MULYOREJO">MANYAR SABRANGAN</option>
+                        <option value="MULYOREJO" data-kecamatan="MULYOREJO">MULYOREJO</option>
+
+                        {{-- PABEAN CANTIAN --}}
+                        <option value="BONGKARAN" data-kecamatan="PABEAN CANTIAN">BONGKARAN</option>
+                        <option value="CREMBO" data-kecamatan="PABEAN CANTIAN">CREMBO</option>
+                        <option value="NYAMPLUNGAN" data-kecamatan="PABEAN CANTIAN">NYAMPLUNGAN</option>
+                        <option value="PERAK TIMUR" data-kecamatan="PABEAN CANTIAN">PERAK TIMUR</option>
+                        <option value="PERAK UTARA" data-kecamatan="PABEAN CANTIAN">PERAK UTARA</option>
+
+                        {{-- PAKAL --}}
+                        <option value="BABAT JERAWAT" data-kecamatan="PAKAL">BABAT JERAWAT</option>
+                        <option value="BENOWO" data-kecamatan="PAKAL">BENOWO</option>
+                        <option value="PAKAL" data-kecamatan="PAKAL">PAKAL</option>
+                        <option value="SUMBEREJO" data-kecamatan="PAKAL">SUMBEREJO</option>
+
+                        {{-- RUNGKUT --}}
+                        <option value="KALIRUNGKUT" data-kecamatan="RUNGKUT">KALIRUNGKUT</option>
+                        <option value="KEDUNG BARUK" data-kecamatan="RUNGKUT">KEDUNG BARUK</option>
+                        <option value="MEDOKAN AYU" data-kecamatan="RUNGKUT">MEDOKAN AYU</option>
+                        <option value="PENJARINGANSARI" data-kecamatan="RUNGKUT">PENJARINGANSARI</option>
+                        <option value="RUNGKUT KIDUL" data-kecamatan="RUNGKUT">RUNGKUT KIDUL</option>
+                        <option value="WONOREJO" data-kecamatan="RUNGKUT">WONOREJO</option>
+
+                        {{-- SAMBIKEREP --}}
+                        <option value="BRINGIN" data-kecamatan="SAMBIKEREP">BRINGIN</option>
+                        <option value="LONTAR" data-kecamatan="SAMBIKEREP">LONTAR</option>
+                        <option value="MADE" data-kecamatan="SAMBIKEREP">MADE</option>
+                        <option value="SAMBIKEREP" data-kecamatan="SAMBIKEREP">SAMBIKEREP</option>
+
+                        {{-- SAWAHAN --}}
+                        <option value="BANYU URIP" data-kecamatan="SAWAHAN">BANYU URIP</option>
+                        <option value="KUPANG KRAJAN" data-kecamatan="SAWAHAN">KUPANG KRAJAN</option>
+                        <option value="PETEMON" data-kecamatan="SAWAHAN">PETEMON</option>
+                        <option value="PUTAT JAYA" data-kecamatan="SAWAHAN">PUTAT JAYA</option>
+                        <option value="SAWAHAN" data-kecamatan="SAWAHAN">SAWAHAN</option>
+                        <option value="TEMBOK DUKUH" data-kecamatan="SAWAHAN">TEMBOK DUKUH</option>
+
+                        {{-- SEMAMPIR --}}
+                        <option value="AMPEL" data-kecamatan="SEMAMPIR">AMPEL</option>
+                        <option value="PEGIRIAN" data-kecamatan="SEMAMPIR">PEGIRIAN</option>
+                        <option value="SIDOTOPO" data-kecamatan="SEMAMPIR">SIDOTOPO</option>
+                        <option value="UJUNG" data-kecamatan="SEMAMPIR">UJUNG</option>
+                        <option value="WONOKUSUMO" data-kecamatan="SEMAMPIR">WONOKUSUMO</option>
+
+                        {{-- SIMOKERTO --}}
+                        <option value="KAPASAN" data-kecamatan="SIMOKERTO">KAPASAN</option>
+                        <option value="SIDODADI" data-kecamatan="SIMOKERTO">SIDODADI</option>
+                        <option value="SIMOKERTO" data-kecamatan="SIMOKERTO">SIMOKERTO</option>
+                        <option value="SIMOLAWANG" data-kecamatan="SIMOKERTO">SIMOLAWANG</option>
+                        <option value="TAMBAKREJO" data-kecamatan="SIMOKERTO">TAMBAKREJO</option>
+
+                        {{-- SUKOLILO --}}
+                        <option value="GEBANG PUTIH" data-kecamatan="SUKOLILO">GEBANG PUTIH</option>
+                        <option value="KEPUTIH" data-kecamatan="SUKOLILO">KEPUTIH</option>
+                        <option value="KLAMPIS NGASEM" data-kecamatan="SUKOLILO">KLAMPIS NGASEM</option>
+                        <option value="MEDOKAN SEMAMPIR" data-kecamatan="SUKOLILO">MEDOKAN SEMAMPIR</option>
+                        <option value="MENUR PUMPUNGAN" data-kecamatan="SUKOLILO">MENUR PUMPUNGAN</option>
+                        <option value="NGINDEN JANGKUNGAN" data-kecamatan="SUKOLILO">NGINDEN JANGKUNGAN</option>
+                        <option value="SEMOLOWARU" data-kecamatan="SUKOLILO">SEMOLOWARU</option>
+
+                        {{-- SUKOMANUNGGAL --}}
+                        <option value="PATEMON" data-kecamatan="SUKOMANUNGGAL">PATEMON</option>
+                        <option value="SIMOMULYO" data-kecamatan="SUKOMANUNGGAL">SIMOMULYO</option>
+                        <option value="SIMOMULYO BARU" data-kecamatan="SUKOMANUNGGAL">SIMOMULYO BARU</option>
+                        <option value="SONOKWIJENAN" data-kecamatan="SUKOMANUNGGAL">SONOKWIJENAN</option>
+                        <option value="SUKOMANUNGGAL" data-kecamatan="SUKOMANUNGGAL">SUKOMANUNGGAL</option>
+                        <option value="TANJUNGSARI" data-kecamatan="SUKOMANUNGGAL">TANJUNGSARI</option>
+
+                        {{-- TAMBAKSARI --}}
+                        <option value="DUKUH SETRO" data-kecamatan="TAMBAKSARI">DUKUH SETRO</option>
+                        <option value="GADING" data-kecamatan="TAMBAKSARI">GADING</option>
+                        <option value="KAPASMADYA BARU" data-kecamatan="TAMBAKSARI">KAPASMADYA BARU</option>
+                        <option value="PACARKELING" data-kecamatan="TAMBAKSARI">PACARKELING</option>
+                        <option value="PACARKEMBANG" data-kecamatan="TAMBAKSARI">PACARKEMBANG</option>
+                        <option value="PLOSO" data-kecamatan="TAMBAKSARI">PLOSO</option>
+                        <option value="RANGKAH" data-kecamatan="TAMBAKSARI">RANGKAH</option>
+                        <option value="TAMBAKSARI" data-kecamatan="TAMBAKSARI">TAMBAKSARI</option>
+
+                        {{-- TANDES --}}
+                        <option value="BALONGSARI" data-kecamatan="TANDES">BALONGSARI</option>
+                        <option value="BANJAR SUGIHAN" data-kecamatan="TANDES">BANJAR SUGIHAN</option>
+                        <option value="KARANG POH" data-kecamatan="TANDES">KARANG POH</option>
+                        <option value="MANUKAN KULON" data-kecamatan="TANDES">MANUKAN KULON</option>
+                        <option value="MANUKAN WETAN" data-kecamatan="TANDES">MANUKAN WETAN</option>
+                        <option value="TANDES" data-kecamatan="TANDES">TANDES</option>
+
+                        {{-- TEGALSARI --}}
+                        <option value="DR. SOETOMO" data-kecamatan="TEGALSARI">DR. SOETOMO</option>
+                        <option value="KEDUNGDORO" data-kecamatan="TEGALSARI">KEDUNGDORO</option>
+                        <option value="KEPUTRAN" data-kecamatan="TEGALSARI">KEPUTRAN</option>
+                        <option value="TEGALSARI" data-kecamatan="TEGALSARI">TEGALSARI</option>
+                        <option value="WONOREJO" data-kecamatan="TEGALSARI">WONOREJO</option>
+
+                        {{-- TENGGILIS MEJOYO --}}
+                        <option value="KENDANGSARI" data-kecamatan="TENGGILIS MEJOYO">KENDANGSARI</option>
+                        <option value="KUTISARI" data-kecamatan="TENGGILIS MEJOYO">KUTISARI</option>
+                        <option value="PANJANG JIWO" data-kecamatan="TENGGILIS MEJOYO">PANJANG JIWO</option>
+                        <option value="PRAPEN" data-kecamatan="TENGGILIS MEJOYO">PRAPEN</option>
+                        <option value="TENGGILIS MEJOYO" data-kecamatan="TENGGILIS MEJOYO">TENGGILIS MEJOYO</option>
+
+                        {{-- WIYUNG --}}
+                        <option value="BABATAN" data-kecamatan="WIYUNG">BABATAN</option>
+                        <option value="BALASKLUMPRIK" data-kecamatan="WIYUNG">BALASKLUMPRIK</option>
+                        <option value="JAJAR TUNGGAL" data-kecamatan="WIYUNG">JAJAR TUNGGAL</option>
+                        <option value="WIYUNG" data-kecamatan="WIYUNG">WIYUNG</option>
+
+                        {{-- WONOCOLO --}}
+                        <option value="BENDUL MERISI" data-kecamatan="WONOCOLO">BENDUL MERISI</option>
+                        <option value="JEMUR WONOSARI" data-kecamatan="WONOCOLO">JEMUR WONOSARI</option>
+                        <option value="MARGOREJO" data-kecamatan="WONOCOLO">MARGOREJO</option>
+                        <option value="SIDOSERMO" data-kecamatan="WONOCOLO">SIDOSERMO</option>
+                        <option value="SIWALANKERTO" data-kecamatan="WONOCOLO">SIWALANKERTO</option>
+
+                        {{-- WONOKROMO --}}
+                        <option value="DARMO" data-kecamatan="WONOKROMO">DARMO</option>
+                        <option value="JAGIR" data-kecamatan="WONOKROMO">JAGIR</option>
+                        <option value="NGAGEL" data-kecamatan="WONOKROMO">NGAGEL</option>
+                        <option value="NGAGELREJO" data-kecamatan="WONOKROMO">NGAGELREJO</option>
+                        <option value="SAWUNGGALING" data-kecamatan="WONOKROMO">SAWUNGGALING</option>
+                        <option value="WONOKROMO" data-kecamatan="WONOKROMO">WONOKROMO</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <label class="form-label fw-bold text-gray-700 fs-7">Periode / Tahun</label>
+                    <select id="filter_soth_tahun" class="form-select form-select-solid fw-semibold fs-7" onchange="terapkanFilterSoth()">
+                        <option value="all" selected>SEMUA TAHUN</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -80,14 +315,16 @@
     </div>
 
     <div class="card border-0 shadow-sm rounded-4">
-        <div class="card-header border-0 pt-5 px-5 bg-transparent d-flex justify-content-between align-items-center">
+        <div class="card-header border-0 pt-5 px-5 bg-transparent d-flex flex-wrap justify-content-between align-items-center gap-3">
             <div class="d-flex align-items-center gap-2">
                 <span class="badge badge-primary px-3 py-2 fw-bolder fs-7 rounded-2">DATA</span>
                 <span class="fw-bolder text-gray-800 fs-6">SOTH</span>
             </div>
-            <button type="button" class="btn btn-sm btn-primary fw-bold px-4 py-2 rounded-3" onclick="bukaModalTambahSoth()">
-                <i class="ki-duotone ki-plus fs-6 me-1"></i> Input Data
-            </button>
+
+            <div class="position-relative w-100 w-md-250px">
+                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-3 top-50 translate-middle-y text-gray-500"></i>
+                <input type="text" id="soth_search_input" class="form-control form-control-solid ps-10 fs-7" placeholder="Cari nama / alamat..." autocomplete="off">
+            </div>
         </div>
         <div class="card-body px-5 pb-5 pt-2">
             <div class="table-responsive">
@@ -104,12 +341,11 @@
                             <th class="text-center min-w-100px">RATA-RATA PRE</th>
                             <th class="text-center min-w-100px">RATA-RATA POST</th>
                             <th class="text-center min-w-90px">TOTAL PESERTA</th>
-                            <th class="text-center min-w-80px">AKSI</th>
                         </tr>
                     </thead>
                     <tbody id="tabel_soth_body" class="fs-7 fw-semibold text-gray-700">
                         <tr>
-                            <td colspan="11" class="text-center py-8 text-gray-400">Memuat data...</td>
+                            <td colspan="10" class="text-center py-8 text-gray-400">Memuat data...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -132,122 +368,5 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalFormSoth" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-650px">
-        <div class="modal-content rounded-4 border-0 shadow">
-            <div class="modal-header pb-0 border-0 justify-content-between">
-                <h3 class="fw-bold text-gray-900 m-0" id="modalFormSothTitle">Input Data SOTH</h3>
-                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                    <i class="ki-duotone ki-cross fs-1"></i>
-                </div>
-            </div>
-            <div class="modal-body scroll-y px-10 py-8">
-                <form id="form_modal_soth" onsubmit="handleFormSothSubmit(event)">
-                    <input type="hidden" id="soth_form_id">
-                    
-                    <div class="mb-4">
-                        <label class="required fs-7 fw-bold text-gray-700 mb-2">Nama</label>
-                        <input type="text" id="soth_form_nama" class="form-control form-control-solid" placeholder="Nama Lokasi / Tempat Belajar" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="required fs-7 fw-bold text-gray-700 mb-2">Alamat</label>
-                        <input type="text" id="soth_form_alamat" class="form-control form-control-solid" placeholder="Contoh: JL. WISMA TENGGER NO. 10" required>
-                    </div>
-
-                    <div class="row g-4 mb-4">
-                        <div class="col-3">
-                            <label class="required fs-7 fw-bold text-gray-700 mb-2">RT</label>
-                            <input type="text" id="soth_form_rt" class="form-control form-control-solid" placeholder="01" required>
-                        </div>
-                        <div class="col-3">
-                            <label class="required fs-7 fw-bold text-gray-700 mb-2">RW</label>
-                            <input type="text" id="soth_form_rw" class="form-control form-control-solid" placeholder="03" required>
-                        </div>
-                        <div class="col-3">
-                            <label class="required fs-7 fw-bold text-gray-700 mb-2">Kelurahan</label>
-                            <input type="text" id="soth_form_kelurahan" class="form-control form-control-solid" placeholder="Kelurahan" required>
-                        </div>
-                        <div class="col-3">
-                            <label class="required fs-7 fw-bold text-gray-700 mb-2">Kecamatan</label>
-                            <input type="text" id="soth_form_kecamatan" class="form-control form-control-solid" placeholder="Kecamatan" required>
-                        </div>
-                    </div>
-
-                    <div class="row g-4 mb-4">
-                        <div class="col-4">
-                            <label class="required fs-7 fw-bold text-gray-700 mb-2">Rata-rata Pre</label>
-                            <input type="number" step="0.01" id="soth_form_pre" class="form-control form-control-solid" placeholder="0.00" required>
-                        </div>
-                        <div class="col-4">
-                            <label class="required fs-7 fw-bold text-gray-700 mb-2">Rata-rata Post</label>
-                            <input type="number" step="0.01" id="soth_form_post" class="form-control form-control-solid" placeholder="0.00" required>
-                        </div>
-                        <div class="col-4">
-                            <label class="required fs-7 fw-bold text-gray-700 mb-2">Total Peserta</label>
-                            <input type="number" id="soth_form_total" class="form-control form-control-solid" placeholder="0" required>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end gap-3 pt-4 border-top border-gray-200">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" id="btn_submit_soth" class="btn btn-primary">Simpan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modalKonfirmasiHapusSoth" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered mw-400px">
-        <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
-            <div class="modal-body p-0">
-                <div class="mb-4 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 72px; height: 72px; background-color: #fee2e2;">
-                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        <line x1="10" y1="11" x2="10" y2="17"></line>
-                        <line x1="14" y1="11" x2="14" y2="17"></line>
-                    </svg>
-                </div>
-
-                <h3 class="fw-bolder text-gray-900 fs-4 mb-2">Hapus Data SOTH?</h3>
-                <p class="text-gray-600 fs-7 mb-6">
-                    Apakah Anda yakin ingin menghapus data ini? Data yang telah dihapus tidak dapat dipulihkan kembali.
-                </p>
-
-                <div class="d-flex justify-content-center gap-3">
-                    <button type="button" class="btn btn-light btn-sm fw-semibold px-5 rounded-3" data-bs-dismiss="modal">
-                        Batal
-                    </button>
-                    <button type="button" id="btnProsesHapusSoth" class="btn btn-danger btn-sm fw-semibold px-5 rounded-3 d-flex align-items-center justify-content-center" style="min-width: 100px;">
-                        <span id="btnHapusSothSpinner" class="spinner-border spinner-border-sm align-middle me-2 d-none" role="status"></span>
-                        <span id="btnHapusSothText">Ya, Hapus</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modalNotifikasiSoth" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-350px">
-        <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
-            <div class="modal-body p-0">
-                <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background-color: #d1fae5;">
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </div>
-                <h4 class="fw-bolder text-gray-900 fs-5 mb-2" id="notifikasiSothTitle">Sukses</h4>
-                <p class="text-gray-600 fs-7 mb-5" id="notifikasiSothText">Data berhasil diproses</p>
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-primary btn-sm fw-semibold px-6 rounded-3" style="background-color: #0f5847; border-color: #0f5847;" data-bs-dismiss="modal">
-                        Tutup
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ asset('js/pages/soth.js') }}"></script>

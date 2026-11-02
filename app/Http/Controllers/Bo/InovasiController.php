@@ -241,21 +241,84 @@ class InovasiController extends Controller
         return view('bo.pages.inovasi.inovasikota.index', compact('kelurahan'));
     }
 
+
+    // SOTH 
+    
     public function soth()
-    {
-        return view('bo.pages.inovasi_soth.index');
+{
+    $listKelurahan = collect();
+
+    // 1. Ambil dari tabel master m_kelurahan
+    if (Schema::hasTable('m_kelurahan')) {
+        $query = DB::table('m_kelurahan');
+
+        if (Schema::hasTable('m_kecamatan') && Schema::hasColumn('m_kelurahan', 'id_kec')) {
+            $query->leftJoin('m_kecamatan', 'm_kelurahan.id_kec', '=', 'm_kecamatan.id_kec')
+                ->select(
+                    'm_kelurahan.nama_kel',
+                    DB::raw('UPPER(TRIM(m_kecamatan.nama_kec)) as nama_kec')
+                );
+        } else {
+            $query->select('nama_kel');
+        }
+
+        $listKelurahan = $query->orderBy('nama_kel', 'asc')->get();
     }
+
+    // 2. Fallback: jika m_kelurahan kosong, ambil dari t_inovasi_soth
+    if ($listKelurahan->isEmpty() && Schema::hasTable('t_inovasi_soth')) {
+        $listKelurahan = DB::table('t_inovasi_soth')
+            ->whereNull('deleted_at')
+            ->select(
+                'kelurahan as nama_kel',
+                DB::raw('UPPER(TRIM(kecamatan)) as nama_kec')
+            )
+            ->distinct()
+            ->orderBy('kelurahan', 'asc')
+            ->get();
+    }
+
+    return view('bo.pages.inovasi_soth.index', [
+        'masterKelurahan' => $listKelurahan
+    ]);
+}
 
     public function getSothData(Request $request)
     {
         $page      = (int) $request->input('page', 1);
         $limit     = (int) $request->input('limit', 10);
         $kecamatan = $request->input('kecamatan');
+        $kelurahan = $request->input('kelurahan');
+        $tahun     = $request->input('tahun');
+        $search    = trim($request->input('search', ''));
 
         $query = DB::table('t_inovasi_soth')->whereNull('deleted_at');
 
         if (!empty($kecamatan) && $kecamatan !== 'all') {
             $query->where('kecamatan', 'ilike', trim($kecamatan));
+        }
+
+        if (!empty($kelurahan) && $kelurahan !== 'all') {
+            $query->where('kelurahan', 'ilike', trim($kelurahan));
+        }
+
+        if (!empty($tahun) && $tahun !== 'all') {
+            if (Schema::hasColumn('t_inovasi_soth', 'tahun')) {
+                $query->where('tahun', $tahun);
+            } else {
+                $query->whereYear('created_at', $tahun);
+            }
+        }
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'ilike', "%{$search}%")
+                  ->orWhere('alamat', 'ilike', "%{$search}%")
+                  ->orWhere('kelurahan', 'ilike', "%{$search}%")
+                  ->orWhere('kecamatan', 'ilike', "%{$search}%")
+                  ->orWhere('rt', 'ilike', "%{$search}%")
+                  ->orWhere('rw', 'ilike', "%{$search}%");
+            });
         }
 
         $total  = $query->count();
@@ -264,12 +327,7 @@ class InovasiController extends Controller
         $items = $query->orderBy('id', 'desc')
             ->offset($offset)
             ->limit($limit)
-            ->get()
-            ->map(function ($row) {
-                $row->hash = IdCipher::encode($row->id);
-                unset($row->id);
-                return $row;
-            });
+            ->get();
 
         return response()->json([
             'total'        => $total,
@@ -285,6 +343,8 @@ class InovasiController extends Controller
     public function getSothChart(Request $request)
     {
         $kecamatan = $request->input('kecamatan');
+        $kelurahan = $request->input('kelurahan');
+        $tahun     = $request->input('tahun');
 
         $query = DB::table('t_inovasi_soth')->whereNull('deleted_at');
 
@@ -292,13 +352,36 @@ class InovasiController extends Controller
             $query->where('kecamatan', 'ilike', trim($kecamatan));
         }
 
+        if (!empty($kelurahan) && $kelurahan !== 'all') {
+            $query->where('kelurahan', 'ilike', trim($kelurahan));
+        }
+
+        if (!empty($tahun) && $tahun !== 'all') {
+            if (Schema::hasColumn('t_inovasi_soth', 'tahun')) {
+                $query->where('tahun', $tahun);
+            } else {
+                $query->whereYear('created_at', $tahun);
+            }
+        }
+
+        // Jika kecamatan dipilih, grafik otomatis mengelompokkan per kelurahan.
+        // Jika kelurahan spesifik dipilih, tampilkan perbandingan SOTH di kelurahan tersebut.
+        // Jika semua kecamatan, tampilkan per kecamatan.
+        if (!empty($kelurahan) && $kelurahan !== 'all') {
+            $groupField = 'nama';
+        } elseif (!empty($kecamatan) && $kecamatan !== 'all') {
+            $groupField = 'kelurahan';
+        } else {
+            $groupField = 'kecamatan';
+        }
+
         $data = $query->select(
-            'kecamatan',
+            $groupField . ' as label_name',
             DB::raw('ROUND(AVG(rata_pre)::numeric, 2) as avg_pre'),
             DB::raw('ROUND(AVG(rata_post)::numeric, 2) as avg_post')
         )
-        ->groupBy('kecamatan')
-        ->orderBy('kecamatan', 'asc')
+        ->groupBy($groupField)
+        ->orderBy($groupField, 'asc')
         ->get();
 
         $labels   = [];
@@ -306,7 +389,7 @@ class InovasiController extends Controller
         $postData = [];
 
         foreach ($data as $item) {
-            $labels[]   = $item->kecamatan;
+            $labels[]   = $item->label_name;
             $preData[]  = (float) $item->avg_pre;
             $postData[] = (float) $item->avg_post;
         }
@@ -315,7 +398,51 @@ class InovasiController extends Controller
             'labels'   => $labels,
             'pretest'  => $preData,
             'posttest' => $postData,
+            'group'    => $groupField
         ]);
+    }
+
+    public function getSothKelurahan(Request $request)
+    {
+        $kecamatan = $request->input('kecamatan');
+        $list = collect();
+
+        if (Schema::hasTable('m_kelurahan')) {
+            $query = DB::table('m_kelurahan');
+
+            $colKel = Schema::hasColumn('m_kelurahan', 'nama_kel') ? 'nama_kel' : 
+                     (Schema::hasColumn('m_kelurahan', 'kelurahan') ? 'kelurahan' : 'nama');
+
+            if (!empty($kecamatan) && $kecamatan !== 'all') {
+                $kecClean = strtoupper(trim($kecamatan));
+
+                if (Schema::hasTable('m_kecamatan') && Schema::hasColumn('m_kelurahan', 'id_kec')) {
+                    $query->whereIn('id_kec', function ($q) use ($kecClean) {
+                        $q->select('id_kec')
+                          ->from('m_kecamatan')
+                          ->whereRaw('UPPER(TRIM(nama_kec)) = ?', [$kecClean]);
+                    });
+                } 
+                elseif (Schema::hasColumn('m_kelurahan', 'nama_kec')) {
+                    $query->whereRaw('UPPER(TRIM(nama_kec)) = ?', [$kecClean]);
+                }
+            }
+
+            $list = $query->orderBy($colKel, 'asc')->pluck($colKel);
+        }
+
+        if ($list->isEmpty() && Schema::hasTable('t_inovasi_soth')) {
+            $query = DB::table('t_inovasi_soth')->whereNull('deleted_at');
+            if (!empty($kecamatan) && $kecamatan !== 'all') {
+                $query->whereRaw('UPPER(TRIM(kecamatan)) = ?', [strtoupper(trim($kecamatan))]);
+            }
+            $list = $query->select('kelurahan')
+                          ->distinct()
+                          ->orderBy('kelurahan', 'asc')
+                          ->pluck('kelurahan');
+        }
+
+        return response()->json($list->filter()->values());
     }
 
     public function storeSoth(Request $request)
@@ -470,7 +597,6 @@ class InovasiController extends Controller
             $kecamatan = $request->input('kecamatan', 'all');
             $search    = trim($request->input('search', ''));
 
-            // Menggunakan tabel kampung_asi (tanpa whereNull deleted_at)
             $query = DB::table('kampung_asi');
 
             if (!empty($kecamatan) && $kecamatan !== 'all') {
@@ -493,7 +619,6 @@ class InovasiController extends Controller
                 ->limit($limit)
                 ->get()
                 ->map(function ($row) {
-                    // Pengecekan aman untuk IdCipher
                     if (class_exists(\App\Helpers\IdCipher::class)) {
                         $row->hash = \App\Helpers\IdCipher::encode($row->id);
                     } elseif (class_exists('IdCipher')) {

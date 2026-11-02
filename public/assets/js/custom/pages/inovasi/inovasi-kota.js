@@ -370,101 +370,151 @@ if (document.readyState === 'loading') {
     initInovasi();
 }
 
-let sothCurrentPage = 1;
-let sothPageSize = 10;
-let sothChartInstance = null;
-let sothModal = null;
-let sothModalHapus = null;
-let sothNotifModal = null;
-let targetHashHapusSoth = null;
+window.ROUTES_SOTH = window.ROUTES_SOTH || {
+    data: '/inovasi/soth/data',
+    chart: '/inovasi/soth/chart'
+};
 
-function tampilkanPopUpSoth(judul, pesan) {
-    const titleEl = document.getElementById('notifikasiSothTitle');
-    const textEl = document.getElementById('notifikasiSothText');
-    if (titleEl) titleEl.textContent = judul;
-    if (textEl) textEl.textContent = pesan;
-
-    const modalEl = document.getElementById('modalNotifikasiSoth');
-    if (modalEl) {
-        if (!sothNotifModal) {
-            sothNotifModal = new bootstrap.Modal(modalEl);
-        }
-        sothNotifModal.show();
-    }
-}
-
-function initSothModule() {
-    const modalEl = document.getElementById('modalFormSoth');
-    if (modalEl && !sothModal) {
-        sothModal = new bootstrap.Modal(modalEl);
-    }
-
-    const modalHapusEl = document.getElementById('modalKonfirmasiHapusSoth');
-    if (modalHapusEl && !sothModalHapus) {
-        sothModalHapus = new bootstrap.Modal(modalHapusEl);
-    }
-
-    const modalNotifEl = document.getElementById('modalNotifikasiSoth');
-    if (modalNotifEl && !sothNotifModal) {
-        sothNotifModal = new bootstrap.Modal(modalNotifEl);
-    }
-
-    initChartSoth();
-    fetchTableSoth(1);
-    fetchChartSoth();
-}
-
-const listKecamatanSothMaster = [
+const masterKecamatanSoth = [
     'ASEMROWO', 'BENOWO', 'BUBUTAN', 'BULAK', 'DUKUH PAKIS', 'GAYUNGAN', 'GENTENG',
     'GUBENG', 'GUNUNG ANYAR', 'JAMBANGAN', 'KARANG PILANG', 'KENJERAN', 'KREMBANGAN',
-    'LAKAR SANTRI', 'MULYOREJO', 'PABEAN CANTIAN', 'PAKAL', 'RUNGKUT',
-    'SAMBI KEREP', 'SAWAHAN', 'SEMAMPIR', 'SIMOKERTO', 'SUKOLILO',
+    'LAKARSANTRI', 'MULYOREJO', 'PABEAN CANTIAN', 'PAKAL', 'RUNGKUT',
+    'SAMBIKEREP', 'SAWAHAN', 'SEMAMPIR', 'SIMOKERTO', 'SUKOLILO',
     'SUKOMANUNGGAL', 'TAMBAKSARI', 'TANDES', 'TEGALSARI', 'TENGGILIS MEJOYO',
     'WIYUNG', 'WONOCOLO', 'WONOKROMO'
 ];
 
-function initChartSoth() {
-    const ctx = document.getElementById('chartSothNilai');
-    if (!ctx) return;
+let chartSothInstance = null;
 
-    if (sothChartInstance) {
-        sothChartInstance.destroy();
-        sothChartInstance = null;
+let sothCurrentPage = 1;
+let sothPageSize = 10;
+let sothTotalPages = 1;
+let sothSearchQuery = '';
+let sothSearchTimer = null;
+
+function initSoth() {
+    initDropdownKelurahanSoth();
+    initChartSoth();
+    fetchTableSoth(1);
+    fetchChartSoth();
+
+    const searchInput = document.getElementById('soth_search_input');
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            searchSothTable();
+        });
+    }
+}
+
+function initDropdownKelurahanSoth() {
+    const kec = (document.getElementById('filter_soth_kecamatan')?.value || 'all').toUpperCase().trim();
+    const kelSelect = document.getElementById('filter_soth_kelurahan');
+    if (!kelSelect) return;
+
+    const options = kelSelect.querySelectorAll('option');
+
+    options.forEach(opt => {
+        if (opt.value === 'all') {
+            opt.hidden = false;
+            opt.disabled = false;
+            return;
+        }
+
+        const optKec = (opt.getAttribute('data-kecamatan') || '').toUpperCase().trim();
+
+        if (kec === 'all' || optKec === kec) {
+            opt.hidden = false;
+            opt.disabled = false;
+        } else {
+            opt.hidden = true;
+            opt.disabled = true;
+        }
+    });
+
+    kelSelect.value = 'all';
+}
+
+function handleSothKecamatanChange() {
+    initDropdownKelurahanSoth();
+    terapkanFilterSoth();
+}
+
+function terapkanFilterSoth() {
+    sothCurrentPage = 1;
+    fetchTableSoth(1);
+    fetchChartSoth();
+}
+
+function resetFilterSoth() {
+    const kec = document.getElementById('filter_soth_kecamatan');
+    const kel = document.getElementById('filter_soth_kelurahan');
+    const thn = document.getElementById('filter_soth_tahun');
+    const search = document.getElementById('soth_search_input');
+
+    if (kec) kec.value = 'all';
+    if (kel) kel.value = 'all';
+    if (thn) thn.value = 'all';
+    if (search) search.value = '';
+
+    initDropdownKelurahanSoth();
+
+    sothSearchQuery = '';
+    sothCurrentPage = 1;
+
+    fetchTableSoth(1);
+    fetchChartSoth();
+}
+
+function initChartSoth() {
+    const canvas = document.getElementById('chartSothNilai');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    if (chartSothInstance) {
+        chartSothInstance.destroy();
+        chartSothInstance = null;
     }
 
-    sothChartInstance = new Chart(ctx, {
+    const ctx = canvas.getContext('2d');
+
+    chartSothInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: listKecamatanSothMaster,
+            labels: masterKecamatanSoth,
             datasets: [
                 {
                     label: 'Pretest',
-                    data: new Array(listKecamatanSothMaster.length).fill(0),
+                    data: new Array(masterKecamatanSoth.length).fill(0),
                     borderColor: '#38bdf8',
-                    backgroundColor: 'rgba(56, 189, 248, 0.12)',
-                    borderWidth: 4,               
-                    borderDash: [6, 6],           
-                    tension: 0,
-                    pointRadius: 5.5,             
+                    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                    borderWidth: 3,
+                    borderDash: [5, 5],
+                    tension: 0.15,
+                    pointRadius: 5,
                     pointHoverRadius: 8,
                     pointBackgroundColor: '#ffffff',
                     pointBorderColor: '#38bdf8',
-                    pointBorderWidth: 3,         
+                    pointBorderWidth: 2.5,
+                    pointHoverBackgroundColor: '#38bdf8',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 2,
                     fill: false
                 },
                 {
                     label: 'Posttest',
-                    data: new Array(listKecamatanSothMaster.length).fill(0),
+                    data: new Array(masterKecamatanSoth.length).fill(0),
                     borderColor: '#fb7185',
-                    backgroundColor: 'rgba(251, 113, 133, 0.12)',
-                    borderWidth: 4,               
-                    borderDash: [6, 6],          
-                    tension: 0,
-                    pointRadius: 5.5,             
+                    backgroundColor: 'rgba(251, 113, 133, 0.15)',
+                    borderWidth: 3,
+                    borderDash: [5, 5],
+                    tension: 0.15,
+                    pointRadius: 5,
                     pointHoverRadius: 8,
                     pointBackgroundColor: '#ffffff',
                     pointBorderColor: '#fb7185',
-                    pointBorderWidth: 3,         
+                    pointBorderWidth: 2.5,
+                    pointHoverBackgroundColor: '#fb7185',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 2,
                     fill: false
                 }
             ]
@@ -472,16 +522,36 @@ function initChartSoth() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
             plugins: {
                 legend: { display: false },
-                datalabels: { display: false },
+                datalabels: false,
                 tooltip: {
-                    backgroundColor: '#1f2937',
-                    padding: 10,
+                    enabled: true,
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: '#1e293b',
+                    titleColor: '#ffffff',
+                    bodyColor: '#e2e8f0',
+                    borderColor: '#334155',
+                    borderWidth: 1,
+                    padding: 12,
                     cornerRadius: 8,
+                    boxPadding: 6,
+                    usePointStyle: true,
+                    titleFont: { size: 13, weight: 'bold' },
+                    bodyFont: { size: 12, weight: '600' },
                     callbacks: {
-                        label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y}%`
+                        title: function(items) {
+                            return items.length > 0 ? items[0].label : '';
+                        },
+                        label: function(ctx) {
+                            const val = parseFloat(ctx.parsed.y || 0).toFixed(2);
+                            return ` ${ctx.dataset.label}: ${val}%`;
+                        }
                     }
                 }
             },
@@ -494,7 +564,7 @@ function initChartSoth() {
                         stepSize: 10,
                         callback: (v) => v + '%',
                         color: '#64748b',
-                        font: { size: 10 }
+                        font: { size: 10, weight: '500' }
                     },
                     grid: { color: '#f1f5f9' }
                 },
@@ -503,7 +573,8 @@ function initChartSoth() {
                         color: '#64748b',
                         font: { size: 9, weight: '600' },
                         maxRotation: 45,
-                        minRotation: 45
+                        minRotation: 45,
+                        autoSkip: false
                     },
                     grid: { color: '#f8fafc' }
                 }
@@ -514,338 +585,240 @@ function initChartSoth() {
 
 function fetchChartSoth() {
     const kec = document.getElementById('filter_soth_kecamatan')?.value || 'all';
-    const chartUrl = window.ROUTES_SOTH?.chart || '/inovasi/soth/chart';
+    const kel = document.getElementById('filter_soth_kelurahan')?.value || 'all';
+    const thn = document.getElementById('filter_soth_tahun')?.value || 'all';
 
-    fetch(`${chartUrl}?kecamatan=${encodeURIComponent(kec)}`, {
+    const chartUrl = window.ROUTES_SOTH?.chart || '/inovasi/soth/chart';
+    const params = new URLSearchParams({ kecamatan: kec, kelurahan: kel, tahun: thn });
+
+    fetch(`${chartUrl}?${params.toString()}`, {
         headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
     .then(data => {
-        if (!sothChartInstance || !sothChartInstance.ctx) return;
-
-        const cleanName = (str) => (str || '').toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
-
-        if (kec !== 'all') {
-            sothChartInstance.data.labels = [kec];
-            sothChartInstance.data.datasets[0].data = [(parseFloat(data.pretest?.[0]) || 0)];
-            sothChartInstance.data.datasets[1].data = [(parseFloat(data.posttest?.[0]) || 0)];
-            sothChartInstance.update();
-            return;
-        }
+        if (!chartSothInstance || !chartSothInstance.ctx) return;
 
         const rawLabels = data.labels || [];
         const rawPre = data.pretest || [];
         const rawPost = data.posttest || [];
 
-        const mappedPre = listKecamatanSothMaster.map(masterKec => {
-            const masterClean = cleanName(masterKec);
-            const foundIndex = rawLabels.findIndex(l => cleanName(l) === masterClean);
-            return foundIndex !== -1 ? (parseFloat(rawPre[foundIndex]) || 0) : 0;
-        });
+        if (kec === 'all' && kel === 'all') {
+            const cleanName = (str) => (str || '').toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
 
-        const mappedPost = listKecamatanSothMaster.map(masterKec => {
-            const masterClean = cleanName(masterKec);
-            const foundIndex = rawLabels.findIndex(l => cleanName(l) === masterClean);
-            return foundIndex !== -1 ? (parseFloat(rawPost[foundIndex]) || 0) : 0;
-        });
+            const mappedPre = masterKecamatanSoth.map(masterKec => {
+                const masterClean = cleanName(masterKec);
+                const foundIndex = rawLabels.findIndex(l => cleanName(l) === masterClean);
+                return foundIndex !== -1 ? (parseFloat(rawPre[foundIndex]) || 0) : 0;
+            });
 
-        sothChartInstance.data.labels = listKecamatanSothMaster;
-        sothChartInstance.data.datasets[0].data = mappedPre;
-        sothChartInstance.data.datasets[1].data = mappedPost;
-        
-        sothChartInstance.update();
+            const mappedPost = masterKecamatanSoth.map(masterKec => {
+                const masterClean = cleanName(masterKec);
+                const foundIndex = rawLabels.findIndex(l => cleanName(l) === masterClean);
+                return foundIndex !== -1 ? (parseFloat(rawPost[foundIndex]) || 0) : 0;
+            });
+
+            chartSothInstance.data.labels = masterKecamatanSoth;
+            chartSothInstance.data.datasets[0].data = mappedPre;
+            chartSothInstance.data.datasets[1].data = mappedPost;
+        } else {
+            chartSothInstance.data.labels = rawLabels.length > 0 ? rawLabels : ['Data Kosong'];
+            chartSothInstance.data.datasets[0].data = rawPre.length > 0 ? rawPre.map(v => parseFloat(v) || 0) : [0];
+            chartSothInstance.data.datasets[1].data = rawPost.length > 0 ? rawPost.map(v => parseFloat(v) || 0) : [0];
+        }
+
+        chartSothInstance.update();
     })
-    .catch(err => console.error("Gagal load chart SOTH:", err));
-}
-
-function filterSothKecamatan() {
-    fetchTableSoth(1);
-    fetchChartSoth();
-}
-
-function changeSothPageSize() {
-    const sel = document.getElementById('soth_page_size');
-    sothPageSize = parseInt(sel.value, 10) || 10;
-    fetchTableSoth(1);
+    .catch(err => console.error('Chart error:', err));
 }
 
 function fetchTableSoth(page = 1) {
-    sothCurrentPage = page;
+    sothCurrentPage = parseInt(page, 10) || 1;
     const tbody = document.getElementById('tabel_soth_body');
-    if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-gray-400">Memuat data...</td></tr>`;
-    }
+    if (!tbody) return;
+
+    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-gray-500"><span class="spinner-border spinner-border-sm me-2"></span>Memuat data...</td></tr>`;
 
     const kec = document.getElementById('filter_soth_kecamatan')?.value || 'all';
-    const dataUrl = window.ROUTES_SOTH?.data || '/inovasi/soth/data';
+    const kel = document.getElementById('filter_soth_kelurahan')?.value || 'all';
+    const thn = document.getElementById('filter_soth_tahun')?.value || 'all';
+    const baseUrl = window.ROUTES_SOTH?.data || '/inovasi/soth/data';
+
     const params = new URLSearchParams({
-        page: page,
+        page: sothCurrentPage,
         limit: sothPageSize,
-        kecamatan: kec
+        kecamatan: kec,
+        kelurahan: kel,
+        tahun: thn,
+        search: sothSearchQuery
     });
 
-    fetch(`${dataUrl}?${params.toString()}`, {
-        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(res => res.json())
-    .then(data => renderTableSoth(data))
-    .catch(err => {
-        console.error("Gagal load tabel SOTH:", err);
-        if (tbody) {
-            tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-gray-400">Gagal memuat data</td></tr>`;
+    fetch(`${baseUrl}?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
         }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        renderTableSoth(data);
+    })
+    .catch(err => {
+        console.error('Table error:', err);
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-gray-400">Gagal memuat data</td></tr>`;
+        renderPaginationSoth(1, 1);
     });
 }
 
 function renderTableSoth(res) {
     const tbody = document.getElementById('tabel_soth_body');
+    const infoRecords = document.getElementById('soth_info_records');
     if (!tbody) return;
 
-    const items = res.data || [];
+    tbody.innerHTML = '';
+
+    let items = [];
+    if (res && Array.isArray(res.data)) {
+        items = res.data;
+    } else if (res && res.data && Array.isArray(res.data.data)) {
+        items = res.data.data;
+    } else if (Array.isArray(res)) {
+        items = res;
+    }
+
+    const total = parseInt(res?.total ?? (res?.data?.total ?? items.length), 10) || 0;
+    const currentPage = parseInt(res?.current_page ?? (res?.data?.current_page ?? sothCurrentPage), 10) || 1;
+    const perPage = parseInt(res?.per_page ?? (res?.data?.per_page ?? sothPageSize), 10) || 10;
+
+    const calculatedPages = Math.max(1, Math.ceil(total / perPage));
+    sothTotalPages = parseInt(res?.last_page ?? (res?.data?.last_page ?? calculatedPages), 10) || 1;
+
     if (items.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-gray-400">Data tidak ditemukan</td></tr>`;
-        updatePaginationInfo(0, 0, 0, 1, 1);
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-gray-400">Data tidak ditemukan</td></tr>`;
+        if (infoRecords) infoRecords.textContent = 'Showing 0 to 0 of 0 records';
+        renderPaginationSoth(1, 1);
         return;
     }
 
-    let html = '';
-    const startNo = ((res.current_page - 1) * res.per_page) + 1;
-
-    items.forEach((item, index) => {
-        const no = startNo + index;
-        const refId = item.hash || item.id;
-        html += `
-            <tr>
-                <td class="text-center">${no}</td>
-                <td>${item.nama ?? '-'}</td>
-                <td>${item.alamat ?? '-'}</td>
-                <td class="text-center">${item.rt ?? '-'}</td>
-                <td class="text-center">${item.rw ?? '-'}</td>
-                <td>${item.kelurahan ?? '-'}</td>
-                <td>${item.kecamatan ?? '-'}</td>
-                <td class="text-center">${parseFloat(item.rata_pre ?? item.rata_rata_pre ?? 0).toFixed(2)}</td>
-                <td class="text-center">${parseFloat(item.rata_post ?? item.rata_rata_post ?? 0).toFixed(2)}</td>
-                <td class="text-center">${item.total_peserta ?? 0}</td>
-                <td class="text-center">
-                    <div class="d-flex justify-content-center gap-1">
-                        <button type="button" class="btn btn-icon btn-light-success btn-sm" onclick="editDataSoth('${refId}')">
-                            <i class="ki-outline ki-pencil fs-4"></i>
-                        </button>
-                        <button type="button" class="btn btn-icon btn-light-danger btn-sm" onclick="konfirmasiHapusSoth('${refId}')">
-                            <i class="ki-outline ki-trash fs-4"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+    items.forEach((row, idx) => {
+        const no = (currentPage - 1) * perPage + (idx + 1);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="text-center">${no}</td>
+            <td>${row.nama || '-'}</td>
+            <td>${row.alamat || '-'}</td>
+            <td class="text-center">${row.rt || '-'}</td>
+            <td class="text-center">${row.rw || '-'}</td>
+            <td>${row.kelurahan || '-'}</td>
+            <td>${row.kecamatan || '-'}</td>
+            <td class="text-center">${parseFloat(row.rata_pre ?? row.rata_rata_pre ?? 0).toFixed(2)}</td>
+            <td class="text-center">${parseFloat(row.rata_post ?? row.rata_rata_post ?? 0).toFixed(2)}</td>
+            <td class="text-center">${row.total_peserta ?? 0}</td>
         `;
+        tbody.appendChild(tr);
     });
 
-    tbody.innerHTML = html;
-    const from = res.from || 0;
-    const to = res.to || 0;
-    const total = res.total || 0;
-    updatePaginationInfo(from, to, total, res.current_page, res.last_page);
+    const start = res.from ?? ((currentPage - 1) * perPage + 1);
+    const end = res.to ?? Math.min(currentPage * perPage, total);
+    if (infoRecords) {
+        infoRecords.textContent = `Showing ${start} to ${end} of ${total} records`;
+    }
+
+    renderPaginationSoth(currentPage, sothTotalPages);
 }
 
-function updatePaginationInfo(from, to, total, current, last) {
-    const info = document.getElementById('soth_info_records');
-    if (info) {
-        info.textContent = `Showing ${from} to ${to} of ${total} records`;
-    }
+function renderPaginationSoth(currentPage, totalPages) {
+    const el = document.getElementById('soth_pagination');
+    if (!el) return;
 
-    const pag = document.getElementById('soth_pagination');
-    if (!pag) return;
+    el.innerHTML = '';
 
-    if (last <= 1) {
-        pag.innerHTML = '';
-        return;
-    }
+    currentPage = parseInt(currentPage, 10) || 1;
+    totalPages = parseInt(totalPages, 10) || 1;
 
-    let pagHtml = '';
+    const buatItemPagination = (label, targetPage, isDisabled, isActive) => {
+        const li = document.createElement('li');
+        li.className = `page-item ${isDisabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`;
 
-    // Tombol Sebelumnya (<)
-    pagHtml += `
-        <li class="page-item previous ${current <= 1 ? 'disabled' : ''}">
-            <a class="page-link" href="javascript:void(0)" onclick="${current > 1 ? `fetchTableSoth(${current - 1})` : ''}">&lt;</a>
-        </li>
-    `;
+        const a = document.createElement('a');
+        a.className = 'page-link';
+        a.href = 'javascript:void(0);';
+        a.style.cursor = isDisabled ? 'default' : 'pointer';
+        a.innerHTML = label;
 
-    // Tombol Angka Halaman (1, 2, 3, dst)
-    for (let i = 1; i <= last; i++) {
-        pagHtml += `
-            <li class="page-item ${i === current ? 'active' : ''}">
-                <a class="page-link" href="javascript:void(0)" onclick="fetchTableSoth(${i})">${i}</a>
-            </li>
-        `;
-    }
-
-    // Tombol Selanjutnya (>)
-    pagHtml += `
-        <li class="page-item next ${current >= last ? 'disabled' : ''}">
-            <a class="page-link" href="javascript:void(0)" onclick="${current < last ? `fetchTableSoth(${current + 1})` : ''}">&gt;</a>
-        </li>
-    `;
-
-    pag.innerHTML = pagHtml;
-}
-
-function bukaModalTambahSoth() {
-    document.getElementById('form_modal_soth').reset();
-    document.getElementById('soth_form_id').value = '';
-    document.getElementById('modalFormSothTitle').textContent = 'Input Data SOTH';
-    if (!sothModal) {
-        sothModal = new bootstrap.Modal(document.getElementById('modalFormSoth'));
-    }
-    sothModal.show();
-}
-
-function editDataSoth(hash) {
-    const showUrl = window.ROUTES_SOTH?.show || '/inovasi/soth/show';
-    fetch(`${showUrl}/${encodeURIComponent(hash)}`, {
-        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(res => res.json())
-    .then(res => {
-        const d = res.data;
-        document.getElementById('soth_form_id').value = d.hash || d.id;
-        document.getElementById('soth_form_nama').value = d.nama;
-        document.getElementById('soth_form_alamat').value = d.alamat;
-        document.getElementById('soth_form_rt').value = d.rt;
-        document.getElementById('soth_form_rw').value = d.rw || '';
-        document.getElementById('soth_form_kelurahan').value = d.kelurahan;
-        document.getElementById('soth_form_kecamatan').value = d.kecamatan;
-        document.getElementById('soth_form_pre').value = d.rata_pre ?? d.rata_rata_pre;
-        document.getElementById('soth_form_post').value = d.rata_post ?? d.rata_rata_post;
-        document.getElementById('soth_form_total').value = d.total_peserta;
-
-        document.getElementById('modalFormSothTitle').textContent = 'Edit Data SOTH';
-        if (!sothModal) {
-            sothModal = new bootstrap.Modal(document.getElementById('modalFormSoth'));
+        if (!isDisabled && !isActive) {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                fetchTableSoth(targetPage);
+            });
         }
-        sothModal.show();
-    })
-    .catch(() => alert('Gagal memuat detail data.'));
-}
 
-function handleFormSothSubmit(e) {
-    e.preventDefault();
-
-    const hash = document.getElementById('soth_form_id').value;
-    const isEdit = Boolean(hash);
-    const token = window.ROUTES_SOTH?.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-    const payload = {
-        nama: document.getElementById('soth_form_nama').value,
-        alamat: document.getElementById('soth_form_alamat').value,
-        rt: document.getElementById('soth_form_rt').value,
-        rw: document.getElementById('soth_form_rw').value,
-        kelurahan: document.getElementById('soth_form_kelurahan').value,
-        kecamatan: document.getElementById('soth_form_kecamatan').value,
-        rata_pre: document.getElementById('soth_form_pre').value,
-        rata_post: document.getElementById('soth_form_post').value,
-        total_peserta: document.getElementById('soth_form_total').value,
-        _token: token
+        li.appendChild(a);
+        return li;
     };
 
-    const updateUrl = window.ROUTES_SOTH?.update || '/inovasi/soth/update';
-    const storeUrl = window.ROUTES_SOTH?.store || '/inovasi/soth/store';
-    const targetUrl = isEdit ? `${updateUrl}/${encodeURIComponent(hash)}` : storeUrl;
-    const btn = document.getElementById('btn_submit_soth');
-    btn.disabled = true;
+    el.appendChild(buatItemPagination('&lt;', currentPage - 1, currentPage <= 1, false));
 
-    fetch(targetUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': token
-        },
-        body: JSON.stringify(payload)
-    })
-    .then(async res => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Terjadi kesalahan saat menyimpan');
-        return data;
-    })
-    .then(res => {
-        if (sothModal) sothModal.hide();
-        fetchTableSoth(sothCurrentPage);
-        fetchChartSoth();
-        
-        tampilkanPopUpSoth(
-            'Sukses', 
-            isEdit ? 'Data Inovasi SOTH berhasil diperbarui!' : 'Data Inovasi SOTH berhasil ditambahkan!'
-        );
-    })
-    .catch(err => {
-        alert(err.message || 'Gagal menyimpan data');
-    })
-    .finally(() => {
-        btn.disabled = false;
-    });
-}
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, currentPage + 2);
 
-function konfirmasiHapusSoth(hash) {
-    if (!hash) return;
-    targetHashHapusSoth = hash;
-    const modalEl = document.getElementById('modalKonfirmasiHapusSoth');
-    if (!sothModalHapus && modalEl) {
-        sothModalHapus = new bootstrap.Modal(modalEl);
-    }
-    if (sothModalHapus) sothModalHapus.show();
-}
+    if (currentPage <= 3) endPage = Math.min(totalPages, 5);
+    if (currentPage >= totalPages - 2) startPage = Math.max(1, totalPages - 4);
 
-document.getElementById('btnProsesHapusSoth')?.addEventListener('click', function() {
-    if (!targetHashHapusSoth) return;
-
-    const btn = document.getElementById('btnProsesHapusSoth');
-    const spinner = document.getElementById('btnHapusSothSpinner');
-    const btnText = document.getElementById('btnHapusSothText');
-    const token = window.ROUTES_SOTH?.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-    btn.disabled = true;
-    spinner.classList.remove('d-none');
-    btnText.textContent = 'Menghapus...';
-
-    const destroyUrl = window.ROUTES_SOTH?.destroy || '/inovasi/soth/destroy';
-    fetch(`${destroyUrl}/${encodeURIComponent(targetHashHapusSoth)}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': token,
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            _token: token,
-            _method: 'DELETE'
-        })
-    })
-    .then(async (res) => {
-        if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.message || 'Gagal menghapus data.');
+    if (startPage > 1) {
+        el.appendChild(buatItemPagination('1', 1, false, false));
+        if (startPage > 2) {
+            const elipsis = document.createElement('li');
+            elipsis.className = 'page-item disabled';
+            elipsis.innerHTML = '<span class="page-link text-muted">...</span>';
+            el.appendChild(elipsis);
         }
-        return res.json();
-    })
-    .then(() => {
-        if (sothModalHapus) sothModalHapus.hide();
+    }
 
-        targetHashHapusSoth = null;
-        fetchTableSoth(sothCurrentPage);
-        fetchChartSoth();
+    for (let p = startPage; p <= endPage; p++) {
+        el.appendChild(buatItemPagination(p, p, false, p === currentPage));
+    }
 
-        tampilkanPopUpSoth('Sukses', 'Data Inovasi SOTH berhasil dihapus!');
-    })
-    .catch(err => {
-        alert(err.message || 'Terjadi kesalahan saat menghapus data.');
-    })
-    .finally(() => {
-        btn.disabled = false;
-        spinner.classList.add('d-none');
-        btnText.textContent = 'Ya, Hapus';
-    });
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const elipsis = document.createElement('li');
+            elipsis.className = 'page-item disabled';
+            elipsis.innerHTML = '<span class="page-link text-muted">...</span>';
+            el.appendChild(elipsis);
+        }
+        el.appendChild(buatItemPagination(totalPages, totalPages, false, false));
+    }
+
+    el.appendChild(buatItemPagination('&gt;', currentPage + 1, currentPage >= totalPages, false));
+}
+
+function searchSothTable() {
+    clearTimeout(sothSearchTimer);
+    sothSearchTimer = setTimeout(() => {
+        const input = document.getElementById('soth_search_input');
+        sothSearchQuery = input ? input.value.trim() : '';
+        fetchTableSoth(1);
+    }, 300);
+}
+
+function changeSothPageSize() {
+    const sizeSelect = document.getElementById('soth_page_size');
+    if (sizeSelect) {
+        sothPageSize = parseInt(sizeSelect.value, 10);
+    }
+    fetchTableSoth(1);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('tabel_soth_body')) {
+        initSoth();
+    }
 });
 
 // KAMPUNG ASI 
@@ -1707,16 +1680,16 @@ window.handleInovasiChange = handleInovasiChange;
 window.updateElearningTimestamp = updateElearningTimestamp;
 
 //Window Soth
-window.initSothModule = initSothModule;
+window.initSoth = initSoth;
+window.initDropdownKelurahanSoth = initDropdownKelurahanSoth;
+window.handleSothKecamatanChange = handleSothKecamatanChange;
+window.terapkanFilterSoth = terapkanFilterSoth;
+window.resetFilterSoth = resetFilterSoth;
 window.initChartSoth = initChartSoth;
 window.fetchChartSoth = fetchChartSoth;
-window.filterSothKecamatan = filterSothKecamatan;
 window.fetchTableSoth = fetchTableSoth;
+window.searchSothTable = searchSothTable;
 window.changeSothPageSize = changeSothPageSize;
-window.bukaModalTambahSoth = bukaModalTambahSoth;
-window.editDataSoth = editDataSoth;
-window.handleFormSothSubmit = handleFormSothSubmit;
-window.konfirmasiHapusSoth = konfirmasiHapusSoth;
 
 $(document).ready(function() {
     handlePokjaChange();
