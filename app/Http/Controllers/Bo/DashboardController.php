@@ -18,6 +18,24 @@ class DashboardController extends Controller
         $kolom = $this->kolom('data_umum_2026');
         $data  = $this->sumPerKecamatan('data_umum_2026', $kolom);
 
+        // Dasa Wisma: angka dihitung dari tabel detail, supaya sama dengan isi modal
+        $jmlDasaWisma = DB::table('d_dasa_wisma_2026')
+            ->where('periode', 2026)
+            ->whereNull('deleted_at')
+            ->selectRaw('id_kec, COUNT(*) AS total')
+            ->groupBy('id_kec')
+            ->pluck('total', 'id_kec');
+
+        foreach ($kecamatan as $kec) {
+            $jml = $jmlDasaWisma[$kec->id_kec] ?? 0;
+
+            if ($data->has($kec->id_kec)) {
+                $data[$kec->id_kec]->dasa_wisma = $jml;
+            } else {
+                $data[$kec->id_kec] = (object) ['id_kec' => $kec->id_kec, 'dasa_wisma' => $jml];
+            }
+        }
+
         $kolomPokja1 = $this->kolom('d_pokja_1_2026');
         $dataPokja1  = DB::table('d_pokja_1_2026')
             ->where('periode', 2026)
