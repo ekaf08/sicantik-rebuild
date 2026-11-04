@@ -25,9 +25,9 @@ class SothTableSeeder extends Seeder
 
         $namaTemas = [
             'Bina Keluarga Balita Ceria',
-            'Melati Terpadu',
+            'Melati Raya',
             'Tunas Bangsa',
-            'Harapan Bunda',
+            'Harapan Ibu',
             'Sejahtera Bersama',
             'Tunas Mandiri',
             'Bintang Kecil',

@@ -316,9 +316,10 @@
 
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-header border-0 pt-5 px-5 bg-transparent d-flex flex-wrap justify-content-between align-items-center gap-3">
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge badge-primary px-3 py-2 fw-bolder fs-7 rounded-2">DATA</span>
-                <span class="fw-bolder text-gray-800 fs-6">SOTH</span>
+           <div class="d-flex align-items-center">
+                <span class="badge badge-success px-4 py-2 fw-bolder fs-7 rounded-2 text-white">
+                    DATA SOTH
+                </span>
             </div>
 
             <div class="position-relative w-100 w-md-250px">

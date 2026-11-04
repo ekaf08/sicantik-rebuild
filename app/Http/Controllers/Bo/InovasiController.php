@@ -248,7 +248,6 @@ class InovasiController extends Controller
 {
     $listKelurahan = collect();
 
-    // 1. Ambil dari tabel master m_kelurahan
     if (Schema::hasTable('m_kelurahan')) {
         $query = DB::table('m_kelurahan');
 
@@ -265,7 +264,6 @@ class InovasiController extends Controller
         $listKelurahan = $query->orderBy('nama_kel', 'asc')->get();
     }
 
-    // 2. Fallback: jika m_kelurahan kosong, ambil dari t_inovasi_soth
     if ($listKelurahan->isEmpty() && Schema::hasTable('t_inovasi_soth')) {
         $listKelurahan = DB::table('t_inovasi_soth')
             ->whereNull('deleted_at')

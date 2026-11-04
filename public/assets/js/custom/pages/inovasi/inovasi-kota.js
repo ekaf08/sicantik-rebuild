@@ -1677,7 +1677,6 @@ window.lihatDetailBalita = lihatDetailBalita;
 window.populateInovasiOptions = populateInovasiOptions;
 window.handlePokjaChange = handlePokjaChange;
 window.handleInovasiChange = handleInovasiChange;
-window.updateElearningTimestamp = updateElearningTimestamp;
 
 //Window Soth
 window.initSoth = initSoth;
