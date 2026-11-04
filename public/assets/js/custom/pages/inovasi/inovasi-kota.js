@@ -3,7 +3,7 @@ const daftarInovasiKota = [
     { key: 'kemanggi', pokja: 'pokja 1', title: 'Kemangi (Kelas Remaja dan Orang Tua Tangguh, Kreatif, dan Mandiri)' },
     { key: 'selantang', pokja: 'pokja 2', title: 'Selantang' },
     { key: 'soth', pokja: 'pokja 2', title: 'SOTH (Sekolah Orang Tua Hebat)' },
-    { key: 'empty-sekretaris', pokja: 'sekretaris', title: 'Data Inovasi tidak ditemukan' },
+    { key: 'sicantik', pokja: 'sekretaris', title: 'Sicantik (Sistem Informasi Pencatatan Kegiatan dan Inovasi PKK Kota Surabaya)' },
     { key: 'makan-ketan', pokja: 'pokja 3', title: 'Makan Ketan (Pemanfaatan Pekarangan untuk Ketahanan Pangan)' },
     { key: 'pisang-danor', pokja: 'pokja 3', title: 'Pisang Danor (Pilah Sampah Anorganik dan Organik)' },
     { key: 'pmt', pokja: 'pokja 3', title: 'PMT (Pemberian Makanan Tambahan)' },
@@ -126,10 +126,20 @@ function populateInovasiOptions(selectedPokja = 'semua') {
     }
 
     if (pokjaKey === 'sekretaris') {
-        const opt = new Option('Data Inovasi tidak ditemukan', 'empty-sekretaris', true, true);
-        $(opt).prop('disabled', true);
+        const defaultOpt = new Option('Pilih salah satu inovasi...', '', true, true);
+        $(defaultOpt).prop('disabled', true);
+        $select.append(defaultOpt);
+
+        const opt = new Option('Si Cantik', 'sicantik', false, false);
         $select.append(opt);
-        if ($select.data('select2')) $select.trigger('change');
+
+        $select.val('sicantik');
+
+        if ($select.data('select2')) {
+            $select.trigger('change');
+        } else {
+            handleInovasiChange();
+        }
         return;
     }
 
@@ -137,19 +147,24 @@ function populateInovasiOptions(selectedPokja = 'semua') {
     $(defaultOpt).prop('disabled', true);
     $select.append(defaultOpt);
 
-    // 1. Filter item berdasarkan pokja
     let items = (typeof daftarInovasiKota !== 'undefined' ? daftarInovasiKota : []).filter(item => {
         const itemPokja = (item.pokja || '').toString().trim().toLowerCase();
-        if (itemPokja === 'sekretaris') return false;
         return pokjaKey === 'semua' || itemPokja === pokjaKey;
     });
 
-    // 2. URUTKAN SESUAI ABJAD A - Z BERDASARKAN TITLE
+    const hasSicantik = items.some(i => i.key === 'sicantik');
+    if (!hasSicantik && pokjaKey === 'semua') {
+        items.push({
+            title: 'Si Cantik',
+            key: 'sicantik',
+            pokja: 'sekretaris'
+        });
+    }
+
     items.sort((a, b) => {
         return a.title.localeCompare(b.title, 'id', { sensitivity: 'base' });
     });
 
-    // 3. Masukkan opsi yang sudah urut abjad ke dalam dropdown
     items.forEach(item => {
         const newOption = new Option(item.title, item.key, false, false);
         $select.append(newOption);
@@ -157,6 +172,8 @@ function populateInovasiOptions(selectedPokja = 'semua') {
 
     if (window.jQuery && $select.data('select2')) {
         $select.val('').trigger('change.select2');
+    } else {
+        nativeSelect.value = '';
     }
 }
 
@@ -233,6 +250,14 @@ function handleInovasiChange() {
                 setTimeout(() => {
                     if (typeof initSurabayaEmas === 'function') {
                         initSurabayaEmas();
+                    }
+                }, 150);
+            }
+
+            if (selectedKey === 'sicantik') {
+                setTimeout(() => {
+                    if (typeof fetchTableSiCantik === 'function') {
+                        fetchTableSiCantik();
                     }
                 }, 150);
             }
@@ -1652,6 +1677,180 @@ document.addEventListener('DOMContentLoaded', () => {
         initSurabayaEmas();
     }
 });
+
+
+let sicantikData = [];
+let sicantikCurrentPage = 1;
+const sicantikLimit = 10;
+let sicantikDebounceTimer = null;
+
+function fetchTableSiCantik() {
+    const tbody = document.getElementById('table-sicantik-body');
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center py-5">
+                    <div class="spinner-border spinner-border-sm text-success mb-2" role="status"></div>
+                    <div class="text-muted small fw-semibold">Memuat data dari database...</div>
+                </td>
+            </tr>
+        `;
+    }
+
+    const endpoint = '/inovasi/sicantik/get-data';
+
+    fetch(endpoint, {
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "Accept": "application/json"
+        }
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.status === 'success' && Array.isArray(res.data)) {
+            sicantikData = res.data;
+        } else {
+            sicantikData = [];
+        }
+        renderTableSiCantik(true);
+    })
+    .catch(err => {
+        console.error("Gagal mengambil data Si Cantik:", err);
+        sicantikData = [];
+        renderTableSiCantik(true);
+    });
+}
+
+function renderTableSiCantik(resetPage = false) {
+    const tbody = document.getElementById('table-sicantik-body');
+    const infoLabel = document.getElementById('table-sicantik-info');
+    if (!tbody) return;
+
+    if (resetPage) sicantikCurrentPage = 1;
+
+    const searchInput = document.getElementById('search-sicantik-input');
+    const q = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+    const filtered = sicantikData.filter(item => {
+        const judul = (item.judul || '').toLowerCase();
+        const deskripsi = (item.deskripsi || '').toLowerCase();
+        const keterangan = (item.keterangan || '').toLowerCase();
+        return q === '' || judul.includes(q) || deskripsi.includes(q) || keterangan.includes(q);
+    });
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / sicantikLimit));
+    if (sicantikCurrentPage > totalPages) sicantikCurrentPage = totalPages;
+
+    const start = (sicantikCurrentPage - 1) * sicantikLimit;
+    const rows = filtered.slice(start, start + sicantikLimit);
+
+    if (rows.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center py-5 text-muted small fw-semibold">
+                    <i class="fa-solid fa-circle-info fs-3 d-block mb-2"></i>
+                    Belum ada data Si Cantik yang ditemukan.
+                </td>
+            </tr>
+        `;
+        if (infoLabel) infoLabel.innerText = 'Showing 0 to 0 of 0 entries';
+        renderPaginationSiCantik(0);
+        return;
+    }
+
+    tbody.innerHTML = rows.map((item, idx) => {
+        const imgThumb = item.gambar 
+            ? `<a href="javascript:void(0)" onclick="openPreviewSiCantik('${item.gambar}', '${item.judul}')">
+                <img src="${item.gambar}" class="img-table-thumb shadow-xs" style="width: 44px; height: 38px; object-fit: cover; border-radius: 6px;" alt="Foto">
+               </a>`
+            : `<span class="text-muted small">-</span>`;
+
+        return `
+            <tr>
+                <td class="text-center fw-bold text-dark">${start + idx + 1}</td>
+                <td class="fw-bold text-dark">${item.judul || '-'}</td>
+                <td class="text-dark small" style="white-space: normal; max-width: 320px;">${item.deskripsi || '-'}</td>
+                <td class="text-center">${imgThumb}</td>
+                <td class="text-dark fw-medium small">${item.keterangan || '-'}</td>
+            </tr>
+        `;
+    }).join('');
+
+    const from = total ? start + 1 : 0;
+    const to = Math.min(start + sicantikLimit, total);
+    if (infoLabel) infoLabel.innerText = `Showing ${from} to ${to} of ${total} entries`;
+    renderPaginationSiCantik(totalPages);
+}
+
+function renderPaginationSiCantik(totalPages) {
+    const ul = document.getElementById('table-sicantik-pagination');
+    if (!ul) return;
+
+    const pages = Math.max(1, totalPages);
+    let html = `
+        <li class="page-item ${sicantikCurrentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="javascript:void(0)" data-page="${sicantikCurrentPage - 1}">&lt;</a>
+        </li>
+    `;
+
+    for (let p = 1; p <= pages; p++) {
+        html += `
+            <li class="page-item ${p === sicantikCurrentPage ? 'active' : ''}">
+                <a class="page-link" href="javascript:void(0)" data-page="${p}">${p}</a>
+            </li>
+        `;
+    }
+
+    html += `
+        <li class="page-item ${sicantikCurrentPage >= pages ? 'disabled' : ''}">
+            <a class="page-link" href="javascript:void(0)" data-page="${sicantikCurrentPage + 1}">&gt;</a>
+        </li>
+    `;
+
+    ul.innerHTML = html;
+}
+
+function openPreviewSiCantik(url, title) {
+    const imgEl = document.getElementById('modal-preview-sicantik-img');
+    const titleEl = document.getElementById('modal-preview-sicantik-title');
+    if (imgEl) imgEl.src = url;
+    if (titleEl) titleEl.innerText = title || 'Preview Gambar';
+
+    const modalEl = document.getElementById('modal-preview-sicantik');
+    if (modalEl && window.bootstrap && window.bootstrap.Modal) {
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    }
+}
+
+document.addEventListener('click', function(e) {
+    const link = e.target.closest('#table-sicantik-pagination a[data-page]');
+    if (link) {
+        e.preventDefault();
+        const p = parseInt(link.getAttribute('data-page'));
+        if (p && p !== sicantikCurrentPage) {
+            sicantikCurrentPage = p;
+            renderTableSiCantik();
+        }
+    }
+});
+
+document.addEventListener('input', function(e) {
+    if (e.target.id === 'search-sicantik-input') {
+        clearTimeout(sicantikDebounceTimer);
+        sicantikDebounceTimer = setTimeout(() => {
+            renderTableSiCantik(true);
+        }, 150);
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetchTableSiCantik();
+});
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    fetchTableSiCantik();
+}
 
 // Window Kampung ASI
 window.initKampungAsi = initKampungAsi;

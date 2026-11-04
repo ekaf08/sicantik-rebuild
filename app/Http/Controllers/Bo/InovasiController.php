@@ -36,22 +36,27 @@ class InovasiController extends Controller
     }
 
     public function global()
-    {
-        $kecamatan = DB::table('m_kecamatan')
-            ->orderBy('nama_kec', 'asc')
-            ->get()
-            ->map(function ($k) {
-                $k->ref = $this->encRef($k->id_kec);
-                unset($k->id_kec);
-                return $k;
-            });
+{
+    $kecamatan = DB::table('m_kecamatan')
+        ->orderBy('nama_kec', 'asc')
+        ->get()
+        ->map(function ($k) {
+            $k->ref = $this->encRef($k->id_kec);
+            unset($k->id_kec);
+            return $k;
+        });
 
-        $kelurahan = DB::table('m_kelurahan')
-            ->orderBy('nama_kel', 'asc')
-            ->get();
+    $kelurahan = DB::table('m_kelurahan')
+        ->orderBy('nama_kel', 'asc')
+        ->get()
+        ->map(function ($kel) {
+            $kel->ref = $this->encRef($kel->id_kel);
+            unset($kel->id_kel);
+            return $kel;
+        });
 
-        return view('bo.pages.inovasi.inovasiglobal.index', compact('kecamatan', 'kelurahan'));
-    }
+    return view('bo.pages.inovasi.inovasiglobal.index', compact('kecamatan', 'kelurahan'));
+}
 
     public function getData()
     {
@@ -930,4 +935,63 @@ class InovasiController extends Controller
             ]
         ]);
     }
+
+
+public function getDataSiCantik(Request $request)
+{
+    try {
+        $raw = DB::table('inovasi_sicantik')
+            ->select('id', 'judul', 'deskripsi', 'gambar', 'keterangan')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        // Enkripsi ID setiap record sebelum dikirim ke frontend
+        $data = $raw->map(function ($item) {
+            return [
+                'id'         => Crypt::encryptString($item->id), // ID terenkripsi (misal: eyJpdiI6...)
+                'judul'      => $item->judul,
+                'deskripsi'  => $item->deskripsi,
+                'gambar'     => $item->gambar,
+                'keterangan' => $item->keterangan,
+            ];
+        });
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data Si Cantik berhasil dimuat',
+            'data'    => $data
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status'  => 'error',
+            'message' => $e->getMessage(),
+            'data'    => []
+        ], 500);
+    }
+}
+
+public function destroySiCantik(Request $request, $encryptedId)
+{
+    try {
+        $realId = Crypt::decryptString($encryptedId);
+
+        DB::table('inovasi_sicantik')->where('id', $realId)->delete();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data berhasil dihapus'
+        ]);
+    } catch (DecryptException $e) {
+        return response()->json([
+            'status'  => 'error',
+            'message' => 'Token tindakan tidak valid atau telah dimanipulasi.'
+        ], 403);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status'  => 'error',
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
 }

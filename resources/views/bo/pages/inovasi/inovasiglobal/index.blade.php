@@ -12,13 +12,13 @@
     }
 
     .banner-inovasi-tosca {
-        background: linear-gradient(135deg, #0b5e57 0%, #0d6e66 50%, #084943 100%) !important;
+        background: linear-gradient(100deg, #0b5e57 0%, #0d6e66 34%, #2f8f83 46%, #7fbfb0 56%, #cfe6d6 66%, #f6efd9 76%, #fbf3e1 100%) !important;
         position: relative;
         overflow: hidden;
         border-radius: 1.25rem !important;
         border: none !important;
         box-shadow: 0 10px 25px -5px rgba(11, 94, 87, 0.35);
-        min-height: 220px;
+        min-height: 280px;
         display: flex;
         align-items: center;
     }
@@ -27,8 +27,10 @@
         content: '';
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0;
-        background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1.2px, transparent 1.2px);
+        background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1.2px, transparent 1.2px);
         background-size: 22px 22px;
+        -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 30%, transparent 58%);
+        mask-image: linear-gradient(90deg, #000 0%, #000 30%, transparent 58%);
         pointer-events: none !important;
         z-index: 1;
     }
@@ -38,10 +40,16 @@
         right: 0;
         bottom: 0;
         height: 100%;
-        max-height: 195px;
-        opacity: 0.55;
+        width: auto;
+        aspect-ratio: 350 / 210;
         pointer-events: none !important;
         z-index: 1 !important;
+    }
+
+    @media (max-width: 991px) {
+        .banner-siluet-kanan {
+            opacity: 0.3;
+        }
     }
 
     .banner-inovasi-tosca h2 {
@@ -128,7 +136,6 @@
         color: #0f172a !important;
     }
 
-    /* Filter Select Kotak Soft Gambar 1 */
     .filter-select-compact {
         width: auto !important;
         display: inline-block !important;
@@ -148,7 +155,6 @@
         box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12) !important;
     }
 
-    /* Search Input Gambar 1 */
     .dt-search-input {
         width: 190px !important;
         border: 1px solid #cbd5e1 !important;
@@ -233,7 +239,6 @@
         transform: scale(1.08);
     }
 
-    /* Soft Icon Buttons Gambar 2 */
     .btn-icon-square-edit {
         width: 36px;
         height: 36px;
@@ -338,28 +343,159 @@
 
 <div class="d-flex flex-column gap-4 w-100 p-2 p-md-3">
 
-    <!-- BANNER DASHBOARD -->
     <div class="card banner-inovasi-tosca mb-4">
-        <svg class="banner-siluet-kanan" viewBox="0 0 450 180" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-            <path d="M280 180 L310 40 L315 40 L345 180 Z" fill="#2dd4bf" />
-            <path d="M312 15 L314 15 L314 40 L312 40 Z" fill="#2dd4bf" />
-            <path d="M340 180 L340 100 L355 100 L355 180 Z" fill="#14b8a6" />
-            <path d="M358 180 L358 80 L378 80 L378 180 Z" fill="#0d9488" />
-            <path d="M382 180 L382 110 L400 110 L400 180 Z" fill="#14b8a6" />
-            <path d="M360 180 C390 110 420 90 460 80 L460 180 Z" fill="#0f766e" />
-            <path d="M390 180 C410 130 435 110 460 105 L460 180 Z" fill="#115e59" />
+        <svg class="banner-siluet-kanan" viewBox="50 0 350 210" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+            <defs>
+                <linearGradient id="fadeKiriKota" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#000"/>
+                    <stop offset="0.3" stop-color="#fff"/>
+                </linearGradient>
+                <mask id="maskKiriKota" maskUnits="userSpaceOnUse" x="50" y="0" width="350" height="210">
+                    <rect x="50" y="0" width="350" height="210" fill="url(#fadeKiriKota)"/>
+                </mask>
+                <radialGradient id="gGlowMatahari" cx="352" cy="46" r="110" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stop-color="#ffe3a0" stop-opacity="0.7"/>
+                    <stop offset="0.45" stop-color="#ffe9b8" stop-opacity="0.3"/>
+                    <stop offset="1" stop-color="#ffe9b8" stop-opacity="0"/>
+                </radialGradient>
+                <radialGradient id="gMatahari" cx="0.4" cy="0.4" r="0.7">
+                    <stop offset="0" stop-color="#fffbe6"/>
+                    <stop offset="1" stop-color="#f2b740"/>
+                </radialGradient>
+                <radialGradient id="gAwan" cx="0.5" cy="0.5" r="0.5">
+                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.55"/>
+                    <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+                </radialGradient>
+            </defs>
+
+            <circle cx="352" cy="46" r="110" fill="url(#gGlowMatahari)"/>
+            <ellipse cx="236" cy="46" rx="48" ry="12" fill="url(#gAwan)"/>
+            <ellipse cx="296" cy="74" rx="40" ry="10" fill="url(#gAwan)"/>
+            <circle cx="352" cy="46" r="21" fill="url(#gMatahari)"/>
+            <g fill="none" stroke="#0d6e66" stroke-width="1.5" stroke-linecap="round" opacity="0.75">
+                <path d="M262 30 q4 -5 8 0 q4 -5 8 0"/>
+                <path d="M286 44 q3 -4 6 0 q3 -4 6 0"/>
+            </g>
+
+            <rect x="272" y="162" width="128" height="30" fill="#bfe0d8" opacity="0.9"/>
+            <g stroke="#14867c" stroke-width="1" stroke-linecap="round" opacity="0.3">
+                <line x1="285" y1="172" x2="305" y2="172"/>
+                <line x1="296" y1="185" x2="312" y2="185"/>
+            </g>
+            <g stroke="#f2b740" stroke-width="1.6" stroke-linecap="round" opacity="0.75">
+                <line x1="340" y1="166" x2="364" y2="166"/>
+                <line x1="344" y1="172" x2="360" y2="172"/>
+                <line x1="334" y1="178" x2="370" y2="178"/>
+                <line x1="346" y1="184" x2="358" y2="184"/>
+            </g>
+
+            <g mask="url(#maskKiriKota)">
+                <path d="M50 192 V184 H62 V178 H76 V186 H90 V174 H100 V180 H110 V158 H124 V146 H138 V162 H150 V150 H164 V166 H236 V152 H248 V140 H262 V158 H272 V192Z" fill="#0d6e66" opacity="0.14"/>
+                <path d="M110 192 V172 H128 V162 H142 V176 H160 V168 H174 V192Z" fill="#0d6e66" opacity="0.26"/>
+                <path d="M226 192 V170 H240 V158 H254 V172 H272 V192Z" fill="#0d6e66" opacity="0.26"/>
+            </g>
+
+            <g fill="#14867c" opacity="0.5">
+                <rect x="298" y="104" width="4" height="56"/>
+                <rect x="370" y="104" width="4" height="56"/>
+                <rect x="262" y="156" width="138" height="3"/>
+                <rect x="290" y="159" width="2" height="25"/>
+                <rect x="316" y="159" width="2" height="25"/>
+                <rect x="350" y="159" width="2" height="25"/>
+                <rect x="388" y="159" width="2" height="25"/>
+            </g>
+            <g stroke="#14867c" stroke-width="0.8" opacity="0.5">
+                <path d="M300 108 L268 156 M300 108 L278 156 M300 108 L288 156 M300 108 L312 156 M300 108 L322 156 M300 108 L332 156"/>
+                <path d="M372 108 L342 156 M372 108 L352 156 M372 108 L362 156 M372 108 L384 156 M372 108 L394 156"/>
+            </g>
+
+            <g mask="url(#maskKiriKota)">
+                <path d="M50 210 C150 196 240 200 320 197 C360 195 380 198 400 194 L400 210Z" fill="#14867c"/>
+                <path d="M50 210 C200 205 300 207 400 202 L400 210Z" fill="#0b5e57"/>
+            </g>
+
+            <ellipse cx="200" cy="194" rx="32" ry="3" fill="#0b5e57" opacity="0.28"/>
+            <g>
+                <rect x="174" y="188" width="52" height="5" fill="#0a554f"/>
+                <rect x="182" y="180" width="36" height="8" fill="#0d6e66"/>
+                <polygon points="190,180 193,72 207,72 210,180" fill="#0d6e66"/>
+                <polygon points="200,180 200,72 207,72 210,180" fill="#0a554f"/>
+                <polygon points="192,72 188,62 212,62 208,72" fill="#0d6e66"/>
+                <polygon points="200,62 212,62 208,72 200,72" fill="#0a554f"/>
+                <polygon points="198,62 199,50 201,50 202,62" fill="#f2b740"/>
+                <g stroke="#fbf3e1" stroke-width="0.8" opacity="0.6">
+                    <line x1="195" y1="76" x2="193" y2="178"/>
+                    <line x1="200" y1="76" x2="200" y2="178"/>
+                    <line x1="205" y1="76" x2="207" y2="178"/>
+                </g>
+            </g>
+
+            <g>
+                <rect x="148" y="170" width="4" height="24" fill="#0a554f"/>
+                <circle cx="150" cy="163" r="12" fill="#14867c"/>
+                <circle cx="141" cy="170" r="9" fill="#2dd4bf"/>
+                <circle cx="159" cy="170" r="9" fill="#0d6e66"/>
+                <rect x="251" y="174" width="3" height="20" fill="#0a554f"/>
+                <circle cx="252" cy="168" r="10" fill="#14867c"/>
+                <circle cx="245" cy="174" r="7" fill="#2dd4bf"/>
+                <circle cx="259" cy="174" r="7" fill="#0d6e66"/>
+            </g>
+
+            <ellipse cx="322" cy="203" rx="46" ry="3.5" fill="#0b5e57" opacity="0.28"/>
+            <g>
+                <rect x="337" y="126" width="8" height="22" fill="#b4553a"/>
+                <rect x="296" y="153" width="52" height="45" fill="#fffaf0"/>
+                <rect x="322" y="153" width="26" height="45" fill="#f1e4c3" opacity="0.7"/>
+                <polygon points="288,153 322,117 356,153" fill="#e8795a"/>
+                <polygon points="322,117 356,153 322,153" fill="#d4654a"/>
+                <rect x="288" y="152" width="68" height="3" fill="#b4553a"/>
+                <circle cx="322" cy="139" r="6" fill="#0d9488" stroke="#fffaf0" stroke-width="1.2"/>
+                <path d="M322 142 c-1.5 -2.5 -5 -0.5 -2.5 2 l2.5 2.5 l2.5 -2.5 c2.5 -2.5 -1 -4.5 -2.5 -2z" fill="#fffaf0"/>
+                <rect x="302" y="162" width="11" height="11" fill="#0d6e66" stroke="#fffaf0" stroke-width="0.8"/>
+                <rect x="331" y="162" width="11" height="11" fill="#0d6e66" stroke="#fffaf0" stroke-width="0.8"/>
+                <g stroke="#fffaf0" stroke-width="0.8">
+                    <line x1="307.5" y1="162" x2="307.5" y2="173"/>
+                    <line x1="302" y1="167.5" x2="313" y2="167.5"/>
+                    <line x1="336.5" y1="162" x2="336.5" y2="173"/>
+                    <line x1="331" y1="167.5" x2="342" y2="167.5"/>
+                </g>
+                <rect x="316" y="172" width="13" height="26" fill="#e9b44c"/>
+                <circle cx="326" cy="186" r="1" fill="#fffaf0"/>
+                <path d="M316 198 L311 206 L334 206 L329 198Z" fill="#cfe8e3"/>
+                <g fill="#5fc7b5">
+                    <rect x="278" y="184" width="2.5" height="14"/>
+                    <rect x="283" y="184" width="2.5" height="14"/>
+                    <rect x="288" y="184" width="2.5" height="14"/>
+                    <rect x="354" y="184" width="2.5" height="14"/>
+                    <rect x="359" y="184" width="2.5" height="14"/>
+                    <rect x="364" y="184" width="2.5" height="14"/>
+                    <rect x="276" y="188" width="17" height="2"/>
+                    <rect x="352" y="188" width="17" height="2"/>
+                </g>
+                <circle cx="300" cy="197" r="2" fill="#f2b740"/>
+                <circle cx="306" cy="198" r="2" fill="#f4a3bd"/>
+                <circle cx="338" cy="198" r="2" fill="#f4a3bd"/>
+                <circle cx="344" cy="197" r="2" fill="#f2b740"/>
+            </g>
+
+            <g>
+                <circle cx="266" cy="198" r="7" fill="#14867c"/>
+                <circle cx="260" cy="200" r="5" fill="#2dd4bf"/>
+                <circle cx="263" cy="194" r="1.5" fill="#f2b740"/>
+                <circle cx="270" cy="197" r="1.5" fill="#f4a3bd"/>
+                <path d="M385 197 L397 197 L395 205 L387 205Z" fill="#e8795a"/>
+                <path d="M391 197 C383 192 384 184 389 182 C392 188 392 193 391 197Z" fill="#2dd4bf"/>
+                <path d="M391 197 C399 192 398 184 393 182 C390 188 390 193 391 197Z" fill="#14867c"/>
+            </g>
         </svg>
 
-        <div class="card-body py-5 px-4 px-md-5 d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-4 position-relative w-100" style="z-index: 10;">
-            <div>
-                <h2 class="fw-bolder mb-1 text-uppercase tracking-wide" style="font-size: 2.1rem; letter-spacing: 0.5px;">
-                    Inovasi Global
-                </h2>
-                <span class="fw-semibold" style="font-size: 0.95rem;">
-                   Berikut adalah Inovasi PKK yang telah diinputkan 
-                </span>
-            </div>
-
+        <div class="card-body py-5 px-4 px-md-5 ps-4 ps-md-5 ps-lg-5 d-flex flex-column justify-content-center position-relative w-100" style="z-index: 10; padding-left: 2.75rem !important;">
+            <h2 class="fw-bolder mb-2 text-uppercase tracking-wide" style="font-size: 2.1rem; letter-spacing: 0.5px;">
+                Inovasi Global
+            </h2>
+            <span class="fw-semibold mb-4" style="font-size: 0.95rem; color: #e6fffa;">
+               Berikut adalah Inovasi PKK yang telah diinputkan 
+            </span>
             <div class="d-flex flex-wrap gap-3" style="position: relative; z-index: 9999;">
                 <button type="button" class="btn-tab-pill-tosca active" id="btn-tab-dashboard">
                     <div>
@@ -385,13 +521,13 @@
                     <div class="col-12 col-md-4">
                         <label class="form-label small fw-bold text-dark text-uppercase mb-1">Kecamatan</label>
                         <select id="dash-filter-kecamatan" class="form-select bg-white border-light-subtle rounded-3 small fw-semibold text-dark">
-                            <option value="Semua">Semua kecamatan</option>
-                            @if(isset($kecamatan) && is_iterable($kecamatan))
-                                @foreach($kecamatan as $kec)
-                                    <option value="{{ $kec->nama_kec }}">{{ $kec->nama_kec }}</option>
-                                @endforeach
-                            @endif
-                        </select>
+                        <option value="Semua">Semua kecamatan</option>
+                        @if(isset($kecamatan) && is_iterable($kecamatan))
+                            @foreach($kecamatan as $kec)
+                                <option value="{{ $kec->nama_kec }}">{{ $kec->nama_kec }}</option>
+                            @endforeach
+                        @endif
+                    </select>
                     </div>
                     <div class="col-12 col-md-4">
                         <label class="form-label small fw-bold text-dark text-uppercase mb-1">Kelurahan</label>
@@ -552,7 +688,6 @@
                     </div>
                 </div>
 
-                <!-- TABEL DATA INOVASI -->
                 <div class="table-custom-wrapper">
                     <div class="table-responsive mb-0">
                         <table class="table table-custom align-middle mb-0 text-nowrap">
@@ -576,7 +711,6 @@
                     </div>
                 </div>
 
-                <!-- PAGINASI -->
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 pt-4 mt-1 border-top">
                     <span class="text-dark small fw-semibold" id="table-info-label">
                         Showing 0 to 0 of 0 entries
@@ -635,7 +769,7 @@
                             <option value="">-- Pilih Kecamatan --</option>
                             @if(isset($kecamatan) && is_iterable($kecamatan))
                                 @foreach($kecamatan as $kec)
-                                    <option value="{{ $kec->ref }}">{{ $kec->nama_kec }}</option>
+                                    <option value="{{ $kec->id_kec ?? $kec->ref ?? $kec->nama_kec }}">{{ $kec->nama_kec }}</option>
                                 @endforeach
                             @endif
                         </select>
@@ -748,7 +882,7 @@
             <input type="hidden" id="delete-target-id" value="">
 
             <div class="d-flex justify-content-center gap-2">
-                <button type="button" class="btn btn-light text-dark fw-bold px-4 rounded-3 small" id="btn-cancel-delete">
+                <button type="button" class="btn-light btn text-dark fw-bold px-4 rounded-3 small" id="btn-cancel-delete">
                     Batal
                 </button>
                 <button type="button" class="btn-danger btn text-white fw-bold px-4 rounded-3 shadow-sm small" id="btn-execute-delete">
@@ -786,7 +920,7 @@
 
 <script>
     const BASE_ASSET_URL = "{{ url('/') }}";
-    const MASTER_KELURAHAN_NAMES = @json(isset($kelurahan) ? collect($kelurahan)->pluck('nama_kel')->filter()->values() : []);
+    const MASTER_KELURAHAN_LIST = @json(isset($kelurahan) ? $kelurahan : []);
     let inovasiData = [];
     let currentFoto1 = '';
     let currentFoto2 = '';
@@ -845,34 +979,78 @@
         bootstrap.Modal.getOrCreateInstance(modalEl).show();
     }
 
-    function syncKelurahanFilter(kecId, kelId, defaultText) {
-        const kecEl = document.getElementById(kecId);
-        const kelEl = document.getElementById(kelId);
-        if (!kecEl || !kelEl) return;
+     const PETA_WILAYAH_SURABAYA = {
+    "tegalsari": ["Kedungdoro", "Keputran", "Dr. Soetomo", "Tegalsari", "Wonorejo"],
+    "simokerto": ["Kapasan", "Sidodadi", "Simokerto", "Simolawang", "Tambakrejo"],
+    "genteng": ["Embong Kaliasin", "Genteng", "Kapasari", "Ketabang", "Peneleh"],
+    "bubutan": ["Alun-alun Contong", "Bubutan", "Gundih", "Jepara", "Tembok Dukuh"],
+    "gubeng": ["Airlangga", "Baratajaya", "Gubeng", "Kertajaya", "Mojo", "Pucangsewu"],
+    "gunung anyar": ["Gunung Anyar", "Gunung Anyar Tambak", "Rungkut Menanggal", "Rungkut Tengah"],
+    "sukolilo": ["Gebang Putih", "Keputih", "Klampisngasem", "Medokan Semampir", "Menur Pumpungan", "Nginden Jangkungan", "Semolowaru"],
+    "tambaksari": ["Dukuh Setro", "Gading", "Kapasmadya Baru", "Pacarkembang", "Pacarkeling", "Ploso", "Rangkah", "Tambaksari"],
+    "mulyorejo": ["Kalijudan", "Kalisari", "Kejawan Putih Tambak", "Manyar Sabrangan", "Mulyorejo", "Dukuh Sutorejo"],
+    "rungkut": ["Kalirungkut", "Kedungbaruk", "Medokan Ayu", "Penjaringan Sari", "Rungkut Kidul", "Wonorejo"],
+    "tenggilis mejoyo": ["Kendangsari", "Kutisari", "Panjang Jiwo", "Prapen", "Tenggilis Mejoyo"],
+    "benowo": ["Kandangan", "Romokalisari", "Sememi", "Tambak Osowilangun"],
+    "pakal": ["Babur Jerawat", "Benowo", "Pakal", "Sumberejo"],
+    "asemrowo": ["Asemrowo", "Genting Kalianak", "Tambak Sarioso"],
+    "sukomanunggal": ["Putat Gede", "Simomulyo", "Simomulyo Baru", "Sonokwijenan", "Sukomanunggal", "Tanjungsari"],
+    "tandes": ["Balongsari", "Banjar Sugihan", "Karang Poh", "Manukan Kulon", "Manukan Wetan", "Tandes"],
+    "sambikerep": ["Benowo", "Bringin", "Made", "Lakar Santri", "Sambikerep"],
+    "lakarsantri": ["Bangkingan", "Jeruk", "Lakarsantri", "Lidah Kulon", "Lidah Wetan", "Sumur Welut"],
+    "karangpilang": ["Karang Pilang", "Kebraon", "Kedurus", "Warugunung"],
+    "jambangan": ["Jambangan", "Karah", "Kebonsari", "Pagesangan"],
+    "gayungan": ["Dukuh Menanggal", "Gayungan", "Ketintang", "Menanggal"],
+    "wonocolo": ["Bendul Merisi", "Jemur Wonosari", "Margorejo", "Sidosermo", "Siwalankerto"],
+    "wonokromo": ["Darmo", "Jagir", "Ngagel", "Ngagelrejo", "Sawunggaling", "Wonokromo"],
+    "sawahan": ["Banyu Urip", "Kupang Krajan", "Pakis", "Petemon", "Putat Jaya", "Sawahan"],
+    "dukuh pakis": ["Dukuh Kupang", "Dukuh Pakis", "Gunung Sari", "Pradah Kalikendal"],
+    "wiyung": ["Babatan", "Balasklumprik", "Jajar Tunggal", "Wiyung"],
+    "krembangan": ["Dupak", "Kemayoran", "Krembangan Selatan", "Morokrembangan", "Perak Barat"],
+    "pabean cantikan": ["Bongkaran", "Krembangan Utara", "Nyamplungan", "Perak Timur", "Perak Utara"],
+    "semampir": ["Ampel", "Pegirian", "Sidotopo", "Ujung", "Wonokusumo"],
+    "kenjeran": ["Bulak Banteng", "Tambak Wedi", "Tanah Kali Kedinding", "Sidotopo Wetan"],
+    "bulak": ["Bulak", "Kedung Cowek", "Kenjeran", "Sukolilo Baru"]
+};
 
-        const selKec = String(kecEl.value || 'Semua').trim().toLowerCase();
-        const names = new Set();
+function syncKelurahanFilter(kecId, kelId, defaultText) {
+    const kecEl = document.getElementById(kecId);
+    const kelEl = document.getElementById(kelId);
+    if (!kecEl || !kelEl) return;
 
-        inovasiData.forEach(i => {
-            const kel = String(i.kelurahan || '').trim();
-            if (!kel || kel === '-') return;
-            if (selKec === 'semua' || String(i.kecamatan).trim().toLowerCase() === selKec) {
-                names.add(kel);
-            }
-        });
+    const rawKec = (kecEl.options[kecEl.selectedIndex]?.text || kecEl.value || '').trim().toLowerCase();
+    const cleanKec = rawKec.replace('kecamatan', '').trim();
+    const isSemua = (!cleanKec || cleanKec === 'semua' || cleanKec.includes('semua'));
+    
+    let listKel = [];
 
-        if (selKec === 'semua' || names.size === 0) {
-            MASTER_KELURAHAN_NAMES.forEach(n => {
-                const kel = String(n || '').trim();
-                if (kel) names.add(kel);
+    if (!isSemua && PETA_WILAYAH_SURABAYA[cleanKec]) {
+        listKel = PETA_WILAYAH_SURABAYA[cleanKec];
+    } else if (isSemua) {
+        if (typeof MASTER_KELURAHAN_LIST !== 'undefined' && Array.isArray(MASTER_KELURAHAN_LIST) && MASTER_KELURAHAN_LIST.length > 0) {
+            listKel = MASTER_KELURAHAN_LIST.map(k => k.nama_kel || k).filter(Boolean);
+        } else {
+            Object.values(PETA_WILAYAH_SURABAYA).forEach(arr => {
+                listKel = listKel.concat(arr);
             });
         }
-
-        const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-        kelEl.innerHTML = `<option value="Semua">${defaultText}</option>` +
-            [...names].sort().map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
-        kelEl.value = 'Semua';
     }
+
+    const uniqueSorted = [...new Set(listKel)].sort((a, b) => a.localeCompare(b, 'id'));
+    const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+
+    let html = `<option value="Semua">${defaultText}</option>`;
+    uniqueSorted.forEach(nama => {
+        html += `<option value="${esc(nama)}">${esc(nama)}</option>`;
+    });
+
+    kelEl.innerHTML = html;
+    kelEl.value = 'Semua';
+
+    if (window.jQuery && $(kelEl).data('select2')) {
+        $(kelEl).trigger('change.select2');
+    }
+}
 
     function fetchDataFromServer() {
         const tbody = document.getElementById('innovation-table-body');
@@ -902,7 +1080,9 @@
                     id: item.ref,
                     tanggal: item.tanggal_entry || '',
                     nama: item.nama_inovasi || '',
+                    id_kec: item.id_kec || '',
                     kecamatan: item.nama_kec || '-',
+                    id_kel: item.id_kel || '',
                     kelurahan: item.nama_kel || '-',
                     deskripsi: item.deskripsi_inovasi || '',
                     file: item.file_dokumen ? item.file_dokumen.split('/').pop() : '',
@@ -955,12 +1135,14 @@
         let counts = { sekretaris: 0, pokja1: 0, pokja2: 0, pokja3: 0, pokja4: 0 };
 
         inovasiData.forEach(item => {
-            const itemKec = (item.id_kec || item.kecamatan || '').toString().toLowerCase();
-            const itemKel = (item.id_kel || item.kelurahan || '').toString().toLowerCase();
+            const itemKec = (item.kecamatan || '').toString().toLowerCase();
+            const itemIdKec = (item.id_kec || '').toString().toLowerCase();
+            const itemKel = (item.kelurahan || '').toString().toLowerCase();
+            const itemIdKel = (item.id_kel || '').toString().toLowerCase();
             const itemPeriode = (item.periode || '').toString().toLowerCase();
 
-            const matchKec = (selKec === 'semua' || itemKec === selKec);
-            const matchKel = (selKel === 'semua' || itemKel === selKel);
+            const matchKec = (selKec === 'semua' || itemKec === selKec || itemIdKec === selKec);
+            const matchKel = (selKel === 'semua' || itemKel === selKel || itemIdKel === selKel);
             const matchPeriode = (selPeriode === 'semua' || itemPeriode === selPeriode);
 
             if (matchKec && matchKel && matchPeriode) {
@@ -1018,25 +1200,23 @@
         const filterPeriode = (document.getElementById('table-filter-periode')?.value || 'Semua').toLowerCase();
 
         const filtered = inovasiData.filter(item => {
-            const namaVal   = (item.nama || item.nama_inovasi || '').toString().toLowerCase();
-            const deskVal   = (item.deskripsi || item.deskripsi_inovasi || '').toString().toLowerCase();
-            const ketVal    = (item.keterangan || '').toString().toLowerCase();
-            const userVal   = (item.dibuatOleh || item.dibuat_oleh || item.creator_name || '').toString().toLowerCase();
-            const kecVal    = (item.kecamatan || item.nama_kec || '').toString().toLowerCase();
-            const kelVal    = (item.kelurahan || item.nama_kel || '').toString().toLowerCase();
+            const namaVal    = (item.nama || item.nama_inovasi || '').toString().toLowerCase();
+            const deskVal    = (item.deskripsi || item.deskripsi_inovasi || '').toString().toLowerCase();
+            const ketVal     = (item.keterangan || '').toString().toLowerCase();
+            const userVal    = (item.dibuatOleh || item.dibuat_oleh || item.creator_name || '').toString().toLowerCase();
+            const kecVal     = (item.kecamatan || item.nama_kec || '').toString().toLowerCase();
+            const idKecVal   = (item.id_kec || '').toString().toLowerCase();
+            const kelVal     = (item.kelurahan || item.nama_kel || '').toString().toLowerCase();
+            const idKelVal   = (item.id_kel || '').toString().toLowerCase();
             const periodeVal = (item.periode || '').toString().toLowerCase();
-            const idKecVal  = (item.id_kec || '').toString().toLowerCase();
-            const idKelVal  = (item.id_kel || '').toString().toLowerCase();
+            const tglVal     = (item.tanggal || '').toString().toLowerCase();
+            const pokjaVal   = (item.pokja || '').toString().toLowerCase();
 
-            // Match Pencarian (Multi-field)
-            const tglVal    = (item.tanggal || '').toString().toLowerCase();
-            const pokjaVal  = (item.pokja || '').toString().toLowerCase();
-            const haystack  = [namaVal, deskVal, ketVal, userVal, kecVal, kelVal, periodeVal, tglVal, pokjaVal]
+            const haystack = [namaVal, deskVal, ketVal, userVal, kecVal, kelVal, periodeVal, tglVal, pokjaVal]
                                 .join(' ')
                                 .replace(/\s+/g, ' ');
             const matchSearch = (q === '') || q.split(/\s+/).every(word => haystack.includes(word));
 
-            // Match Dropdown Filter
             const matchKec = (filterKec === 'semua') || (idKecVal === filterKec) || (kecVal === filterKec);
             const matchKel = (filterKel === 'semua') || (idKelVal === filterKel) || (kelVal === filterKel);
             const matchPeriode = (filterPeriode === 'semua') || (periodeVal === filterPeriode);
@@ -1127,8 +1307,7 @@
         const ul = document.getElementById('table-pagination-list');
         if (!ul) return;
 
-        const pages = Math.max(2, totalPages || 2);
-
+        const pages = Math.max(1, totalPages);
         let html = `
             <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
                 <a class="page-link" href="javascript:void(0)" data-page="${currentPage - 1}">&lt;</a>
@@ -1136,9 +1315,8 @@
         `;
 
         for (let p = 1; p <= pages; p++) {
-            const active = (p === currentPage);
             html += `
-                <li class="page-item ${active ? 'active' : ''}">
+                <li class="page-item ${p === currentPage ? 'active' : ''}">
                     <a class="page-link" href="javascript:void(0)" data-page="${p}">${p}</a>
                 </li>
             `;
@@ -1259,7 +1437,9 @@
         const kecEl = document.getElementById('form-input-kecamatan');
         kecEl.value = '';
         [...kecEl.options].forEach(o => {
-            if (o.text.trim().toLowerCase() === String(item.kecamatan).trim().toLowerCase()) kecEl.value = o.value;
+            if (o.value === String(item.id_kec) || o.text.trim().toLowerCase() === String(item.kecamatan).trim().toLowerCase()) {
+                kecEl.value = o.value;
+            }
         });
         document.getElementById('form-input-dibuat').value = item.dibuatOleh;
         document.getElementById('form-input-nama').value = item.nama;
@@ -1350,51 +1530,52 @@
     }
 
     function handleHapusInovasi() {
-    const id = document.getElementById('delete-target-id').value;
-    const btnDelete = document.getElementById('btn-execute-delete');
+        const id = document.getElementById('delete-target-id').value;
+        const btnDelete = document.getElementById('btn-execute-delete');
 
-    if (!id || id === '-1') return;
+        if (!id || id === '-1') return;
 
-    btnDelete.disabled = true;
-    btnDelete.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Menghapus...';
+        btnDelete.disabled = true;
+        btnDelete.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Menghapus...';
 
-    const baseDeleteRoute = "{{ route('inovasi.global.destroy', ['id' => ':id']) }}";
-    const deleteUrl = baseDeleteRoute.replace(':id', id);
+        const baseDeleteRoute = "{{ route('inovasi.global.destroy', ['id' => ':id']) }}";
+        const deleteUrl = baseDeleteRoute.replace(':id', id);
 
-    fetch(deleteUrl, {
-        method: 'DELETE',
-        headers: {
-            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-            "X-Requested-With": "XMLHttpRequest",
-            "Accept": "application/json"
-        }
-    })
-    .then(res => {
-        if (!res.ok) {
-            throw new Error(`HTTP status ${res.status}`);
-        }
-        return res.json();
-    })
-    .then(res => {
-        btnDelete.disabled = false;
-        btnDelete.innerHTML = '<i class="fa-solid fa-trash me-1 text-white"></i> Ya, Hapus';
-        hideModalDelete();
+        fetch(deleteUrl, {
+            method: 'DELETE',
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "X-Requested-With": "XMLHttpRequest",
+                "Accept": "application/json"
+            }
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP status ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(res => {
+            btnDelete.disabled = false;
+            btnDelete.innerHTML = '<i class="fa-solid fa-trash me-1 text-white"></i> Ya, Hapus';
+            hideModalDelete();
 
-        if (res.status === 'success') {
-            notifyToast(res.message || 'Data berhasil dihapus.');
-            fetchDataFromServer();
-        } else {
-            notifyToast(res.message || 'Gagal menghapus data.', false);
-        }
-    })
-    .catch(err => {
-        btnDelete.disabled = false;
-        btnDelete.innerHTML = '<i class="fa-solid fa-trash me-1 text-white"></i> Ya, Hapus';
-        hideModalDelete();
-        console.error('Error delete:', err);
-        notifyToast('Terjadi kesalahan atau rute hapus tidak ditemukan (404).', false);
-    });
-}
+            if (res.status === 'success') {
+                notifyToast(res.message || 'Data berhasil dihapus.');
+                fetchDataFromServer();
+            } else {
+                notifyToast(res.message || 'Gagal menghapus data.', false);
+            }
+        })
+        .catch(err => {
+            btnDelete.disabled = false;
+            btnDelete.innerHTML = '<i class="fa-solid fa-trash me-1 text-white"></i> Ya, Hapus';
+            hideModalDelete();
+            console.error('Error delete:', err);
+            notifyToast('Terjadi kesalahan atau rute hapus tidak ditemukan (404).', false);
+        });
+    }
+
     document.addEventListener('click', function (e) {
         if (e.target.closest('#btn-tab-dashboard')) {
             e.preventDefault();
@@ -1497,7 +1678,6 @@
                 reader.readAsDataURL(file);
             }
         } 
-        
         else if (e.target.id === 'file-foto-2') {
             const file = e.target.files[0];
             if (file) {
@@ -1521,7 +1701,6 @@
                 reader.readAsDataURL(file);
             }
         } 
-        
         else if (e.target.id === 'file-dokumen-pdf') {
             const file = e.target.files[0];
             if (file) {
@@ -1543,7 +1722,7 @@
                 setPreviewPdf(file.name, sizeKb);
             }
         }
-            });
+    });
 
     document.addEventListener('input', function (e) {
         if (e.target.id === 'search-inovasi-input') {
@@ -1572,4 +1751,3 @@
     fetchDataFromServer();
 </script>
 @endsection
-
