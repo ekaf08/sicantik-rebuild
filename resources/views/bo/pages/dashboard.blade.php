@@ -106,23 +106,25 @@
     <!--begin::Card header-->
     <div class="card-header border-0 pt-5">
         <!--begin::Nav Tabs (Data Umum PKK, Pokja, dll)-->
-        <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-5">
-            <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#kt_tab_data_umum">Data Umum PKK</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_1">Pokja I</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_2">Pokja II</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_3">Pokja III</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_tab_pokja_4">Pokja IV</a>
-            </li>
-        </ul>
+            @php
+                $tabAktif = $activeTab ?? 'data_umum';
+            
+                $tabs = [
+                    'data_umum' => ['Data Umum PKK', 'kt_tab_data_umum', 'bo.pages.dashboard.data-umum'],
+                    'pokja1'    => ['Pokja I',       'kt_tab_pokja_1',   'bo.pages.dashboard.pokja-1'],
+                    'pokja2'    => ['Pokja II',      'kt_tab_pokja_2',   'bo.pages.dashboard.pokja-2'],
+                    'pokja3'    => ['Pokja III',     'kt_tab_pokja_3',   'bo.pages.dashboard.pokja-3'],
+                    'pokja4'    => ['Pokja IV',      'kt_tab_pokja_4',   'bo.pages.dashboard.pokja-4'],
+                ];
+            @endphp
+            <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-5">
+                @foreach ($tabs as $kunci => [$label, $idTab, $viewTab])
+                    <li class="nav-item">
+                        <a class="nav-link text-active-primary pb-4 {{ $tabAktif === $kunci ? 'active' : '' }}"
+                        data-bs-toggle="tab" href="#{{ $idTab }}">{{ $label }}</a>
+                    </li>
+                @endforeach
+            </ul>
         <!--end::Nav Tabs-->
     </div>
     <!--end::Card header-->
@@ -156,21 +158,11 @@
 
         <!--begin::Tab Content-->
         <div class="tab-content">
-            <div id="kt_tab_data_umum" class="tab-pane fade show active">
-                @include('bo.pages.dashboard.data-umum')
-            </div>
-            <div id="kt_tab_pokja_1" class="tab-pane fade">
-                @include('bo.pages.dashboard.pokja-1')
-            </div>
-            <div id="kt_tab_pokja_2" class="tab-pane fade">
-                @include('bo.pages.dashboard.pokja-2')
-            </div>
-            <div id="kt_tab_pokja_3" class="tab-pane fade">
-                @include('bo.pages.dashboard.pokja-3')
-            </div>
-            <div id="kt_tab_pokja_4" class="tab-pane fade">
-                @include('bo.pages.dashboard.pokja-4')
-            </div>
+            @foreach ($tabs as $kunci => [$label, $idTab, $viewTab])
+                <div id="{{ $idTab }}" class="tab-pane fade {{ $tabAktif === $kunci ? 'show active' : '' }}">
+                    @include($viewTab)
+                </div>
+            @endforeach
         </div>
         <!--end::Tab Content-->
     </div>

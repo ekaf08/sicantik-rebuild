@@ -71,6 +71,7 @@ class DataUmumController extends Controller
         }
 
         return view('bo.pages.dashboard', [
+            'activeTab' => request()->query('tab', 'data_umum'),
             'level'       => 'kelurahan',
             'kec'         => $kec,
             'baris'       => $baris,

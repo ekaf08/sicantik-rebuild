@@ -15,23 +15,35 @@ class ModalController extends Controller
 
         abort_if(!$p, 404);
 
-        // Kalau query_detail diisi di master, pakai itu (detail khusus).
-        // Kalau kosong, bentuk query bawaan dari tb_dashboard + alias.
+        $kel = (int) $request->query('kel'); // 0 = tingkat kecamatan
+
         if (filled($p->query_detail)) {
             $sql   = $p->query_detail;
             $jenis = (int) $p->jenis_form;
+
+            abort_if($kel && !preg_match('/:kel\b/', $sql), 422, 'Detail tingkat kelurahan belum tersedia');
         } else {
-            [$sql, $jenis] = $this->queryBawaan($p);
+            [$sql, $jenis] = $this->queryBawaan($p, $kel);
         }
 
         abort_unless(preg_match('/^\s*select/i', $sql), 422);
 
+        $nilai = [
+            'kec'     => (int) $request->query('kec'),
+            'kel'     => $kel,
+            'periode' => (int) $request->query('periode', 2026),
+        ];
+
+        preg_match_all('/(?<!:):([a-z_]\w*)/i', $sql, $m);
+
         $bindings = [];
-        if (str_contains($p->query_detail, ':kec')) {
-            $bindings['kec'] = (int) $request->query('kec');
-        }
-        if (str_contains($p->query_detail, ':kel')) {
-            $bindings['kel'] = (int) $request->query('kel', 0);
+        foreach (array_unique($m[1]) as $nama) {
+            abort_unless(
+                array_key_exists($nama, $nilai),
+                422,
+                "Parameter :$nama tidak dikenal"
+            );
+            $bindings[$nama] = $nilai[$nama];
         }
 
         $stmt = DB::connection()->getPdo()->prepare($sql);
@@ -50,12 +62,7 @@ class ModalController extends Controller
         ]);
     }
 
-    /**
-     * Query bawaan: rincian per kelurahan kalau tabelnya punya id_kel,
-     * kalau tidak, satu angka tingkat kecamatan.
-     * Nama tabel/kolom divalidasi lewat Schema::hasColumn sebelum dipakai.
-     */
-    private function queryBawaan($p): array
+    private function queryBawaan($p, int $kel): array
     {
         $tabel = $p->tb_dashboard;
         $kolom = $p->alias;
@@ -69,20 +76,39 @@ class ModalController extends Controller
         $t = '"' . str_replace('"', '""', $tabel) . '"';
         $c = '"' . str_replace('"', '""', $kolom) . '"';
 
-        if (Schema::hasColumn($tabel, 'id_kel')) {
+        if (!Schema::hasColumn($tabel, 'id_kel')) {
+            abort_if($kel, 422, 'Detail tingkat kelurahan belum tersedia');
+
             return [
-                "SELECT k.nama_kel AS kelurahan, d.$c AS jumlah
-                   FROM $t d
-                   JOIN m_kelurahan k ON k.id_kel = d.id_kel
-                  WHERE d.id_kec = :kec AND d.id_kel IS NOT NULL AND d.periode = :periode
-                  ORDER BY k.nama_kel",
-                0,
+                "SELECT $c AS nilai FROM $t WHERE id_kec = :kec AND periode = :periode",
+                1,
+            ];
+        }
+
+        if ($kel) {
+            return [
+                "SELECT d.$c AS nilai FROM $t d
+                  WHERE d.id_kec = :kec AND d.id_kel = :kel AND d.periode = :periode",
+                1,
+            ];
+        }
+
+        // jenis_form = 1 di master: modal agregat (satu angka = jumlah seluruh kelurahan)
+        if ((int) $p->jenis_form === 1) {
+            return [
+                "SELECT SUM(d.$c) AS nilai FROM $t d
+                  WHERE d.id_kec = :kec AND d.id_kel IS NOT NULL AND d.periode = :periode",
+                1,
             ];
         }
 
         return [
-            "SELECT $c AS nilai FROM $t WHERE id_kec = :kec AND periode = :periode",
-            1,
+            "SELECT k.nama_kel AS kelurahan, d.$c AS jumlah
+               FROM $t d
+               JOIN m_kelurahan k ON k.id_kel = d.id_kel
+              WHERE d.id_kec = :kec AND d.id_kel IS NOT NULL AND d.periode = :periode
+              ORDER BY k.nama_kel",
+            0,
         ];
     }
 }
