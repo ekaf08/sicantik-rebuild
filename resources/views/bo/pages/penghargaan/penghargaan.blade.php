@@ -23,24 +23,135 @@
     <!-- SweetAlert2 untuk pop-up notifikasi -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* Teks tabel Penghargaan: hitam tegas */
-        #kt_table_penghargaan thead th { color: #000 !important; font-weight: 800 !important; }
-        #kt_table_penghargaan tbody td { color: #000 !important; }
-    </style>
+    /* Styling Tabel Grid Komprehensif (Sesuai Referensi Gambar) */
+    #kt_table_penghargaan {
+        border-collapse: collapse !important;
+        border: 1px solid #f1f3f5 !important;
+    }
+
+    /* Header Tabel: Background Abu-abu Soft & Teks Hitam Tebal */
+    #kt_table_penghargaan thead th {
+        background-color: #f8f9fa !important;
+        color: #181c32 !important;
+        font-weight: 700 !important;
+        border: 1px solid #e9ecef !important;
+        padding: 12px 16px !important;
+    }
+
+    /* Isi Tabel: Border Tipis Halus di Setiap Sel (Horizontal & Vertikal) */
+    #kt_table_penghargaan tbody td {
+        color: #212529 !important;
+        border: 1px solid #f1f3f5 !important;
+        padding: 12px 16px !important;
+    }
+
+    /* Tombol & header modal bernuansa emas */
+    .btn-emas { background-color: #e2b24a; color: #5a4310 !important; border: 0; }
+    .btn-emas:hover, .btn-emas:focus { background-color: #d9a63a; color: #5a4310 !important; }
+    .btn-emas i { color: #5a4310 !important; }
+    .modal-header-emas { background-color: #f3e3b8; border-bottom: 0; }
+    .modal-header-emas h2 { color: #5a4310; }
+</style>
     <div class="d-flex flex-column flex-column-fluid">
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-fluid">
 
-                <!-- Banner Header Hijau Tema SiCantik -->
-                <div class="card mb-7 border-0 position-relative overflow-hidden"
-                    style="background-color: #0d5c3a; border-radius: 12px;">
-                    <div
-                        class="card-body p-8 text-white d-flex align-items-center justify-content-between position-relative z-index-1">
-                        <div>
-                            <h1 class="text-white fw-bolder fs-2hx mb-2" style="letter-spacing: 0.5px;">PENGHARGAAN</h1>
-                            <p class="fs-6 text-white opacity-80 mb-0">Data Penghargaan Kota Surabaya</p>
-                        </div>
+                <!-- Banner Penghargaan (pastel emas) -->
+                <style>
+                    .pg-hero {
+                        position: relative;
+                        overflow: hidden;
+                        display: flex;
+                        align-items: center;
+                        min-height: 210px;
+                        padding: 2rem 2.5rem;
+                        margin-bottom: 1.75rem;
+                        border-radius: 1rem;
+                        background: #fbf1d9;
+                    }
+                    .pg-hero-text { position: relative; z-index: 2; max-width: 52%; }
+                    .pg-hero-label {
+                        display: block; margin-bottom: .5rem;
+                        font-size: .72rem; font-weight: 700; letter-spacing: .14em;
+                        text-transform: uppercase; color: #c99a2e;
+                    }
+                    .pg-hero-title { margin: 0 0 .4rem; font-size: 2.1rem; font-weight: 800; line-height: 1.15; color: #5a4310; }
+                    .pg-hero-sub { margin: 0; font-size: .95rem; font-weight: 500; color: #7d6a3a; }
+                    .pg-hero-art {
+                        position: absolute; right: 0; bottom: 0;
+                        height: 100%; width: auto; max-width: 58%;
+                        z-index: 1; pointer-events: none;
+                    }
+                    @media (max-width: 767.98px) {
+                        .pg-hero { padding: 1.5rem; min-height: 170px; }
+                        .pg-hero-title { font-size: 1.6rem; }
+                        .pg-hero-text { max-width: 100%; }
+                        .pg-hero-art { opacity: .3; max-width: 80%; }
+                    }
+                </style>
+
+                <div class="pg-hero">
+                    <div class="pg-hero-text">
+                        <span class="pg-hero-label">Surabaya</span>
+                        <h2 class="pg-hero-title">Penghargaan</h2>
+                        <p class="pg-hero-sub">Data Penghargaan Kota Surabaya</p>
                     </div>
+
+                    <svg class="pg-hero-art" viewBox="0 0 440 210" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+                        <path d="M0 210 C10 110 80 40 200 32 C320 24 400 42 440 52 L440 210 Z" fill="#f3e3b8"/>
+                        <circle cx="318" cy="22" r="46" fill="#edd9a0" opacity=".6"/>
+                        <circle cx="46" cy="176" r="14" fill="#edd9a0"/>
+                        <ellipse cx="228" cy="193" rx="196" ry="8" fill="#000" opacity=".07"/>
+
+                        <!-- konfeti -->
+                        <circle cx="170" cy="58" r="3.5" fill="#e9a0a0"/>
+                        <circle cx="292" cy="50" r="3.5" fill="#7fa58f"/>
+                        <rect x="320" y="74" width="7" height="7" rx="1.5" transform="rotate(25 323 77)" fill="#e8b83f"/>
+                        <rect x="150" y="92" width="6" height="6" rx="1.5" transform="rotate(-20 153 95)" fill="#7fa58f"/>
+                        <circle cx="266" cy="70" r="3" fill="#e8b83f"/>
+                        <polygon points="300,100 302.4,106 308.8,106.3 303.8,110.2 305.6,116.4 300,112.8 294.4,116.4 296.2,110.2 291.2,106.3 297.6,106" fill="#f2c14e"/>
+
+                        <!-- podium -->
+                        <rect x="140" y="158" width="60" height="28" rx="3" fill="#ebcb80"/>
+                        <rect x="200" y="140" width="60" height="46" rx="3" fill="#e2b24a"/>
+                        <rect x="260" y="164" width="60" height="22" rx="3" fill="#efd596"/>
+                        <g fill="#fff" font-family="Georgia, 'Times New Roman', serif" font-weight="700" text-anchor="middle">
+                            <text x="230" y="172" font-size="22">1</text>
+                            <text x="170" y="180" font-size="16">2</text>
+                            <text x="290" y="181" font-size="14">3</text>
+                        </g>
+
+                        <!-- piala -->
+                        <rect x="215" y="132" width="30" height="8" rx="2" fill="#c8922a"/>
+                        <rect x="225" y="120" width="10" height="14" fill="#d9a53a"/>
+                        <path d="M204 78 H256 C256 108 246 120 230 120 C214 120 204 108 204 78 Z" fill="#e8b83f"/>
+                        <path d="M204 84 C188 84 188 106 208 108" stroke="#d9a53a" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M256 84 C272 84 272 106 252 108" stroke="#d9a53a" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M213 86 C213 100 217 108 222 112" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+                        <polygon points="230,83 232.2,89 238.6,89.2 233.5,93.1 235.3,99.3 230,95.7 224.7,99.3 226.5,93.1 221.4,89.2 227.8,89" fill="#fff" opacity=".92"/>
+
+                        <!-- medali -->
+                        <path d="M96 52 L118 52 L136 98 L114 98 Z" fill="#7fa58f"/>
+                        <path d="M140 52 L118 52 L100 98 L122 98 Z" fill="#6e9988"/>
+                        <circle cx="118" cy="116" r="20" fill="#e8b83f"/>
+                        <circle cx="118" cy="116" r="13" stroke="#fff" stroke-width="2" opacity=".6"/>
+                        <polygon points="118,107 120,113 126.4,113.2 121.3,117.1 123.2,123.3 118,119.7 112.8,123.3 114.7,117.1 109.6,113.2 116,113" fill="#fff" opacity=".9"/>
+
+                        <!-- sertifikat -->
+                        <g transform="rotate(6 371 140)">
+                            <rect x="340" y="98" width="62" height="82" rx="4" fill="#fff"/>
+                            <rect x="350" y="112" width="42" height="5" rx="2.5" fill="#e8b83f"/>
+                            <rect x="350" y="126" width="42" height="4" rx="2" fill="#e8dfc4"/>
+                            <rect x="350" y="136" width="34" height="4" rx="2" fill="#e8dfc4"/>
+                            <rect x="350" y="146" width="38" height="4" rx="2" fill="#e8dfc4"/>
+                            <path d="M364 168 L360 182 L367 178 L374 182 L370 168 Z" fill="#d98585"/>
+                            <circle cx="367" cy="162" r="10" fill="#d98585"/>
+                            <circle cx="367" cy="162" r="5" stroke="#fff" stroke-width="1.5" opacity=".7"/>
+                        </g>
+
+                        <!-- tunas dekor -->
+                        <g stroke="#7fa58f" stroke-width="2.5" stroke-linecap="round"><path d="M70 188 L70 160"/><path d="M70 174 L61 164"/><path d="M70 168 L79 158"/></g>
+                    </svg>
                 </div>
 
                 <!-- Card Utama -->
@@ -71,10 +182,10 @@
                                 @endfor
                             </select>
 
-                            <!-- Tombol Tambah Penghargaan Hijau Tema -->
-                            <button type="button" class="btn fw-bold text-white px-6" style="background-color: #0d5c3a;"
+                            <!-- Tombol Tambah Penghargaan (emas) -->
+                            <button type="button" class="btn btn-emas fw-bold px-6"
                                 data-bs-toggle="modal" data-bs-target="#modal_tambah_penghargaan">
-                                <i class="ki-outline ki-plus fs-2 text-white me-1"></i> Tambah Penghargaan
+                                <i class="ki-outline ki-plus fs-2 me-1"></i> Tambah Penghargaan
                             </button>
                         </div>
                     </div>
@@ -121,10 +232,10 @@
                                                     </button>
                                                 </td>
                                                 <td>
-                                                    <a href="{{ asset('storage/' . $item->file) }}" target="_blank"
-                                                        class="btn btn-sm btn-light-success fw-bold px-3">
+                                                    <button type="button" class="btn btn-sm btn-light-success fw-bold px-3"
+                                                        onclick="previewFile('{{ asset('storage/' . $item->file) }}')">
                                                         <i class="ki-outline ki-eye fs-5"></i> Lihat File
-                                                    </a>
+                                                    </button>
                                                 </td>
                                                 <td>{{ $item->created_by ?? 'Admin' }}</td>
                                                 <td class="text-end">
@@ -160,9 +271,9 @@
     <div class="modal fade" id="modal_tambah_penghargaan" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header" style="background-color: #0d5c3a;">
-                    <h2 class="fw-bold text-white mb-0">Tambah Data Penghargaan</h2>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                <div class="modal-header modal-header-emas">
+                    <h2 class="fw-bold mb-0">Tambah Data Penghargaan</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
                 <form action="{{ route('penghargaan.store') }}" method="POST" enctype="multipart/form-data">
@@ -217,8 +328,7 @@
                     </div>
                     <div class="modal-footer flex-center">
                         <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn fw-bold text-white px-8"
-                            style="background-color: #0d5c3a;">Simpan</button>
+                        <button type="submit" class="btn btn-emas fw-bold px-8">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -229,9 +339,9 @@
     <div class="modal fade" id="modal_edit_penghargaan" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header" style="background-color: #0d5c3a;">
-                    <h2 class="fw-bold text-white mb-0">Edit Data Penghargaan</h2>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header modal-header-emas">
+                    <h2 class="fw-bold mb-0">Edit Data Penghargaan</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="form_edit_penghargaan" action="" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -282,7 +392,7 @@
                     </div>
                     <div class="modal-footer flex-center">
                         <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn fw-bold text-white px-8" style="background-color: #0d5c3a;">Update Data</button>
+                        <button type="submit" class="btn btn-emas fw-bold px-8">Update Data</button>
                     </div>
                 </form>
             </div>
@@ -299,6 +409,21 @@
                 </div>
                 <div class="modal-body text-center p-5">
                     <img id="img_preview" src="" class="img-fluid rounded shadow-sm" alt="Foto Penghargaan" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Preview File Dokumen (PDF, DOC, DOCX) -->
+    <div class="modal fade" id="modal_preview_file" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header border-0 py-2 px-3 justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe id="file_preview_frame" src="" title="Preview File"
+                        style="width: 100%; height: 78vh; border: 0; display: block;"></iframe>
                 </div>
             </div>
         </div>
@@ -371,6 +496,66 @@
         var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_preview_foto'));
         modal.show();
     }
+
+    // 3b. Preview File Dokumen (PDF, DOC, DOCX) yang aman untuk LAN & Production
+    function previewFile(url) {
+    var ext = url.split('?')[0].split('.').pop().toLowerCase();
+    var modalBody = document.getElementById('file_preview_frame').parentNode;
+
+    // 1. Jika file PDF -> langsung render di iframe pop-up modal
+    if (ext === 'pdf') {
+        modalBody.innerHTML = '<iframe id="file_preview_frame" src="' + url + '" title="Preview File" style="width: 100%; height: 78vh; border: 0; display: block;"></iframe>';
+    }
+    // 2. Jika file Word (DOC / DOCX)
+    else {
+        var host = window.location.hostname;
+        // Cek apakah diakses dari localhost atau IP LAN Kominfo (10.x.x.x / 192.168.x.x)
+        var isLocalOrIntranet = host === 'localhost' ||
+                                host === '127.0.0.1' ||
+                                host.startsWith('10.') ||
+                                host.startsWith('192.168.') ||
+                                host.endsWith('.test') ||
+                                host.endsWith('.local');
+
+        if (isLocalOrIntranet) {
+            // Di Jaringan LAN / Localhost: Tampilkan kartu info rapi + tombol unduh/buka langsung di modal
+            modalBody.innerHTML =
+                '<div class="d-flex flex-column align-items-center justify-content-center p-10 text-center" style="height: 60vh;">' +
+                    '<div class="symbol symbol-100px mb-5">' +
+                        '<span class="symbol-label bg-light-primary">' +
+                            '<i class="ki-outline ki-file-down text-primary fs-5x"></i>' +
+                        '</span>' +
+                    '</div>' +
+                    '<h3 class="fw-bold text-gray-900 mb-2">Dokumen Word (.doc / .docx)</h3>' +
+                    '<p class="text-gray-600 mb-6 fs-6 max-w-400px">' +
+                        'Karena sedang diakses via jaringan LAN/Lokal, preview instan Word dibatasi.<br>Silakan unduh atau buka dokumen untuk melihat isinya.' +
+                    '</p>' +
+                    '<a href="' + url + '" download class="btn btn-primary fw-bold px-8 py-3 me-2">' +
+                        '<i class="ki-outline ki-download fs-3 me-2"></i> Download File' +
+                    '</a>' +
+                    '<a href="' + url + '" target="_blank" class="btn btn-light-primary fw-bold px-8 py-3">' +
+                        '<i class="ki-outline ki-exit-right-corner fs-3 me-2"></i> Buka di Tab Baru' +
+                    '</a>' +
+                '</div>';
+        } else {
+            // Di Server Online (Publik): Render otomatis via Office Viewer Resmi
+            var officeUrl = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(url);
+            modalBody.innerHTML = '<iframe id="file_preview_frame" src="' + officeUrl + '" title="Preview File" style="width: 100%; height: 78vh; border: 0; display: block;"></iframe>';
+        }
+    }
+
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_preview_file')).show();
+}
+
+// Reset iframe/modal saat ditutup
+document.getElementById('modal_preview_file').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('file_preview_frame').parentNode.innerHTML = '<iframe id="file_preview_frame" src="" title="Preview File" style="width: 100%; height: 78vh; border: 0; display: block;"></iframe>';
+});
+
+    // Kosongkan PDF/Doc saat pop up ditutup supaya tidak terus dimuat di belakang
+    document.getElementById('modal_preview_file').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('file_preview_frame').src = '';
+    });
 
     // 4. Pop-up Konfirmasi & Proses Hapus
     function hapusPenghargaan(id, nama) {
