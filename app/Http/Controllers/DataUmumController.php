@@ -56,6 +56,20 @@ class DataUmumController extends Controller
             }
         }
 
+        $kader = DB::table('d_kader_2026')
+            ->where('id_kec', $idKec)->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kel, jenis_kader, jenis_kelamin, COUNT(*) AS total')
+            ->groupBy('id_kel', 'jenis_kader', 'jenis_kelamin')
+            ->get();
+
+        foreach ($kader as $r) {
+            $alias = $r->jenis_kader . '_' . strtolower($r->jenis_kelamin);
+            if (!$data->has($r->id_kel)) {
+                $data[$r->id_kel] = (object) ['id_kel' => $r->id_kel];
+            }
+            $data[$r->id_kel]->$alias = $r->total;
+        }
+
         return view('bo.pages.dashboard', [
             'level'       => 'kelurahan',
             'kec'         => $kec,

@@ -36,6 +36,21 @@ class DashboardController extends Controller
             }
         }
 
+        // Kader: angka dihitung dari tabel detail
+        $kader = DB::table('d_kader_2026')
+            ->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kec, jenis_kader, jenis_kelamin, COUNT(*) AS total')
+            ->groupBy('id_kec', 'jenis_kader', 'jenis_kelamin')
+            ->get();
+
+        foreach ($kader as $r) {
+            $alias = $r->jenis_kader . '_' . strtolower($r->jenis_kelamin);
+            if (!$data->has($r->id_kec)) {
+                $data[$r->id_kec] = (object) ['id_kec' => $r->id_kec];
+            }
+            $data[$r->id_kec]->$alias = $r->total;
+        }
+
         // Kolom Kelurahan: jumlah kelurahan asli dari m_kelurahan
         $jmlKelurahan = DB::table('m_kelurahan as l')
             ->join('m_kecamatan as k', 'k.kode_bpjs', '=', 'l.kode_kec_bpjs')
