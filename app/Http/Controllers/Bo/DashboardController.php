@@ -51,6 +51,37 @@ class DashboardController extends Controller
             $data[$r->id_kec]->$alias = $r->total;
         }
 
+        // Penduduk: KK dan jumlah jiwa dari tabel detail
+        $pend = DB::table('d_penduduk_2026')
+            ->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw("id_kec,
+                COUNT(*) FILTER (WHERE kepala_keluarga) AS kk,
+                COUNT(*) FILTER (WHERE jenis_kelamin = 'L') AS jumlah_jiwa_l,
+                COUNT(*) FILTER (WHERE jenis_kelamin = 'P') AS jumlah_jiwa_p")
+            ->groupBy('id_kec')
+            ->get();
+
+        foreach ($pend as $r) {
+            if (!$data->has($r->id_kec)) {
+                $data[$r->id_kec] = (object) ['id_kec' => $r->id_kec];
+            }
+            $data[$r->id_kec]->kk = $r->kk;
+            $data[$r->id_kec]->jumlah_jiwa_l = $r->jumlah_jiwa_l;
+            $data[$r->id_kec]->jumlah_jiwa_p = $r->jumlah_jiwa_p;
+        }
+
+        $rw = DB::table('d_lembaga_2026')
+            ->where('periode', 2026)->where('jenis', 'rw')->whereNull('deleted_at')
+            ->selectRaw('id_kec, COUNT(*) AS total')
+            ->groupBy('id_kec')->pluck('total', 'id_kec');
+
+        foreach ($rw as $idKec => $total) {
+            if (!$data->has($idKec)) {
+                $data[$idKec] = (object) ['id_kec' => $idKec];
+            }
+            $data[$idKec]->rw = $total;
+        }
+
         // Kolom Kelurahan: jumlah kelurahan asli dari m_kelurahan
         $jmlKelurahan = DB::table('m_kelurahan as l')
             ->join('m_kecamatan as k', 'k.kode_bpjs', '=', 'l.kode_kec_bpjs')

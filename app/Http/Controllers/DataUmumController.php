@@ -70,6 +70,37 @@ class DataUmumController extends Controller
             $data[$r->id_kel]->$alias = $r->total;
         }
 
+        $pend = DB::table('d_penduduk_2026')
+            ->where('id_kec', $idKec)->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw("id_kel,
+                COUNT(*) FILTER (WHERE kepala_keluarga) AS kk,
+                COUNT(*) FILTER (WHERE jenis_kelamin = 'L') AS jumlah_jiwa_l,
+                COUNT(*) FILTER (WHERE jenis_kelamin = 'P') AS jumlah_jiwa_p")
+            ->groupBy('id_kel')
+            ->get();
+
+        foreach ($pend as $r) {
+            if (!$data->has($r->id_kel)) {
+                $data[$r->id_kel] = (object) ['id_kel' => $r->id_kel];
+            }
+            $data[$r->id_kel]->kk = $r->kk;
+            $data[$r->id_kel]->jumlah_jiwa_l = $r->jumlah_jiwa_l;
+            $data[$r->id_kel]->jumlah_jiwa_p = $r->jumlah_jiwa_p;
+        }
+
+        $rw = DB::table('d_lembaga_2026')
+            ->where('id_kec', $idKec)->where('periode', 2026)
+            ->where('jenis', 'rw')->whereNull('deleted_at')
+            ->selectRaw('id_kel, COUNT(*) AS total')
+            ->groupBy('id_kel')->pluck('total', 'id_kel');
+
+        foreach ($rw as $idKel => $total) {
+            if (!$data->has($idKel)) {
+                $data[$idKel] = (object) ['id_kel' => $idKel];
+            }
+            $data[$idKel]->rw = $total;
+        }
+
         return view('bo.pages.dashboard', [
             'activeTab' => request()->query('tab', 'data_umum'),
             'level'       => 'kelurahan',
