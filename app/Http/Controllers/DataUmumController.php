@@ -28,6 +28,34 @@ class DataUmumController extends Controller
             ->get()
             ->keyBy('id_kel');
 
+        // Tiap kelurahan = 1
+        foreach ($baris as $kel) {
+            if ($data->has($kel->id_kel)) {
+                $data[$kel->id_kel]->kelurahan = 1;
+            } else {
+                $data[$kel->id_kel] = (object) ['id_kel' => $kel->id_kel, 'kelurahan' => 1];
+            }
+        }
+
+        // Dasa Wisma per kelurahan, dihitung dari tabel detail
+        $jmlDasaWisma = DB::table('d_dasa_wisma_2026')
+            ->where('id_kec', $idKec)
+            ->where('periode', 2026)
+            ->whereNull('deleted_at')
+            ->selectRaw('id_kel, COUNT(*) AS total')
+            ->groupBy('id_kel')
+            ->pluck('total', 'id_kel');
+
+        foreach ($baris as $kel) {
+            $jml = $jmlDasaWisma[$kel->id_kel] ?? 0;
+
+            if ($data->has($kel->id_kel)) {
+                $data[$kel->id_kel]->dasa_wisma = $jml;
+            } else {
+                $data[$kel->id_kel] = (object) ['id_kel' => $kel->id_kel, 'dasa_wisma' => $jml];
+            }
+        }
+
         return view('bo.pages.dashboard', [
             'level'       => 'kelurahan',
             'kec'         => $kec,

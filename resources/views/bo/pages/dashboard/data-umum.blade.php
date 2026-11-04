@@ -103,6 +103,7 @@
                                 data-id="{{ $k->id }}"
                                 data-kec-id="{{ $lv === 'kelurahan' ? $kec->id_kec : $b->id_kec }}"
                                 data-kec-nama="{{ $nama }}"
+                                data-kel-id="{{ $lv === 'kelurahan' ? $b->id_kel : 0 }}"
                             @endunless>
                             {{ number_format($data[$id]->{$k->alias} ?? 0, 0, ',', '.') }}
                         </td>

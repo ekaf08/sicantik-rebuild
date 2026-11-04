@@ -2105,7 +2105,7 @@ document.addEventListener('click', function (e) {
   const el = e.target.closest('.agregat-trigger[data-id]');
   if (!el) return;
 
-  fetch(`/modal/${el.dataset.id}?kec=${el.dataset.kecId}`)
+  fetch(`/modal/${el.dataset.id}?kec=${el.dataset.kecId}&kel=${el.dataset.kelId ?? 0}`)
     .then(r => r.json())
     .then(hasil => tampilkan(hasil, el.dataset.kecNama));
 });

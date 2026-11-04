@@ -27,11 +27,11 @@ class ModalController extends Controller
         abort_unless(preg_match('/^\s*select/i', $sql), 422);
 
         $bindings = [];
-        if (str_contains($sql, ':kec')) {
+        if (str_contains($p->query_detail, ':kec')) {
             $bindings['kec'] = (int) $request->query('kec');
         }
-        if (str_contains($sql, ':periode')) {
-            $bindings['periode'] = (int) $request->query('periode', 2026);
+        if (str_contains($p->query_detail, ':kel')) {
+            $bindings['kel'] = (int) $request->query('kel', 0);
         }
 
         $stmt = DB::connection()->getPdo()->prepare($sql);

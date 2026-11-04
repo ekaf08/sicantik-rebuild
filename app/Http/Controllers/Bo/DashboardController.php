@@ -36,6 +36,23 @@ class DashboardController extends Controller
             }
         }
 
+        // Kolom Kelurahan: jumlah kelurahan asli dari m_kelurahan
+        $jmlKelurahan = DB::table('m_kelurahan as l')
+            ->join('m_kecamatan as k', 'k.kode_bpjs', '=', 'l.kode_kec_bpjs')
+            ->selectRaw('k.id_kec, COUNT(*) AS total')
+            ->groupBy('k.id_kec')
+            ->pluck('total', 'id_kec');
+
+        foreach ($kecamatan as $kec) {
+            $jml = $jmlKelurahan[$kec->id_kec] ?? 0;
+
+            if ($data->has($kec->id_kec)) {
+                $data[$kec->id_kec]->kelurahan = $jml;
+            } else {
+                $data[$kec->id_kec] = (object) ['id_kec' => $kec->id_kec, 'kelurahan' => $jml];
+            }
+        }
+
         $kolomPokja1 = $this->kolom('d_pokja_1_2026');
         $dataPokja1  = DB::table('d_pokja_1_2026')
             ->where('periode', 2026)
