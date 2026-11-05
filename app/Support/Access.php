@@ -9,6 +9,10 @@ class Access
     protected const BYPASS_ROLE_IDS = [1]; // ID Super Admin
     protected const BYPASS_USER_IDS = [2]; // Bypass khusus User ID 2 (Super User tanpa role)
 
+    protected const SUPER_ONLY_PATHS = [
+        '/master/user', '/master/role', '/master/menu', '/master/permission',
+    ];
+
     protected static ?array $cache = null;
 
     public static function flush(): void
@@ -26,16 +30,30 @@ class Access
         );
     }
 
+    public static function isSuperOnlyPath(string $url): bool
+    {
+        $u = '/' . trim($url, '/');
+
+        foreach (self::SUPER_ONLY_PATHS as $p) {
+            if ($u === $p || str_starts_with($u, $p . '/')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static function isProtectedUser($user): bool
     {
         return in_array((int) $user->id, self::BYPASS_USER_IDS, true)
             || in_array((int) $user->role_id, self::BYPASS_ROLE_IDS, true);
     }
 
-public static function bypassRoleIds(): array
-{
-    return self::BYPASS_ROLE_IDS;
-}
+    public static function bypassRoleIds(): array
+    {
+        return self::BYPASS_ROLE_IDS;
+    }
+
     public static function can(string $url, string $field = 'table'): bool
     {
         $user = auth()->user();
@@ -46,6 +64,10 @@ public static function bypassRoleIds(): array
         if (in_array((int) $user->id, self::BYPASS_USER_IDS, true)
             || in_array((int) $user->role_id, self::BYPASS_ROLE_IDS, true)) {
             return true;
+        }
+
+        if (self::isSuperOnlyPath($url)) {
+            return false;
         }
 
         if (self::$cache === null) {

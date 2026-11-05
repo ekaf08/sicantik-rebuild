@@ -193,8 +193,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/kampung-asi/chart', [InovasiController::class, 'getKampungAsiChart'])->name('kampung-asi.chart');
 
     // SiCantik 
-    Route::get('/inovasi/sicantik/get-data', [InovasiSiCantikController::class, 'getData'])->name('inovasi.sicantik.getData');
-
+    Route::get('/inovasi/sicantik/get-data', [InovasiController::class, 'getDataSiCantik'])->name('inovasi.sicantik.getData');    
     // CATCH-ALL: harus paling bawah
     Route::get('/{slug}', [MenuController::class, 'handleDynamicPage']) ->where('slug', '.*')->name('menu.dynamic');
 });

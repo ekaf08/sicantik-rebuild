@@ -937,35 +937,23 @@ class InovasiController extends Controller
     }
 
 
-public function getDataSiCantik(Request $request)
+public function getDataSiCantik()
 {
     try {
-        $raw = DB::table('inovasi_sicantik')
-            ->select('id', 'judul', 'deskripsi', 'gambar', 'keterangan')
-            ->orderBy('id', 'asc')
-            ->get();
-
-        // Enkripsi ID setiap record sebelum dikirim ke frontend
-        $data = $raw->map(function ($item) {
-            return [
-                'id'         => Crypt::encryptString($item->id), // ID terenkripsi (misal: eyJpdiI6...)
-                'judul'      => $item->judul,
-                'deskripsi'  => $item->deskripsi,
-                'gambar'     => $item->gambar,
-                'keterangan' => $item->keterangan,
-            ];
-        });
+        $data = \DB::table('inovasi_sicantik')->get();
 
         return response()->json([
             'status'  => 'success',
-            'message' => 'Data Si Cantik berhasil dimuat',
+            'message' => 'Berhasil',
             'data'    => $data
-        ]);
-    } catch (\Exception $e) {
+        ], 200);
+
+    } catch (\Throwable $e) {
         return response()->json([
             'status'  => 'error',
             'message' => $e->getMessage(),
-            'data'    => []
+            'line'    => $e->getLine(),
+            'file'    => $e->getFile()
         ], 500);
     }
 }

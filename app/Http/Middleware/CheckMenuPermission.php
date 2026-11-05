@@ -35,6 +35,10 @@ class CheckMenuPermission
 
         $path = '/' . trim($request->path(), '/');
 
+        if (Access::isSuperOnlyPath($path)) {
+            abort(403, 'Akses ditolak.');
+        }
+
         if (in_array($path, self::OPEN_PATHS, true)
             || collect(self::OPEN_PREFIXES)->contains(fn ($p) => str_starts_with($path, $p))) {
             return $next($request);

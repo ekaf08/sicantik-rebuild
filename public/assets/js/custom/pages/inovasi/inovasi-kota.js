@@ -125,24 +125,6 @@ function populateInovasiOptions(selectedPokja = 'semua') {
         nativeSelect.innerHTML = '';
     }
 
-    if (pokjaKey === 'sekretaris') {
-        const defaultOpt = new Option('Pilih salah satu inovasi...', '', true, true);
-        $(defaultOpt).prop('disabled', true);
-        $select.append(defaultOpt);
-
-        const opt = new Option('Si Cantik', 'sicantik', false, false);
-        $select.append(opt);
-
-        $select.val('sicantik');
-
-        if ($select.data('select2')) {
-            $select.trigger('change');
-        } else {
-            handleInovasiChange();
-        }
-        return;
-    }
-
     const defaultOpt = new Option('Pilih salah satu inovasi...', '', true, true);
     $(defaultOpt).prop('disabled', true);
     $select.append(defaultOpt);
@@ -1705,10 +1687,17 @@ function fetchTableSiCantik() {
             "Accept": "application/json"
         }
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+    })
     .then(res => {
         if (res.status === 'success' && Array.isArray(res.data)) {
             sicantikData = res.data;
+        } else if (Array.isArray(res)) {
+            sicantikData = res;
         } else {
             sicantikData = [];
         }
@@ -1731,7 +1720,7 @@ function renderTableSiCantik(resetPage = false) {
     const searchInput = document.getElementById('search-sicantik-input');
     const q = (searchInput ? searchInput.value : '').toLowerCase().trim();
 
-    const filtered = sicantikData.filter(item => {
+    const filtered = (sicantikData || []).filter(item => {
         const judul = (item.judul || '').toLowerCase();
         const deskripsi = (item.deskripsi || '').toLowerCase();
         const keterangan = (item.keterangan || '').toLowerCase();
@@ -1760,8 +1749,9 @@ function renderTableSiCantik(resetPage = false) {
     }
 
     tbody.innerHTML = rows.map((item, idx) => {
-        const imgThumb = item.gambar 
-            ? `<a href="javascript:void(0)" onclick="openPreviewSiCantik('${item.gambar}', '${item.judul}')">
+        const hasImage = item.gambar && item.gambar !== '-' && item.gambar !== 'null';
+        const imgThumb = hasImage 
+            ? `<a href="javascript:void(0)" onclick="openPreviewSiCantik('${item.gambar}', '${(item.judul || '').replace(/'/g, "\\'")}')">
                 <img src="${item.gambar}" class="img-table-thumb shadow-xs" style="width: 44px; height: 38px; object-fit: cover; border-radius: 6px;" alt="Foto">
                </a>`
             : `<span class="text-muted small">-</span>`;
@@ -1787,14 +1777,18 @@ function renderPaginationSiCantik(totalPages) {
     const ul = document.getElementById('table-sicantik-pagination');
     if (!ul) return;
 
-    const pages = Math.max(1, totalPages);
+    if (totalPages <= 1) {
+        ul.innerHTML = '';
+        return;
+    }
+
     let html = `
         <li class="page-item ${sicantikCurrentPage === 1 ? 'disabled' : ''}">
             <a class="page-link" href="javascript:void(0)" data-page="${sicantikCurrentPage - 1}">&lt;</a>
         </li>
     `;
 
-    for (let p = 1; p <= pages; p++) {
+    for (let p = 1; p <= totalPages; p++) {
         html += `
             <li class="page-item ${p === sicantikCurrentPage ? 'active' : ''}">
                 <a class="page-link" href="javascript:void(0)" data-page="${p}">${p}</a>
@@ -1803,7 +1797,7 @@ function renderPaginationSiCantik(totalPages) {
     }
 
     html += `
-        <li class="page-item ${sicantikCurrentPage >= pages ? 'disabled' : ''}">
+        <li class="page-item ${sicantikCurrentPage >= totalPages ? 'disabled' : ''}">
             <a class="page-link" href="javascript:void(0)" data-page="${sicantikCurrentPage + 1}">&gt;</a>
         </li>
     `;
@@ -1818,8 +1812,12 @@ function openPreviewSiCantik(url, title) {
     if (titleEl) titleEl.innerText = title || 'Preview Gambar';
 
     const modalEl = document.getElementById('modal-preview-sicantik');
-    if (modalEl && window.bootstrap && window.bootstrap.Modal) {
-        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    if (modalEl) {
+        if (window.bootstrap && window.bootstrap.Modal) {
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        } else if (window.jQuery) {
+            $(modalEl).modal('show');
+        }
     }
 }
 
@@ -1827,7 +1825,7 @@ document.addEventListener('click', function(e) {
     const link = e.target.closest('#table-sicantik-pagination a[data-page]');
     if (link) {
         e.preventDefault();
-        const p = parseInt(link.getAttribute('data-page'));
+        const p = parseInt(link.getAttribute('data-page'), 10);
         if (p && p !== sicantikCurrentPage) {
             sicantikCurrentPage = p;
             renderTableSiCantik();
@@ -1836,7 +1834,7 @@ document.addEventListener('click', function(e) {
 });
 
 document.addEventListener('input', function(e) {
-    if (e.target.id === 'search-sicantik-input') {
+    if (e.target && e.target.id === 'search-sicantik-input') {
         clearTimeout(sicantikDebounceTimer);
         sicantikDebounceTimer = setTimeout(() => {
             renderTableSiCantik(true);
@@ -1844,11 +1842,9 @@ document.addEventListener('input', function(e) {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    fetchTableSiCantik();
-});
-
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fetchTableSiCantik);
+} else {
     fetchTableSiCantik();
 }
 

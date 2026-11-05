@@ -93,16 +93,21 @@
             <div>
                 <h5 class="fw-bold text-dark mb-1 sc-judul">Si Cantik (Sistem Informasi Pencatatan Kegiatan dan Inovasi PKK Kota Surabaya)</h5>
             </div>
-
+            <div class="d-flex align-items-center gap-2">
+                <div class="position-relative">
+                    <input type="text" id="search-sicantik-input" class="form-control form-control-sm ps-9" placeholder="Cari inovasi..." style="min-width: 200px;">
+                    <i class="fa-solid fa-magnifying-glass position-absolute top-50 translate-middle-y ms-3 text-muted fs-7"></i>
+                </div>
+            </div>
         </div>
 
         <div class="table-custom-wrapper">
             <div class="table-responsive mb-0">
-                <table class="table table-custom align-middle mb-0 text-nowrap">
+                <table class="table table-custom align-middle mb-0">
                     <thead>
                         <tr>
-                            <th class="text-center" style="width: 60px;">No <i class="fa-solid fa-angle-up text-secondary ms-1" style="font-size: 0.7rem;"></i></th>
-                            <th style="min-width: 180px;">Judul</th>
+                            <th class="text-center" style="width: 60px;">No</th>
+                            <th style="min-width: 200px;">Judul</th>
                             <th style="min-width: 280px;">Deskripsi</th>
                             <th class="text-center" style="width: 120px;">Gambar</th>
                             <th style="min-width: 160px;">Keterangan</th>
@@ -111,7 +116,7 @@
                     <tbody id="table-sicantik-body">
                         <tr>
                             <td colspan="5" class="text-center py-5">
-                                <div class="spinner-border spinner-border-sm text-teal mb-2" role="status"></div>
+                                <div class="spinner-border spinner-border-sm text-success mb-2" role="status"></div>
                                 <div class="text-muted small fw-semibold">Memuat data Si Cantik...</div>
                             </td>
                         </tr>
