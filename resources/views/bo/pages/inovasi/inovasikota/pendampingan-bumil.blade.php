@@ -19,48 +19,75 @@
         transition: all 0.2s ease;
     }
     .nav-pills-custom .nav-link.active-hamil {
-        background: #f64e60 !important;
+        background: #e5655d !important;
         color: #ffffff !important;
-        box-shadow: 0 4px 12px rgba(246, 78, 96, 0.3);
+        box-shadow: 0 4px 12px rgba(229, 101, 93, 0.3);
     }
     .nav-pills-custom .nav-link.active-kek {
-        background: #8b5cf6 !important;
+        background: #d4608f !important;
         color: #ffffff !important;
-        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        box-shadow: 0 4px 12px rgba(212, 96, 143, 0.3);
     }
     .nav-pills-custom .nav-link.active-nifas {
-        background: #e83e8c !important;
+        background: #b57bbf !important;
         color: #ffffff !important;
-        box-shadow: 0 4px 12px rgba(232, 62, 140, 0.3);
+        box-shadow: 0 4px 12px rgba(181, 123, 191, 0.3);
     }
     /* Teks tabel hitam: judul kolom tebal, isi tabel tipis */
     #bm-table thead th { color: #000 !important; }
     #bm-table tbody td { color: #000 !important; }
 
     /* Popup Lihat (riwayat) */
-    .bm-hero { background: linear-gradient(135deg, #6d28d9 0%, #ec4899 100%); color: #fff; border-radius: 16px; padding: 20px 24px; }
+    .bm-hero { background: linear-gradient(135deg, #d4608f 0%, #f3a0bd 100%); color: #fff; border-radius: 16px; padding: 20px 24px; }
     .bm-avatar { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; flex-shrink: 0; }
     .bm-chip { background: rgba(255,255,255,.2); border-radius: 999px; padding: 4px 12px; font-size: .78rem; font-weight: 700; white-space: nowrap; }
     .bm-info-item label { font-size: .68rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 2px; }
     .bm-info-item span { font-weight: 700; color: #1e293b; font-size: .9rem; }
     .bm-riwayat { border-radius: 16px; overflow: hidden; border: 1px solid #e5e7eb; }
     .bm-riwayat-head { color: #fff; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .bm-riwayat-a { background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); }
-    .bm-riwayat-b { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+    .bm-riwayat-a { background: linear-gradient(135deg, #f08fb0 0%, #d4608f 100%); }
+    .bm-riwayat-b { background: linear-gradient(135deg, #8ab5a0 0%, #6f9c86 100%); }
     .bm-mini-table { width: 100%; font-size: .82rem; }
-    .bm-mini-table thead th { background: #f1f5f9; color: #000; font-weight: 800; text-align: center; padding: 10px 12px; white-space: nowrap; text-transform: uppercase; font-size: .7rem; letter-spacing: .03em; }
+    .bm-mini-table thead th { background: #fbe9f0; color: #5e2b2b; font-weight: 800; text-align: center; padding: 10px 12px; white-space: nowrap; text-transform: uppercase; font-size: .7rem; letter-spacing: .03em; }
     .bm-mini-table tbody td { color: #000; text-align: center; padding: 10px 12px; border-top: 1px dashed #e5e7eb; white-space: nowrap; font-weight: 600; }
-    .bm-mini-table tbody tr:hover td { background: #f8fafc; }
+    .bm-mini-table tbody tr:hover td { background: #fdf7f9; }
+
+    /* Banner ibu hamil: dipindah ke paling atas halaman oleh skrip di bawah */
+    .bmb { position: relative; display: flex; align-items: center; overflow: hidden; min-height: 210px; border-radius: 1rem; background: #faeeea; box-shadow: 0 2px 10px rgba(30, 40, 60, 0.06); margin-bottom: .5rem; }
+    .bmb .ik-blob { fill: #f4d9d3; } .bmb .ik-blob2 { fill: #f7e3de; } .bmb .ik-shadow { fill: #ecc9c3; }
+    .bmb__tx { position: relative; z-index: 2; padding: 1.5rem 2.25rem; max-width: 62%; }
+    .bmb__kecil { font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #d98a8a; margin-bottom: .5rem; }
+    .bmb__judul { font-size: 2rem; line-height: 1.15; font-weight: 800; color: #5e2b2b; margin: 0 0 .5rem; }
+    .bmb__desk { display: block; font-size: .95rem; font-weight: 500; color: #8a5252; }
+    .bmb__art { position: absolute; right: 0; bottom: 0; width: 370px; height: 206px; pointer-events: none; z-index: 1; }
+    .bmb__art svg { width: 100%; height: 100%; display: block; }
+    @media (max-width: 991px) { .bmb__art { width: 300px; height: 167px; } .bmb__tx { max-width: 70%; } }
+    @media (max-width: 767px) { .bmb__art { display: none; } .bmb__tx { max-width: 100%; padding: 1.25rem; } .bmb__judul { font-size: 1.5rem; } }
+    .bmb-info { background: #fdf7f9; border: 1px solid #f4e1e8; border-radius: 16px; }
+    .bm-btn-lihat { background: #fbe0ea; color: #d4608f; border: none; }
+    .bm-btn-lihat:hover { background: #d4608f; color: #fff; }
+    .bm-btn-lihat:hover i { color: #fff !important; }
+    .bm-pg .page-item.active .page-link { background-color: #d4608f; border-color: #d4608f; color: #fff; }
+    .bm-pg .page-link { color: #a8406f; }
 </style>
 
-<!-- Banner Informasi Inovasi dengan Style Gradasi Modern -->
-<div class="card card-flush border-0 mb-6" style="background-color: #f0f6ff !important; border-radius: 16px;">
+<!-- Banner Pendampingan Ibu Hamil (dipindah ke atas halaman oleh skrip di akhir file) -->
+<div class="bmb d-none" id="bmb-top">
+    <div class="bmb__tx">
+        <div class="bmb__kecil">Inovasi Kota</div>
+        <h2 class="bmb__judul">Pendampingan Ibu Hamil dan Ibu Hamil Resti</h2>
+        <span class="bmb__desk">Mendampingi ibu hamil agar sehat dan selamat</span>
+    </div>
+    <div class="bmb__art"><svg viewBox="0 0 370 206" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path class="ik-blob" d="M0 206 C8 112 70 66 170 56 C260 48 332 44 370 40 L370 206Z"/><circle class="ik-blob2" cx="248" cy="30" r="46"/><circle class="ik-blob2" cx="14" cy="186" r="14"/><ellipse class="ik-shadow" cx="185" cy="197" rx="158" ry="6.5"/><line x1="52" y1="190" x2="52" y2="138" stroke="#e0a96a" stroke-width="2.2" stroke-linecap="round" /><path d="M52 171.8 C68 169.8 72 157.8 66 149.8 C56 155.8 52 163.8 52 171.8Z" fill="#e0a96a" /><path d="M52 161.4 C36 159.4 32 147.4 38 139.4 C48 145.4 52 153.4 52 161.4Z" fill="#e9b878" /><path d="M52 151 C68 149 72 137 66 129 C56 135 52 143 52 151Z" fill="#e0a96a" /><path d="M52 138 C44 132 44 122 52 116 C60 122 60 132 52 138Z" fill="#e9b878" /><line x1="334" y1="190" x2="334" y2="120" stroke="#6f9c86" stroke-width="2.2" stroke-linecap="round" /><path d="M334 165.5 C318 163.5 314 151.5 320 143.5 C330 149.5 334 157.5 334 165.5Z" fill="#6f9c86" /><path d="M334 151.5 C350 149.5 354 137.5 348 129.5 C338 135.5 334 143.5 334 151.5Z" fill="#8ab5a0" /><path d="M334 137.5 C318 135.5 314 123.5 320 115.5 C330 121.5 334 129.5 334 137.5Z" fill="#6f9c86" /><path d="M334 120 C326 114 326 104 334 98 C342 104 342 114 334 120Z" fill="#8ab5a0" /><rect x="87" y="149.7" width="7.3" height="40.3" rx="2.2" fill="#46546a" /><rect x="97.7" y="149.7" width="7.3" height="40.3" rx="2.2" fill="#46546a" /><ellipse cx="90.6" cy="188.2" rx="6" ry="2.9" fill="#2a2a2a" /><ellipse cx="101.4" cy="188.2" rx="6" ry="2.9" fill="#2a2a2a" /><line x1="83.7" y1="119.4" x2="74.7" y2="144.1" stroke="#f0c3a0" stroke-width="6" stroke-linecap="round" /><line x1="108.3" y1="119.4" x2="119.5" y2="137.4" stroke="#f0c3a0" stroke-width="6" stroke-linecap="round" /><rect x="82" y="109.4" width="28" height="42.6" rx="10.1" fill="#8fb09c" /><rect x="92.6" y="104.9" width="6.7" height="7.8" rx="0" fill="#f0c3a0" /><circle cx="96" cy="99.3" r="10.3" fill="#f0c3a0" /><path d="M85 99.3 A11 11 0 0 1 107 99.3 Q96 92.6 85 99.3Z" fill="#2d2420" /><path d="M170 96 C160 130 152 164 146 190 L240 190 C234 150 232 120 224 100Z" fill="#d98a8a" /><ellipse cx="222" cy="134" rx="26" ry="32" fill="#d98a8a" /><path d="M166 96 Q196 84 226 96 L224 112 Q196 104 168 112Z" fill="#cf7d7d" /><line x1="176" y1="100" x2="206" y2="136" stroke="#f2c09a" stroke-width="7" stroke-linecap="round" /><line x1="228" y1="112" x2="230" y2="142" stroke="#f2c09a" stroke-width="7" stroke-linecap="round" /><rect x="190" y="184" width="10" height="7" rx="3" fill="#f2c09a" /><rect x="210" y="184" width="10" height="7" rx="3" fill="#f2c09a" /><rect x="192" y="80" width="12" height="12" rx="3" fill="#f2c09a" /><circle cx="198" cy="66" r="17" fill="#f2c09a" /><path d="M181 66 A17 17 0 0 1 215 66 Q198 56 181 66Z" fill="#33261f" /><circle cx="198" cy="46" r="8.5" fill="#33261f" /><path d="M250 79 C232 67 238 52 250 61 C262 52 268 67 250 79Z" fill="#f0b36a" /><path d="M278 102 C266 94 270 84 278 90 C286 84 290 94 278 102Z" fill="#e69a9a" /></svg></div>
+</div>
+
+<!-- Penjelasan Inovasi -->
+<div class="card card-flush border-0 mb-6 bmb-info">
     <div class="card-body p-6 p-md-7">
-        <h4 class="fw-bolder text-gray-900 mb-3 fs-3">Inovasi Pendampingan Ibu Hamil & Ibu Hamil Resti</h4>
-        <p class="text-gray-700 fs-7 mb-3" style="line-height: 1.7;">
+        <p class="fs-7 mb-3" style="line-height: 1.7; color:#5e2b2b;">
             Inovasi yang memiliki tujuan untuk mengetahui jumlah dan kondisi ibu hamil secara menyeluruh hingga tingkat kecamatan, kelurahan, RW, dan RT. Data yang dikumpulkan tidak hanya berupa jumlah, tetapi juga informasi detail seperti NIK, nama, alamat lengkap, riwayat kehamilan, serta riwayat kesehatan sejak masa calon pengantin.
         </p>
-        <p class="text-gray-700 fs-7 mb-0" style="line-height: 1.7;">
+        <p class="fs-7 mb-0" style="line-height: 1.7; color:#5e2b2b;">
             Dengan data yang lengkap dan terintegrasi, kondisi ibu hamil dapat dipantau secara lebih akurat. Melalui inovasi ini, pemerintah kota dengan PKK dapat menentukan jenis intervensi yang tepat sesuai kebutuhan masing-masing ibu hamil. Harapannya, pelayanan kesehatan menjadi lebih terukur, tepat sasaran, serta mampu menekan risiko komplikasi kehamilan, kematian ibu dan bayi, serta mendukung kelahiran generasi yang sehat.
         </p>
     </div>
@@ -74,10 +101,10 @@
                 <div>
                     <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">TOTAL IBU HAMIL</span>
                     <div class="fs-2hx fw-bolder text-gray-900 mt-1" id="bm-kpi-hamil">0</div>
-                    <span class="badge badge-light-primary fw-semibold fs-8 mt-2">Data Terdaftar</span>
+                    <span class="badge fw-semibold fs-8 mt-2" style="background:#fbe0ea;color:#a8406f;">Data Terdaftar</span>
                 </div>
-                <div class="w-50px h-50px rounded-circle bg-light-primary d-flex align-items-center justify-content-center">
-                    <i class="ki-outline ki-profile-user fs-1 text-primary"></i>
+                <div class="w-50px h-50px rounded-circle d-flex align-items-center justify-content-center" style="background:#fbe0ea;">
+                    <i class="ki-outline ki-profile-user fs-1" style="color:#d4608f;"></i>
                 </div>
             </div>
         </div>
@@ -87,11 +114,11 @@
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">IBU HAMIL RESTI (RISIKO TINGGI)</span>
-                    <div class="fs-2hx fw-bolder text-danger mt-1" id="bm-kpi-resti">0</div>
-                    <span class="badge badge-light-danger fw-semibold fs-8 mt-2">Butuh Pendampingan Extra</span>
+                    <div class="fs-2hx fw-bolder mt-1" style="color:#e5655d;" id="bm-kpi-resti">0</div>
+                    <span class="badge fw-semibold fs-8 mt-2" style="background:#fde3e1;color:#b8433e;">Butuh Pendampingan Extra</span>
                 </div>
-                <div class="w-50px h-50px rounded-circle bg-light-danger d-flex align-items-center justify-content-center">
-                    <i class="ki-outline ki-shield-cross fs-1 text-danger"></i>
+                <div class="w-50px h-50px rounded-circle d-flex align-items-center justify-content-center" style="background:#fde3e1;">
+                    <i class="ki-outline ki-shield-cross fs-1" style="color:#e5655d;"></i>
                 </div>
             </div>
         </div>
@@ -101,11 +128,11 @@
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">TOTAL IBU NIFAS</span>
-                    <div class="fs-2hx fw-bolder mt-1" style="color: #e83e8c;" id="bm-kpi-nifas">0</div>
-                    <span class="badge badge-light-warning fw-semibold fs-8 mt-2">Pemantauan Pasca Melahirkan</span>
+                    <div class="fs-2hx fw-bolder mt-1" style="color: #b57bbf;" id="bm-kpi-nifas">0</div>
+                    <span class="badge fw-semibold fs-8 mt-2" style="background:#f1e2f5;color:#85498f;">Pemantauan Pasca Melahirkan</span>
                 </div>
-                <div class="w-50px h-50px rounded-circle d-flex align-items-center justify-content-center" style="background-color: #fde6f2;">
-                    <i class="ki-outline ki-heart fs-1" style="color: #e83e8c;"></i>
+                <div class="w-50px h-50px rounded-circle d-flex align-items-center justify-content-center" style="background-color: #f1e2f5;">
+                    <i class="ki-outline ki-heart fs-1" style="color: #b57bbf;"></i>
                 </div>
             </div>
         </div>
@@ -135,10 +162,10 @@
     </div>
 
     <div class="card-body pt-2 px-6 pb-6">
-        <div class="p-6 rounded-4" style="background-color: #f8fafc; border: 1px solid #edf2f7;">
+        <div class="p-6 rounded-4" style="background-color: #fdf7f9; border: 1px solid #f4e1e8;">
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-6">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="w-8px h-24px rounded-2" id="bm-indicator" style="background-color: #8b5cf6;"></span>
+                    <span class="w-8px h-24px rounded-2" id="bm-indicator" style="background-color: #d4608f;"></span>
                     <h5 class="fw-bolder text-gray-800 m-0 fs-5 tracking-wide" id="bm-judul">IBU HAMIL KEK/TIDAK KEK</h5>
                 </div>
 
@@ -217,7 +244,7 @@
 
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4">
             <span class="text-gray-600 fs-8 fw-semibold" id="bm-info"></span>
-            <ul class="pagination pagination-outline mb-0" id="bm-pagination"></ul>
+            <ul class="pagination pagination-outline bm-pg mb-0" id="bm-pagination"></ul>
         </div>
     </div>
 </div>
@@ -253,9 +280,9 @@
     let pluginTerdaftar = false;
 
     const TAB = {
-        kek:   { judul: 'IBU HAMIL KEK/TIDAK KEK',     warna: '#8b5cf6', kelas: 'active-kek',   tombol: 'bm-tab-kek' },
-        resti: { judul: 'IBU HAMIL RESTI/TIDAK RESTI', warna: '#f64e60', kelas: 'active-hamil', tombol: 'bm-tab-resti' },
-        nifas: { judul: 'IBU NIFAS',                   warna: '#e83e8c', kelas: 'active-nifas', tombol: 'bm-tab-nifas' }
+        kek:   { judul: 'IBU HAMIL KEK/TIDAK KEK',     warna: '#d4608f', kelas: 'active-kek',   tombol: 'bm-tab-kek' },
+        resti: { judul: 'IBU HAMIL RESTI/TIDAK RESTI', warna: '#e5655d', kelas: 'active-hamil', tombol: 'bm-tab-resti' },
+        nifas: { judul: 'IBU NIFAS',                   warna: '#b57bbf', kelas: 'active-nifas', tombol: 'bm-tab-nifas' }
     };
 
     function esc(v) {
@@ -327,17 +354,17 @@
         if (mode === 'kek') {
             const hamil = function (r) { return r.kategori === 'hamil'; };
             dataset = [
-                garis('Ibu Hamil KEK', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.status_kek === 'KEK'; }), '#8b5cf6', false),
-                garis('Ibu Hamil Tidak KEK', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.status_kek !== 'KEK'; }), '#2ec4b6', true)
+                garis('Ibu Hamil KEK', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.status_kek === 'KEK'; }), '#d4608f', false),
+                garis('Ibu Hamil Tidak KEK', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.status_kek !== 'KEK'; }), '#6f9c86', true)
             ];
         } else if (mode === 'resti') {
             const hamil = function (r) { return r.kategori === 'hamil'; };
             dataset = [
-                garis('Ibu Hamil Resti', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.resti; }), '#f64e60', false),
-                garis('Ibu Hamil Tidak Resti', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && !r.resti; }), '#3b82f6', true)
+                garis('Ibu Hamil Resti', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.resti; }), '#e5655d', false),
+                garis('Ibu Hamil Tidak Resti', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && !r.resti; }), '#7f9bb8', true)
             ];
         } else {
-            dataset = [garis('Ibu Nifas', hitung(g.daftar, g.kunci, function (r) { return r.kategori === 'nifas'; }), '#e83e8c', false)];
+            dataset = [garis('Ibu Nifas', hitung(g.daftar, g.kunci, function (r) { return r.kategori === 'nifas'; }), '#b57bbf', false)];
         }
 
         chart = new Chart(canvas.getContext('2d'), {
@@ -401,7 +428,7 @@
                     '<td>' + esc(r.nik || '-') + '</td>' +
                     '<td class="fw-bold">' + esc(r.nama) + '</td>' +
                     '<td>' + esc(r.alamat || '-') + '</td>' +
-                    '<td class="text-center"><button class="btn btn-sm btn-icon btn-light-primary rounded-circle bm-btn-lihat" data-id="' + esc(r.id) + '" title="Lihat"><i class="ki-outline ki-eye fs-5"></i></button></td>' +
+                    '<td class="text-center"><button class="btn btn-sm btn-icon rounded-circle bm-btn-lihat" data-id="' + esc(r.id) + '" title="Lihat"><i class="ki-outline ki-eye fs-5"></i></button></td>' +
                     '</tr>';
             }).join('');
         }
@@ -594,5 +621,32 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () { setTimeout(mulaiHalaman, 300); });
+})();
+</script>
+
+<script>
+// Ganti banner hijau "INOVASI KOTA" di atas halaman dengan banner pink saat sub menu ini dibuka
+(function () {
+    function mulai() {
+        var pink = document.getElementById('bmb-top');
+        var kontainer = document.getElementById('content-pendampingan-bumil');
+        var sub = document.getElementById('banner-subtitle-inovasi');
+        var asli = (sub && sub.closest('.card')) || document.querySelector('.banner-inovasi-kota');
+        if (!pink || !kontainer || !asli) return;
+        asli.parentNode.insertBefore(pink, asli);
+
+        function sinkron() {
+            var tampil = kontainer.offsetParent !== null;
+            pink.classList.toggle('d-none', !tampil);
+            asli.style.display = tampil ? 'none' : '';
+        }
+        var ob = new MutationObserver(sinkron);
+        ob.observe(kontainer, { attributes: true, attributeFilter: ['class', 'style'] });
+        if (kontainer.parentElement) ob.observe(kontainer.parentElement, { attributes: true, attributeFilter: ['class', 'style'] });
+        var pilih = document.getElementById('select-filter-inovasi');
+        if (pilih) pilih.addEventListener('change', function () { setTimeout(sinkron, 50); });
+        sinkron();
+    }
+    document.addEventListener('DOMContentLoaded', mulai);
 })();
 </script>

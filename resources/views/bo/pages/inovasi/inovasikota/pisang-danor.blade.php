@@ -2,63 +2,135 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-    /* Card Kategori Pisang Danor */
+    /* Kartu kategori: pastel senada banner (kuning = anorganik, tosca = organik), mengambang */
     .card-kategori-danor {
-        border-radius: 16px !important;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
         cursor: pointer;
         user-select: none;
+        border-radius: 1rem !important;
+        border: 1px solid transparent !important;
+        transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
     }
-    .card-kategori-danor:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+    .card-kategori-danor::before {
+        content: "";
+        position: absolute;
+        right: -40px; top: -40px;
+        width: 140px; height: 140px;
+        border-radius: 50%;
+        opacity: .8;
+        pointer-events: none;
+        transition: background-color .2s ease;
     }
-    .card-anorganik.active-kategori {
-        border: 2px solid #3b82f6 !important;
-        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25) !important;
-        transform: translateY(-2px);
+    .card-kategori-danor::after {
+        content: "\2713\00a0 Dipilih";
+        position: absolute;
+        top: 12px; right: 14px;
+        z-index: 2;
+        display: none;
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-size: .7rem;
+        font-weight: 700;
     }
-    .card-organik.active-kategori {
-        border: 2px solid #22c55e !important;
-        box-shadow: 0 8px 24px rgba(34, 197, 94, 0.25) !important;
-        transform: translateY(-2px);
+    .card-kategori-danor.active-kategori::after { display: block; }
+    .card-kategori-danor:hover { transform: translateY(-3px); }
+    .card-kategori-danor.active-kategori { transform: translateY(-3px); }
+    .pd-kat-body {
+        position: relative; z-index: 1;
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 1.5rem 1.25rem 1.25rem 1.5rem;
+        min-height: 140px;
     }
-    .header-anorganik {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-    }
-    .header-organik {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
-    }
+    .pd-kat-judul { margin: 0 0 .4rem; font-size: 1.4rem; font-weight: 800; line-height: 1.15; }
+    .pd-kat-desc { margin: 0; font-size: .85rem; font-weight: 500; line-height: 1.55; max-width: 15rem; }
+    .pd-kat-ilu { width: 84px; height: 96px; flex-shrink: 0; align-self: flex-end; }
 
-    /* Style Si Basam */
+    /* Anorganik: kuning pastel */
+    .card-anorganik { background: #fbf1de; border-color: #f1deb0 !important; box-shadow: 0 1px 2px rgba(122, 84, 16, .06), 0 10px 24px -10px rgba(122, 84, 16, .3); }
+    .card-anorganik::before { background: #f3e3c0; }
+    .card-anorganik::after { background: #e8a23b; color: #4a2f06; }
+    .card-anorganik .pd-kat-judul { color: #5a3b0e; }
+    .card-anorganik .pd-kat-desc { color: #7d6232; }
+    .card-anorganik:hover { box-shadow: 0 2px 4px rgba(122, 84, 16, .08), 0 18px 32px -12px rgba(122, 84, 16, .38); }
+    .card-anorganik.active-kategori { background: #f7e6bf; border-color: #e8a23b !important; box-shadow: 0 2px 4px rgba(122, 84, 16, .08), 0 18px 32px -12px rgba(122, 84, 16, .42) !important; }
+    .card-anorganik.active-kategori::before { background: #efd69a; }
+
+    /* Organik: tosca pastel */
+    .card-organik { background: #e8f2ee; border-color: #cfe3da !important; box-shadow: 0 1px 2px rgba(31, 74, 68, .06), 0 10px 24px -10px rgba(31, 74, 68, .3); }
+    .card-organik::before { background: #d2e4de; }
+    .card-organik::after { background: #2a9d8f; color: #fff; }
+    .card-organik .pd-kat-judul { color: #1f4a44; }
+    .card-organik .pd-kat-desc { color: #4a7068; }
+    .card-organik:hover { box-shadow: 0 2px 4px rgba(31, 74, 68, .08), 0 18px 32px -12px rgba(31, 74, 68, .38); }
+    .card-organik.active-kategori { background: #d6eae2; border-color: #2a9d8f !important; box-shadow: 0 2px 4px rgba(31, 74, 68, .08), 0 18px 32px -12px rgba(31, 74, 68, .42) !important; }
+    .card-organik.active-kategori::before { background: #bfdcd1; }
+
+    /* Tab Pisang Danor / Si Basam: pil tosca lembut */
+    #tab-btn-danor, #tab-btn-basam {
+        border: 0 !important;
+        border-radius: 999px !important;
+        padding: .55rem 1.1rem !important;
+        background: transparent !important;
+        color: #8a9a96 !important;
+        letter-spacing: .04em;
+        transition: background-color .2s ease, color .2s ease;
+    }
+    #tab-btn-danor:hover, #tab-btn-basam:hover { background: #f1f7f4 !important; color: #2a7f74 !important; }
+    #tab-btn-danor.active, #tab-btn-basam.active { background: #e8f2ee !important; color: #1f6f66 !important; box-shadow: inset 0 0 0 1px #cfe3da; }
+
+    /* Tombol utama tosca tua, senada banner */
+    .btn.pd-btn-tosca { background-color: #1f7a70; color: #fff; border: 0; }
+    .btn.pd-btn-tosca:hover, .btn.pd-btn-tosca:focus { background-color: #17665d; color: #fff; }
+
+    /* Si Basam: kartu pastel senada banner, mengambang */
     .basam-card {
-        border-radius: 14px !important;
-        border: 1px solid #e2e8f0 !important;
+        position: relative;
         overflow: hidden;
-        background: #fff;
+        border-radius: 1rem !important;
+        border: 1px solid var(--bc-line) !important;
+        background: var(--bc-bg) !important;
+        box-shadow: 0 1px 2px rgba(var(--bc-shadow), .06), 0 10px 24px -10px rgba(var(--bc-shadow), .28) !important;
+        transition: transform .2s ease, box-shadow .2s ease;
     }
-    .basam-header-pilah {
-        background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+    .basam-card::before {
+        content: "";
+        position: absolute;
+        right: -44px; top: -44px;
+        width: 150px; height: 150px;
+        border-radius: 50%;
+        background: var(--bc-deco);
+        opacity: .8;
+        pointer-events: none;
     }
-    .basam-header-bank {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    .basam-card:hover { box-shadow: 0 2px 4px rgba(var(--bc-shadow), .08), 0 18px 32px -12px rgba(var(--bc-shadow), .36) !important; }
+    .basam-card-klik { cursor: pointer; }
+    .basam-card-klik:hover { transform: translateY(-3px); }
+    .basam-head { position: relative; z-index: 1; padding: 1.15rem 1.5rem .15rem; }
+    .basam-title {
+        display: flex; align-items: center; gap: .55rem;
+        margin: 0; font-size: .8rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+        color: var(--bc-title);
     }
-    .basam-header-tonase {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    }
-    .basam-header-paving {
-        background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-    }
+    .basam-title::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--bc-accent); }
+    .basam-card .card-body { position: relative; z-index: 1; }
+    .basam-card .text-gray-500 { color: var(--bc-label) !important; }
+    .basam-card .text-gray-900 { color: var(--bc-title) !important; }
+    .basam-card .text-success { color: #1f8a7d !important; }
+    .basam-card .text-danger { color: #d2603f !important; }
+    .basam-card .border-end { border-color: var(--bc-line) !important; }
     .basam-clickable {
         cursor: pointer;
         padding: 8px;
-        border-radius: 8px;
+        border-radius: 10px;
         transition: background-color 0.2s ease, transform 0.15s ease;
     }
-    .basam-clickable:hover {
-        background-color: rgba(13, 148, 136, 0.08);
-        transform: scale(1.02);
-    }
+    .basam-clickable:hover { background-color: rgba(255, 255, 255, .6); transform: scale(1.02); }
+
+    .basam-pilah  { --bc-bg:#e8f2ee; --bc-line:#cfe3da; --bc-deco:#d2e4de; --bc-accent:#2a9d8f; --bc-title:#1f4a44; --bc-label:#4a7068; --bc-shadow:31,74,68; }
+    .basam-bank   { --bc-bg:#ebf3e3; --bc-line:#d3e4c3; --bc-deco:#dbe8cf; --bc-accent:#6e9a4a; --bc-title:#2c4a1e; --bc-label:#4f6b3c; --bc-shadow:44,74,30; }
+    .basam-tonase { --bc-bg:#fbf1de; --bc-line:#f1deb0; --bc-deco:#f3e3c0; --bc-accent:#e8a23b; --bc-title:#5a3b0e; --bc-label:#7d6232; --bc-shadow:122,84,16; }
+    .basam-paving { --bc-bg:#fbede8; --bc-line:#f1d3ca; --bc-deco:#f4d9d2; --bc-accent:#d98080; --bc-title:#5e2e2e; --bc-label:#8a5a5a; --bc-shadow:94,46,46; }
 
     /* Preview foto & checkbox organik */
     /* Teks tabel hitam: judul kolom tetap tebal, isi tabel tetap tipis */
@@ -78,8 +150,73 @@
     .basam-chip { background: rgba(255,255,255,.18); color: #fff; border-radius: 999px; padding: .25rem .75rem; font-size: .8rem; font-weight: 700; }
 </style>
 
+<!-- Banner atas Pisang Danor: otomatis naik menggantikan banner hijau "Inovasi Kota" saat submenu ini dipilih -->
+<style>
+    .pd-hero {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        min-height: 210px;
+        padding: 2rem 2.5rem;
+        margin-bottom: .5rem;
+        border-radius: 1rem;
+        background: #e8f2ee;
+    }
+    .pd-hero-text { position: relative; z-index: 2; max-width: 52%; }
+    .pd-hero-label {
+        display: block; margin-bottom: .5rem;
+        font-size: .72rem; font-weight: 700; letter-spacing: .14em;
+        text-transform: uppercase; color: #2a9d8f;
+    }
+    .pd-hero-title { margin: 0 0 .4rem; font-size: 2.1rem; font-weight: 800; line-height: 1.15; color: #1f4a44; }
+    .pd-hero-sub { margin: 0; font-size: .95rem; font-weight: 500; color: #4a7068; }
+    .pd-hero-art {
+        position: absolute; right: 0; bottom: 0;
+        height: 100%; width: auto; max-width: 58%;
+        z-index: 1; pointer-events: none;
+    }
+    @media (max-width: 767.98px) {
+        .pd-hero { padding: 1.5rem; min-height: 170px; }
+        .pd-hero-title { font-size: 1.6rem; }
+        .pd-hero-text { max-width: 100%; }
+        .pd-hero-art { opacity: .3; max-width: 80%; }
+    }
+</style>
+
+<div id="pd-top-banner" class="pd-hero sub-banner-top d-none">
+    <div class="pd-hero-text">
+        <span class="pd-hero-label">Inovasi Kota</span>
+        <h2 class="pd-hero-title">Pisang Danor</h2>
+        <p class="pd-hero-sub">Pilah Sampah Anorganik dan Organik</p>
+    </div>
+
+    <svg class="pd-hero-art" viewBox="0 0 440 210" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+                                <path d="M0 210 C10 110 80 40 200 32 C320 24 400 42 440 52 L440 210 Z" fill="#d2e4de"/>
+        <circle cx="318" cy="22" r="46" fill="#c4dbd3" opacity=".6"/>
+        <circle cx="46" cy="176" r="14" fill="#c4dbd3"/>
+        <ellipse cx="228" cy="193" rx="196" ry="8" fill="#000" opacity=".07"/>
+                                <path d="M220 114 L274 114 L268 186 L226 186 Z" fill="#2a9d8f"/>
+                                <rect x="214" y="102" width="66" height="13" rx="5" fill="#1f6f66"/>
+                                <rect x="239" y="93" width="16" height="9" rx="3" fill="#1f6f66"/>
+                                <path d="M247 134 C260 138 262 156 247 166 C234 156 236 140 247 134 Z" fill="#fff"/>
+                                <path d="M300 114 L358 114 L352 186 L306 186 Z" fill="#e8a23b"/>
+                                <rect x="294" y="102" width="70" height="13" rx="5" fill="#c98a1f"/>
+                                <rect x="320" y="93" width="18" height="9" rx="3" fill="#c98a1f"/>
+                                <rect x="324" y="130" width="10" height="9" rx="2" fill="#fff"/>
+                                <rect x="319" y="139" width="20" height="28" rx="6" fill="#fff"/>
+                                <path d="M382 68 C382 100 410 112 434 100 C412 102 394 90 394 66 Z" fill="#f2c14e"/>
+                                <path d="M388 64 L388 56" stroke="#b8891a" stroke-width="3" stroke-linecap="round"/>
+                                <path d="M394 146 A14 14 0 1 1 402 160" stroke="#2a9d8f" stroke-width="3.5" stroke-linecap="round"/>
+                                <path d="M394 140 L394 150 L404 148 Z" fill="#2a9d8f"/>
+                                <g transform="rotate(-18 190 66)"><rect x="186" y="46" width="9" height="9" rx="2" fill="#fff"/><rect x="182" y="55" width="17" height="26" rx="5" fill="#fff"/></g>
+                                <g stroke="#e0b878" stroke-width="2.5" stroke-linecap="round"><path d="M150 190 L150 156"/></g>
+                                <g fill="#e0b878"><ellipse cx="141" cy="166" rx="5" ry="14" transform="rotate(-25 141 166)"/><ellipse cx="160" cy="164" rx="5" ry="14" transform="rotate(25 160 164)"/></g>
+                            </svg>
+</div>
+
 <!-- Banner Deskripsi Inovasi Pisang Danor -->
-<div class="card card-flush border-0 mb-6" style="background-color: #f0f6ff !important; border-radius: 16px;">
+<div class="card card-flush border-0 mb-6" style="background-color: #eef6f2 !important; border-radius: 16px;">
     <div class="card-body p-6 p-md-7">
         <h4 class="fw-bolder text-gray-900 mb-3 fs-3">Inovasi Pisang Danor (Pilah Sampah Anorganik dan Organik)</h4>
         <p class="text-gray-700 fs-7 mb-3" style="line-height: 1.7;">
@@ -115,30 +252,42 @@
         <div id="view-section-pisang-danor">
             <!-- Grid 2 Kartu Interaktif: Anorganik & Organik -->
             <div class="row g-4 justify-content-center mb-6">
-                <!-- Kartu ANORGANIK (Biru) -->
-                <div class="col-12 col-md-5 col-lg-4">
-                    <div class="card card-kategori-danor card-anorganik active-kategori overflow-hidden h-100 border" id="card-btn-anorganik" onclick="pilihKategoriDanor('anorganik')">
-                        <div class="header-anorganik text-white text-center py-4 px-3">
-                            <h4 class="fw-bolder text-white m-0 fs-3 tracking-wide">ANORGANIK</h4>
-                        </div>
-                        <div class="card-body p-5 text-center d-flex align-items-center justify-content-center" style="background-color: #f8fafc;">
-                            <p class="text-gray-700 fw-semibold fs-7 mb-0" style="line-height: 1.6;">
-                                Pelatihan pengolahan bahan non-alami seperti plastik & limbah keras
-                            </p>
+                <!-- Kartu ANORGANIK (kuning pastel) -->
+                <div class="col-12 col-md-6 col-xl-5">
+                    <div class="card card-kategori-danor card-anorganik active-kategori h-100" id="card-btn-anorganik" onclick="pilihKategoriDanor('anorganik')">
+                        <div class="pd-kat-body">
+                            <div>
+                                <h4 class="pd-kat-judul">Anorganik</h4>
+                                <p class="pd-kat-desc">Pelatihan pengolahan bahan non-alami seperti plastik &amp; limbah keras</p>
+                            </div>
+                            <svg class="pd-kat-ilu" viewBox="0 0 84 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <ellipse cx="42" cy="91" rx="30" ry="4" fill="#000" opacity=".08"/>
+                                <rect x="32" y="8" width="20" height="8" rx="3" fill="#c98a1f"/>
+                                <rect x="8" y="14" width="68" height="12" rx="5" fill="#c98a1f"/>
+                                <path d="M14 28 H70 L65 89 H19 Z" fill="#e8a23b"/>
+                                <rect x="38" y="40" width="8" height="8" rx="2" fill="#fff"/>
+                                <rect x="33" y="47" width="18" height="30" rx="6" fill="#fff"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
 
-                <!-- Kartu ORGANIK (Hijau) -->
-                <div class="col-12 col-md-5 col-lg-4">
-                    <div class="card card-kategori-danor card-organik overflow-hidden h-100 border" id="card-btn-organik" onclick="pilihKategoriDanor('organik')">
-                        <div class="header-organik text-white text-center py-4 px-3">
-                            <h4 class="fw-bolder text-white m-0 fs-3 tracking-wide">ORGANIK</h4>
-                        </div>
-                        <div class="card-body p-5 text-center d-flex align-items-center justify-content-center" style="background-color: #f8fafc;">
-                            <p class="text-gray-700 fw-semibold fs-7 mb-0" style="line-height: 1.6;">
-                                Pelatihan pemanfaatan bahan alami seperti tanaman & limbah organik
-                            </p>
+                <!-- Kartu ORGANIK (tosca pastel) -->
+                <div class="col-12 col-md-6 col-xl-5">
+                    <div class="card card-kategori-danor card-organik h-100" id="card-btn-organik" onclick="pilihKategoriDanor('organik')">
+                        <div class="pd-kat-body">
+                            <div>
+                                <h4 class="pd-kat-judul">Organik</h4>
+                                <p class="pd-kat-desc">Pelatihan pemanfaatan bahan alami seperti tanaman &amp; limbah organik</p>
+                            </div>
+                            <svg class="pd-kat-ilu" viewBox="0 0 84 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <ellipse cx="42" cy="91" rx="30" ry="4" fill="#000" opacity=".08"/>
+                                <rect x="32" y="8" width="20" height="8" rx="3" fill="#1f6f66"/>
+                                <rect x="8" y="14" width="68" height="12" rx="5" fill="#1f6f66"/>
+                                <path d="M14 28 H70 L65 89 H19 Z" fill="#2a9d8f"/>
+                                <path d="M42 42 C59 46 61 66 42 78 C25 66 27 46 42 42 Z" fill="#fff"/>
+                                <path d="M42 50 V72" stroke="#2a9d8f" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -155,7 +304,7 @@
                         <span class="text-gray-500 fs-8 fw-semibold" id="subtitle-tabel-danor">Menampilkan daftar data pengolahan sampah anorganik</span>
                     </div>
 
-                    <button type="button" class="btn fw-bold fs-7 px-5 text-white rounded-3 shadow-sm" style="background-color: #22c55e !important;" onclick="openTambahDanor()">
+                    <button type="button" class="btn pd-btn-tosca fw-bold fs-7 px-5 text-white rounded-3 shadow-sm" onclick="openTambahDanor()">
                         <i class="ki-outline ki-plus fs-3 text-white me-1"></i> Tambah Data
                     </button>
                 </div>
@@ -221,7 +370,7 @@
                     </select>
                 </div>
                 <div class="col-6 col-md-2">
-                    <button type="button" class="btn btn-primary w-100 fw-bold" style="background-color: #0d9488 !important; border-color: #0d9488 !important;" onclick="basamFilterDanor()">Filter</button>
+                    <button type="button" class="btn pd-btn-tosca w-100 fw-bold" onclick="basamFilterDanor()">Filter</button>
                 </div>
                 <div class="col-6 col-md-2">
                     <button type="button" class="btn btn-light w-100 fw-semibold" onclick="basamResetDanor()">Reset</button>
@@ -229,15 +378,15 @@
             </div>
             <div class="row g-4">
                 <div class="col-12 col-md-6">
-                    <div class="basam-card h-100 shadow-sm">
-                        <div class="basam-header-pilah text-white text-center py-3">
-                            <h5 class="fw-bolder text-white m-0 tracking-wider">PILAH</h5>
+                    <div class="basam-card basam-pilah h-100">
+                        <div class="basam-head">
+                            <h5 class="basam-title">PILAH</h5>
                         </div>
                         <div class="card-body p-5">
                             <div class="row text-center align-items-center">
                                 <div class="col-6 border-end basam-clickable" onclick="basamDetailDanor('pilah_sudah')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">SUDAH</span>
-                                    <div class="fs-2hx fw-bolder my-1" style="color: #10b981;" id="basam-pilah-sudah-tonase">0</div>
+                                    <div class="fs-2hx fw-bolder my-1" style="color: #1f8a7d;" id="basam-pilah-sudah-tonase">0</div>
                                     <span class="fs-1 fw-bolder text-success" id="basam-pilah-sudah-count">0</span>
                                 </div>
                                 <div class="col-6 basam-clickable" onclick="basamDetailDanor('pilah_belum')">
@@ -251,15 +400,15 @@
                 </div>
 
                 <div class="col-12 col-md-6">
-                    <div class="basam-card h-100 shadow-sm">
-                        <div class="basam-header-bank text-white text-center py-3">
-                            <h5 class="fw-bolder text-white m-0 tracking-wider">BANK SAMPAH</h5>
+                    <div class="basam-card basam-bank h-100">
+                        <div class="basam-head">
+                            <h5 class="basam-title">BANK SAMPAH</h5>
                         </div>
                         <div class="card-body p-5">
                             <div class="row text-center align-items-center">
                                 <div class="col-6 border-end basam-clickable" onclick="basamDetailDanor('bank')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">SUDAH ADA</span>
-                                    <div class="fs-2hx fw-bolder my-2" style="color: #10b981;" id="basam-bank-ada">0</div>
+                                    <div class="fs-2hx fw-bolder my-2" style="color: #1f8a7d;" id="basam-bank-ada">0</div>
                                 </div>
                                 <div class="col-6 basam-clickable" onclick="basamDetailDanor('bank_belum')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">BELUM ADA</span>
@@ -271,9 +420,9 @@
                 </div>
 
                 <div class="col-12 col-md-6">
-                    <div class="basam-card h-100 shadow-sm basam-clickable" onclick="basamDetailDanor('tonase')">
-                        <div class="basam-header-tonase text-white text-center py-3">
-                            <h5 class="fw-bolder text-white m-0 tracking-wider">TONASE AN-ORGANIK</h5>
+                    <div class="basam-card basam-tonase basam-card-klik h-100" onclick="basamDetailDanor('tonase')">
+                        <div class="basam-head">
+                            <h5 class="basam-title">TONASE AN-ORGANIK</h5>
                         </div>
                         <div class="card-body p-5 text-center">
                             <div class="fs-2hx fw-bolder text-gray-900 mt-1" id="basam-tonase-anorganik">0</div>
@@ -283,9 +432,9 @@
                 </div>
 
                 <div class="col-12 col-md-6">
-                    <div class="basam-card h-100 shadow-sm">
-                        <div class="basam-header-paving text-white text-center py-3">
-                            <h5 class="fw-bolder text-white m-0 tracking-wider">PAVING</h5>
+                    <div class="basam-card basam-paving h-100">
+                        <div class="basam-head">
+                            <h5 class="basam-title">PAVING</h5>
                         </div>
                         <div class="card-body p-5">
                             <div class="row text-center align-items-center">
@@ -295,7 +444,7 @@
                                 </div>
                                 <div class="col-4 border-end basam-clickable" onclick="basamDetailDanor('paving_sudah')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">SUDAH BIOPORI</span>
-                                    <div class="fs-2hx fw-bolder my-1" style="color: #10b981;" id="basam-paving-sudah">0</div>
+                                    <div class="fs-2hx fw-bolder my-1" style="color: #1f8a7d;" id="basam-paving-sudah">0</div>
                                 </div>
                                 <div class="col-4 basam-clickable" onclick="basamDetailDanor('paving_belum')">
                                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">BELUM BIOPORI</span>
@@ -386,7 +535,7 @@
 
                     <div class="d-flex justify-content-end gap-3 pt-4 border-top">
                         <button type="button" class="btn btn-light-danger fw-bold px-6" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-success fw-bold px-6 text-white" style="background-color: #22c55e !important;">Simpan Data</button>
+                        <button type="submit" class="btn pd-btn-tosca fw-bold px-6 text-white">Simpan Data</button>
                     </div>
                 </form>
             </div>
@@ -601,7 +750,7 @@
 
                     <div class="d-flex justify-content-end gap-3 pt-4 border-top">
                         <button type="button" class="btn btn-light-danger fw-bold px-6" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-success fw-bold px-6 text-white" style="background-color: #22c55e !important;">Simpan</button>
+                        <button type="submit" class="btn pd-btn-tosca fw-bold px-6 text-white">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -1314,5 +1463,30 @@
             .catch(function () { gagal('Gagal mengambil data kecamatan/kelurahan dari database.'); })
             .finally(function () { initWilayah(); loadAll(); });
     });
+})();
+</script>
+
+{{-- Tukar banner: banner pastel Pisang Danor naik ke posisi banner atas, banner hijau disembunyikan --}}
+<script>
+(function () {
+    var banner = document.getElementById('pd-top-banner');
+    if (!banner) return;
+    var item = banner.closest('.inovasi-item-view');   // wadah konten Pisang Danor (tampil/sembunyi sesuai dropdown)
+    var hijau = document.querySelector('#banner-inovasi-default, .banner-inovasi-kota');   // banner hijau di index.blade.php
+
+    if (hijau && item) hijau.insertAdjacentElement('afterend', banner);   // naik ke posisi banner atas
+
+    function sync() {
+        var tampil = !item || item.offsetParent !== null;
+        banner.classList.toggle('d-none', !tampil);
+        // Banner hijau tampil hanya jika tidak ada banner submenu yang sedang aktif
+        if (hijau) hijau.classList.toggle('d-none', !!document.querySelector('.sub-banner-top:not(.d-none)'));
+    }
+
+    if (item) new MutationObserver(sync).observe(item, { attributes: true, attributeFilter: ['class', 'style'] });
+    document.addEventListener('change', function (e) {
+        if (e.target && (e.target.id === 'select-filter-inovasi' || e.target.id === 'select-filter-pokja')) setTimeout(sync, 0);
+    });
+    sync();
 })();
 </script>

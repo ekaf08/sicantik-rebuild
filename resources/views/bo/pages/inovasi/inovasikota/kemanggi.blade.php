@@ -1,3 +1,39 @@
+<style>
+    /* Banner Kemangi: dipindah ke paling atas halaman oleh skrip di bawah */
+    .kmb { position: relative; display: flex; align-items: center; overflow: hidden; min-height: 210px; border-radius: 1rem; background: #f0ecf7; box-shadow: 0 2px 10px rgba(30, 40, 60, 0.06); margin-bottom: .5rem; }
+    .kmb .ik-blob { fill: #e4def0; } .kmb .ik-blob2 { fill: #e9e4f3; } .kmb .ik-shadow { fill: #dcd5eb; }
+    .kmb__tx { position: relative; z-index: 2; padding: 1.5rem 2.25rem; max-width: 62%; }
+    .kmb__kecil { font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #8d7bbd; margin-bottom: .5rem; }
+    .kmb__judul { font-size: 2rem; line-height: 1.15; font-weight: 800; color: #362f48; margin: 0 0 .5rem; }
+    .kmb__desk { display: block; font-size: .95rem; font-weight: 500; color: #4e4468; }
+    .kmb__art { position: absolute; right: 0; bottom: 0; width: 370px; height: 206px; pointer-events: none; z-index: 1; }
+    .kmb__art svg { width: 100%; height: 100%; display: block; }
+    @media (max-width: 991px) { .kmb__art { width: 300px; height: 167px; } .kmb__tx { max-width: 70%; } }
+    @media (max-width: 767px) { .kmb__art { display: none; } .kmb__tx { max-width: 100%; padding: 1.25rem; } .kmb__judul { font-size: 1.5rem; } }
+    /* Warna Kemangi: lavender pastel, senada dengan banner */
+    #content-kemanggi .card { border: 1px solid #e6e0f2 !important; }
+    #content-kemanggi h2.fw-bolder { color: #3b2f66 !important; }
+    #content-kemanggi .card-title { color: #3b2f66 !important; }
+    #content-kemanggi .badge-light-primary { background-color: #ece7f6 !important; color: #6f5ea8 !important; }
+    #content-kemanggi .btn-success { background-color: #8d7bbd !important; border-color: #8d7bbd !important; color: #fff !important; }
+    #content-kemanggi .btn-success:hover { background-color: #7a68ab !important; border-color: #7a68ab !important; }
+    #content-kemanggi .card-header.bg-light-subtle { background-color: #f6f3fb !important; }
+    #kmg-table thead { background-color: #f0ecf7 !important; }
+    #content-kemanggi .pagination .page-link { color: #6f5ea8; }
+    #content-kemanggi .pagination .page-item.active .page-link { background-color: #8d7bbd; border-color: #8d7bbd; color: #fff; }
+    #content-kemanggi .form-select:focus, #content-kemanggi .form-control:focus { border-color: #8d7bbd; box-shadow: 0 0 0 3px rgba(141, 123, 189, .15); }
+</style>
+
+<!-- Banner Kemangi (dipindah ke atas halaman oleh skrip di akhir file) -->
+<div class="kmb sub-banner-top d-none" id="kmb-top">
+    <div class="kmb__tx">
+        <div class="kmb__kecil">Inovasi Kota</div>
+        <h2 class="kmb__judul">Kemangi</h2>
+        <span class="kmb__desk">Kelas Remaja dan Orang Tua Tangguh, Kreatif, dan Mandiri</span>
+    </div>
+    <div class="kmb__art"><svg viewBox="0 0 370 206" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path class="ik-blob" d="M0 206 C8 112 70 66 170 56 C260 48 332 44 370 40 L370 206Z"/><circle class="ik-blob2" cx="248" cy="30" r="46"/><circle class="ik-blob2" cx="14" cy="186" r="14"/><ellipse class="ik-shadow" cx="185" cy="197" rx="158" ry="6.5"/><line x1="338" y1="190" x2="338" y2="130" stroke="#6f9c86" stroke-width="2.2" stroke-linecap="round" /><path d="M338 169 C322 167 318 155 324 147 C334 153 338 161 338 169Z" fill="#6f9c86" /><path d="M338 157 C354 155 358 143 352 135 C342 141 338 149 338 157Z" fill="#8ab5a0" /><path d="M338 145 C322 143 318 131 324 123 C334 129 338 137 338 145Z" fill="#6f9c86" /><path d="M338 130 C330 124 330 114 338 108 C346 114 346 124 338 130Z" fill="#8ab5a0" /><rect x="78" y="112" width="16" height="34" rx="6" fill="#8d7bbd" /><rect x="113.6" y="152.2" width="6.8" height="37.8" rx="2.1" fill="#3d5266" /><rect x="123.6" y="152.2" width="6.8" height="37.8" rx="2.1" fill="#3d5266" /><ellipse cx="117" cy="188.3" rx="5.7" ry="2.7" fill="#2a2a2a" /><ellipse cx="127" cy="188.3" rx="5.7" ry="2.7" fill="#2a2a2a" /><line x1="110.5" y1="123.8" x2="100" y2="146.9" stroke="#f0b98d" stroke-width="5.7" stroke-linecap="round" /><line x1="133.6" y1="123.8" x2="165.1" y2="111.2" stroke="#f0b98d" stroke-width="5.7" stroke-linecap="round" /><rect x="108.9" y="114.4" width="26.2" height="39.9" rx="9.5" fill="#f0a24f" /><rect x="118.8" y="110.2" width="6.3" height="7.4" rx="0" fill="#f0b98d" /><circle cx="122" cy="104.9" r="9.7" fill="#f0b98d" /><path d="M111.7 104.9 A10.3 10.3 0 0 1 132.3 104.9 Q122 98.6 111.7 104.9Z" fill="#2b221d" /><rect x="242.8" y="148.6" width="7.5" height="41.4" rx="2.3" fill="#2f3556" /><rect x="253.7" y="148.6" width="7.5" height="41.4" rx="2.3" fill="#2f3556" /><ellipse cx="246.5" cy="188.2" rx="6.2" ry="3" fill="#2a2a2a" /><ellipse cx="257.5" cy="188.2" rx="6.2" ry="3" fill="#2a2a2a" /><rect x="239.9" y="90" width="24.1" height="39.1" rx="10.3" fill="#7a4a32" /><line x1="239.3" y1="117.5" x2="209.4" y2="129.1" stroke="#efbb93" stroke-width="6.2" stroke-linecap="round" /><line x1="264.6" y1="117.5" x2="276.1" y2="145.2" stroke="#efbb93" stroke-width="6.2" stroke-linecap="round" /><rect x="237.6" y="107.2" width="28.7" height="43.7" rx="10.3" fill="#8d7bbd" /><rect x="248.6" y="102.6" width="6.9" height="8" rx="0" fill="#efbb93" /><circle cx="252" cy="96.9" r="10.6" fill="#efbb93" /><path d="M240.7 96.9 A11.3 11.3 0 0 1 263.3 96.9 Q252 90 240.7 96.9Z" fill="#7a4a32" /><rect x="168" y="28" width="86" height="44" rx="14" fill="#fff" /><polygon points="232,70 240,70 238,84" fill="#fff" /><rect x="182" y="40" width="36" height="5" rx="2.5" fill="#8d7bbd" /><rect x="182" y="51" width="26" height="4.5" rx="2.2" fill="#dcd6ea" /><circle cx="238" cy="50" r="3.6" fill="#6aa89a" /></svg></div>
+</div>
+
 <!-- KONTEN INOVASI KEMANGGI (Tampil Bersih di Samping Sidebar Metronic) -->
 <div class="d-flex flex-column gap-5">
 
@@ -7,10 +43,10 @@
             <h2 class="fw-bolder text-gray-900 mb-1 fs-2">
                 Inovasi Kemangi
             </h2>
-            <h4 class="text-success fw-bold text-uppercase tracking-wider fs-6 mb-3">
+            <h4 class="fw-bold text-uppercase tracking-wider fs-6 mb-3" style="color:#8d7bbd;">
                 Kelas Remaja dan Orang Tua Tangguh, Kreatif, dan Mandiri
             </h4>
-            <div class="bg-success rounded-pill mb-4" style="height: 3px; width: 60px;"></div>
+            <div class="rounded-pill mb-4" style="height: 3px; width: 60px; background-color:#8d7bbd;"></div>
             <p class="text-gray-600 fs-6 lh-base mb-0">
                 Kelas Remaja-orang tua tangguh, kreatif dan mandiri Kota Surabaya (KEMANGI) adalah kelas yang diadakan sebagai upaya untuk meningkatkan pengetahuan dan keterampilan para remaja dalam memberikan edukasi terhadap teman sebaya. Meningkatkan pengetahuan, sikap dan perilaku yang positif dalam pengembangan diri remaja secara mental, fisik, intelektual, spiritual dan sosial serta meningkatkan keterampilan orang tua dalam pengasuhan remaja agar keluarga mampu menghadapi tantangan modern dengan lebih baik.
             </p>
@@ -61,11 +97,11 @@
             <!-- Legend Garis Custom (Biru & Merah) -->
             <div class="d-flex align-items-center justify-content-center gap-5 mb-4 fs-7 fw-semibold text-gray-600">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="d-inline-block rounded-pill" style="width: 26px; height: 6px; background-color: #0284c7;"></span>
+                    <span class="d-inline-block rounded-pill" style="width: 26px; height: 6px; background-color: #7c6bb0;"></span>
                     <span>Pretest</span>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <span class="d-inline-block rounded-pill" style="width: 26px; height: 6px; background-color: #f43f5e;"></span>
+                    <span class="d-inline-block rounded-pill" style="width: 26px; height: 6px; background-color: #e0627f;"></span>
                     <span>Posttest</span>
                 </div>
             </div>
@@ -90,11 +126,11 @@
             <!-- Legend Garis Custom (Biru & Merah) -->
             <div class="d-flex align-items-center justify-content-center gap-5 mb-4 fs-7 fw-semibold text-gray-600">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="d-inline-block rounded-pill" style="width: 26px; height: 6px; background-color: #0284c7;"></span>
+                    <span class="d-inline-block rounded-pill" style="width: 26px; height: 6px; background-color: #7c6bb0;"></span>
                     <span>Pretest</span>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <span class="d-inline-block rounded-pill" style="width: 26px; height: 6px; background-color: #f43f5e;"></span>
+                    <span class="d-inline-block rounded-pill" style="width: 26px; height: 6px; background-color: #e0627f;"></span>
                     <span>Posttest</span>
                 </div>
             </div>
@@ -400,7 +436,7 @@
         };
         return new Chart(canvas, {
             type: 'line',
-            data: { labels: d.label, datasets: [garis('Pretest', d.pre, '#0284c7'), garis('Posttest', d.post, '#f43f5e')] },
+            data: { labels: d.label, datasets: [garis('Pretest', d.pre, '#7c6bb0'), garis('Posttest', d.post, '#e0627f')] },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -463,8 +499,8 @@
                     '<td class="fw-bold">' + esc(r.kecamatan) + '</td>' +
                     '<td>' + esc(r.kelurahan) + '</td>' +
                     '<td class="text-center">' + esc(r.tahun) + '</td>' +
-                    '<td class="text-center fw-bold" style="color: #0284c7 !important;">' + angka(r.nilai_pre) + '</td>' +
-                    '<td class="text-center fw-bold" style="color: #f43f5e !important;">' + angka(r.nilai_post) + '</td>' +
+                    '<td class="text-center fw-bold" style="color: #7c6bb0 !important;">' + angka(r.nilai_pre) + '</td>' +
+                    '<td class="text-center fw-bold" style="color: #e0627f !important;">' + angka(r.nilai_post) + '</td>' +
                     '<td class="text-center">' + esc(r.jumlah_peserta) + '</td>' +
                     (CRUD_AKTIF
                         ? '<td class="pe-5 text-center text-nowrap">' +
@@ -599,5 +635,43 @@
             .catch(function () { gagal('Gagal mengambil data kecamatan/kelurahan dari database.'); })
             .finally(function () { initWilayah(); loadData(); });
     });
+})();
+</script>
+
+<script>
+// Banner pastel Kemangi naik menggantikan banner hijau "Inovasi Kota" saat submenu ini dibuka
+(function () {
+    var banner = document.getElementById('kmb-top');
+    if (!banner) return;
+    var item = document.getElementById('content-kemanggi') || banner.closest('.inovasi-item-view');   // wadah konten Kemangi
+
+    // Cari banner hijau "Inovasi Kota" di index.blade.php (tidak bergantung pada nama class tertentu)
+    function cariBannerHijau() {
+        var el = document.querySelector('#banner-inovasi-default, .banner-inovasi-kota');
+        if (el) return el;
+        var sub = document.getElementById('banner-subtitle-inovasi');
+        var pilih = document.getElementById('select-filter-inovasi');
+        if (!sub || !pilih) return null;
+        el = sub;
+        while (el.parentElement && !el.parentElement.contains(pilih)) el = el.parentElement;
+        return el;
+    }
+    var hijau = cariBannerHijau();
+
+    // Pindahkan banner pastel ke posisi banner hijau (tepat di bawahnya)
+    if (hijau && item) hijau.insertAdjacentElement('afterend', banner);
+
+    function sync() {
+        var tampil = !item || item.offsetParent !== null;
+        banner.classList.toggle('d-none', !tampil);
+        // Banner hijau tampil hanya jika tidak ada banner submenu yang sedang aktif
+        if (hijau) hijau.classList.toggle('d-none', !!document.querySelector('.sub-banner-top:not(.d-none)'));
+    }
+
+    if (item) new MutationObserver(sync).observe(item, { attributes: true, attributeFilter: ['class', 'style'] });
+    document.addEventListener('change', function (e) {
+        if (e.target && (e.target.id === 'select-filter-inovasi' || e.target.id === 'select-filter-pokja')) setTimeout(sync, 0);
+    });
+    sync();
 })();
 </script>

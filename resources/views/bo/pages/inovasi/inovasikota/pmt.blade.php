@@ -2,9 +2,46 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-.card-tahun { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.card-tahun:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important; }
-.card-tahun.pmt-aktif { box-shadow: 0 6px 20px rgba(0,0,0,0.18) !important; transform: translateY(-3px); }
+/* Kartu tahun: kuning pastel senada banner, mengambang, terangkat saat disentuh */
+.card.card-tahun {
+    position: relative; overflow: hidden; cursor: pointer;
+    background: #fbf1de; border: 1px solid #f1deb0 !important; border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(122, 84, 16, .06), 0 10px 24px -10px rgba(122, 84, 16, .3) !important;
+    transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
+}
+.card.card-tahun::before {
+    content: ""; position: absolute; right: -40px; top: -40px; width: 130px; height: 130px;
+    border-radius: 50%; background: #f3e3c0; opacity: .8; pointer-events: none; transition: background-color .2s ease;
+}
+.card.card-tahun .card-body { position: relative; z-index: 1; }
+.card.card-tahun:hover { transform: translateY(-3px); box-shadow: 0 2px 4px rgba(122, 84, 16, .08), 0 18px 32px -12px rgba(122, 84, 16, .38) !important; }
+.card.card-tahun.pmt-aktif { background: #f7e6bf; border-color: #e8a23b !important; transform: translateY(-3px); box-shadow: 0 2px 4px rgba(122, 84, 16, .08), 0 18px 32px -12px rgba(122, 84, 16, .42) !important; }
+.card.card-tahun.pmt-aktif::before { background: #efd69a; }
+.pmt-kartu-label { font-size: .75rem; font-weight: 700; letter-spacing: .08em; color: #7d6232; }
+.pmt-kartu-angka { font-size: 2.6rem; font-weight: 800; line-height: 1.1; color: #5a3b0e; }
+.pmt-kartu-sub { font-size: .85rem; font-weight: 700; color: #b8791a; }
+.pmt-kartu-tahun { background: #fff; color: #8a5a0a; font-weight: 700; font-size: .9rem; padding: .5rem 0; border-radius: .75rem; transition: background-color .2s ease, color .2s ease; }
+.card-tahun.pmt-aktif .pmt-kartu-tahun { background: #e8a23b; color: #4a2f06; }
+
+/* Tombol utama, tautan, dan total: amber senada banner */
+.btn.pmt-btn-amber { background-color: #b8791a; color: #fff; border: 0; }
+.btn.pmt-btn-amber:hover, .btn.pmt-btn-amber:focus { background-color: #9f6914; color: #fff; }
+.pmt-link { color: #b8791a; }
+.pmt-link:hover { color: #9f6914; }
+.pmt-total-pill { background: #fbf1de; border: 1px solid #f1deb0; border-radius: 1rem; box-shadow: 0 1px 2px rgba(122, 84, 16, .06), 0 8px 20px -10px rgba(122, 84, 16, .28); }
+.pmt-total-pill span { color: #8a5a0a; }
+
+/* Tabel: header & aksi bernuansa amber lembut */
+#tabel-pmt thead tr { background: #fbf1de !important; }
+#tabel-pmt thead th { color: #5a3b0e !important; border-color: #f1e3c0 !important; }
+#tabel-pmt tbody td { border-color: #f4ead0 !important; }
+#tabel-pmt tbody tr:hover td { background: #fffaf0; }
+#tabel-pmt .btn-light-primary { background-color: #fbf1de !important; color: #b8791a !important; }
+#tabel-pmt .btn-light-primary:hover { background-color: #f3e3c0 !important; }
+#tabel-pmt .btn-light-primary i, #tabel-pmt .text-primary i { color: #b8791a !important; }
+#tabel-pmt .text-primary { color: #b8791a !important; }
+#pagination-pmt .page-item.active .page-link { background-color: #b8791a !important; border-color: #b8791a !important; color: #fff !important; }
+#pagination-pmt .page-link { color: #7d6232; }
 .pmt-photo-box {
     border: 1px solid #e4e6ef; border-radius: .75rem; background: #f8f9fb;
     display: flex; align-items: center; justify-content: center; overflow: hidden; height: 150px;
@@ -14,8 +51,59 @@
 
 <input type="hidden" id="pmt-csrf-token" value="{{ csrf_token() }}">
 
+<!-- Banner atas PMT: otomatis naik menggantikan banner hijau "Inovasi Kota" saat submenu ini dipilih -->
+<style>
+    /* Banner atas PMT: kuning pastel, naik menggantikan banner hijau saat submenu ini dipilih */
+    .pmh { position: relative; overflow: hidden; display: flex; align-items: center; min-height: 210px; padding: 2rem 2.5rem; margin-bottom: .5rem; border-radius: 1rem; background: #fbf1de; }
+    .pmh-text { position: relative; z-index: 2; max-width: 52%; }
+    .pmh-label { display: block; margin-bottom: .5rem; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #e8a23b; }
+    .pmh-title { margin: 0 0 .4rem; font-size: 2.1rem; font-weight: 800; line-height: 1.15; color: #5a3b0e; }
+    .pmh-sub { margin: 0; font-size: .95rem; font-weight: 500; color: #7d6232; }
+    .pmh-art { position: absolute; right: 0; bottom: 0; height: 100%; width: auto; max-width: 58%; z-index: 1; pointer-events: none; }
+    @media (max-width: 767.98px) {
+        .pmh { padding: 1.5rem; min-height: 170px; }
+        .pmh-title { font-size: 1.6rem; }
+        .pmh-text { max-width: 100%; }
+        .pmh-art { opacity: .3; max-width: 80%; }
+    }
+</style>
+
+<div id="pmt-top-banner" class="pmh sub-banner-top d-none">
+    <div class="pmh-text">
+        <span class="pmh-label">Inovasi Kota</span>
+        <h2 class="pmh-title">PMT</h2>
+        <p class="pmh-sub">Pemberian Makanan Tambahan</p>
+    </div>
+
+    <svg class="pmh-art" viewBox="0 0 440 210" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+                                <path d="M0 210 C10 110 80 40 200 32 C320 24 400 42 440 52 L440 210 Z" fill="#f3e3c0"/>
+        <circle cx="318" cy="22" r="46" fill="#edd8aa" opacity=".6"/>
+        <circle cx="46" cy="176" r="14" fill="#edd8aa"/>
+        <ellipse cx="228" cy="193" rx="196" ry="8" fill="#000" opacity=".07"/>
+                                <rect x="166" y="158" width="262" height="9" rx="4" fill="#8a6648"/>
+                                <rect x="176" y="167" width="242" height="20" rx="8" fill="#7b563c"/>
+                                <circle cx="196" cy="148" r="11" fill="#e0b878"/>
+                                <circle cx="215" cy="148" r="11" fill="#e0b878"/>
+                                <circle cx="205" cy="135" r="11" fill="#e8c78d"/>
+                                <path d="M250 150 C250 126 292 126 292 150 L292 158 L250 158 Z" fill="#8aae92"/>
+                                <circle cx="271" cy="108" r="18" fill="#f3cca8"/>
+                                <path d="M253 104 C253 88 289 88 289 104 C282 97 260 97 253 104 Z" fill="#3b2a22"/>
+                                <circle cx="271" cy="86" r="7" fill="#3b2a22"/>
+                                <path d="M290 142 L316 126" stroke="#f3cca8" stroke-width="6" stroke-linecap="round"/>
+                                <path d="M316 126 L326 112" stroke="#b8bcc6" stroke-width="3" stroke-linecap="round"/>
+                                <path d="M300 158 H348 C348 172 340 178 324 178 C308 178 300 172 300 158 Z" fill="#fff"/>
+                                <path d="M298 158 H350" stroke="#e8a23b" stroke-width="4" stroke-linecap="round"/>
+                                <rect x="374" y="132" width="26" height="26" fill="#fff"/>
+                                <path d="M374 132 L387 118 L400 132 Z" fill="#a8c0ae"/>
+                                <rect x="374" y="142" width="26" height="6" fill="#a8c0ae"/>
+                                <path d="M394 120 L402 104" stroke="#e8a23b" stroke-width="3.5" stroke-linecap="round"/>
+                                <path d="M410 150 C420 146 430 152 432 160 C424 158 416 158 410 150 Z" fill="#d9695a"/>
+                                <g stroke="#7fa58f" stroke-width="2.5" stroke-linecap="round"><path d="M142 188 L142 160"/><path d="M142 174 L133 164"/><path d="M142 168 L151 158"/></g>
+                            </svg>
+</div>
+
 <!-- Banner Informasi PMT -->
-<div class="card card-flush bg-light-primary border-0 mb-6" style="background-color: #f0f6ff !important;">
+<div class="card card-flush border-0 mb-6" style="background-color: #fdf6e6 !important;">
     <div class="card-body p-6">
         <h4 class="fw-bold text-gray-900 mb-2">Inovasi PMT (Pemberian Makanan Tambahan)</h4>
         <p class="text-gray-600 fs-7 mb-0" style="line-height: 1.6;">
@@ -27,13 +115,13 @@
 <!-- Header PMT & Dashboard Link -->
 <div class="d-flex flex-stack mb-5">
     <h3 class="fw-bold text-gray-900 m-0">PMT (Pemberian Makanan Tambahan)</h3>
-    <a href="#" class="text-primary fw-bold fs-7 text-hover-underline">Dashboard</a>
+    <a href="#" class="pmt-link fw-bold fs-7 text-hover-underline">Dashboard</a>
 </div>
 
 <!-- Total & Filter -->
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-6">
-    <div class="border border-warning rounded-4 px-6 py-3 bg-white d-flex align-items-center justify-content-center">
-        <span class="fs-2hx fw-bolder text-warning me-2" id="pmt-total">Total : 0</span>
+    <div class="pmt-total-pill px-6 py-3 d-flex align-items-center justify-content-center">
+        <span class="fs-2hx fw-bolder me-2" id="pmt-total">Total : 0</span>
     </div>
 
     <div class="d-flex flex-wrap align-items-center gap-3 ms-auto">
@@ -59,7 +147,7 @@
             @endfor
         </select>
 
-        <button type="button" class="btn btn-primary fw-bold fs-7 px-4" onclick="openTambahPmt()">
+        <button type="button" class="btn pmt-btn-amber fw-bold fs-7 px-4" onclick="openTambahPmt()">
             <i class="ki-outline ki-plus fs-3 me-1"></i> Tambah Data PMT
         </button>
     </div>
@@ -68,34 +156,34 @@
 <!-- 3 Card Tahun (klik untuk memfilter tabel) -->
 <div class="row g-4 mb-6">
     <div class="col-md-4">
-        <div class="card h-100 cursor-pointer shadow-sm border border-primary card-tahun" id="pmt-card-2024" onclick="pmtFilterTahun('2024')">
+        <div class="card h-100 cursor-pointer card-tahun" id="pmt-card-2024" onclick="pmtFilterTahun('2024')">
             <div class="card-body p-6 text-center d-flex flex-column justify-content-between">
-                <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">TOTAL</span>
-                <div class="fs-3hx fw-bolder text-primary my-2" id="pmt-count-2024">0</div>
-                <span class="text-primary fw-bold fs-7 mb-4">BALITA</span>
-                <div class="bg-primary text-white fw-bold py-2 rounded-3 fs-7">2024</div>
+                <span class="pmt-kartu-label">TOTAL</span>
+                <div class="pmt-kartu-angka my-2" id="pmt-count-2024">0</div>
+                <span class="pmt-kartu-sub mb-4">BALITA</span>
+                <div class="pmt-kartu-tahun">2024</div>
             </div>
         </div>
     </div>
 
     <div class="col-md-4">
-        <div class="card h-100 cursor-pointer shadow-sm border card-tahun" id="pmt-card-2025" onclick="pmtFilterTahun('2025')" style="border-color: #7239ea !important;">
+        <div class="card h-100 cursor-pointer card-tahun" id="pmt-card-2025" onclick="pmtFilterTahun('2025')">
             <div class="card-body p-6 text-center d-flex flex-column justify-content-between">
-                <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">TOTAL</span>
-                <div class="fs-3hx fw-bolder my-2" style="color: #7239ea;" id="pmt-count-2025">0</div>
-                <span class="fw-bold fs-7 mb-4" style="color: #7239ea;">BALITA</span>
-                <div class="text-white fw-bold py-2 rounded-3 fs-7" style="background-color: #7239ea;">2025</div>
+                <span class="pmt-kartu-label">TOTAL</span>
+                <div class="pmt-kartu-angka my-2" id="pmt-count-2025">0</div>
+                <span class="pmt-kartu-sub mb-4">BALITA</span>
+                <div class="pmt-kartu-tahun">2025</div>
             </div>
         </div>
     </div>
 
     <div class="col-md-4">
-        <div class="card h-100 cursor-pointer shadow-sm border border-success card-tahun" id="pmt-card-2026" onclick="pmtFilterTahun('2026')">
+        <div class="card h-100 cursor-pointer card-tahun" id="pmt-card-2026" onclick="pmtFilterTahun('2026')">
             <div class="card-body p-6 text-center d-flex flex-column justify-content-between">
-                <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">TOTAL</span>
-                <div class="fs-3hx fw-bolder text-success my-2" id="pmt-count-2026">0</div>
-                <span class="text-success fw-bold fs-7 mb-4">BALITA</span>
-                <div class="bg-success text-white fw-bold py-2 rounded-3 fs-7">2026</div>
+                <span class="pmt-kartu-label">TOTAL</span>
+                <div class="pmt-kartu-angka my-2" id="pmt-count-2026">0</div>
+                <span class="pmt-kartu-sub mb-4">BALITA</span>
+                <div class="pmt-kartu-tahun">2026</div>
             </div>
         </div>
     </div>
@@ -169,7 +257,7 @@
                         <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">NIK <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <input type="text" class="form-control form-control-solid" id="pmt-nik" name="nik" maxlength="16" inputmode="numeric" placeholder="16 digit NIK" required />
-                            <button class="btn btn-primary fw-bold px-6" type="button" id="pmt-cari-nik">Cari</button>
+                            <button class="btn pmt-btn-amber fw-bold px-6" type="button" id="pmt-cari-nik">Cari</button>
                         </div>
                         <div class="form-text fs-9">Tombol Cari mengisi otomatis data balita yang NIK-nya sudah pernah tercatat di PMT.</div>
                     </div>
@@ -262,7 +350,7 @@
                         <button type="button" class="btn btn-danger fw-bold px-6" data-bs-dismiss="modal">
                             <i class="ki-outline ki-cross fs-4 me-1"></i> Batal
                         </button>
-                        <button type="submit" class="btn btn-success fw-bold px-6 text-white" style="background-color: #4CAF50 !important; border-color: #4CAF50 !important;">
+                        <button type="submit" class="btn pmt-btn-amber fw-bold px-6 text-white">
                             <i class="ki-outline ki-check fs-4 me-1 text-white"></i> Simpan
                         </button>
                     </div>
@@ -622,5 +710,42 @@
             .catch(function () { gagal('Gagal mengambil data kecamatan/kelurahan dari database.'); })
             .finally(function () { initWilayah(); loadData(); });
     });
+})();
+</script>
+
+{{-- Tukar banner: banner pastel PMT naik ke posisi banner atas, banner hijau disembunyikan --}}
+<script>
+(function () {
+    var banner = document.getElementById('pmt-top-banner');
+    if (!banner) return;
+    var item = banner.closest('.inovasi-item-view') || document.getElementById('content-pmt');   // wadah konten PMT (tampil/sembunyi sesuai dropdown)
+
+    // Cari banner hijau "Inovasi Kota" di index.blade.php (tidak bergantung pada nama class tertentu)
+    function cariBannerHijau() {
+        var el = document.querySelector('#banner-inovasi-default, .banner-inovasi-kota');
+        if (el) return el;
+        var sub = document.getElementById('banner-subtitle-inovasi');
+        var pilih = document.getElementById('select-filter-inovasi');
+        if (!sub || !pilih) return null;
+        el = sub;
+        while (el.parentElement && !el.parentElement.contains(pilih)) el = el.parentElement;
+        return el;
+    }
+    var hijau = cariBannerHijau();
+
+    if (hijau && item) hijau.insertAdjacentElement('afterend', banner);   // naik ke posisi banner atas
+
+    function sync() {
+        var tampil = !item || item.offsetParent !== null;
+        banner.classList.toggle('d-none', !tampil);
+        // Banner hijau tampil hanya jika tidak ada banner submenu yang sedang aktif
+        if (hijau) hijau.classList.toggle('d-none', !!document.querySelector('.sub-banner-top:not(.d-none)'));
+    }
+
+    if (item) new MutationObserver(sync).observe(item, { attributes: true, attributeFilter: ['class', 'style'] });
+    document.addEventListener('change', function (e) {
+        if (e.target && (e.target.id === 'select-filter-inovasi' || e.target.id === 'select-filter-pokja')) setTimeout(sync, 0);
+    });
+    sync();
 })();
 </script>

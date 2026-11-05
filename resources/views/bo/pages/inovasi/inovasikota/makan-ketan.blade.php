@@ -46,9 +46,56 @@
     #mk-table thead th { color: #000 !important; }
     #mk-table tbody td { color: #000 !important; }
     .mk-toast.show { transform: translateX(0); }
-    .mk-card-tahun { cursor: pointer; transition: box-shadow .2s ease, transform .15s ease; }
-    .mk-card-tahun:hover { transform: translateY(-2px); }
-    .mk-card-aktif { box-shadow: 0 0 0 3px rgba(0,0,0,.18), 0 10px 24px -8px rgba(0,0,0,.25) !important; transform: translateY(-2px); }
+    /* Kartu data per tahun: hijau pastel senada banner, mengambang, terangkat saat disentuh */
+    .card.mk-card-tahun {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        background: #e3f2d3;
+        border: 1px solid #cde4b8;
+        border-radius: 1rem;
+        box-shadow: 0 1px 2px rgba(44, 74, 30, .06), 0 10px 24px -10px rgba(44, 74, 30, .28);
+        transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
+    }
+    /* Lingkaran dekor lembut di sudut kanan, seperti pada banner */
+    .card.mk-card-tahun::before {
+        content: "";
+        position: absolute;
+        right: -34px; top: -34px;
+        width: 120px; height: 120px;
+        border-radius: 50%;
+        background: #d0e7ba;
+        opacity: .8;
+        transition: background-color .2s ease;
+        pointer-events: none;
+    }
+    .card.mk-card-tahun .card-body { position: relative; z-index: 1; }
+    .card.mk-card-tahun:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 2px 4px rgba(44, 74, 30, .08), 0 18px 32px -12px rgba(44, 74, 30, .36);
+    }
+    .card.mk-card-aktif {
+        background: #cfe6b5;
+        border-color: #5fa03a;
+        transform: translateY(-3px);
+        box-shadow: 0 2px 4px rgba(44, 74, 30, .08), 0 18px 32px -12px rgba(44, 74, 30, .4) !important;
+    }
+    .card.mk-card-aktif::before { background: #bddb9f; }
+    .mk-kartu-label { font-size: .85rem; font-weight: 600; color: #4f6b3c; }
+    .mk-kartu-angka { font-size: 2.1rem; font-weight: 700; line-height: 1.1; color: #2c4a1e; margin-top: .5rem; }
+    .mk-kartu-ket { font-size: .78rem; color: #5b7a45; margin-top: .15rem; }
+    .mk-ikon {
+        width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+        background: #fff; color: #3b6d11;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .mk-ikon i { color: #3b6d11; }
+    .mk-card-aktif .mk-kartu-label, .mk-card-aktif .mk-kartu-ket { color: #2f5a0d; }
+    .mk-card-aktif .mk-kartu-angka { color: #1f3a12; }
+    .mk-card-aktif .mk-kartu-ket::after { content: " \00b7  dipilih"; }
+    .btn.mk-btn-hijau { background-color: #3b6d11; color: #fff; border: 0; }
+    .btn.mk-btn-hijau:hover, .btn.mk-btn-hijau:focus { background-color: #2f5a0d; color: #fff; }
+    .btn.mk-btn-hijau i { color: #fff; }
     .mk-toast-icon {
         width: 34px; height: 34px; border-radius: 50%;
         background: #22c55e; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -61,6 +108,156 @@
 <div id="mk-toast" class="mk-toast">
     <div class="mk-toast-icon"><i class="ki-outline ki-check fs-3"></i></div>
     <p class="fw-bold mb-0" id="mk-toast-text">Data berhasil ditambahkan</p>
+</div>
+
+<!-- 0. Banner atas Makan Ketan: otomatis naik menggantikan banner hijau "Inovasi Kota" saat submenu ini dipilih -->
+<style>
+    .mk-hero {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        min-height: 210px;
+        padding: 2rem 2.5rem;
+        margin-bottom: .5rem;
+        border-radius: 1rem;
+        background: #ebf3e3;
+        box-shadow: 0 6px 18px -8px rgba(47, 74, 34, .25);
+    }
+    .mk-hero-text {
+        position: relative;
+        z-index: 2;
+        max-width: 52%;
+    }
+    .mk-hero-label {
+        display: block;
+        margin-bottom: .5rem;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: #6e9a4a;
+    }
+    .mk-hero-title {
+        margin: 0 0 .4rem;
+        font-size: 2.1rem;
+        font-weight: 800;
+        line-height: 1.15;
+        color: #2c4a1e;
+    }
+    .mk-hero-sub {
+        margin: 0;
+        font-size: .95rem;
+        font-weight: 500;
+        color: #4f6b3c;
+    }
+    .mk-hero-art {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        height: 100%;
+        width: auto;
+        max-width: 55%;
+        z-index: 1;
+        pointer-events: none;
+    }
+    @media (max-width: 767.98px) {
+        .mk-hero { padding: 1.5rem; min-height: 170px; }
+        .mk-hero-title { font-size: 1.6rem; }
+        .mk-hero-text { max-width: 100%; }
+        .mk-hero-art { opacity: .35; max-width: 75%; }
+    }
+</style>
+
+<div id="mk-top-banner" class="mk-hero sub-banner-top d-none">
+    <div class="mk-hero-text">
+        <span class="mk-hero-label">Inovasi Kota</span>
+        <h2 class="mk-hero-title">Makan Ketan</h2>
+        <p class="mk-hero-sub">Pemanfaatan Pekarangan untuk Ketahanan Pangan</p>
+    </div>
+
+    <svg class="mk-hero-art" viewBox="0 0 440 210" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+        <!-- latar: bukit lembut + lingkaran dekor -->
+        <path d="M0 210 C10 110 80 40 200 32 C320 24 400 42 440 52 L440 210 Z" fill="#dbe8cf"/>
+        <circle cx="318" cy="22" r="46" fill="#d3e3c4" opacity=".6"/>
+        <circle cx="46" cy="176" r="14" fill="#d3e3c4"/>
+
+        <!-- matahari -->
+        <circle cx="96" cy="44" r="17" fill="#f2c14e"/>
+        <g stroke="#f2c14e" stroke-width="3" stroke-linecap="round">
+            <line x1="96" y1="16" x2="96" y2="22"/><line x1="96" y1="66" x2="96" y2="72"/>
+            <line x1="68" y1="44" x2="74" y2="44"/><line x1="118" y1="44" x2="124" y2="44"/>
+            <line x1="76" y1="24" x2="80" y2="28"/><line x1="112" y1="60" x2="116" y2="64"/>
+            <line x1="116" y1="24" x2="112" y2="28"/><line x1="80" y1="60" x2="76" y2="64"/>
+        </g>
+
+        <!-- bayangan tanah -->
+        <ellipse cx="228" cy="193" rx="196" ry="8" fill="#b9cfa5" opacity=".55"/>
+
+        <!-- pot 1: cabai -->
+        <path d="M72 162 L108 162 L102 190 L78 190 Z" fill="#c9703f"/>
+        <rect x="70" y="158" width="40" height="7" rx="3" fill="#b05f33"/>
+        <line x1="90" y1="158" x2="90" y2="104" stroke="#5a8a3c" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="78" cy="122" rx="13" ry="6" transform="rotate(-30 78 122)" fill="#6fa047"/>
+        <ellipse cx="102" cy="116" rx="13" ry="6" transform="rotate(30 102 116)" fill="#6fa047"/>
+        <ellipse cx="80" cy="142" rx="13" ry="6" transform="rotate(-25 80 142)" fill="#5a8a3c"/>
+        <ellipse cx="101" cy="138" rx="13" ry="6" transform="rotate(25 101 138)" fill="#5a8a3c"/>
+        <ellipse cx="72" cy="136" rx="4" ry="10" transform="rotate(12 72 136)" fill="#d9452f"/>
+        <ellipse cx="110" cy="130" rx="4" ry="10" transform="rotate(-12 110 130)" fill="#d9452f"/>
+        <ellipse cx="90" cy="108" rx="4" ry="9" fill="#d9452f"/>
+
+        <!-- pot 2: terong -->
+        <path d="M132 162 L168 162 L162 190 L138 190 Z" fill="#c9703f"/>
+        <rect x="130" y="158" width="40" height="7" rx="3" fill="#b05f33"/>
+        <line x1="150" y1="158" x2="150" y2="108" stroke="#5a8a3c" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="136" cy="124" rx="14" ry="6" transform="rotate(-30 136 124)" fill="#6fa047"/>
+        <ellipse cx="164" cy="118" rx="14" ry="6" transform="rotate(30 164 118)" fill="#6fa047"/>
+        <ellipse cx="138" cy="144" rx="14" ry="6" transform="rotate(-25 138 144)" fill="#5a8a3c"/>
+        <ellipse cx="162" cy="140" rx="14" ry="6" transform="rotate(25 162 140)" fill="#5a8a3c"/>
+        <ellipse cx="141" cy="134" rx="6" ry="11" fill="#7b4a9e"/>
+        <ellipse cx="160" cy="130" rx="6" ry="11" fill="#7b4a9e"/>
+
+        <!-- pot 3: sawi / kangkung -->
+        <path d="M192 162 L228 162 L222 190 L198 190 Z" fill="#c9703f"/>
+        <rect x="190" y="158" width="40" height="7" rx="3" fill="#b05f33"/>
+        <ellipse cx="200" cy="144" rx="6" ry="17" transform="rotate(-28 200 144)" fill="#5a8a3c"/>
+        <ellipse cx="220" cy="144" rx="6" ry="17" transform="rotate(28 220 144)" fill="#5a8a3c"/>
+        <ellipse cx="210" cy="140" rx="7" ry="19" fill="#7fb356"/>
+        <ellipse cx="205" cy="150" rx="5" ry="13" transform="rotate(-12 205 150)" fill="#6fa047"/>
+        <ellipse cx="215" cy="150" rx="5" ry="13" transform="rotate(12 215 150)" fill="#6fa047"/>
+
+        <!-- ibu: kaki, badan, kepala -->
+        <rect x="322" y="162" width="8" height="26" rx="3" fill="#d99a73"/>
+        <rect x="336" y="162" width="8" height="26" rx="3" fill="#d99a73"/>
+        <ellipse cx="326" cy="189" rx="7" ry="3" fill="#3b2a22"/>
+        <ellipse cx="340" cy="189" rx="7" ry="3" fill="#3b2a22"/>
+        <path d="M313 100 L353 100 L364 166 L302 166 Z" fill="#6b8f4e"/>
+        <path d="M313 100 L353 100 L356 128 L310 128 Z" fill="#f2a65a"/>
+        <circle cx="333" cy="82" r="15" fill="#f1c9a0"/>
+        <path d="M318 80 C318 64 348 64 348 80 C342 72 324 72 318 80 Z" fill="#3b2a22"/>
+        <circle cx="333" cy="63" r="7" fill="#3b2a22"/>
+        <!-- lengan menyiram + alat siram -->
+        <line x1="316" y1="110" x2="282" y2="122" stroke="#f1c9a0" stroke-width="7" stroke-linecap="round"/>
+        <rect x="258" y="116" width="26" height="19" rx="4" fill="#4f7fa8"/>
+        <path d="M258 122 L238 108" stroke="#4f7fa8" stroke-width="5" stroke-linecap="round"/>
+        <path d="M262 116 C262 106 280 106 280 116" stroke="#3d6485" stroke-width="3" fill="none"/>
+        <g fill="#8cc7e8">
+            <circle cx="234" cy="118" r="2.6"/><circle cx="231" cy="130" r="2.6"/>
+            <circle cx="236" cy="140" r="2.6"/><circle cx="228" cy="124" r="2"/>
+        </g>
+
+        <!-- keranjang hasil panen -->
+        <circle cx="388" cy="162" r="9" fill="#d9452f"/>
+        <circle cx="404" cy="164" r="8" fill="#7fb356"/>
+        <circle cx="396" cy="156" r="7" fill="#e9a23b"/>
+        <path d="M374 168 L418 168 L412 192 L380 192 Z" fill="#c89b5e"/>
+        <path d="M376 175 H416 M378 183 H414" stroke="#a97c42" stroke-width="2"/>
+
+        <!-- tunas dekor -->
+        <g stroke="#6fa047" stroke-width="2.5" stroke-linecap="round">
+            <path d="M32 190 L32 168"/><path d="M32 178 L24 170"/><path d="M32 174 L40 166"/>
+        </g>
+    </svg>
 </div>
 
 <!-- 1. Banner Deskripsi Inovasi -->
@@ -78,67 +275,56 @@
     </div>
 </div>
 
-<!-- 2. Header & Tombol Tambah Data -->
+<!-- 2. Judul bagian & Tombol Tambah Data -->
 <div class="d-flex flex-stack mb-5">
     <div>
-        <h2 class="fs-2hx fw-bold text-gray-900 mb-1">Makan Ketan</h2>
+        <h3 class="fs-3 fw-bold text-gray-900 mb-1">Data per tahun</h3>
+        <span class="text-gray-500 fs-7">Klik kartu untuk menyaring tabel di bawah</span>
     </div>
     <div>
-        <button type="button" class="btn btn-success fw-bold px-5" id="mk-btn-tambah" data-bs-toggle="modal" data-bs-target="#modal_tambah_makan_ketan">
+        <button type="button" class="btn mk-btn-hijau fw-bold px-5" id="mk-btn-tambah" data-bs-toggle="modal" data-bs-target="#modal_tambah_makan_ketan">
             <i class="ki-outline ki-plus fs-2 me-1"></i> Tambah Makan Ketan
         </button>
     </div>
 </div>
 
-<!-- 3. Stat Cards: Total Data per Tahun (dihitung otomatis dari data) -->
+<!-- 3. Kartu: Total Data per Tahun (angka dihitung otomatis dari data) -->
 <div class="row g-4 mb-6">
     <div class="col-12 col-md-4">
-        <div class="card card-flush h-100 shadow-sm border-start border-4 border-primary mk-card-tahun" id="mk-card-2024" onclick="mkFilterTahun('2024')">
-            <div class="card-body p-5 d-flex align-items-center justify-content-between">
-                <div>
-                    <span class="text-gray-500 fw-semibold fs-7 d-block mb-1">TOTAL DATA</span>
-                    <span class="fs-2hx fw-bold text-gray-900" id="mk-total-2024">0</span>
+        <div class="card card-flush h-100 mk-card-tahun" id="mk-card-2024" onclick="mkFilterTahun('2024')">
+            <div class="card-body p-5">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="mk-kartu-label">Tahun 2024</span>
+                    <span class="mk-ikon"><i class="ki-outline ki-calendar fs-2"></i></span>
                 </div>
-                <div class="symbol symbol-45px symbol-circle bg-light-primary">
-                    <span class="symbol-label"><i class="ki-outline ki-calendar text-primary fs-1"></i></span>
-                </div>
-            </div>
-            <div class="card-footer py-2 px-5 bg-light-primary text-center">
-                <span class="fs-8 fw-bold text-primary">MAKAN KETAN 2024</span>
+                <div class="mk-kartu-angka" id="mk-total-2024">0</div>
+                <div class="mk-kartu-ket">data tercatat</div>
             </div>
         </div>
     </div>
 
     <div class="col-12 col-md-4">
-        <div class="card card-flush h-100 shadow-sm border-start border-4 mk-card-tahun" id="mk-card-2025" onclick="mkFilterTahun('2025')" style="border-color: #7239ea !important;">
-            <div class="card-body p-5 d-flex align-items-center justify-content-between">
-                <div>
-                    <span class="text-gray-500 fw-semibold fs-7 d-block mb-1">TOTAL DATA</span>
-                    <span class="fs-2hx fw-bold" style="color: #7239ea;" id="mk-total-2025">0</span>
+        <div class="card card-flush h-100 mk-card-tahun" id="mk-card-2025" onclick="mkFilterTahun('2025')">
+            <div class="card-body p-5">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="mk-kartu-label">Tahun 2025</span>
+                    <span class="mk-ikon"><i class="ki-outline ki-chart-line-up fs-2"></i></span>
                 </div>
-                <div class="symbol symbol-45px symbol-circle" style="background-color: #f8f5ff;">
-                    <span class="symbol-label"><i class="ki-outline ki-chart-line-up fs-1" style="color: #7239ea;"></i></span>
-                </div>
-            </div>
-            <div class="card-footer py-2 px-5 text-center" style="background-color: #f8f5ff;">
-                <span class="fs-8 fw-bold" style="color: #7239ea;">MAKAN KETAN 2025</span>
+                <div class="mk-kartu-angka" id="mk-total-2025">0</div>
+                <div class="mk-kartu-ket">data tercatat</div>
             </div>
         </div>
     </div>
 
     <div class="col-12 col-md-4">
-        <div class="card card-flush h-100 shadow-sm border-start border-4 border-success mk-card-tahun" id="mk-card-2026" onclick="mkFilterTahun('2026')">
-            <div class="card-body p-5 d-flex align-items-center justify-content-between">
-                <div>
-                    <span class="text-gray-500 fw-semibold fs-7 d-block mb-1">TOTAL DATA</span>
-                    <span class="fs-2hx fw-bold text-success" id="mk-total-2026">0</span>
+        <div class="card card-flush h-100 mk-card-tahun" id="mk-card-2026" onclick="mkFilterTahun('2026')">
+            <div class="card-body p-5">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="mk-kartu-label">Tahun 2026</span>
+                    <span class="mk-ikon"><i class="ki-outline ki-verify fs-2"></i></span>
                 </div>
-                <div class="symbol symbol-45px symbol-circle bg-light-success">
-                    <span class="symbol-label"><i class="ki-outline ki-verify text-success fs-1"></i></span>
-                </div>
-            </div>
-            <div class="card-footer py-2 px-5 bg-light-success text-center">
-                <span class="fs-8 fw-bold text-success">MAKAN KETAN 2026</span>
+                <div class="mk-kartu-angka" id="mk-total-2026">0</div>
+                <div class="mk-kartu-ket">data tercatat</div>
             </div>
         </div>
     </div>
@@ -785,5 +971,31 @@
         .then(function (data) { kelurahanByKecamatan = data; })
         .catch(function () { alert('Gagal mengambil data kecamatan/kelurahan dari database.'); })
         .finally(function () { initWilayah(); loadData(); });
+})();
+</script>
+
+{{-- Tukar banner: banner pastel Makan Ketan naik ke posisi banner atas, banner hijau disembunyikan --}}
+<script>
+(function () {
+    var banner = document.getElementById('mk-top-banner');
+    if (!banner) return;
+    var item = banner.closest('.inovasi-item-view');   // wadah konten Makan Ketan (tampil/sembunyi sesuai dropdown)
+    var hijau = document.querySelector('#banner-inovasi-default, .banner-inovasi-kota');   // banner hijau di index.blade.php
+
+    // Pindahkan banner pastel ke posisi banner hijau (tepat di bawahnya)
+    if (hijau && item) hijau.insertAdjacentElement('afterend', banner);
+
+    function sync() {
+        var tampil = !item || item.offsetParent !== null;
+        banner.classList.toggle('d-none', !tampil);
+        // Banner hijau tampil hanya jika tidak ada banner submenu yang sedang aktif
+        if (hijau) hijau.classList.toggle('d-none', !!document.querySelector('.sub-banner-top:not(.d-none)'));
+    }
+
+    if (item) new MutationObserver(sync).observe(item, { attributes: true, attributeFilter: ['class', 'style'] });
+    document.addEventListener('change', function (e) {
+        if (e.target && (e.target.id === 'select-filter-inovasi' || e.target.id === 'select-filter-pokja')) setTimeout(sync, 0);
+    });
+    sync();
 })();
 </script>

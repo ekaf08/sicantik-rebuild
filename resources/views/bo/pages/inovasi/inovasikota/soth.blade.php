@@ -1,20 +1,83 @@
+<!-- Banner atas SOTH: otomatis naik menggantikan banner hijau "Inovasi Kota" saat submenu ini dipilih -->
+<style>
+    /* Banner atas SOTH: naik menggantikan banner hijau saat submenu ini dipilih */
+    .sth-hero { position: relative; overflow: hidden; display: flex; align-items: center; min-height: 210px; padding: 2rem 2.5rem; margin-bottom: .5rem; border-radius: 1rem; background: #f7ede7; }
+    .sth-hero-text { position: relative; z-index: 2; max-width: 52%; }
+    .sth-hero-label { display: block; margin-bottom: .5rem; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #d2603f; }
+    .sth-hero-title { margin: 0 0 .4rem; font-size: 2.1rem; font-weight: 800; line-height: 1.15; color: #5a2a1a; }
+    .sth-hero-sub { margin: 0; font-size: .95rem; font-weight: 500; color: #7d5645; }
+    .sth-hero-art { position: absolute; right: 0; bottom: 0; height: 100%; width: auto; max-width: 58%; z-index: 1; pointer-events: none; }
+    @media (max-width: 767.98px) {
+        .sth-hero { padding: 1.5rem; min-height: 170px; }
+        .sth-hero-title { font-size: 1.6rem; }
+        .sth-hero-text { max-width: 100%; }
+        .sth-hero-art { opacity: .3; max-width: 80%; }
+    }
+
+    /* Kartu SOTH: mengambang dengan bayangan terakota lembut */
+    .sth-card { border: 1px solid #f1dfd6 !important; border-radius: 1rem !important; box-shadow: 0 1px 2px rgba(90, 42, 26, .05), 0 10px 24px -12px rgba(90, 42, 26, .22) !important; }
+    .sth-aksen { color: #d2603f !important; }
+    .sth-garis { background-color: #d2603f; }
+    .sth-badge { background-color: #d2603f; color: #fff; }
+    .sth-card thead tr { background-color: #f7ede7 !important; }
+    .sth-card thead th { color: #5a2a1a !important; }
+    .sth-card tbody tr:hover td { background-color: #fffaf7; }
+    .sth-card .pagination .page-link { color: #7d5645; }
+    .sth-card .pagination .page-item.active .page-link { background-color: #d2603f !important; border-color: #d2603f !important; color: #fff !important; }
+</style>
+
+<div id="sth-top-banner" class="sth-hero sub-banner-top d-none">
+    <div class="sth-hero-text">
+        <span class="sth-hero-label">Inovasi Kota</span>
+        <h2 class="sth-hero-title">SOTH</h2>
+        <p class="sth-hero-sub">Sekolah Orang Tua Hebat</p>
+    </div>
+
+    <svg class="sth-hero-art" viewBox="0 0 440 210" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+                                <path d="M0 210 C10 110 80 40 200 32 C320 24 400 42 440 52 L440 210 Z" fill="#eedace"/>
+        <circle cx="318" cy="22" r="46" fill="#e7ccbc" opacity=".6"/>
+        <circle cx="46" cy="176" r="14" fill="#e7ccbc"/>
+        <ellipse cx="228" cy="193" rx="196" ry="8" fill="#000" opacity=".07"/>
+                                <path d="M212 98 C198 128 192 160 190 188 H284 C286 160 278 128 268 98 Z" fill="#d2603f"/>
+                                <rect x="231" y="144" width="9" height="42" rx="3" fill="#3b4458"/>
+                                <rect x="243" y="144" width="9" height="42" rx="3" fill="#3b4458"/>
+                                <rect x="228" y="98" width="28" height="48" rx="8" fill="#e9b840"/>
+                                <circle cx="242" cy="80" r="13" fill="#f1c9a0"/>
+                                <path d="M228 80 C226 62 258 62 256 80 C252 70 232 70 228 80 Z" fill="#3b2a22"/>
+                                <circle cx="242" cy="62" r="7" fill="#3b2a22"/>
+                                <path d="M254 112 L290 146" stroke="#f1c9a0" stroke-width="6" stroke-linecap="round"/>
+                                <rect x="290" y="150" width="18" height="24" rx="4" fill="#4a7a5a"/>
+                                <rect x="292" y="174" width="6" height="14" rx="2" fill="#3b4458"/>
+                                <rect x="301" y="174" width="6" height="14" rx="2" fill="#3b4458"/>
+                                <circle cx="299" cy="140" r="9" fill="#f1c9a0"/>
+                                <path d="M290 138 C290 129 308 129 308 138 C304 134 294 134 290 138 Z" fill="#3b2a22"/>
+                                <rect x="310" y="154" width="8" height="16" rx="4" fill="#d2603f"/>
+                                <path d="M356 152 L346 188 M404 152 L414 188" stroke="#7b563c" stroke-width="4.5" stroke-linecap="round"/>
+                                <rect x="340" y="100" width="76" height="54" rx="5" fill="#7b563c"/>
+                                <rect x="346" y="106" width="64" height="42" rx="3" fill="#4a7a5a"/>
+                                <rect x="346" y="150" width="30" height="3" rx="1.5" fill="#a98562"/>
+                                <text x="378" y="138" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="24" fill="#fff">ABC</text>
+                                <g stroke="#4a7a5a" stroke-width="2.5" stroke-linecap="round"><path d="M160 188 L160 158"/><path d="M160 174 L151 164"/><path d="M160 168 L169 158"/></g>
+                            </svg>
+</div>
+
 <div class="d-flex flex-column gap-5">
-    <div class="card card-flush shadow-sm rounded-4 border-0">
+    <div class="card card-flush shadow-sm rounded-4 border-0 sth-card">
         <div class="card-body p-5 p-lg-8">
             <h2 class="fw-bolder text-gray-900 mb-1 fs-2">
                 Inovasi SOTH
             </h2>
-            <h4 class="text-success fw-bold text-uppercase tracking-wider fs-6 mb-3">
+            <h4 class="sth-aksen fw-bold text-uppercase tracking-wider fs-6 mb-3">
                 Sekolah Orang Tua Hebat
             </h4>
-            <div class="bg-success rounded-pill mb-4" style="height: 3px; width: 60px;"></div>
+            <div class="sth-garis rounded-pill mb-4" style="height: 3px; width: 60px;"></div>
             <span class="text-gray-600 fs-6 lh-base mb-0 d-block mt-3">
                 Program Sekolah Orang Tua Hebat, Kolaborasi Pemkot Surabaya, BKKBN, dan PKK untuk meningkatkan kualitas pengasuhan anak melalui pendidikan informal, mencegah stunting, membentuk karakter positif, dan memperkuat hubungan keluarga, dengan fokus pada orang tua balita (0-5 tahun) di setiap RW, melalui 14 materi pengasuhan dan gizi.
             </span>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-sm rounded-4 sth-card">
         <div class="card-body p-5">
             <div class="row g-4 align-items-end">
                 <div class="col-12 col-md-5">
@@ -59,7 +122,7 @@
                     <label class="form-label fw-bold text-gray-700 fs-7">Kelurahan</label>
                     <select id="filter_soth_kelurahan" class="form-select form-select-solid fw-semibold fs-7" onchange="terapkanFilterSoth()">
                         <option value="all" selected>SEMUA KELURAHAN</option>
-                        
+
                         {{-- ASEMROWO --}}
                         <option value="ASEMROWO" data-kecamatan="ASEMROWO">ASEMROWO</option>
                         <option value="GENTING KALIANAK" data-kecamatan="ASEMROWO">GENTING KALIANAK</option>
@@ -291,7 +354,7 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-sm rounded-4 sth-card">
         <div class="card-header border-0 pt-5 px-5 bg-transparent">
             <h5 class="card-title align-items-start flex-column mb-0">
                 <span class="fw-bolder text-gray-800 fs-6 text-uppercase">NILAI RATA - RATA</span>
@@ -314,10 +377,10 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-sm rounded-4 sth-card">
         <div class="card-header border-0 pt-5 px-5 bg-transparent d-flex flex-wrap justify-content-between align-items-center gap-3">
            <div class="d-flex align-items-center">
-                <span class="badge badge-success px-4 py-2 fw-bolder fs-7 rounded-2 text-white">
+                <span class="badge sth-badge px-4 py-2 fw-bolder fs-7 rounded-2 text-white">
                     DATA SOTH
                 </span>
             </div>
@@ -371,3 +434,41 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ asset('js/pages/soth.js') }}"></script>
+
+{{-- Tukar banner: banner pastel SOTH naik ke posisi banner atas, banner hijau disembunyikan --}}
+<script>
+(function () {
+    var banner = document.getElementById('sth-top-banner');
+    if (!banner) return;
+    var item = banner.closest('.inovasi-item-view') || document.getElementById('content-soth');   // wadah konten SOTH (tampil/sembunyi sesuai dropdown)
+    if (!item) return;   // wadah tidak ditemukan: banner tetap tersembunyi agar tidak muncul di submenu lain
+
+    // Cari banner hijau "Inovasi Kota" di index.blade.php (tidak bergantung pada nama class tertentu)
+    function cariBannerHijau() {
+        var el = document.querySelector('#banner-inovasi-default, .banner-inovasi-kota');
+        if (el) return el;
+        var sub = document.getElementById('banner-subtitle-inovasi');
+        var pilih = document.getElementById('select-filter-inovasi');
+        if (!sub || !pilih) return null;
+        el = sub;
+        while (el.parentElement && !el.parentElement.contains(pilih)) el = el.parentElement;
+        return el;
+    }
+    var hijau = cariBannerHijau();
+
+    if (hijau) hijau.insertAdjacentElement('afterend', banner);   // naik ke posisi banner atas
+
+    function sync() {
+        var tampil = item.offsetParent !== null;
+        banner.classList.toggle('d-none', !tampil);
+        // Banner hijau tampil hanya jika tidak ada banner submenu yang sedang aktif
+        if (hijau) hijau.classList.toggle('d-none', !!document.querySelector('.sub-banner-top:not(.d-none)'));
+    }
+
+    new MutationObserver(sync).observe(item, { attributes: true, attributeFilter: ['class', 'style'] });
+    document.addEventListener('change', function (e) {
+        if (e.target && (e.target.id === 'select-filter-inovasi' || e.target.id === 'select-filter-pokja')) setTimeout(sync, 0);
+    });
+    sync();
+})();
+</script>

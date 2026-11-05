@@ -3,61 +3,130 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+    /* Banner atas Selantang: biru pastel, naik menggantikan banner hijau saat submenu ini dipilih */
+    .sln-hero { position: relative; overflow: hidden; display: flex; align-items: center; min-height: 210px; padding: 2rem 2.5rem; margin-bottom: .5rem; border-radius: 1rem; background: #eaf1f5; }
+    .sln-hero-text { position: relative; z-index: 2; max-width: 52%; }
+    .sln-hero-label { display: block; margin-bottom: .5rem; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #5b8db0; }
+    .sln-hero-title { margin: 0 0 .4rem; font-size: 2.1rem; font-weight: 800; line-height: 1.15; color: #24394a; }
+    .sln-hero-sub { margin: 0; font-size: .95rem; font-weight: 500; color: #4a6070; }
+    .sln-hero-art { position: absolute; right: 0; bottom: 0; height: 100%; width: auto; max-width: 58%; z-index: 1; pointer-events: none; }
+    @media (max-width: 767.98px) {
+        .sln-hero { padding: 1.5rem; min-height: 170px; }
+        .sln-hero-title { font-size: 1.6rem; }
+        .sln-hero-text { max-width: 100%; }
+        .sln-hero-art { opacity: .3; max-width: 80%; }
+    }
+
+    /* Kartu: putih mengambang dengan bayangan biru lembut */
     .card-selantang {
         border-radius: 16px !important;
-        border: none !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
-        transition: all 0.25s ease;
+        border: 1px solid #e3ecf1 !important;
+        box-shadow: 0 1px 2px rgba(36, 57, 74, .05), 0 10px 24px -12px rgba(36, 57, 74, .22) !important;
+        transition: transform .25s ease, box-shadow .25s ease;
+        overflow: hidden;
     }
     .card-selantang:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 2px 4px rgba(36, 57, 74, .06), 0 16px 30px -14px rgba(36, 57, 74, .3) !important;
     }
-    /* Banner Header Hijau Emerald - Teal */
-    .banner-selantang {
-        background: linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #115e59 100%) !important;
-        border-radius: 16px !important;
-        position: relative;
-        overflow: hidden;
-    }
-    /* Header Card Hijau Emerald */
+    /* Header kartu: pita biru pastel, bukan gradasi teal */
     .header-card-green {
-        background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important;
-        color: #ffffff !important;
+        background: #eaf1f5 !important;
+        color: #24394a !important;
+        border-bottom: 1px solid #d6e4ec !important;
         border-top-left-radius: 16px !important;
         border-top-right-radius: 16px !important;
     }
-    .btn-selantang-green {
-        background-color: #0d9488 !important;
-        border-color: #0d9488 !important;
-        color: #ffffff !important;
-    }
-    .btn-selantang-green:hover {
-        background-color: #0f766e !important;
-        border-color: #0f766e !important;
-    }
+    .header-card-green .card-title, .header-card-green .card-title i { color: #24394a !important; }
+    .btn-selantang-green { background-color: #3f6f93 !important; border-color: #3f6f93 !important; color: #ffffff !important; }
+    .btn-selantang-green:hover { background-color: #335a78 !important; border-color: #335a78 !important; }
+
+    /* Strip info dashboard & periode */
+    .sln-info { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.5rem; background: #fff; border: 1px solid #e3ecf1; border-radius: 1rem; box-shadow: 0 1px 2px rgba(36, 57, 74, .05), 0 10px 24px -12px rgba(36, 57, 74, .2); }
+    .sln-info-ikon { width: 52px; height: 52px; border-radius: 50%; background: #eaf1f5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sln-info-ikon i { color: #4a7a9c; }
+    .sln-info-kecil { display: block; font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #5b8db0; }
+    .sln-info-judul { margin: .1rem 0 .15rem; font-size: 1.25rem; font-weight: 800; color: #24394a; }
+    .sln-info-desc { font-size: .85rem; font-weight: 500; color: #4a6070; }
+    .sln-periode { background: #eaf1f5; border-radius: .85rem; padding: .6rem 1rem; }
+    .sln-periode label { display: block; margin: 0 0 .15rem; font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #5b8db0; }
+    .sln-periode div { display: flex; align-items: center; gap: .4rem; font-size: .9rem; font-weight: 800; color: #24394a; }
+    .sln-periode i { color: #4a7a9c; }
+
+    /* Kartu metrik atas & insight: pastel dengan ikon di lingkaran putih */
+    .sln-metrik { border-radius: 16px !important; }
+    .sln-m-biru  { background: #eaf1f5 !important; border-color: #d6e4ec !important; }
+    .sln-m-krem  { background: #fbf1de !important; border-color: #f1deb0 !important; }
+    .sln-m-sage  { background: #ebf3e3 !important; border-color: #d3e4c3 !important; }
+    .sln-m-rose  { background: #fbede8 !important; border-color: #f1d3ca !important; }
+    .sln-ikon { width: 50px; height: 50px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sln-insight { border: 1px solid transparent; border-radius: 1rem; }
+    .sln-insight.sln-m-biru { border-color: #d6e4ec; } .sln-insight.sln-m-sage { border-color: #d3e4c3; }
+    .sln-insight.sln-m-rose { border-color: #f1d3ca; } .sln-insight.sln-m-krem { border-color: #f1deb0; }
+
+    /* Tabel ringkasan: header biru lembut; warna status dibuat senada (hijau sage, kuning, biru, terakota) */
+    #adl-tbody .bg-success, #iadl-tbody .bg-success { background-color: #6bb38a !important; }
+    #adl-tbody .bg-warning, #iadl-tbody .bg-warning { background-color: #e8a23b !important; }
+    #adl-tbody .bg-info,    #iadl-tbody .bg-info    { background-color: #5b8db0 !important; }
+    #adl-tbody .bg-danger,  #iadl-tbody .bg-danger  { background-color: #d2603f !important; }
+    #adl-tbody .bg-dark,    #iadl-tbody .bg-dark    { background-color: #6b5b53 !important; }
+    #adl-tbody .text-success, #iadl-tbody .text-success { color: #3f8a63 !important; }
+    #adl-tbody .text-warning, #iadl-tbody .text-warning { color: #b8791a !important; }
+    #adl-tbody .text-info,    #iadl-tbody .text-info    { color: #3f6f93 !important; }
+    #adl-tbody .text-danger,  #iadl-tbody .text-danger  { color: #c2512f !important; }
+    #adl-tbody .text-dark,    #iadl-tbody .text-dark    { color: #4a3f39 !important; }
+    .card-selantang thead tr { background: #f3f7f9 !important; }
 </style>
 
-<!-- Banner Header Dashboard Kegiatan SELANTANG -->
-<div class="card banner-selantang mb-6 p-6 text-white shadow-sm">
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-4 position-relative z-index-2">
-        <div class="d-flex align-items-center gap-4">
-            <div class="w-60px h-60px rounded-circle bg-white bg-opacity-20 d-flex align-items-center justify-content-center backdrop-blur">
-                <i class="ki-outline ki-teacher fs-1 text-white"></i>
-            </div>
-            <div>
-                <span class="fs-8 fw-bold text-uppercase tracking-wider opacity-75">PEMERINTAH KOTA SURABAYA — DP3APPKB</span>
-                <h2 class="fw-bolder text-white mb-0 fs-2a">DASHBOARD KEGIATAN SELANTANG</h2>
-                <span class="fs-7 text-white text-opacity-80 fw-semibold">Sekolah Lansia Tangguh — Ringkasan Data Peserta & Hasil Assesment</span>
-            </div>
+<!-- Banner atas Selantang: otomatis naik menggantikan banner hijau "Inovasi Kota" saat submenu ini dipilih -->
+<div id="sln-top-banner" class="sln-hero sub-banner-top d-none">
+    <div class="sln-hero-text">
+        <span class="sln-hero-label">Inovasi Kota</span>
+        <h2 class="sln-hero-title">Selantang</h2>
+        <p class="sln-hero-sub">Sekolah Lansia Tangguh</p>
+    </div>
+
+    <svg class="sln-hero-art" viewBox="0 0 440 210" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+                                <path d="M0 210 C10 110 80 40 200 32 C320 24 400 42 440 52 L440 210 Z" fill="#d6e4ec"/>
+        <circle cx="318" cy="22" r="46" fill="#c8dae5" opacity=".6"/>
+        <circle cx="46" cy="176" r="14" fill="#c8dae5"/>
+        <ellipse cx="228" cy="193" rx="196" ry="8" fill="#000" opacity=".07"/>
+                                <rect x="260" y="170" width="7" height="16" rx="3" fill="#d9a07a"/>
+                                <rect x="272" y="170" width="7" height="16" rx="3" fill="#d9a07a"/>
+                                <path d="M254 144 H286 L296 172 H244 Z" fill="#b5667a"/>
+                                <rect x="257" y="108" width="26" height="38" rx="7" fill="#e9b840"/>
+                                <circle cx="270" cy="94" r="12" fill="#e0a98a"/>
+                                <path d="M257 92 C257 76 283 76 283 92 C278 85 262 85 257 92 Z" fill="#e5e5ec"/>
+                                <circle cx="270" cy="75" r="7" fill="#e5e5ec"/>
+                                <path d="M282 120 L314 132" stroke="#d9a07a" stroke-width="6" stroke-linecap="round"/>
+                                <path d="M0 0 C-6 -8 -18 -2 0 12 C18 -2 6 -8 0 0Z" transform="translate(308 100) scale(.9)" fill="#e9b840"/>
+                                <rect x="340" y="148" width="8" height="38" rx="3" fill="#3b4458"/>
+                                <rect x="352" y="148" width="8" height="38" rx="3" fill="#3b4458"/>
+                                <rect x="337" y="104" width="26" height="46" rx="7" fill="#5b8db0"/>
+                                <circle cx="350" cy="90" r="12" fill="#d9a07a"/>
+                                <path d="M338 94 C336 82 346 76 350 78 C354 76 364 82 362 94 C360 86 340 86 338 94 Z" fill="#cfcfd8"/>
+                                <path d="M337 120 L322 130" stroke="#d9a07a" stroke-width="6" stroke-linecap="round"/>
+                                <path d="M363 120 L384 134" stroke="#d9a07a" stroke-width="6" stroke-linecap="round"/>
+                                <path d="M386 138 L386 188" stroke="#7b563c" stroke-width="4.5" stroke-linecap="round"/>
+                                <path d="M386 138 C386 128 400 128 400 138" stroke="#7b563c" stroke-width="4.5" stroke-linecap="round"/>
+                                <g stroke="#7fa58f" stroke-width="2.5" stroke-linecap="round"><path d="M180 188 L180 156"/><path d="M180 172 L171 162"/><path d="M180 166 L189 156"/></g>
+                                <g stroke="#7fa58f" stroke-width="2.5" stroke-linecap="round"><path d="M420 188 L420 164"/><path d="M420 176 L412 168"/></g>
+                            </svg>
+</div>
+
+<!-- Info dashboard & periode data -->
+<div class="sln-info mb-6">
+    <div class="d-flex align-items-center gap-4">
+        <div class="sln-info-ikon"><i class="ki-outline ki-teacher fs-1"></i></div>
+        <div>
+            <span class="sln-info-kecil">Pemerintah Kota Surabaya — DP3APPKB</span>
+            <h3 class="sln-info-judul">Dashboard Kegiatan Selantang</h3>
+            <span class="sln-info-desc">Sekolah Lansia Tangguh — Ringkasan Data Peserta &amp; Hasil Assesment</span>
         </div>
-        <div class="bg-white bg-opacity-15 p-3 px-4 rounded-4 backdrop-blur border border-white border-opacity-20">
-            <label class="form-label fs-9 fw-bold text-uppercase text-white opacity-75 mb-1">Periode Data</label>
-            <div class="fs-7 fw-bolder text-white d-flex align-items-center gap-2">
-                <i class="ki-outline ki-calendar fs-6 text-white"></i>
-                <span id="label-periode-aktif">Tahun 2026</span>
-            </div>
-        </div>
+    </div>
+    <div class="sln-periode">
+        <label>Periode Data</label>
+        <div><i class="ki-outline ki-calendar fs-6"></i><span id="label-periode-aktif">Tahun 2026</span></div>
     </div>
 </div>
 
@@ -134,11 +203,11 @@
 <div class="row g-4 mb-6">
     <!-- Total Peserta Card -->
     <div class="col-12 col-md-4">
-        <div class="card card-selantang h-100 p-5">
+        <div class="card card-selantang sln-metrik sln-m-biru h-100 p-5">
             <span class="fs-8 fw-bold text-gray-500 text-uppercase tracking-wider">TOTAL PESERTA</span>
             <div class="d-flex align-items-center justify-content-between mt-3">
-                <div class="w-50px h-50px rounded-4 bg-light-teal d-flex align-items-center justify-content-center" style="background-color: #ccfbf1;">
-                    <i class="ki-outline ki-people fs-2x" style="color: #0d9488;"></i>
+                <div class="sln-ikon">
+                    <i class="ki-outline ki-people fs-2x" style="color: #4a7a9c;"></i>
                 </div>
                 <div class="text-end">
                     <div class="fs-3hx fw-bolder text-gray-900" id="val-total-peserta">0</div>
@@ -150,19 +219,19 @@
 
     <!-- Ringkasan Gender Card -->
     <div class="col-12 col-md-4">
-        <div class="card card-selantang h-100 p-5">
+        <div class="card card-selantang sln-metrik sln-m-krem h-100 p-5">
             <span class="fs-8 fw-bold text-gray-500 text-uppercase tracking-wider mb-3">RASIO JENIS KELAMIN</span>
             <div class="d-flex align-items-center justify-content-around">
                 <div class="text-center">
                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">LAKI - LAKI</span>
-                    <div class="fs-2x fw-bolder my-1" style="color: #0d9488;" id="val-jk-l">380</div>
-                    <span class="badge fw-bold fs-8" style="background-color: #ccfbf1; color: #0f766e;" id="pct-jk-l">30.4%</span>
+                    <div class="fs-2x fw-bolder my-1" style="color: #3f6f93;" id="val-jk-l">380</div>
+                    <span class="badge fw-bold fs-8" style="background-color: #d6e4ec; color: #24394a;" id="pct-jk-l">30.4%</span>
                 </div>
                 <div class="vr h-40px bg-gray-200"></div>
                 <div class="text-center">
                     <span class="fs-8 fw-bold text-gray-500 text-uppercase">PEREMPUAN</span>
-                    <div class="fs-2x fw-bolder text-danger my-1" id="val-jk-p">870</div>
-                    <span class="badge badge-light-danger fw-bold fs-8" id="pct-jk-p">69.6%</span>
+                    <div class="fs-2x fw-bolder my-1" style="color: #c25d6e;" id="val-jk-p">870</div>
+                    <span class="badge fw-bold fs-8" style="background-color: #f4d9de; color: #8a3a48;" id="pct-jk-p">69.6%</span>
                 </div>
             </div>
         </div>
@@ -170,14 +239,14 @@
 
     <!-- Coverage Kelurahan Card -->
     <div class="col-12 col-md-4">
-        <div class="card card-selantang h-100 p-5">
+        <div class="card card-selantang sln-metrik sln-m-sage h-100 p-5">
             <span class="fs-8 fw-bold text-gray-500 text-uppercase tracking-wider">SEBARAN KELURAHAN</span>
             <div class="d-flex align-items-center justify-content-between mt-3">
-                <div class="w-50px h-50px rounded-4 bg-light-success d-flex align-items-center justify-content-center">
-                    <i class="ki-outline ki-geolocation fs-2x text-success"></i>
+                <div class="sln-ikon">
+                    <i class="ki-outline ki-geolocation fs-2x" style="color: #4f7a35;"></i>
                 </div>
                 <div class="text-end">
-                    <div class="fs-3hx fw-bolder text-success" id="val-kelurahan">0</div>
+                    <div class="fs-3hx fw-bolder" style="color: #2c4a1e;" id="val-kelurahan">0</div>
                     <span class="fs-8 fw-bold text-gray-500">Kelurahan Terjangkau</span>
                 </div>
             </div>
@@ -303,30 +372,30 @@
     <div class="card-body p-6">
         <div class="row g-4">
             <div class="col-12 col-md-3">
-                <div class="p-5 rounded-4 text-center border border-teal border-opacity-10 h-100 d-flex flex-column justify-content-center" style="background-color: #f0fdf4;">
+                <div class="p-5 sln-insight sln-m-biru text-center h-100 d-flex flex-column justify-content-center">
                     <span class="fs-8 fw-bold text-gray-600 text-uppercase">DOMINASI KATEGORI ADL</span>
-                    <div class="fs-2hx fw-bolder my-2" style="color: #0d9488;" id="ins-adl-pct">0%</div>
+                    <div class="fs-2hx fw-bolder my-2" style="color: #3f6f93;" id="ins-adl-pct">0%</div>
                     <span class="fs-8 fw-semibold text-gray-700" id="ins-adl-txt">-</span>
                 </div>
             </div>
             <div class="col-12 col-md-3">
-                <div class="p-5 rounded-4 bg-light-success text-center border border-success border-opacity-10 h-100 d-flex flex-column justify-content-center">
+                <div class="p-5 sln-insight sln-m-sage text-center h-100 d-flex flex-column justify-content-center">
                     <span class="fs-8 fw-bold text-gray-600 text-uppercase">DOMINASI KATEGORI IADL</span>
-                    <div class="fs-2hx fw-bolder text-success my-2" id="ins-iadl-pct">0%</div>
+                    <div class="fs-2hx fw-bolder my-2" style="color: #3f6f26;" id="ins-iadl-pct">0%</div>
                     <span class="fs-8 fw-semibold text-gray-700" id="ins-iadl-txt">-</span>
                 </div>
             </div>
             <div class="col-12 col-md-3">
-                <div class="p-5 rounded-4 bg-light-danger text-center border border-danger border-opacity-10 h-100 d-flex flex-column justify-content-center">
+                <div class="p-5 sln-insight sln-m-rose text-center h-100 d-flex flex-column justify-content-center">
                     <span class="fs-8 fw-bold text-gray-600 text-uppercase">DOMINASI GENDER</span>
-                    <div class="fs-2hx fw-bolder text-danger my-2" id="ins-gender-pct">0%</div>
+                    <div class="fs-2hx fw-bolder my-2" style="color: #c25d6e;" id="ins-gender-pct">0%</div>
                     <span class="fs-8 fw-semibold text-gray-700" id="ins-gender-txt">-</span>
                 </div>
             </div>
             <div class="col-12 col-md-3">
-                <div class="p-5 rounded-4 text-center border border-teal border-opacity-10 h-100 d-flex flex-column justify-content-center" style="background-color: #ccfbf1;">
+                <div class="p-5 sln-insight sln-m-krem text-center h-100 d-flex flex-column justify-content-center">
                     <span class="fs-8 fw-bold text-gray-600 text-uppercase">TOTAL LANSIA TERDATA</span>
-                    <div class="fs-2hx fw-bolder my-2" style="color: #0f766e;" id="ins-total">0</div>
+                    <div class="fs-2hx fw-bolder my-2" style="color: #8a5a0a;" id="ins-total">0</div>
                     <span class="fs-8 fw-semibold text-gray-700">Total Peserta Kegiatan SELANTANG</span>
                 </div>
             </div>
@@ -383,16 +452,16 @@ function mulberry32(a) {
 }
 
 const ADL_KAT = [
-    { nama: 'Mandiri',                label: '20 : MANDIRI',                  bullet: 'bg-success', teks: 'text-success', warna: '#50cd89', cocok: function (s) { return s >= 20; } },
-    { nama: 'Ketergantungan Ringan',  label: '12 - 19 : KETERGANTUNGAN RINGAN',  bullet: 'bg-warning', teks: 'text-warning', warna: '#ffc700', cocok: function (s) { return s >= 12 && s <= 19; } },
-    { nama: 'Ketergantungan Sedang',  label: '9 - 11 : KETERGANTUNGAN SEDANG',   bullet: 'bg-info',    teks: 'text-info',    warna: '#009ef7', cocok: function (s) { return s >= 9 && s <= 11; } },
-    { nama: 'Ketergantungan Berat',   label: '5 - 8 : KETERGANTUNGAN BERAT',     bullet: 'bg-danger',  teks: 'text-danger',  warna: '#f64e60', cocok: function (s) { return s >= 5 && s <= 8; } },
-    { nama: 'Ketergantungan Total',   label: '0 - 4 : KETERGANTUNGAN TOTAL',     bullet: 'bg-dark',    teks: 'text-dark',    warna: '#181c32', cocok: function (s) { return s <= 4; } }
+    { nama: 'Mandiri',                label: '20 : MANDIRI',                  bullet: 'bg-success', teks: 'text-success', warna: '#6bb38a', cocok: function (s) { return s >= 20; } },
+    { nama: 'Ketergantungan Ringan',  label: '12 - 19 : KETERGANTUNGAN RINGAN',  bullet: 'bg-warning', teks: 'text-warning', warna: '#e8a23b', cocok: function (s) { return s >= 12 && s <= 19; } },
+    { nama: 'Ketergantungan Sedang',  label: '9 - 11 : KETERGANTUNGAN SEDANG',   bullet: 'bg-info',    teks: 'text-info',    warna: '#5b8db0', cocok: function (s) { return s >= 9 && s <= 11; } },
+    { nama: 'Ketergantungan Berat',   label: '5 - 8 : KETERGANTUNGAN BERAT',     bullet: 'bg-danger',  teks: 'text-danger',  warna: '#d2603f', cocok: function (s) { return s >= 5 && s <= 8; } },
+    { nama: 'Ketergantungan Total',   label: '0 - 4 : KETERGANTUNGAN TOTAL',     bullet: 'bg-dark',    teks: 'text-dark',    warna: '#6b5b53', cocok: function (s) { return s <= 4; } }
 ];
 const IADL_KAT = [
-    { nama: 'Mandiri / Tak Perlu Bantuan',   label: '9 - 16 : MANDIRI / TAK PERLU BANTUAN', bullet: 'bg-success', teks: 'text-success', warna: '#50cd89', cocok: function (s) { return s >= 9; } },
-    { nama: 'Perlu Bantuan',                 label: '1 - 8 : PERLU BANTUAN',                bullet: 'bg-warning', teks: 'text-warning', warna: '#ffc700', cocok: function (s) { return s >= 1 && s <= 8; } },
-    { nama: 'Tidak Dapat Melakukan Apa-apa', label: '0 : TIDAK DAPAT MELAKUKAN APA-APA',    bullet: 'bg-danger',  teks: 'text-danger',  warna: '#f64e60', cocok: function (s) { return s === 0; } }
+    { nama: 'Mandiri / Tak Perlu Bantuan',   label: '9 - 16 : MANDIRI / TAK PERLU BANTUAN', bullet: 'bg-success', teks: 'text-success', warna: '#6bb38a', cocok: function (s) { return s >= 9; } },
+    { nama: 'Perlu Bantuan',                 label: '1 - 8 : PERLU BANTUAN',                bullet: 'bg-warning', teks: 'text-warning', warna: '#e8a23b', cocok: function (s) { return s >= 1 && s <= 8; } },
+    { nama: 'Tidak Dapat Melakukan Apa-apa', label: '0 : TIDAK DAPAT MELAKUKAN APA-APA',    bullet: 'bg-danger',  teks: 'text-danger',  warna: '#d2603f', cocok: function (s) { return s === 0; } }
 ];
 
 const pesertaDummy = (function () {
@@ -566,7 +635,7 @@ function renderSelantang() {
     $id('ins-total').textContent = fmt(total);
 
     if (typeof Chart !== 'undefined') {
-        chartGender = buatChart(chartGender, 'chartGenderSelantang', 'doughnut', ['Laki-Laki', 'Perempuan'], [l, p], ['#0d9488', '#f64e60'], true);
+        chartGender = buatChart(chartGender, 'chartGenderSelantang', 'doughnut', ['Laki-Laki', 'Perempuan'], [l, p], ['#5b8db0', '#d98080'], true);
         chartAdl = buatChart(chartAdl, 'chartAdlSelantang', 'pie', ADL_KAT.map(function (k) { return k.nama; }), adl, ADL_KAT.map(function (k) { return k.warna; }), false);
         chartIadl = buatChart(chartIadl, 'chartIadlSelantang', 'doughnut', IADL_KAT.map(function (k) { return k.nama; }), iadl, IADL_KAT.map(function (k) { return k.warna; }), false);
     }
@@ -586,4 +655,41 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(renderSelantang, 300);
 });
 
+</script>
+
+{{-- Tukar banner: banner pastel Selantang naik ke posisi banner atas, banner hijau disembunyikan --}}
+<script>
+(function () {
+    var banner = document.getElementById('sln-top-banner');
+    if (!banner) return;
+    var item = banner.closest('.inovasi-item-view') || document.getElementById('content-selantang');   // wadah konten Selantang (tampil/sembunyi sesuai dropdown)
+
+    // Cari banner hijau "Inovasi Kota" di index.blade.php (tidak bergantung pada nama class tertentu)
+    function cariBannerHijau() {
+        var el = document.querySelector('#banner-inovasi-default, .banner-inovasi-kota');
+        if (el) return el;
+        var sub = document.getElementById('banner-subtitle-inovasi');
+        var pilih = document.getElementById('select-filter-inovasi');
+        if (!sub || !pilih) return null;
+        el = sub;
+        while (el.parentElement && !el.parentElement.contains(pilih)) el = el.parentElement;
+        return el;
+    }
+    var hijau = cariBannerHijau();
+
+    if (hijau && item) hijau.insertAdjacentElement('afterend', banner);   // naik ke posisi banner atas
+
+    function sync() {
+        var tampil = !item || item.offsetParent !== null;
+        banner.classList.toggle('d-none', !tampil);
+        // Banner hijau tampil hanya jika tidak ada banner submenu yang sedang aktif
+        if (hijau) hijau.classList.toggle('d-none', !!document.querySelector('.sub-banner-top:not(.d-none)'));
+    }
+
+    if (item) new MutationObserver(sync).observe(item, { attributes: true, attributeFilter: ['class', 'style'] });
+    document.addEventListener('change', function (e) {
+        if (e.target && (e.target.id === 'select-filter-inovasi' || e.target.id === 'select-filter-pokja')) setTimeout(sync, 0);
+    });
+    sync();
+})();
 </script>
