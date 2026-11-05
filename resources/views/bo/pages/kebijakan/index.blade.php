@@ -1,6 +1,13 @@
 @extends('bo.layout.app')
 
 @section('content')
+
+@php
+    $canCreate = \App\Support\Access::can('kebijakan', 'create');
+    $canUpdate = \App\Support\Access::can('kebijakan', 'update');
+    $canDelete = \App\Support\Access::can('kebijakan', 'delete');
+@endphp
+
 <style>
     .banner-kebijakan-card {
         background: #0f5847 radial-gradient(#197862 1.5px, transparent 1.5px);
@@ -107,10 +114,12 @@
                 </p>
             </div>
             <div class="d-flex align-items-center">
+                @if($canCreate)
                 <button type="button" class="btn btn-tambah-sk fw-bold px-5 py-3 rounded-3 shadow-sm d-flex align-items-center gap-2" onclick="bukaModalTambahKebijakan()">
                     <span class="fs-4 lh-1 fw-bold">+</span>
                     <span class="fs-7 fw-bolder text-uppercase">Tambah Lampiran SK</span>
                 </button>
+                @endif
             </div>
         </div>
         <div class="banner-silhouette-bg"></div>
@@ -359,6 +368,11 @@
         destroy: "{{ url('/kebijakan/destroy') }}",
         csrfToken: "{{ csrf_token() }}",
         uploadBaseUrl: "{{ asset('uploads/file-surat-keputusan') }}"
+    };
+
+    const PERM_KEBIJAKAN = {
+    update: @json($canUpdate),
+    delete: @json($canDelete)
     };
 
     const daftarKelurahanSurabaya = [
@@ -896,9 +910,14 @@
                 hapusKebijakan(hash);
             });
 
-            actionContainer.appendChild(btnEdit);
-            actionContainer.appendChild(btnDelete);
-            tdAction.appendChild(actionContainer);
+            if (PERM_KEBIJAKAN.update) actionContainer.appendChild(btnEdit);
+            if (PERM_KEBIJAKAN.delete) actionContainer.appendChild(btnDelete);
+
+            if (PERM_KEBIJAKAN.update || PERM_KEBIJAKAN.delete) {
+                tdAction.appendChild(actionContainer);
+            } else {
+                tdAction.textContent = '-';
+            }
 
             tr.appendChild(tdNo);
             tr.appendChild(tdNoSk);
