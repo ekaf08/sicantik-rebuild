@@ -15,7 +15,11 @@
         min-height: 180px;
         position: relative;
         overflow: hidden;
-        border-radius: 12px;a
+        border-radius: 12px;
+    }
+    .banner-kebijakan-card .card-body {
+        position: relative;
+        z-index: 2;
     }
     .banner-silhouette-bg {
         position: absolute;
@@ -31,20 +35,29 @@
         right: 25px;
         bottom: -10px;
         height: 190px;
-        opacity: 0.28;
+        width: 190px;
+        opacity: 1;
         pointer-events: none;
     }
+    @media (max-width: 767px) {
+        .banner-silhouette-vector {
+            height: 130px;
+            width: 130px;
+            opacity: 0.3;
+        }
+    }
     .btn-tambah-sk {
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        color: #ffffff;
-        transition: all 0.25s ease-in-out;
+    background: #ffffff !important;
+    border: 1px solid #ffffff !important;
+    color: #0f5847 !important;
+    transition: all 0.25s ease-in-out;
     }
     .btn-tambah-sk:hover {
-        background: #ffffff !important;
+        background: #f4ead0 !important;
+        border-color: #f4ead0 !important;
         color: #0f5847 !important;
-        border-color: #ffffff !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
     }
     .compact-select {
         height: 32px !important;
@@ -112,21 +125,64 @@
                 <p class="fs-6 text-white text-opacity-80 mb-0">
                     Berikut adalah data lampiran SK yang telah diinputkan.
                 </p>
-            </div>
-            <div class="d-flex align-items-center">
-                @if($canCreate)
-                <button type="button" class="btn btn-tambah-sk fw-bold px-5 py-3 rounded-3 shadow-sm d-flex align-items-center gap-2" onclick="bukaModalTambahKebijakan()">
-                    <span class="fs-4 lh-1 fw-bold">+</span>
-                    <span class="fs-7 fw-bolder text-uppercase">Tambah Lampiran SK</span>
-                </button>
-                @endif
+                <div class="d-flex align-items-center mt-5">
+                    @if($canCreate)
+                    <button type="button" class="btn btn-tambah-sk fw-bold px-5 py-3 rounded-3 shadow-sm d-flex align-items-center gap-2" onclick="bukaModalTambahKebijakan()">
+                        <span class="fs-4 lh-1 fw-bold">+</span>
+                        <span class="fs-7 fw-bolder text-uppercase">Tambah Lampiran SK</span>
+                    </button>
+                    @endif
+                </div>
             </div>
         </div>
         <div class="banner-silhouette-bg"></div>
-        <svg class="banner-silhouette-vector d-none d-md-block" viewBox="0 0 100 100" fill="#ffffff">
-            <polygon points="50,0 54,40 60,40 60,100 40,100 40,40 46,40"/>
-            <polygon points="15,45 25,45 25,100 15,100"/>
-            <polygon points="75,35 88,35 88,100 75,100"/>
+        <svg class="banner-silhouette-vector d-none d-md-block" viewBox="0 0 160 170" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="80" cy="85" r="72" fill="#197862" opacity="0.45"/>
+
+            <rect x="44" y="22" width="84" height="116" rx="2" fill="#d3cbb0" transform="rotate(10 86 80)"/>
+            <rect x="44" y="22" width="84" height="116" rx="2" fill="#e3dcc5" transform="rotate(5 86 80)"/>
+
+            <g transform="rotate(-5 84 80)">
+                <path d="M44 22 H114 L134 42 V144 H44Z" fill="#07382c" opacity="0.35"/>
+                <path d="M40 18 H110 L130 38 V140 H40Z" fill="#fbf8ee"/>
+                <path d="M110 18 V38 H130Z" fill="#e3dcc5"/>
+
+                <circle cx="52" cy="32" r="5" stroke="#0f5847" stroke-width="1"/>
+                <circle cx="52" cy="32" r="1.8" fill="#0f5847"/>
+                <rect x="62" y="28" width="40" height="3" rx="1.5" fill="#0f5847"/>
+                <rect x="62" y="34" width="28" height="2.4" rx="1.2" fill="#0f5847" opacity="0.45"/>
+                <line x1="46" y1="43" x2="124" y2="43" stroke="#0f5847" stroke-width="0.7"/>
+
+                <rect x="57" y="51" width="56" height="5" rx="2.5" fill="#0f5847"/>
+                <rect x="64" y="60" width="42" height="2.4" rx="1.2" fill="#0f5847" opacity="0.45"/>
+
+                <g fill="#0f5847" opacity="0.28">
+                    <rect x="48" y="74" width="76" height="2.2" rx="1"/>
+                    <rect x="48" y="80" width="76" height="2.2" rx="1"/>
+                    <rect x="48" y="86" width="68" height="2.2" rx="1"/>
+                    <rect x="48" y="92" width="76" height="2.2" rx="1"/>
+                    <rect x="48" y="98" width="46" height="2.2" rx="1"/>
+                </g>
+
+                <rect x="84" y="104" width="24" height="2.2" rx="1" fill="#0f5847" opacity="0.45"/>
+                <path d="M86 116 q4 -8 7 0 t7 0 t7 -3" stroke="#0f5847" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                <rect x="84" y="122" width="34" height="2.4" rx="1.2" fill="#0f5847" opacity="0.6"/>
+
+                <path d="M50 10 v17 a2.6 2.6 0 0 0 5.2 0 v-19 a1.7 1.7 0 0 0 -3.4 0 v15" stroke="#aeb7b3" stroke-width="1.2" stroke-linecap="round"/>
+
+                <g transform="translate(62 118) rotate(-12)" opacity="0.85">
+                    <circle r="12" stroke="#1d8e74" stroke-width="1"/>
+                    <circle r="9.6" stroke="#1d8e74" stroke-width="1.4" stroke-dasharray="1.2 1.6"/>
+                    <circle r="7.2" stroke="#1d8e74" stroke-width="0.6"/>
+                    <polygon points="0,-3.6 0.9,-1.1 3.4,-1.1 1.4,0.4 2.1,2.9 0,1.4 -2.1,2.9 -1.4,0.4 -3.4,-1.1 -0.9,-1.1" fill="#1d8e74"/>
+                </g>
+            </g>
+
+            <path d="M117 135 L110 160 L118 156 L122 164 L125 140Z" fill="#f4ead0"/>
+            <path d="M131 135 L138 160 L130 156 L126 164 L123 140Z" fill="#e0cfa3"/>
+            <circle cx="124" cy="126" r="16" fill="#d9a441"/>
+            <circle cx="124" cy="126" r="11.5" fill="#f2c15c"/>
+            <path d="M118 126 l4.5 4.5 l9 -10" stroke="#0f5847" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
     </div>
 
@@ -297,56 +353,98 @@
         <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
             <div class="modal-body p-0">
                 <div class="mb-4 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 72px; height: 72px; background-color: #fee2e2;">
-                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        <line x1="10" y1="11" x2="10" y2="17"></line>
-                        <line x1="14" y1="11" x2="14" y2="17"></line>
-                    </svg>
-                </div>
+                    <svg class="banner-silhouette-vector d-none d-md-block" viewBox="0 0 160 170" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="80" cy="85" r="72" fill="#197862" opacity="0.45"/>
 
-                <h3 class="fw-bolder text-gray-900 fs-4 mb-2">Hapus Lmapiran Dokumen SK?</h3>
-                <p class="text-gray-600 fs-7 mb-6">
-                    Apakah Anda yakin ingin menghapus data SK ini?.
-                </p>
+            <rect x="44" y="22" width="84" height="116" rx="2" fill="#d3cbb0" transform="rotate(10 86 80)"/>
+            <rect x="44" y="22" width="84" height="116" rx="2" fill="#e3dcc5" transform="rotate(5 86 80)"/>
 
-                <div class="d-flex justify-content-center gap-3">
-                    <button type="button" class="btn btn-light btn-sm fw-semibold px-5 rounded-3" data-bs-dismiss="modal">
-                        Batal
-                    </button>
-                    <button type="button" id="btnKonfirmasiHapus" class="btn btn-danger btn-sm fw-semibold px-5 rounded-3 d-flex align-items-center justify-content-center" style="min-width: 100px;">
-                        <span id="btnHapusSpinner" class="spinner-border spinner-border-sm align-middle me-2 d-none" role="status"></span>
-                        <span id="btnHapusText">Ya, Hapus</span>
-                    </button>
+            <g transform="rotate(-5 84 80)">
+                <path d="M44 22 H114 L134 42 V144 H44Z" fill="#07382c" opacity="0.35"/>
+                <path d="M40 18 H110 L130 38 V140 H40Z" fill="#fbf8ee"/>
+                <path d="M110 18 V38 H130Z" fill="#e3dcc5"/>
+
+                <circle cx="52" cy="32" r="5" stroke="#0f5847" stroke-width="1"/>
+                <circle cx="52" cy="32" r="1.8" fill="#0f5847"/>
+                <rect x="62" y="28" width="40" height="3" rx="1.5" fill="#0f5847"/>
+                <rect x="62" y="34" width="28" height="2.4" rx="1.2" fill="#0f5847" opacity="0.45"/>
+                <line x1="46" y1="43" x2="124" y2="43" stroke="#0f5847" stroke-width="0.7"/>
+
+                <rect x="57" y="51" width="56" height="5" rx="2.5" fill="#0f5847"/>
+                <rect x="64" y="60" width="42" height="2.4" rx="1.2" fill="#0f5847" opacity="0.45"/>
+
+                <g fill="#0f5847" opacity="0.28">
+                    <rect x="48" y="74" width="76" height="2.2" rx="1"/>
+                    <rect x="48" y="80" width="76" height="2.2" rx="1"/>
+                    <rect x="48" y="86" width="68" height="2.2" rx="1"/>
+                    <rect x="48" y="92" width="76" height="2.2" rx="1"/>
+                    <rect x="48" y="98" width="46" height="2.2" rx="1"/>
+                </g>
+
+                <rect x="84" y="104" width="24" height="2.2" rx="1" fill="#0f5847" opacity="0.45"/>
+                <path d="M86 116 q4 -8 7 0 t7 0 t7 -3" stroke="#0f5847" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                <rect x="84" y="122" width="34" height="2.4" rx="1.2" fill="#0f5847" opacity="0.6"/>
+
+                <path d="M50 10 v17 a2.6 2.6 0 0 0 5.2 0 v-19 a1.7 1.7 0 0 0 -3.4 0 v15" stroke="#aeb7b3" stroke-width="1.2" stroke-linecap="round"/>
+
+                <g transform="translate(62 118) rotate(-12)" opacity="0.85">
+                    <circle r="12" stroke="#1d8e74" stroke-width="1"/>
+                    <circle r="9.6" stroke="#1d8e74" stroke-width="1.4" stroke-dasharray="1.2 1.6"/>
+                    <circle r="7.2" stroke="#1d8e74" stroke-width="0.6"/>
+                    <polygon points="0,-3.6 0.9,-1.1 3.4,-1.1 1.4,0.4 2.1,2.9 0,1.4 -2.1,2.9 -1.4,0.4 -3.4,-1.1 -0.9,-1.1" fill="#1d8e74"/>
+                </g>
+            </g>
+
+            <path d="M117 135 L110 160 L118 156 L122 164 L125 140Z" fill="#f4ead0"/>
+            <path d="M131 135 L138 160 L130 156 L126 164 L123 140Z" fill="#e0cfa3"/>
+            <circle cx="124" cy="126" r="16" fill="#d9a441"/>
+            <circle cx="124" cy="126" r="11.5" fill="#f2c15c"/>
+            <path d="M118 126 l4.5 4.5 l9 -10" stroke="#0f5847" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+                        </div>
+
+                        <h3 class="fw-bolder text-gray-900 fs-4 mb-2">Hapus Lmapiran Dokumen SK?</h3>
+                        <p class="text-gray-600 fs-7 mb-6">
+                            Apakah Anda yakin ingin menghapus data SK ini?.
+                        </p>
+
+                        <div class="d-flex justify-content-center gap-3">
+                            <button type="button" class="btn btn-light btn-sm fw-semibold px-5 rounded-3" data-bs-dismiss="modal">
+                                Batal
+                            </button>
+                            <button type="button" id="btnKonfirmasiHapus" class="btn btn-danger btn-sm fw-semibold px-5 rounded-3 d-flex align-items-center justify-content-center" style="min-width: 100px;">
+                                <span id="btnHapusSpinner" class="spinner-border spinner-border-sm align-middle me-2 d-none" role="status"></span>
+                                <span id="btnHapusText">Ya, Hapus</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="modal fade" id="modalPreviewPdf" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-900px" style="height: 90vh;">
-        <div class="modal-content h-100">
-            <div class="modal-header py-3 px-6 border-bottom">
-                <h3 class="fw-bold fs-5 mb-0" id="modalPreviewTitle">Preview Dokumen SK</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-0 h-100">
-                <iframe id="iframePreviewPdf" src="" width="100%" height="100%" style="border: none;"></iframe>
+        <div class="modal fade" id="modalPreviewPdf" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mw-900px" style="height: 90vh;">
+                <div class="modal-content h-100">
+                    <div class="modal-header py-3 px-6 border-bottom">
+                        <h3 class="fw-bold fs-5 mb-0" id="modalPreviewTitle">Preview Dokumen SK</h3>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0 h-100">
+                        <iframe id="iframePreviewPdf" src="" width="100%" height="100%" style="border: none;"></iframe>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="modal fade" id="modalNotifikasiPesan" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-350px">
-        <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
-            <div class="modal-body p-0">
-                <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background-color: #d1fae5;">
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </div>
+        <div class="modal fade" id="modalNotifikasiPesan" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mw-350px">
+                <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
+                    <div class="modal-body p-0">
+                        <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background-color: #d1fae5;">
+                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
                 <h4 class="fw-bolder text-gray-900 fs-5 mb-2" id="notifikasiPesanTitle">Sukses</h4>
                 <p class="text-gray-600 fs-7 mb-5" id="notifikasiPesanText">Data berhasil diproses</p>
                 <div class="d-flex justify-content-center">

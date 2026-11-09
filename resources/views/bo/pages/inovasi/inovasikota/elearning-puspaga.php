@@ -82,8 +82,6 @@
 
 <!-- KONTEN INOVASI E-LEARNING PUSPAGA / PAAREDI -->
 <div class="d-flex flex-column gap-5 w-100">
-
-    <!-- Sub-header SIAP PPAK -->
     <div class="d-flex flex-column">
         <h3 class="fw-bolder text-gray-900 fs-3 mb-1">SIAP PPAK</h3>
         <span class="text-gray-500 fs-7 fw-semibold">Dashboard Embed E-Learning PAAREDI</span>
@@ -141,19 +139,20 @@
 
         </div>
     </div>
-
+</div>
 </div>
 
 <div class="modal fade" id="modalElearningKelurahan" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-4 border-0 shadow-lg">
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
             <div class="modal-header pb-2 border-0 px-6 pt-6">
                 <div>
                     <h4 class="modal-title fw-bolder text-gray-900 fs-4 mb-2">Daftar Kelurahan E-Learning PAAREDI</h4>
-                    <span class="badge-kecamatan-info fs-7" id="modal_kecamatan_badge">
-                        Genteng
-                    </span>
+                    <span class="badge-kecamatan-info fs-7" id="modal_kecamatan_badge">Genteng</span>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -167,7 +166,6 @@
                     </button>
                 </div>
 
-                <!-- Tabel Kelurahan -->
                 <div class="table-responsive">
                     <table class="table table-row-dashed table-hover align-middle gs-4 gy-3 my-0 fs-7">
                         <thead class="bg-light-subtle text-gray-600 fw-bold fs-8 text-uppercase border-bottom border-gray-200">
@@ -178,13 +176,10 @@
                                 <th class="text-end pe-4">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="tabel_daftar_kelurahan_body" class="fw-semibold text-gray-700">
-                            <!-- Diinjeksi dinamis via JS -->
-                        </tbody>
+                        <tbody id="tabel_daftar_kelurahan_body" class="fw-semibold text-gray-700"></tbody>
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -192,24 +187,18 @@
 <div class="modal fade" id="modalElearningPeserta" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content rounded-4 border-0 shadow-lg">
-
             <div class="modal-header pb-2 border-0 px-6 pt-6">
                 <div>
                     <h4 class="modal-title fw-bolder text-gray-900 fs-4 mb-2">Detail Peserta E-Learning PAAREDI</h4>
                     <div class="d-flex align-items-center gap-2" id="modal_peserta_badges">
-                        <span class="badge-kecamatan-info fs-7" id="badge_peserta_kecamatan">
-                            Genteng
-                        </span>
-                        <span class="badge-kelurahan-success fs-7 d-none" id="badge_peserta_kelurahan">
-                            Embong Kaliasin
-                        </span>
+                        <span class="badge-kecamatan-info fs-7" id="badge_peserta_kecamatan">Genteng</span>
+                        <span class="badge-kelurahan-success fs-7 d-none" id="badge_peserta_kelurahan">Embong Kaliasin</span>
                     </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <div class="modal-body px-6 pb-6 pt-3">
-                <!-- Tabel Peserta -->
                 <div class="table-responsive">
                     <table class="table table-row-dashed align-middle gs-4 gy-3 my-0 fs-7">
                         <thead class="bg-light-subtle text-gray-600 fw-bold fs-8 text-uppercase border-bottom border-gray-200">
@@ -222,17 +211,13 @@
                             </tr>
                         </thead>
                         <tbody id="tabel_detail_peserta_body">
-                            <!-- State default kosong -->
                             <tr>
-                                <td colspan="5" class="text-center py-12 text-gray-400 fw-semibold fs-6">
-                                    Belum ada data
-                                </td>
+                                <td colspan="5" class="text-center py-12 text-gray-400 fw-semibold fs-6">Belum ada data</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Footer Modal Peserta: Total Data & Tombol Tutup -->
                 <div class="d-flex align-items-center justify-content-between pt-5 mt-4 border-top border-gray-100">
                     <span class="text-gray-700 fw-bold fs-7" id="label_total_peserta">Total: 0 data</span>
                     <button type="button" class="btn btn-sm btn-light fw-bold rounded-2 px-5 text-gray-700 border" data-bs-dismiss="modal">
@@ -240,13 +225,11 @@
                     </button>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
 <script>
-// Banner pastel E-learning menggantikan banner hijau saat sub menu ini dibuka
 (function () {
     function mulai() {
         if (document.getElementById('kb-banner')) return; // sudah ditangani index.blade.php
