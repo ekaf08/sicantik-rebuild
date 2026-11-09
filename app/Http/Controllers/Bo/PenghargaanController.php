@@ -71,13 +71,13 @@ class PenghargaanController extends Controller
             'kecamatan_id'          => 'required',
             'kelurahan_id'          => 'required',
             'foto'                  => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'file'                  => 'required|file|mimes:pdf,doc,docx|max:2048',
+            'file'                  => 'required|file|mimes:pdf,docx|max:2048',
         ], [
             'kecamatan_id.required' => 'Kecamatan wajib dipilih!',
             'kelurahan_id.required' => 'Kelurahan wajib dipilih!',
             'foto.mimes' => 'Format foto harus berupa JPG, JPEG, atau PNG!',
             'foto.max'   => 'Ukuran foto maksimal 2MB!',
-            'file.mimes' => 'Format file dokumen harus berupa PDF, DOC, atau DOCX!',
+            'file.mimes' => 'Format file dokumen harus berupa PDF atau DOCX!',
             'file.max'   => 'Ukuran file dokumen maksimal 2MB!',
         ]);
 
@@ -117,11 +117,11 @@ class PenghargaanController extends Controller
             'kategori_penghargaan'  => 'required|string|max:255',
             'tahun'                 => 'required|string|max:4',
             'foto'                  => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-            'file'                  => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'file'                  => 'nullable|file|mimes:pdf,docx|max:2048',
         ], [
             'foto.mimes' => 'Format foto harus berupa JPG, JPEG, atau PNG!',
             'foto.max'   => 'Ukuran foto maksimal 2MB!',
-            'file.mimes' => 'Format file dokumen harus berupa PDF, DOC, atau DOCX!',
+            'file.mimes' => 'Format file dokumen harus berupa PDF atau DOCX!',
             'file.max'   => 'Ukuran file dokumen maksimal 2MB!',
         ]);
 
