@@ -12,6 +12,19 @@ use Illuminate\Support\Facades\Validator;
 
 class InovasiController extends Controller
 {
+    private const UPLOAD_DIR = 'uploads/inovasi-global';
+
+    
+    private const REGEX_TEKS  = '/^[\p{L}\p{M}\p{N}\s.,\-()\/:!?&%]+$/u';
+    private const REGEX_TOKEN = '/^[A-Za-z0-9\-_]+$/';
+    private const REGEX_PERIODE = '/^[\p{L}\p{N}\s\-\/]+$/u';
+
+    private const FILE_FIELDS = [
+        'foto_1'       => 'foto1',
+        'foto_2'       => 'foto2',
+        'file_dokumen' => 'dokumen',
+    ];
+
     public function index()
     {
         $kecamatan = DB::table('m_kecamatan')->orderBy('nama_kec', 'asc')->get();
@@ -35,28 +48,102 @@ class InovasiController extends Controller
         }
     }
 
+    private function isMaliciousString(string $value): bool
+    {
+        $decoded = $value;
+        for ($i = 0; $i < 3; $i++) {
+            $next = html_entity_decode(urldecode($decoded), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            if ($next === $decoded) {
+                break;
+            }
+            $decoded = $next;
+        }
+
+        $patterns = [
+            '/[<>]/',                                   
+            '/\x00/',                                   
+            '/javascript\s*:/i',
+            '/vbscript\s*:/i',
+            '/data\s*:\s*text\/html/i',
+            '/\bon[a-z]{3,}\s*=/i',                     
+            '/\b(alert|prompt|confirm|eval)\s*\(/i',
+            '/document\s*\.\s*(cookie|write|location|domain)/i',
+            '/window\s*\.\s*location/i',
+            '/\{\{|\}\}|\{!!|!!\}/',                   
+            '/\$\{/',                                   
+            '/\bunion\s+(all\s+)?select\b/i',          
+            '/;\s*(drop|delete|update|insert|alter|truncate)\b/i',
+            '/\bor\s+1\s*=\s*1\b/i',
+        ];
+
+        foreach ([$value, $decoded] as $candidate) {
+            foreach ($patterns as $pattern) {
+                if (preg_match($pattern, $candidate)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function findMaliciousInput(array $inputs, string $prefix = ''): ?string
+    {
+        foreach ($inputs as $key => $value) {
+            $name = $prefix === '' ? (string) $key : $prefix . '.' . $key;
+
+            if (is_array($value)) {
+                if ($found = $this->findMaliciousInput($value, $name)) {
+                    return $found;
+                }
+                continue;
+            }
+
+            if (is_string($value) && $value !== '' && $this->isMaliciousString($value)) {
+                return $name;
+            }
+        }
+
+        return null;
+    }
+
+    
+    private function deleteStoredFile(?string $path): void
+    {
+        if (empty($path)) {
+            return;
+        }
+
+        $base = realpath(public_path(self::UPLOAD_DIR));
+        $full = realpath(public_path(ltrim($path, '/')));
+
+        if ($base && $full && strpos($full, $base . DIRECTORY_SEPARATOR) === 0 && is_file($full)) {
+            @unlink($full);
+        }
+    }
+
     public function global()
-{
-    $kecamatan = DB::table('m_kecamatan')
-        ->orderBy('nama_kec', 'asc')
-        ->get()
-        ->map(function ($k) {
-            $k->ref = $this->encRef($k->id_kec);
-            unset($k->id_kec);
-            return $k;
-        });
+    {
+        $kecamatan = DB::table('m_kecamatan')
+            ->orderBy('nama_kec', 'asc')
+            ->get()
+            ->map(function ($k) {
+                $k->ref = $this->encRef($k->id_kec);
+                unset($k->id_kec);
+                return $k;
+            });
 
-    $kelurahan = DB::table('m_kelurahan')
-        ->orderBy('nama_kel', 'asc')
-        ->get()
-        ->map(function ($kel) {
-            $kel->ref = $this->encRef($kel->id_kel);
-            unset($kel->id_kel);
-            return $kel;
-        });
+        $kelurahan = DB::table('m_kelurahan')
+            ->orderBy('nama_kel', 'asc')
+            ->get()
+            ->map(function ($kel) {
+                $kel->ref = $this->encRef($kel->id_kel);
+                unset($kel->id_kel);
+                return $kel;
+            });
 
-    return view('bo.pages.inovasi.inovasiglobal.index', compact('kecamatan', 'kelurahan'));
-}
+        return view('bo.pages.inovasi.inovasiglobal.index', compact('kecamatan', 'kelurahan'));
+    }
 
     public function getData()
     {
@@ -104,25 +191,63 @@ class InovasiController extends Controller
 
     public function storeOrUpdateGlobal(Request $request)
     {
+        /* ---- (5) Tolak input yang mengandung script / simbol berbahaya ---- */
+        $labels = [
+            'tanggal_entry'     => 'Tanggal Entry',
+            'pokja'             => 'Pokja',
+            'id_kec'            => 'Kecamatan',
+            'id_kel'            => 'Kelurahan',
+            'nama_inovasi'      => 'Nama Inovasi',
+            'deskripsi_inovasi' => 'Deskripsi Inovasi',
+            'dibuat_oleh'       => 'Dibuat Oleh',
+            'periode'           => 'Periode',
+            'keterangan'        => 'Keterangan',
+            'id'                => 'ID',
+        ];
+
+        $badField = $this->findMaliciousInput(
+            $request->except(['_token', '_method', 'foto_1', 'foto_2', 'file_dokumen'])
+        );
+
+        if ($badField !== null) {
+            $label = $labels[$badField] ?? $badField;
+            return response()->json([
+                'status'  => 'error',
+                'message' => "Kolom {$label} mengandung kata atau simbol yang tidak diizinkan (misalnya tag HTML atau script).",
+            ], 422);
+        }
+
         $validator = Validator::make($request->all(), [
-            'id'                => 'nullable',
-            'tanggal_entry'     => 'required|date',
-            'pokja'             => 'required|in:Sekretaris,POKJA 1,POKJA 2,POKJA 3,POKJA 4',
-            'id_kec'            => 'required',
-            'id_kel'            => 'nullable',
-            'nama_inovasi'      => 'required|string|max:255',
-            'deskripsi_inovasi' => 'required|string',
-            'foto_1'            => 'sometimes|nullable|file|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'foto_2'            => 'sometimes|nullable|file|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'file_dokumen'      => 'sometimes|nullable|file|mimes:pdf|max:2048',
+            'id'                 => ['nullable', 'string', 'max:1000', 'regex:' . self::REGEX_TOKEN],
+            'tanggal_entry'      => 'required|date',
+            'pokja'              => 'required|in:Sekretaris,POKJA 1,POKJA 2,POKJA 3,POKJA 4',
+            'id_kec'             => ['required', 'string', 'max:1000', 'regex:' . self::REGEX_TOKEN],
+            'id_kel'             => ['nullable', 'string', 'max:1000', 'regex:' . self::REGEX_TOKEN],
+            'nama_inovasi'       => ['required', 'string', 'max:255', 'regex:' . self::REGEX_TEKS],
+            'deskripsi_inovasi'  => ['required', 'string', 'max:5000', 'regex:' . self::REGEX_TEKS],
+            'periode'            => ['nullable', 'string', 'max:20', 'regex:' . self::REGEX_PERIODE],
+            'keterangan'         => ['nullable', 'string', 'max:255', 'regex:' . self::REGEX_TEKS],
+            'foto_1'             => 'sometimes|nullable|file|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'foto_2'             => 'sometimes|nullable|file|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'file_dokumen'       => 'sometimes|nullable|file|mimes:pdf|max:2048',
+            'remove_foto_1'      => 'nullable|in:0,1',
+            'remove_foto_2'      => 'nullable|in:0,1',
+            'remove_file_dokumen'=> 'nullable|in:0,1',
         ], [
-            'id_kec.required'   => 'Kecamatan wajib dipilih.',
-            'foto_1.max'        => 'Ukuran Foto 1 tidak boleh lebih dari 2 MB.',
-            'foto_1.mimes'      => 'Format Foto 1 harus JPG, PNG, atau WEBP.',
-            'foto_2.max'        => 'Ukuran Foto 2 tidak boleh lebih dari 2 MB.',
-            'foto_2.mimes'      => 'Format Foto 2 harus JPG, PNG, atau WEBP.',
-            'file_dokumen.max'  => 'Ukuran dokumen PDF tidak boleh lebih dari 2 MB.',
-            'file_dokumen.mimes'=> 'Berkas lampiran wajib berformat PDF.',
+            'id_kec.required'    => 'Kecamatan wajib dipilih.',
+            'id_kec.regex'       => 'Kecamatan tidak valid.',
+            'id_kel.regex'       => 'Kelurahan tidak valid.',
+            'id.regex'           => 'Data tidak valid.',
+            'nama_inovasi.regex'      => 'Nama Inovasi hanya boleh berisi huruf, angka, spasi, dan tanda . , - ( ) / : ! ? & %',
+            'deskripsi_inovasi.regex' => 'Deskripsi Inovasi hanya boleh berisi huruf, angka, spasi, dan tanda . , - ( ) / : ! ? & %',
+            'keterangan.regex'        => 'Keterangan hanya boleh berisi huruf, angka, spasi, dan tanda . , - ( ) / : ! ? & %',
+            'periode.regex'           => 'Periode hanya boleh berisi huruf, angka, spasi, strip, dan garis miring.',
+            'foto_1.max'         => 'Ukuran Foto 1 tidak boleh lebih dari 2 MB.',
+            'foto_1.mimes'       => 'Format Foto 1 harus JPG, PNG, atau WEBP.',
+            'foto_2.max'         => 'Ukuran Foto 2 tidak boleh lebih dari 2 MB.',
+            'foto_2.mimes'       => 'Format Foto 2 harus JPG, PNG, atau WEBP.',
+            'file_dokumen.max'   => 'Ukuran dokumen PDF tidak boleh lebih dari 2 MB.',
+            'file_dokumen.mimes' => 'Berkas lampiran wajib berformat PDF.',
         ]);
 
         if ($validator->fails()) {
@@ -133,75 +258,108 @@ class InovasiController extends Controller
             ], 422);
         }
 
-        try {
-            $id = $request->id;
-            $isEdit = !empty($id) && $id !== '-1';
+        $id     = $request->id;
+        $isEdit = !empty($id) && $id !== '-1';
 
-            if ($isEdit) {
-                $id = $this->decRef($id);
-                if (!$id) {
-                    return response()->json([
-                        'status'  => 'error',
-                        'message' => 'Data tidak valid.'
-                    ], 400);
-                }
-            }
-
-            $idKec = $this->decRef($request->id_kec);
-            if (!$idKec) {
+        if ($isEdit) {
+            $id = $this->decRef($id);
+            if (!$id) {
                 return response()->json([
                     'status'  => 'error',
-                    'message' => 'Kecamatan tidak valid.'
-                ], 422);
+                    'message' => 'Data tidak valid.'
+                ], 400);
             }
+        }
 
-            $payload = [
-                'tanggal_entry'     => $request->tanggal_entry,
-                'nama_inovasi'      => $request->nama_inovasi,
-                'deskripsi_inovasi' => $request->deskripsi_inovasi,
-                'pokja'             => $request->pokja,
-                'id_kec'            => $idKec,
-                'id_kel'            => $request->filled('id_kel') ? $this->decRef($request->id_kel) : null,
-                'periode'           => $request->periode ?? '2026',
-                'keterangan'        => $request->keterangan ?? ($request->pokja . ' - Kota Surabaya'),
-                'updated_by'        => Auth::id() ?? 1,
-                'updated_at'        => now(),
-            ];
+        $idKec = $this->decRef($request->id_kec);
+        if (!$idKec) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Kecamatan tidak valid.'
+            ], 422);
+        }
 
-            $destinationPath = public_path('uploads/inovasi-global');
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);
-            }
+        $payload = [
+            'tanggal_entry'     => $request->tanggal_entry,
+            'nama_inovasi'      => trim($request->nama_inovasi),
+            'deskripsi_inovasi' => trim($request->deskripsi_inovasi),
+            'pokja'             => $request->pokja,
+            'id_kec'            => $idKec,
+            'id_kel'            => $request->filled('id_kel') ? $this->decRef($request->id_kel) : null,
+            'periode'           => $request->periode ?? '2026',
+            'keterangan'        => $request->keterangan ?? ($request->pokja . ' - Kota Surabaya'),
+            'updated_by'        => Auth::id() ?? 1,
+            'updated_at'        => now(),
+        ];
 
-            if ($request->hasFile('foto_1')) {
-                $file = $request->file('foto_1');
-                $fileName = time() . '_foto1_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->move($destinationPath, $fileName);
-                $payload['foto_1'] = '/uploads/inovasi-global/' . $fileName;
-            }
+        $newFiles         = [];
+        $oldFilesToDelete = []; 
 
-            if ($request->hasFile('foto_2')) {
-                $file = $request->file('foto_2');
-                $fileName = time() . '_foto2_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->move($destinationPath, $fileName);
-                $payload['foto_2'] = '/uploads/inovasi-global/' . $fileName;
-            }
+        DB::beginTransaction();
 
-            if ($request->hasFile('file_dokumen')) {
-                $file = $request->file('file_dokumen');
-                $fileName = time() . '_dokumen_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->move($destinationPath, $fileName);
-                $payload['file_dokumen'] = '/uploads/inovasi-global/' . $fileName;
-            }
+        try {
+            $existing = null;
 
             if ($isEdit) {
+                $existing = DB::table('t_inovasi_global')
+                    ->where('id', $id)
+                    ->whereNull('deleted_at')
+                    ->first();
+
+                if (!$existing) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status'  => 'error',
+                        'message' => 'Data inovasi tidak ditemukan.'
+                    ], 404);
+                }
+
                 DB::table('t_inovasi_global')->where('id', $id)->update($payload);
+                $recordId = $id;
                 $msg = 'Data inovasi berhasil diperbarui.';
             } else {
                 $payload['created_by'] = Auth::id() ?? 1;
                 $payload['created_at'] = now();
-                DB::table('t_inovasi_global')->insert($payload);
+                $recordId = DB::table('t_inovasi_global')->insertGetId($payload);
                 $msg = 'Inovasi baru berhasil disimpan.';
+            }
+
+            $destinationPath = public_path(self::UPLOAD_DIR);
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+
+            $fileUpdates = [];
+
+            foreach (self::FILE_FIELDS as $field => $label) {
+                $oldPath = $existing->{$field} ?? null;
+
+                if ($request->hasFile($field) && $request->file($field)->isValid()) {
+                    $file     = $request->file($field);
+                    $fileName = time() . '_' . $label . '_' . uniqid() . '.' . $file->extension();
+                    $file->move($destinationPath, $fileName);
+
+                    $newPath = '/' . self::UPLOAD_DIR . '/' . $fileName;
+                    $newFiles[]           = $newPath;
+                    $fileUpdates[$field]  = $newPath;
+
+                    if ($oldPath) {
+                        $oldFilesToDelete[] = $oldPath;
+                    }
+                } elseif ($isEdit && $request->input('remove_' . $field) === '1' && $oldPath) {
+                    $fileUpdates[$field] = null;
+                    $oldFilesToDelete[]  = $oldPath;
+                }
+            }
+
+            if (!empty($fileUpdates)) {
+                DB::table('t_inovasi_global')->where('id', $recordId)->update($fileUpdates);
+            }
+
+            DB::commit();
+
+            foreach ($oldFilesToDelete as $oldFile) {
+                $this->deleteStoredFile($oldFile);
             }
 
             return response()->json([
@@ -209,7 +367,13 @@ class InovasiController extends Controller
                 'message' => $msg
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            foreach ($newFiles as $newFile) {
+                $this->deleteStoredFile($newFile);
+            }
+
             return response()->json([
                 'status'  => 'error',
                 'message' => 'Gagal menyimpan ke database: ' . $e->getMessage()
@@ -218,26 +382,52 @@ class InovasiController extends Controller
     }
 
     public function destroyGlobal(Request $request)
-    {
-        $id = $this->decRef($request->input('id', $request->route('id')));
+{
+    $id = $this->decRef($request->input('id', $request->route('id')));
 
-        if (!$id) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'ID data tidak valid.'
-            ], 400);
-        }
-
-        DB::table('t_inovasi_global')->where('id', $id)->update([
-            'deleted_by' => Auth::id() ?? 1,
-            'deleted_at' => now(),
-        ]);
-
+    if (!$id) {
         return response()->json([
-            'status'  => 'success',
-            'message' => 'Data inovasi berhasil dihapus.'
-        ]);
+            'status'  => 'error',
+            'message' => 'ID data tidak valid.'
+        ], 400);
     }
+
+    $row = DB::table('t_inovasi_global')
+        ->where('id', $id)
+        ->whereNull('deleted_at')
+        ->first();
+
+    if (!$row) {
+        return response()->json([
+            'status'  => 'error',
+            'message' => 'Data inovasi tidak ditemukan atau sudah dihapus.'
+        ], 404);
+    }
+
+    try {
+        DB::table('t_inovasi_global')->where('id', $id)->update([
+            'foto_1'       => null,
+            'foto_2'       => null,
+            'file_dokumen' => null,
+            'deleted_by'   => Auth::id() ?? 1,
+            'deleted_at'   => now(),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status'  => 'error',
+            'message' => 'Gagal menghapus data: ' . $e->getMessage()
+        ], 500);
+    }
+
+    foreach ([$row->foto_1, $row->foto_2, $row->file_dokumen] as $path) {
+        $this->deleteStoredFile($path);
+    }
+
+    return response()->json([
+        'status'  => 'success',
+        'message' => 'Data inovasi berhasil dihapus.'
+    ]);
+}
 
     public function kota()
     {
@@ -245,7 +435,6 @@ class InovasiController extends Controller
 
         return view('bo.pages.inovasi.inovasikota.index', compact('kelurahan'));
     }
-
 
     // SOTH 
     

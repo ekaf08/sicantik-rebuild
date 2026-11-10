@@ -6,7 +6,8 @@
     #view-inovasi-input,
     #modal-form-inovasi,
     #modal-confirm-delete,
-    #modal-preview-media {
+    #modal-preview-media,
+    #modal-detail-pokja {
         color: #0f172a !important;
         font-family: inherit;
     }
@@ -60,9 +61,9 @@
     }
 
     .btn-tab-pill-tosca {
-        min-width: 170px;
-        padding: 10px 18px;
-        border-radius: 1rem;
+        min-width: 230px !important;
+        padding: 16px 26px !important;
+        border-radius: 1.1rem !important;
         transition: all 0.25s ease;
         cursor: pointer !important;
         text-align: left;
@@ -104,10 +105,37 @@
         color: #a7f3d0 !important;
     }
 
+    .btn-tab-pill-tosca .tab-title-text {
+        font-size: 1.1rem !important;
+        letter-spacing: 0.6px !important;
+    }
+    .btn-tab-pill-tosca .tab-sub-text {
+        font-size: 0.88rem !important;
+        margin-top: 2px;
+    }
+
+    .card-pokja-clickable {
+        transition: all 0.22s ease-in-out;
+        cursor: pointer !important;
+        border: 1.5px solid transparent !important;
+        background-color: #ffffff;
+    }
+    .card-pokja-clickable:hover {
+        transform: translateY(-4px);
+        background-color: #f0fdfa !important;
+        border-color: #2dd4bf !important;
+        box-shadow: 0 12px 24px -4px rgba(13, 148, 136, 0.18) !important;
+    }
+    .card-pokja-clickable:active {
+        transform: scale(0.98);
+        background-color: #ccfbf1 !important;
+        border-color: #0d9488 !important;
+    }
+
     .stat-card-title {
         color: #0f172a !important;
         font-weight: 700 !important;
-        font-size: 0.85rem !important;
+        font-size: 1rem !important;
     }
 
     .table-custom-wrapper {
@@ -183,8 +211,8 @@
     .form-control-modern {
         border: 1.5px solid #cbd5e1;
         border-radius: 0.55rem;
-        padding: 8px 12px;
-        font-size: 0.85rem;
+        padding: 10px 14px !important;
+        font-size: 0.95rem !important;
         background-color: #ffffff !important;
         color: #0f172a !important;
         transition: all 0.2s ease;
@@ -227,16 +255,16 @@
     }
 
     .img-table-thumb {
-        width: 44px;
-        height: 38px;
+        width: 72px !important;
+        height: 60px !important;
         object-fit: cover;
-        border-radius: 6px;
-        border: 1px solid #cbd5e1;
+        border-radius: 8px !important;
+        border: 2px solid #cbd5e1 !important;
         transition: transform 0.2s;
         cursor: pointer;
     }
     .img-table-thumb:hover {
-        transform: scale(1.08);
+        transform: scale(1.12);
     }
 
     .btn-icon-square-edit {
@@ -278,8 +306,8 @@
     }
 
     .modal-delete-icon-box {
-        width: 68px;
-        height: 68px;
+        width: 84px;
+        height: 84px;
         background-color: #ffe4e6;
         color: #e11d48;
         border-radius: 50%;
@@ -287,13 +315,13 @@
         align-items: center;
         justify-content: center;
         margin: 0 auto 1rem;
-        font-size: 1.85rem;
+        font-size: 2.3rem;
         box-shadow: 0 0 0 8px #fff1f2;
     }
 
     .modal-delete-desc {
         color: #334155 !important;
-        font-size: 0.875rem !important;
+        font-size: 1.05rem !important;
         font-weight: 500 !important;
         line-height: 1.5;
     }
@@ -326,19 +354,101 @@
         border-color: #0d9488 !important;
     }
 
-    .toast-container-custom {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 10000;
-    }
-
     .tab-view-container {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
         width: 100%;
     }
+
+    .btn-preview-pdf {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px !important;
+        font-size: 0.9rem !important;
+        font-weight: 700 !important;
+        border-radius: 10px !important;
+    }
+    .btn-preview-pdf i { font-size: 1.5rem; }
+
+    .btn-remove-foto {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 24px;
+        height: 24px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(225, 29, 72, 0.92);
+        color: #fff;
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 5;
+        padding: 0;
+    }
+    .btn-remove-foto:hover { background: #be123c; }
+
+    #modal-form-inovasi .modal-dialog {
+        max-width: 780px !important;
+        width: 94%;
+    }
+    #modal-form-inovasi .modal-title { font-size: 1.35rem !important; }
+    #modal-form-inovasi .form-label { font-size: 0.92rem !important; }
+    #modal-form-inovasi .btn { font-size: 0.92rem !important; }
+    #modal-alert-box {
+        font-size: 0.98rem !important;
+        padding: 12px 16px !important;
+    }
+
+    #modal-confirm-delete .modal-dialog {
+        max-width: 540px !important;
+        width: 94%;
+    }
+    #modal-confirm-delete .modal-content-modern { padding: 2.2rem !important; }
+    #modal-confirm-delete h5 { font-size: 1.5rem !important; }
+    #modal-confirm-delete .btn { font-size: 1rem !important; padding: 10px 26px !important; }
+
+    #modal-preview-media .modal-dialog {
+        max-width: 1000px !important;
+        width: 95%;
+    }
+    #modal-preview-media .modal-title { font-size: 1.2rem !important; }
+    #preview-media-body { min-height: 75vh !important; }
+    #preview-media-body iframe { height: 75vh !important; }
+    #preview-media-body img { max-height: 75vh !important; }
+
+    .toast-container-custom {
+        position: fixed;
+        top: 50% !important;
+        left: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%);
+        z-index: 20000;
+    }
+    .toast-container-custom .toast {
+        width: 520px;
+        max-width: 92vw;
+        border-radius: 1rem !important;
+    }
+    .toast-container-custom .toast-body {
+        padding: 1.5rem 1.5rem !important;
+    }
+    #toast-message { font-size: 1.1rem !important; line-height: 1.5; }
+    #toast-icon { font-size: 2.2rem !important; }
+
+    #dash-filter-kelurahan:disabled,
+    #table-filter-kelurahan:disabled {
+        background-color: #ffffff !important;
+        opacity: 1 !important;
+        pointer-events: none;
+    }
+    #dash-filter-kelurahan:disabled { color: #0f172a !important; }
+    #table-filter-kelurahan:disabled { color: #334155 !important; }
 </style>
 
 <div class="d-flex flex-column gap-4 w-100 p-2 p-md-3">
@@ -494,7 +604,7 @@
                 Inovasi Global
             </h2>
             <span class="fw-semibold mb-4" style="font-size: 0.95rem; color: #e6fffa;">
-               Berikut adalah Inovasi PKK yang telah diinputkan 
+                Berikut adalah Inovasi PKK yang telah diinputkan 
             </span>
             <div class="d-flex flex-wrap gap-3" style="position: relative; z-index: 9999;">
                 <button type="button" class="btn-tab-pill-tosca active" id="btn-tab-dashboard">
@@ -521,13 +631,13 @@
                     <div class="col-12 col-md-4">
                         <label class="form-label small fw-bold text-dark text-uppercase mb-1">Kecamatan</label>
                         <select id="dash-filter-kecamatan" class="form-select bg-white border-light-subtle rounded-3 small fw-semibold text-dark">
-                        <option value="Semua">Semua kecamatan</option>
-                        @if(isset($kecamatan) && is_iterable($kecamatan))
-                            @foreach($kecamatan as $kec)
-                                <option value="{{ $kec->nama_kec }}">{{ $kec->nama_kec }}</option>
-                            @endforeach
-                        @endif
-                    </select>
+                            <option value="Semua">Semua kecamatan</option>
+                            @if(isset($kecamatan) && is_iterable($kecamatan))
+                                @foreach($kecamatan as $kec)
+                                    <option value="{{ $kec->nama_kec }}">{{ $kec->nama_kec }}</option>
+                                @endforeach
+                            @endif
+                        </select>
                     </div>
                     <div class="col-12 col-md-4">
                         <label class="form-label small fw-bold text-dark text-uppercase mb-1">Kelurahan</label>
@@ -549,94 +659,105 @@
         </div>
 
         <div class="row g-3">
-            <div class="col-6 col-md-4 col-xl">
-                <div class="card border-0 shadow-sm rounded-4 text-center h-100">
-                    <div class="card-body p-4">
-                        <h2 class="fw-bold text-dark mb-1" id="stat-count-sekretaris">0</h2>
-                        <span class="stat-card-title d-block mb-3">Sekretaris</span>
-                        <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill small fw-bold">Inovasi</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-xl">
-                <div class="card border-0 shadow-sm rounded-4 text-center h-100">
-                    <div class="card-body p-4">
-                        <h2 class="fw-bold text-dark mb-1" id="stat-count-pokja1">0</h2>
-                        <span class="stat-card-title d-block mb-3">Pokja 1</span>
-                        <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill small fw-bold">Inovasi</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-xl">
-                <div class="card border-0 shadow-sm rounded-4 text-center h-100">
-                    <div class="card-body p-4">
-                        <h2 class="fw-bold text-dark mb-1" id="stat-count-pokja2">0</h2>
-                        <span class="stat-card-title d-block mb-3">Pokja 2</span>
-                        <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill small fw-bold">Inovasi</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-xl">
-                <div class="card border-0 shadow-sm rounded-4 text-center h-100">
-                    <div class="card-body p-4">
-                        <h2 class="fw-bold text-dark mb-1" id="stat-count-pokja3">0</h2>
-                        <span class="stat-card-title d-block mb-3">Pokja 3</span>
-                        <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill small fw-bold">Inovasi</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-4 col-xl">
-                <div class="card border-0 shadow-sm rounded-4 text-center h-100">
-                    <div class="card-body p-4">
-                        <h2 class="fw-bold text-dark mb-1" id="stat-count-pokja4">0</h2>
-                        <span class="stat-card-title d-block mb-3">Pokja 4</span>
-                        <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill small fw-bold">Inovasi</span>
-                    </div>
-                </div>
+    <div class="col-6 col-md-4 col-xl">
+        <div class="card border-0 shadow-sm rounded-4 text-center h-100 card-pokja-clickable" data-pokja="Sekretaris" style="background-color: #f0fdfa !important; border: 1.5px solid #a7f3d0 !important;">
+            <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-center align-items-center" style="min-height: 220px;">
+                <h1 class="fw-bolder mb-2" id="stat-count-sekretaris" style="font-size: 3.2rem; line-height: 1; color: #0d6e66;">0</h1>
+                <span class="stat-card-title d-block mb-3 fs-5" style="color: #0b5e57 !important;">Sekretaris</span>
+                <span class="badge px-4 py-2 rounded-pill fw-bold" style="font-size: 0.85rem; background-color: #ccfbf1; color: #0d6e66; border: 1px solid #99f6e4;">Inovasi</span>
             </div>
         </div>
+    </div>
+
+    <div class="col-6 col-md-4 col-xl">
+        <div class="card border-0 shadow-sm rounded-4 text-center h-100 card-pokja-clickable" data-pokja="POKJA 1" style="background-color: #f0fdf4 !important; border: 1.5px solid #a7f3d0 !important;">
+            <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-center align-items-center" style="min-height: 220px;">
+                <h1 class="fw-bolder mb-2" id="stat-count-pokja1" style="font-size: 3.2rem; line-height: 1; color: #14867c;">0</h1>
+                <span class="stat-card-title d-block mb-3 fs-5" style="color: #0f6860 !important;">Pokja 1</span>
+                <span class="badge px-4 py-2 rounded-pill fw-bold" style="font-size: 0.85rem; background-color: #d1fae5; color: #14867c; border: 1px solid #6ee7b7;">Inovasi</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-4 col-xl">
+        <div class="card border-0 shadow-sm rounded-4 text-center h-100 card-pokja-clickable" data-pokja="POKJA 2" style="background-color: #f2f9f6 !important; border: 1.5px solid #bbf2e5 !important;">
+            <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-center align-items-center" style="min-height: 220px;">
+                <h1 class="fw-bolder mb-2" id="stat-count-pokja2" style="font-size: 3.2rem; line-height: 1; color: #2f8f83;">0</h1>
+                <span class="stat-card-title d-block mb-3 fs-5" style="color: #1e6b62 !important;">Pokja 2</span>
+                <span class="badge px-4 py-2 rounded-pill fw-bold" style="font-size: 0.85rem; background-color: #dcf6ef; color: #2f8f83; border: 1px solid #a3ebd8;">Inovasi</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-4 col-xl">
+        <div class="card border-0 shadow-sm rounded-4 text-center h-100 card-pokja-clickable" data-pokja="POKJA 3" style="background-color: #fffdf5 !important; border: 1.5px solid #fde68a !important;">
+            <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-center align-items-center" style="min-height: 220px;">
+                <h1 class="fw-bolder mb-2" id="stat-count-pokja3" style="font-size: 3.2rem; line-height: 1; color: #d97706;">0</h1>
+                <span class="stat-card-title d-block mb-3 fs-5" style="color: #b45309 !important;">Pokja 3</span>
+                <span class="badge px-4 py-2 rounded-pill fw-bold" style="font-size: 0.85rem; background-color: #fef3c7; color: #b45309; border: 1px solid #fcd34d;">Inovasi</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4 col-xl">
+        <div class="card border-0 shadow-sm rounded-4 text-center h-100 card-pokja-clickable" data-pokja="POKJA 4" style="background-color: #fff8f5 !important; border: 1.5px solid #fed7aa !important;">
+            <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-center align-items-center" style="min-height: 220px;">
+                <h1 class="fw-bolder mb-2" id="stat-count-pokja4" style="font-size: 3.2rem; line-height: 1; color: #ea580c;">0</h1>
+                <span class="stat-card-title d-block mb-3 fs-5" style="color: #c2410c !important;">Pokja 4</span>
+                <span class="badge px-4 py-2 rounded-pill fw-bold" style="font-size: 0.85rem; background-color: #ffedd5; color: #c2410c; border: 1px solid #fdba74;">Inovasi</span>
+            </div>
+        </div>
+    </div>
+</div>
 
         <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-                    <h5 class="fw-bold text-dark mb-0">Distribusi Inovasi per Pokja</h5>
-                    <span class="badge bg-light text-dark border px-3 py-2 fw-bold" id="stat-total-badge">Total: 0 Inovasi</span>
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-1 fs-4">Distribusi Inovasi per Pokja</h5>
+                    </div>
+                    <span class="badge bg-light text-dark border px-3 py-2 fw-bold fs-7 shadow-xs" id="stat-total-badge">Total: 0 Inovasi</span>
                 </div>
-                <div class="d-flex flex-column gap-3">
-                    <div class="d-flex align-items-center">
-                        <span class="text-dark fw-bold small text-start" style="width: 100px;">Pokja 4</span>
-                        <div class="progress flex-grow-1 mx-3" style="height: 10px;">
-                            <div class="progress-bar bg-primary" id="bar-pokja4" role="progressbar" style="width: 0%"></div>
+                
+                <div class="d-flex flex-column gap-4 py-2">
+                    <div class="d-flex align-items-center p-2 rounded-3 bg-light-subtle card-pokja-clickable" data-pokja="Sekretaris">
+                        <span class="text-dark fw-bold small text-start ps-2" style="width: 130px; font-size: 0.92rem;">Sekretaris</span>
+                        <div class="progress flex-grow-1 mx-3 rounded-pill bg-secondary-subtle" style="height: 14px;">
+                            <div class="progress-bar bg-success rounded-pill transition-all" id="bar-sekretaris" role="progressbar" style="width: 0%"></div>
                         </div>
-                        <span class="text-dark fw-bold small text-end" id="val-pokja4" style="width: 30px;">0</span>
+                        <span class="text-dark fw-bolder text-end pe-2" id="val-sekretaris" style="width: 45px; font-size: 1rem;">0</span>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <span class="text-dark fw-bold small text-start" style="width: 100px;">Pokja 3</span>
-                        <div class="progress flex-grow-1 mx-3" style="height: 10px;">
-                            <div class="progress-bar bg-success" id="bar-pokja3" role="progressbar" style="width: 0%"></div>
+
+                    <div class="d-flex align-items-center p-2 rounded-3 bg-light-subtle card-pokja-clickable" data-pokja="POKJA 1">
+                        <span class="text-dark fw-bold small text-start ps-2" style="width: 130px; font-size: 0.92rem;">Pokja 1</span>
+                        <div class="progress flex-grow-1 mx-3 rounded-pill bg-secondary-subtle" style="height: 14px;">
+                            <div class="progress-bar bg-primary rounded-pill transition-all" id="bar-pokja1" role="progressbar" style="width: 0%"></div>
                         </div>
-                        <span class="text-dark fw-bold small text-end" id="val-pokja3" style="width: 30px;">0</span>
+                        <span class="text-dark fw-bolder text-end pe-2" id="val-pokja1" style="width: 45px; font-size: 1rem;">0</span>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <span class="text-dark fw-bold small text-start" style="width: 100px;">Sekretaris</span>
-                        <div class="progress flex-grow-1 mx-3" style="height: 10px;">
-                            <div class="progress-bar bg-success" id="bar-sekretaris" role="progressbar" style="width: 0%"></div>
+
+                    <div class="d-flex align-items-center p-2 rounded-3 bg-light-subtle card-pokja-clickable" data-pokja="POKJA 2">
+                        <span class="text-dark fw-bold small text-start ps-2" style="width: 130px; font-size: 0.92rem;">Pokja 2</span>
+                        <div class="progress flex-grow-1 mx-3 rounded-pill bg-secondary-subtle" style="height: 14px;">
+                            <div class="progress-bar bg-primary rounded-pill transition-all" id="bar-pokja2" role="progressbar" style="width: 0%"></div>
                         </div>
-                        <span class="text-dark fw-bold small text-end" id="val-sekretaris" style="width: 30px;">0</span>
+                        <span class="text-dark fw-bolder text-end pe-2" id="val-pokja2" style="width: 45px; font-size: 1rem;">0</span>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <span class="text-dark fw-bold small text-start" style="width: 100px;">Pokja 1</span>
-                        <div class="progress flex-grow-1 mx-3" style="height: 10px;">
-                            <div class="progress-bar bg-primary" id="bar-pokja1" role="progressbar" style="width: 0%"></div>
+
+                    <div class="d-flex align-items-center p-2 rounded-3 bg-light-subtle card-pokja-clickable" data-pokja="POKJA 3">
+                        <span class="text-dark fw-bold small text-start ps-2" style="width: 130px; font-size: 0.92rem;">Pokja 3</span>
+                        <div class="progress flex-grow-1 mx-3 rounded-pill bg-secondary-subtle" style="height: 14px;">
+                            <div class="progress-bar bg-success rounded-pill transition-all" id="bar-pokja3" role="progressbar" style="width: 0%"></div>
                         </div>
-                        <span class="text-dark fw-bold small text-end" id="val-pokja1" style="width: 30px;">0</span>
+                        <span class="text-dark fw-bolder text-end pe-2" id="val-pokja3" style="width: 45px; font-size: 1rem;">0</span>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <span class="text-dark fw-bold small text-start" style="width: 100px;">Pokja 2</span>
-                        <div class="progress flex-grow-1 mx-3" style="height: 10px;">
-                            <div class="progress-bar bg-primary" id="bar-pokja2" role="progressbar" style="width: 0%"></div>
+
+                    <div class="d-flex align-items-center p-2 rounded-3 bg-light-subtle card-pokja-clickable" data-pokja="POKJA 4">
+                        <span class="text-dark fw-bold small text-start ps-2" style="width: 130px; font-size: 0.92rem;">Pokja 4</span>
+                        <div class="progress flex-grow-1 mx-3 rounded-pill bg-secondary-subtle" style="height: 14px;">
+                            <div class="progress-bar bg-primary rounded-pill transition-all" id="bar-pokja4" role="progressbar" style="width: 0%"></div>
                         </div>
-                        <span class="text-dark fw-bold small text-end" id="val-pokja2" style="width: 30px;">0</span>
+                        <span class="text-dark fw-bolder text-end pe-2" id="val-pokja4" style="width: 45px; font-size: 1rem;">0</span>
                     </div>
                 </div>
             </div>
@@ -727,6 +848,38 @@
 
 </div>
 
+<div class="modal fade" id="modal-detail-pokja" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content modal-content-modern bg-white">
+            <div class="modal-header border-bottom px-4 py-3">
+                <h5 class="modal-title fw-bold text-dark fs-5 mb-0" id="modal-detail-pokja-title">Detail Inovasi - Sekretaris</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="table-custom-wrapper">
+                    <div class="table-responsive mb-0">
+                        <table class="table table-custom align-middle mb-0 text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 50px;">No <i class="fa-solid fa-angle-up text-secondary ms-1" style="font-size: 0.7rem;"></i></th>
+                                    <th>Tanggal Entry</th>
+                                    <th>Nama Inovasi</th>
+                                    <th>Deskripsi Inovasi</th>
+                                    <th class="text-center">Periode</th>
+                                    <th class="text-center">Keterangan</th>
+                                    <th>Dibuat Oleh</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detail-pokja-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modal-form-inovasi" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 620px;">
         <div class="modal-content modal-content-modern">
@@ -738,6 +891,9 @@
             <form id="form-submit-inovasi" class="p-4 d-flex flex-column gap-3 bg-white">
                 @csrf
                 <input type="hidden" id="entry-index-id" name="id" value="-1">
+                <input type="hidden" id="remove-foto-1" name="remove_foto_1" value="0">
+                <input type="hidden" id="remove-foto-2" name="remove_foto_2" value="0">
+                <input type="hidden" id="remove-file-dokumen" name="remove_file_dokumen" value="0">
 
                 <div id="modal-alert-box" class="alert alert-danger py-2 px-3 small rounded-3 d-none align-items-center gap-2" role="alert">
                     <i class="fa-solid fa-circle-exclamation text-danger"></i>
@@ -802,6 +958,9 @@
                                 <div class="preview-img-container mb-2" id="box-preview-1">
                                     <span class="small fw-semibold text-secondary" id="text-preview-1"><i class="fa-regular fa-image fa-2x d-block mb-1 text-secondary"></i>Foto 1</span>
                                     <img src="" id="img-preview-1" class="d-none" alt="Preview Foto 1">
+                                    <button type="button" class="btn-remove-foto d-none" id="btn-remove-foto-1" data-num="1" title="Hapus Foto 1">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
                                 </div>
                                 <input type="file" id="file-foto-1" name="foto_1" accept="image/*" class="d-none">
                                 <button type="button" id="btn-pilih-foto-1" class="btn btn-sm btn-white border shadow-xs fw-bold small w-100 py-1 text-dark">
@@ -816,6 +975,9 @@
                                 <div class="preview-img-container mb-2" id="box-preview-2">
                                     <span class="small fw-semibold text-secondary" id="text-preview-2"><i class="fa-regular fa-image fa-2x d-block mb-1 text-secondary"></i>Foto 2</span>
                                     <img src="" id="img-preview-2" class="d-none" alt="Preview Foto 2">
+                                    <button type="button" class="btn-remove-foto d-none" id="btn-remove-foto-2" data-num="2" title="Hapus Foto 2">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
                                 </div>
                                 <input type="file" id="file-foto-2" name="foto_2" accept="image/*" class="d-none">
                                 <button type="button" id="btn-pilih-foto-2" class="btn btn-sm btn-white border shadow-xs fw-bold small w-100 py-1 text-dark">
@@ -963,6 +1125,37 @@
         return BASE_ASSET_URL + cleanPath;
     }
 
+    function escapeHtml(v) {
+        return String(v ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function resetRemoveFlags() {
+        ['remove-foto-1', 'remove-foto-2', 'remove-file-dokumen'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '0';
+        });
+    }
+
+    function resetFileInputs() {
+        ['file-foto-1', 'file-foto-2', 'file-dokumen-pdf'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+    }
+
+    function removeFoto(num) {
+        document.getElementById(`file-foto-${num}`).value = '';
+        if (String(num) === '1') currentFoto1 = ''; else currentFoto2 = '';
+        setPreviewBox(num, '');
+        document.getElementById(`label-foto-${num}`).innerText = 'Belum ada foto';
+        document.getElementById(`remove-foto-${num}`).value = '1';
+    }
+
     function openPreviewModal(type, url, title) {
         const body = document.getElementById('preview-media-body');
         const titleEl = document.getElementById('preview-media-title');
@@ -970,91 +1163,96 @@
         body.innerHTML = '';
 
         if (type === 'pdf') {
-            body.innerHTML = `<iframe src="${url}" style="width: 100%; height: 500px; border: none; border-radius: 8px;"></iframe>`;
+            const frame = document.createElement('iframe');
+            frame.src = url;
+            frame.style.cssText = 'width:100%;height:500px;border:none;border-radius:8px;';
+            body.appendChild(frame);
         } else {
-            body.innerHTML = `<img src="${url}" class="img-fluid rounded shadow-sm" style="max-height: 500px; object-fit: contain;">`;
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'img-fluid rounded shadow-sm';
+            img.style.cssText = 'max-height:500px;object-fit:contain;';
+            body.appendChild(img);
         }
 
-        const modalEl = document.getElementById('modal-preview-media');
-        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-preview-media')).show();
     }
 
-     const PETA_WILAYAH_SURABAYA = {
-    "tegalsari": ["Kedungdoro", "Keputran", "Dr. Soetomo", "Tegalsari", "Wonorejo"],
-    "simokerto": ["Kapasan", "Sidodadi", "Simokerto", "Simolawang", "Tambakrejo"],
-    "genteng": ["Embong Kaliasin", "Genteng", "Kapasari", "Ketabang", "Peneleh"],
-    "bubutan": ["Alun-alun Contong", "Bubutan", "Gundih", "Jepara", "Tembok Dukuh"],
-    "gubeng": ["Airlangga", "Baratajaya", "Gubeng", "Kertajaya", "Mojo", "Pucangsewu"],
-    "gunung anyar": ["Gunung Anyar", "Gunung Anyar Tambak", "Rungkut Menanggal", "Rungkut Tengah"],
-    "sukolilo": ["Gebang Putih", "Keputih", "Klampisngasem", "Medokan Semampir", "Menur Pumpungan", "Nginden Jangkungan", "Semolowaru"],
-    "tambaksari": ["Dukuh Setro", "Gading", "Kapasmadya Baru", "Pacarkembang", "Pacarkeling", "Ploso", "Rangkah", "Tambaksari"],
-    "mulyorejo": ["Kalijudan", "Kalisari", "Kejawan Putih Tambak", "Manyar Sabrangan", "Mulyorejo", "Dukuh Sutorejo"],
-    "rungkut": ["Kalirungkut", "Kedungbaruk", "Medokan Ayu", "Penjaringan Sari", "Rungkut Kidul", "Wonorejo"],
-    "tenggilis mejoyo": ["Kendangsari", "Kutisari", "Panjang Jiwo", "Prapen", "Tenggilis Mejoyo"],
-    "benowo": ["Kandangan", "Romokalisari", "Sememi", "Tambak Osowilangun"],
-    "pakal": ["Babur Jerawat", "Benowo", "Pakal", "Sumberejo"],
-    "asemrowo": ["Asemrowo", "Genting Kalianak", "Tambak Sarioso"],
-    "sukomanunggal": ["Putat Gede", "Simomulyo", "Simomulyo Baru", "Sonokwijenan", "Sukomanunggal", "Tanjungsari"],
-    "tandes": ["Balongsari", "Banjar Sugihan", "Karang Poh", "Manukan Kulon", "Manukan Wetan", "Tandes"],
-    "sambikerep": ["Benowo", "Bringin", "Made", "Lakar Santri", "Sambikerep"],
-    "lakarsantri": ["Bangkingan", "Jeruk", "Lakarsantri", "Lidah Kulon", "Lidah Wetan", "Sumur Welut"],
-    "karangpilang": ["Karang Pilang", "Kebraon", "Kedurus", "Warugunung"],
-    "jambangan": ["Jambangan", "Karah", "Kebonsari", "Pagesangan"],
-    "gayungan": ["Dukuh Menanggal", "Gayungan", "Ketintang", "Menanggal"],
-    "wonocolo": ["Bendul Merisi", "Jemur Wonosari", "Margorejo", "Sidosermo", "Siwalankerto"],
-    "wonokromo": ["Darmo", "Jagir", "Ngagel", "Ngagelrejo", "Sawunggaling", "Wonokromo"],
-    "sawahan": ["Banyu Urip", "Kupang Krajan", "Pakis", "Petemon", "Putat Jaya", "Sawahan"],
-    "dukuh pakis": ["Dukuh Kupang", "Dukuh Pakis", "Gunung Sari", "Pradah Kalikendal"],
-    "wiyung": ["Babatan", "Balasklumprik", "Jajar Tunggal", "Wiyung"],
-    "krembangan": ["Dupak", "Kemayoran", "Krembangan Selatan", "Morokrembangan", "Perak Barat"],
-    "pabean cantikan": ["Bongkaran", "Krembangan Utara", "Nyamplungan", "Perak Timur", "Perak Utara"],
-    "semampir": ["Ampel", "Pegirian", "Sidotopo", "Ujung", "Wonokusumo"],
-    "kenjeran": ["Bulak Banteng", "Tambak Wedi", "Tanah Kali Kedinding", "Sidotopo Wetan"],
-    "bulak": ["Bulak", "Kedung Cowek", "Kenjeran", "Sukolilo Baru"]
-};
+    const PETA_WILAYAH_SURABAYA = {
+        "tegalsari": ["Kedungdoro", "Keputran", "Dr. Soetomo", "Tegalsari", "Wonorejo"],
+        "simokerto": ["Kapasan", "Sidodadi", "Simokerto", "Simolawang", "Tambakrejo"],
+        "genteng": ["Embong Kaliasin", "Genteng", "Kapasari", "Ketabang", "Peneleh"],
+        "bubutan": ["Alun-alun Contong", "Bubutan", "Gundih", "Jepara", "Tembok Dukuh"],
+        "gubeng": ["Airlangga", "Baratajaya", "Gubeng", "Kertajaya", "Mojo", "Pucangsewu"],
+        "gunung anyar": ["Gunung Anyar", "Gunung Anyar Tambak", "Rungkut Menanggal", "Rungkut Tengah"],
+        "sukolilo": ["Gebang Putih", "Keputih", "Klampisngasem", "Medokan Semampir", "Menur Pumpungan", "Nginden Jangkungan", "Semolowaru"],
+        "tambaksari": ["Dukuh Setro", "Gading", "Kapasmadya Baru", "Pacarkembang", "Pacarkeling", "Ploso", "Rangkah", "Tambaksari"],
+        "mulyorejo": ["Kalijudan", "Kalisari", "Kejawan Putih Tambak", "Manyar Sabrangan", "Mulyorejo", "Dukuh Sutorejo"],
+        "rungkut": ["Kalirungkut", "Kedungbaruk", "Medokan Ayu", "Penjaringan Sari", "Rungkut Kidul", "Wonorejo"],
+        "tenggilis mejoyo": ["Kendangsari", "Kutisari", "Panjang Jiwo", "Prapen", "Tenggilis Mejoyo"],
+        "benowo": ["Kandangan", "Romokalisari", "Sememi", "Tambak Osowilangun"],
+        "pakal": ["Babur Jerawat", "Benowo", "Pakal", "Sumberejo"],
+        "asemrowo": ["Asemrowo", "Genting Kalianak", "Tambak Sarioso"],
+        "sukomanunggal": ["Putat Gede", "Simomulyo", "Simomulyo Baru", "Sonokwijenan", "Sukomanunggal", "Tanjungsari"],
+        "tandes": ["Balongsari", "Banjar Sugihan", "Karang Poh", "Manukan Kulon", "Manukan Wetan", "Tandes"],
+        "sambikerep": ["Benowo", "Bringin", "Made", "Lakar Santri", "Sambikerep"],
+        "lakarsantri": ["Bangkingan", "Jeruk", "Lakarsantri", "Lidah Kulon", "Lidah Wetan", "Sumur Welut"],
+        "karangpilang": ["Karang Pilang", "Kebraon", "Kedurus", "Warugunung"],
+        "jambangan": ["Jambangan", "Karah", "Kebonsari", "Pagesangan"],
+        "gayungan": ["Dukuh Menanggal", "Gayungan", "Ketintang", "Menanggal"],
+        "wonocolo": ["Bendul Merisi", "Jemur Wonosari", "Margorejo", "Sidosermo", "Siwalankerto"],
+        "wonokromo": ["Darmo", "Jagir", "Ngagel", "Ngagelrejo", "Sawunggaling", "Wonokromo"],
+        "sawahan": ["Banyu Urip", "Kupang Krajan", "Pakis", "Petemon", "Putat Jaya", "Sawahan"],
+        "dukuh pakis": ["Dukuh Kupang", "Dukuh Pakis", "Gunung Sari", "Pradah Kalikendal"],
+        "wiyung": ["Babatan", "Balasklumprik", "Jajar Tunggal", "Wiyung"],
+        "krembangan": ["Dupak", "Kemayoran", "Krembangan Selatan", "Morokrembangan", "Perak Barat"],
+        "pabean cantikan": ["Bongkaran", "Krembangan Utara", "Nyamplungan", "Perak Timur", "Perak Utara"],
+        "semampir": ["Ampel", "Pegirian", "Sidotopo", "Ujung", "Wonokusumo"],
+        "kenjeran": ["Bulak Banteng", "Tambak Wedi", "Tanah Kali Kedinding", "Sidotopo Wetan"],
+        "bulak": ["Bulak", "Kedung Cowek", "Kenjeran", "Sukolilo Baru"]
+    };
 
-function syncKelurahanFilter(kecId, kelId, defaultText) {
-    const kecEl = document.getElementById(kecId);
-    const kelEl = document.getElementById(kelId);
-    if (!kecEl || !kelEl) return;
+    function syncKelurahanFilter(kecId, kelId, defaultText) {
+        const kecEl = document.getElementById(kecId);
+        const kelEl = document.getElementById(kelId);
+        if (!kecEl || !kelEl) return;
 
-    const rawKec = (kecEl.options[kecEl.selectedIndex]?.text || kecEl.value || '').trim().toLowerCase();
-    const cleanKec = rawKec.replace('kecamatan', '').trim();
-    const isSemua = (!cleanKec || cleanKec === 'semua' || cleanKec.includes('semua'));
-    
-    let listKel = [];
+        const rawKec = (kecEl.options[kecEl.selectedIndex]?.text || kecEl.value || '').trim().toLowerCase();
+        const cleanKec = rawKec.replace('kecamatan', '').trim();
+        const isSemua = (!cleanKec || cleanKec === 'semua' || cleanKec.includes('semua'));
+        
+        let listKel = [];
 
-    if (!isSemua && PETA_WILAYAH_SURABAYA[cleanKec]) {
-        listKel = PETA_WILAYAH_SURABAYA[cleanKec];
-    } else if (isSemua) {
-        if (typeof MASTER_KELURAHAN_LIST !== 'undefined' && Array.isArray(MASTER_KELURAHAN_LIST) && MASTER_KELURAHAN_LIST.length > 0) {
-            listKel = MASTER_KELURAHAN_LIST.map(k => k.nama_kel || k).filter(Boolean);
-        } else {
-            Object.values(PETA_WILAYAH_SURABAYA).forEach(arr => {
-                listKel = listKel.concat(arr);
-            });
+        if (!isSemua && PETA_WILAYAH_SURABAYA[cleanKec]) {
+            listKel = PETA_WILAYAH_SURABAYA[cleanKec];
+        }
+
+        const uniqueSorted = [...new Set(listKel)].sort((a, b) => a.localeCompare(b, 'id'));
+        const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+
+        let html = `<option value="Semua">${defaultText}</option>`;
+        uniqueSorted.forEach(nama => {
+            html += `<option value="${esc(nama)}">${esc(nama)}</option>`;
+        });
+
+        kelEl.innerHTML = html;
+        kelEl.value = 'Semua';
+        kelEl.disabled = isSemua;
+
+        if (window.jQuery && $(kelEl).data('select2')) {
+            $(kelEl).trigger('change.select2');
         }
     }
 
-    const uniqueSorted = [...new Set(listKel)].sort((a, b) => a.localeCompare(b, 'id'));
-    const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    let fetchSeq = 0;
+    let fetchInFlight = false;
 
-    let html = `<option value="Semua">${defaultText}</option>`;
-    uniqueSorted.forEach(nama => {
-        html += `<option value="${esc(nama)}">${esc(nama)}</option>`;
-    });
-
-    kelEl.innerHTML = html;
-    kelEl.value = 'Semua';
-
-    if (window.jQuery && $(kelEl).data('select2')) {
-        $(kelEl).trigger('change.select2');
-    }
-}
-
-    function fetchDataFromServer() {
+    function fetchDataFromServer(silent = false) {
+        if (silent && fetchInFlight) return;
+        fetchInFlight = true;
+        const reqId = ++fetchSeq;
         const tbody = document.getElementById('innovation-table-body');
-        if (tbody) {
+        if (tbody && !silent) {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="10" class="text-center py-5">
@@ -1075,6 +1273,7 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
         })
         .then(res => res.json())
         .then(res => {
+            if (reqId !== fetchSeq) return;
             if (res.status === 'success' && Array.isArray(res.data)) {
                 inovasiData = res.data.map(item => ({
                     id: item.ref,
@@ -1094,18 +1293,24 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
                     dibuatOleh: item.creator_name || item.dibuat_oleh || 'Kader PKK',
                     pokja: item.pokja || 'POKJA 3'
                 }));
-            } else {
+            } else if (!silent) {
                 inovasiData = [];
             }
-            syncKelurahanFilter('dash-filter-kecamatan', 'dash-filter-kelurahan', 'Semua kelurahan');
-            syncKelurahanFilter('table-filter-kecamatan', 'table-filter-kelurahan', 'Pilih Kelurahan');
+            if (!silent) {
+                syncKelurahanFilter('dash-filter-kecamatan', 'dash-filter-kelurahan', 'Semua kelurahan');
+                syncKelurahanFilter('table-filter-kecamatan', 'table-filter-kelurahan', 'Pilih Kelurahan');
+            }
             updateDashboardCounters();
             renderCustomTable();
         })
         .catch(err => {
             console.error(err);
+            if (silent) return;
             inovasiData = [];
             renderCustomTable();
+        })
+        .finally(() => {
+            fetchInFlight = false;
         });
     }
 
@@ -1178,11 +1383,77 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
             if (text) text.innerText = val;
         };
 
-        setBar('bar-pokja4', 'val-pokja4', counts.pokja4);
-        setBar('bar-pokja3', 'val-pokja3', counts.pokja3);
         setBar('bar-sekretaris', 'val-sekretaris', counts.sekretaris);
         setBar('bar-pokja1', 'val-pokja1', counts.pokja1);
         setBar('bar-pokja2', 'val-pokja2', counts.pokja2);
+        setBar('bar-pokja3', 'val-pokja3', counts.pokja3);
+        setBar('bar-pokja4', 'val-pokja4', counts.pokja4);
+    }
+
+    function openDetailPokjaModal(pokjaKey) {
+        const titleEl = document.getElementById('modal-detail-pokja-title');
+        const tbody = document.getElementById('detail-pokja-table-body');
+        if (!tbody) return;
+
+        const displayPokjaName = pokjaKey.toUpperCase().includes('SEKRETARIS') ? 'Sekretaris' : pokjaKey.toUpperCase();
+        if (titleEl) {
+            titleEl.innerText = `Detail Inovasi - ${displayPokjaName}`;
+        }
+
+        const selKec = (document.getElementById('dash-filter-kecamatan')?.value || 'Semua').toLowerCase();
+        const selKel = (document.getElementById('dash-filter-kelurahan')?.value || 'Semua').toLowerCase();
+        const selPeriode = (document.getElementById('dash-filter-periode')?.value || 'Semua').toLowerCase();
+
+        const filtered = inovasiData.filter(item => {
+            const itemKec = (item.kecamatan || '').toString().toLowerCase();
+            const itemIdKec = (item.id_kec || '').toString().toLowerCase();
+            const itemKel = (item.kelurahan || '').toString().toLowerCase();
+            const itemIdKel = (item.id_kel || '').toString().toLowerCase();
+            const itemPeriode = (item.periode || '').toString().toLowerCase();
+            const itemPokja = (item.pokja || '').toUpperCase();
+
+            const matchKec = (selKec === 'semua' || itemKec === selKec || itemIdKec === selKec);
+            const matchKel = (selKel === 'semua' || itemKel === selKel || itemIdKel === selKel);
+            const matchPeriode = (selPeriode === 'semua' || itemPeriode === selPeriode);
+
+            let matchPokja = false;
+            if (pokjaKey.toUpperCase().includes('SEKRETARIS')) {
+                matchPokja = itemPokja.includes('SEKRETARIS');
+            } else {
+                const num = pokjaKey.replace(/\D/g, '');
+                matchPokja = itemPokja.includes(num);
+            }
+
+            return matchKec && matchKel && matchPeriode && matchPokja;
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted small fw-semibold">
+                        <i class="fa-solid fa-folder-open text-muted fs-3 d-block mb-2"></i>
+                        Belum ada data inovasi untuk ${displayPokjaName}.
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = filtered.map((item, idx) => `
+                <tr>
+                    <td class="text-center fw-bold text-dark">${idx + 1}</td>
+                    <td class="fw-bold text-dark">${escapeHtml(item.tanggal)}</td>
+                    <td class="fw-bold text-dark">${escapeHtml(item.nama)}</td>
+                    <td class="text-dark small" style="max-width: 280px; white-space: normal;">${escapeHtml(item.deskripsi)}</td>
+                    <td class="text-center fw-bold text-dark">${escapeHtml(item.periode)}</td>
+                    <td class="text-center text-dark fw-semibold">${escapeHtml(item.keterangan)}</td>
+                    <td class="fw-semibold text-dark">${escapeHtml(item.dibuatOleh)}</td>
+                </tr>
+            `).join('');
+        }
+
+        const modalEl = document.getElementById('modal-detail-pokja');
+        if (modalEl) {
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        }
     }
 
     function renderCustomTable(resetPage = false) {
@@ -1246,44 +1517,47 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
 
         tbody.innerHTML = rows.map((item, idx) => {
             const pdfBtn = (item.pdfUrl && item.pdfUrl !== '#')
-                ? `<button type="button" onclick="openPreviewModal('pdf', '${item.pdfUrl}', 'Dokumen: ${item.nama}')" class="btn btn-sm btn-outline-danger py-1 px-2 fw-semibold d-inline-flex align-items-center gap-1 shadow-xs" style="font-size: 0.72rem;">
-                    <i class="fa-solid fa-file-pdf"></i> PDF
+                ? `<button type="button" class="btn btn-outline-danger btn-preview-pdf btn-preview-media shadow-xs"
+                        data-type="pdf" data-url="${escapeHtml(item.pdfUrl)}" data-title="${escapeHtml('Dokumen: ' + item.nama)}">
+                        <i class="fa-solid fa-file-pdf"></i> PDF
                    </button>`
                 : `<span class="text-muted small">-</span>`;
 
-            const fotoThumb1 = item.foto1 
-                ? `<a href="javascript:void(0)" onclick="openPreviewModal('img', '${item.foto1}', 'Foto 1 - ${item.nama}')" class="d-inline-block me-1">
-                    <img src="${item.foto1}" class="img-table-thumb shadow-xs" alt="Foto 1" title="Lihat Foto 1">
-                   </a>` 
+            const fotoThumb1 = item.foto1
+                ? `<a href="javascript:void(0)" class="d-inline-block me-1 btn-preview-media"
+                      data-type="img" data-url="${escapeHtml(item.foto1)}" data-title="${escapeHtml('Foto 1 - ' + item.nama)}">
+                      <img src="${escapeHtml(item.foto1)}" class="img-table-thumb shadow-xs" alt="Foto 1" title="Lihat Foto 1">
+                   </a>`
                 : '';
-            const fotoThumb2 = item.foto2 
-                ? `<a href="javascript:void(0)" onclick="openPreviewModal('img', '${item.foto2}', 'Foto 2 - ${item.nama}')" class="d-inline-block">
-                    <img src="${item.foto2}" class="img-table-thumb shadow-xs" alt="Foto 2" title="Lihat Foto 2">
-                   </a>` 
+            const fotoThumb2 = item.foto2
+                ? `<a href="javascript:void(0)" class="d-inline-block btn-preview-media"
+                      data-type="img" data-url="${escapeHtml(item.foto2)}" data-title="${escapeHtml('Foto 2 - ' + item.nama)}">
+                      <img src="${escapeHtml(item.foto2)}" class="img-table-thumb shadow-xs" alt="Foto 2" title="Lihat Foto 2">
+                   </a>`
                 : '';
 
             return `
                 <tr>
                     <td class="text-center fw-bold text-dark">${start + idx + 1}</td>
-                    <td class="fw-bold text-dark">${item.tanggal}</td>
-                    <td class="fw-bold text-dark">${item.nama}</td>
-                    <td class="text-dark small" style="max-width: 250px; white-space: normal;">${item.deskripsi}</td>
+                    <td class="fw-bold text-dark">${escapeHtml(item.tanggal)}</td>
+                    <td class="fw-bold text-dark">${escapeHtml(item.nama)}</td>
+                    <td class="text-dark small" style="max-width: 250px; white-space: normal;">${escapeHtml(item.deskripsi)}</td>
                     <td class="text-center">${pdfBtn}</td>
                     <td class="text-center">
                         ${fotoThumb1}${fotoThumb2}
                         ${(!item.foto1 && !item.foto2) ? '<span class="text-muted small">-</span>' : ''}
                     </td>
-                    <td class="text-center fw-bold text-dark">${item.periode}</td>
-                    <td class="text-center text-dark fw-semibold">${item.keterangan}</td>
-                    <td class="fw-semibold text-dark">${item.dibuatOleh}</td>
+                    <td class="text-center fw-bold text-dark">${escapeHtml(item.periode)}</td>
+                    <td class="text-center text-dark fw-semibold">${escapeHtml(item.keterangan)}</td>
+                    <td class="fw-semibold text-dark">${escapeHtml(item.dibuatOleh)}</td>
                     <td class="text-center">
                         <div class="d-inline-flex align-items-center justify-content-center gap-2">
-                            <button type="button" class="btn-icon-square-edit btn-edit-item" data-id="${item.id}" title="Edit Data">
+                            <button type="button" class="btn-icon-square-edit btn-edit-item" data-id="${escapeHtml(item.id)}" title="Edit Data">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                                 </svg>
                             </button>
-                            <button type="button" class="btn-icon-square-delete btn-delete-item" data-id="${item.id}" title="Hapus Data">
+                            <button type="button" class="btn-icon-square-delete btn-delete-item" data-id="${escapeHtml(item.id)}" title="Hapus Data">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="3 6 5 6 21 6"></polyline>
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -1379,14 +1653,17 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
     function setPreviewBox(num, src) {
         const img = document.getElementById(`img-preview-${num}`);
         const text = document.getElementById(`text-preview-${num}`);
+        const btnRemove = document.getElementById(`btn-remove-foto-${num}`);
         if (src) {
             img.src = src;
             img.classList.remove('d-none');
             text.classList.add('d-none');
+            btnRemove?.classList.remove('d-none');
         } else {
             img.src = '';
             img.classList.add('d-none');
             text.classList.remove('d-none');
+            btnRemove?.classList.add('d-none');
         }
     }
 
@@ -1411,6 +1688,8 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
 
     function openModalTambah() {
         document.getElementById('form-submit-inovasi').reset();
+        resetRemoveFlags();
+        resetFileInputs();
         document.getElementById('entry-index-id').value = '-1';
         document.getElementById('modal-form-title').innerText = 'Tambah Data Inovasi';
         document.getElementById('label-foto-1').innerText = 'Belum ada foto';
@@ -1429,6 +1708,9 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
     function openModalEdit(id) {
         const item = inovasiData.find(d => d.id == id);
         if (!item) return;
+
+        resetRemoveFlags();
+        resetFileInputs();
 
         document.getElementById('entry-index-id').value = item.id;
         document.getElementById('modal-form-title').innerText = 'Edit Data Inovasi';
@@ -1504,13 +1786,14 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
             method: 'POST',
             body: formData,
             headers: {
-                "X-Requested-With": "XMLHttpRequest"
+                "X-Requested-With": "XMLHttpRequest",
+                "Accept": "application/json"
             }
         })
         .then(res => res.json())
         .then(res => {
             btnSubmit.disabled = false;
-            btnSubmit.innerHTML = 'Simpan Inovasi';
+            btnSubmit.innerHTML = 'Simpan';
 
             if (res.status === 'success') {
                 notifyToast(res.message || 'Data inovasi berhasil disimpan!');
@@ -1538,22 +1821,27 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
         btnDelete.disabled = true;
         btnDelete.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Menghapus...';
 
-        const baseDeleteRoute = "{{ route('inovasi.global.destroy', ['id' => ':id']) }}";
-        const deleteUrl = baseDeleteRoute.replace(':id', id);
+        const deleteUrl = "{{ route('inovasi.global.destroy') }}";
+
+        const fd = new FormData();
+        fd.append('id', id);
+        fd.append('_method', 'DELETE');
+        fd.append('_token', "{{ csrf_token() }}");
 
         fetch(deleteUrl, {
-            method: 'DELETE',
+            method: 'POST',
+            body: fd,
             headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
                 "X-Requested-With": "XMLHttpRequest",
                 "Accept": "application/json"
             }
         })
-        .then(res => {
+        .then(async res => {
+            const json = await res.json().catch(() => ({}));
             if (!res.ok) {
-                throw new Error(`HTTP status ${res.status}`);
+                throw new Error(json.message || `HTTP status ${res.status}`);
             }
-            return res.json();
+            return json;
         })
         .then(res => {
             btnDelete.disabled = false;
@@ -1572,11 +1860,19 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
             btnDelete.innerHTML = '<i class="fa-solid fa-trash me-1 text-white"></i> Ya, Hapus';
             hideModalDelete();
             console.error('Error delete:', err);
-            notifyToast('Terjadi kesalahan atau rute hapus tidak ditemukan (404).', false);
+            notifyToast(err.message || 'Gagal menghapus data.', false);
         });
     }
 
     document.addEventListener('click', function (e) {
+        const pokjaCard = e.target.closest('.card-pokja-clickable');
+        if (pokjaCard) {
+            e.preventDefault();
+            const pokja = pokjaCard.getAttribute('data-pokja');
+            if (pokja) openDetailPokjaModal(pokja);
+            return;
+        }
+
         if (e.target.closest('#btn-tab-dashboard')) {
             e.preventDefault();
             switchTab('dashboard');
@@ -1604,9 +1900,17 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
         } else if (e.target.closest('#btn-remove-pdf')) {
             e.preventDefault();
             document.getElementById('file-dokumen-pdf').value = '';
+            document.getElementById('remove-file-dokumen').value = '1';
             currentPdfUrl = '';
             currentPdfName = '';
             setPreviewPdf('', '');
+        } else if (e.target.closest('.btn-remove-foto')) {
+            e.preventDefault();
+            removeFoto(e.target.closest('.btn-remove-foto').getAttribute('data-num'));
+        } else if (e.target.closest('.btn-preview-media')) {
+            e.preventDefault();
+            const b = e.target.closest('.btn-preview-media');
+            openPreviewModal(b.dataset.type, b.dataset.url, b.dataset.title);
         } else if (e.target.closest('.btn-edit-item')) {
             e.preventDefault();
             openModalEdit(e.target.closest('.btn-edit-item').getAttribute('data-id'));
@@ -1724,6 +2028,17 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
         }
     });
 
+    document.addEventListener('change', function (e) {
+        const map = {
+            'file-foto-1': 'remove-foto-1',
+            'file-foto-2': 'remove-foto-2',
+            'file-dokumen-pdf': 'remove-file-dokumen'
+        };
+        if (map[e.target.id] && e.target.files && e.target.files.length) {
+            document.getElementById(map[e.target.id]).value = '0';
+        }
+    });
+
     document.addEventListener('input', function (e) {
         if (e.target.id === 'search-inovasi-input') {
             clearTimeout(searchDebounceTimer);
@@ -1745,6 +2060,21 @@ function syncKelurahanFilter(kecId, kelId, defaultText) {
     document.addEventListener('search', function (e) {
         if (e.target.id === 'search-inovasi-input') {
             renderCustomTable(true);
+        }
+    });
+
+    const AUTO_REFRESH_MS = 30000; 
+    function isAnyModalOpen() {
+        return !!document.querySelector('.modal.show');
+    }
+    setInterval(function () {
+        if (document.hidden || isAnyModalOpen()) return;
+        fetchDataFromServer(true);
+    }, AUTO_REFRESH_MS);
+
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden && !isAnyModalOpen()) {
+            fetchDataFromServer(true);
         }
     });
 
