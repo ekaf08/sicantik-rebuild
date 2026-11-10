@@ -38,4 +38,18 @@ class BumilController extends Controller
 
         return response()->json($data);
     }
+
+    // Riwayat satu ibu (untuk popup Lihat): riwayat kehamilan + riwayat calon pengantin
+    public function riwayat(string $id)
+    {
+        $id = IdCipher::decodeOrFail($id);
+        $bumil = Bumil::findOrFail($id);
+
+        $sembunyi = ['id', 'bumil_id', 'created_at', 'updated_at', 'deleted_at'];
+
+        return response()->json([
+            'kehamilan'       => $bumil->kehamilan()->orderBy('tanggal')->get()->makeHidden($sembunyi)->values(),
+            'calon_pengantin' => $bumil->calonPengantin()->orderBy('tanggal')->get()->makeHidden($sembunyi)->values(),
+        ]);
+    }
 }

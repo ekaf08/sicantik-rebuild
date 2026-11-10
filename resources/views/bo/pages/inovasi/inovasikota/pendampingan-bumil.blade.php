@@ -11,6 +11,11 @@
         transform: translateY(-3px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
     }
+    .card-kpi { cursor: pointer; }
+    .card-kpi.kpi-aktif { box-shadow: 0 10px 22px rgba(0,0,0,0.10) !important; transform: translateY(-3px); }
+    #bm-card-kek.kpi-aktif { border: 2px solid #d4608f !important; }
+    #bm-card-resti.kpi-aktif { border: 2px solid #e5655d !important; }
+    #bm-card-nifas.kpi-aktif { border: 2px solid #b57bbf !important; }
     .nav-pills-custom .nav-link {
         color: #5e6278;
         background: #f5f8fa;
@@ -34,8 +39,8 @@
         box-shadow: 0 4px 12px rgba(181, 123, 191, 0.3);
     }
     /* Teks tabel hitam: judul kolom tebal, isi tabel tipis */
-    #bm-table thead th { color: #000 !important; }
-    #bm-table tbody td { color: #000 !important; }
+    .bm-table thead th { color: #000 !important; }
+    .bm-table tbody td { color: #000 !important; }
 
     /* Popup Lihat (riwayat) */
     .bm-hero { background: linear-gradient(135deg, #d4608f 0%, #f3a0bd 100%); color: #fff; border-radius: 16px; padding: 20px 24px; }
@@ -47,6 +52,11 @@
     .bm-riwayat-head { color: #fff; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .bm-riwayat-a { background: linear-gradient(135deg, #f08fb0 0%, #d4608f 100%); }
     .bm-riwayat-b { background: linear-gradient(135deg, #8ab5a0 0%, #6f9c86 100%); }
+    .bm-riwayat.rw-a { border-color: #f08fb0; } .bm-riwayat.rw-b { border-color: #8ab5a0; }
+    .bm-mini-table thead th.bm-sort { cursor: pointer; user-select: none; }
+    .bm-mini-table thead th.bm-sort:hover { background: #f8d6e3; }
+    .bm-mini-table thead th .bm-arah { font-size: .6rem; margin-left: 4px; opacity: .55; }
+    .bm-rw-info { font-size: .8rem; font-weight: 600; color: #64748b; }
     .bm-mini-table { width: 100%; font-size: .82rem; }
     .bm-mini-table thead th { background: #fbe9f0; color: #5e2b2b; font-weight: 800; text-align: center; padding: 10px 12px; white-space: nowrap; text-transform: uppercase; font-size: .7rem; letter-spacing: .03em; }
     .bm-mini-table tbody td { color: #000; text-align: center; padding: 10px 12px; border-top: 1px dashed #e5e7eb; white-space: nowrap; font-weight: 600; }
@@ -69,6 +79,7 @@
     .bm-btn-lihat:hover i { color: #fff !important; }
     .bm-pg .page-item.active .page-link { background-color: #d4608f; border-color: #d4608f; color: #fff; }
     .bm-pg .page-link { color: #a8406f; }
+    .ik-sub-aktif .banner-inovasi-kota, [class*="ik-aktif-"] .banner-inovasi-kota { display: none !important; }
 </style>
 
 <!-- Banner Pendampingan Ibu Hamil (dipindah ke atas halaman oleh skrip di akhir file) -->
@@ -96,7 +107,7 @@
 <!-- KPI Metric Cards (dihitung otomatis dari data) -->
 <div class="row g-4 mb-6">
     <div class="col-12 col-sm-6 col-xl-4">
-        <div class="card card-flush h-100 card-kpi bg-white p-5 rounded-4">
+        <div class="card card-flush h-100 card-kpi bg-white p-5 rounded-4" id="bm-card-kek" role="button" tabindex="0" onclick="bmSwitchTab('kek')" onkeydown="if(event.key==='Enter'){bmSwitchTab('kek')}" title="Klik untuk lihat grafik dan datanya">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">TOTAL IBU HAMIL</span>
@@ -110,7 +121,7 @@
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-4">
-        <div class="card card-flush h-100 card-kpi bg-white p-5 rounded-4">
+        <div class="card card-flush h-100 card-kpi bg-white p-5 rounded-4" id="bm-card-resti" role="button" tabindex="0" onclick="bmSwitchTab('resti')" onkeydown="if(event.key==='Enter'){bmSwitchTab('resti')}" title="Klik untuk lihat grafik dan datanya">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">IBU HAMIL RESTI (RISIKO TINGGI)</span>
@@ -124,7 +135,7 @@
         </div>
     </div>
     <div class="col-12 col-sm-6 col-xl-4">
-        <div class="card card-flush h-100 card-kpi bg-white p-5 rounded-4">
+        <div class="card card-flush h-100 card-kpi bg-white p-5 rounded-4" id="bm-card-nifas" role="button" tabindex="0" onclick="bmSwitchTab('nifas')" onkeydown="if(event.key==='Enter'){bmSwitchTab('nifas')}" title="Klik untuk lihat grafik dan datanya">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <span class="text-gray-500 fw-bold fs-8 text-uppercase tracking-wider">TOTAL IBU NIFAS</span>
@@ -140,7 +151,7 @@
 </div>
 
 <!-- Section Grafik Pemetaan -->
-<div class="card card-flush border-0 shadow-sm rounded-4 mb-6">
+<div class="card card-flush border-0 shadow-sm rounded-4 mb-6" id="bm-chart-card">
     <div class="card-header align-items-center border-0 pt-6 px-6">
         <div>
             <h3 class="card-title fw-bolder text-gray-900 fs-3 m-0">Inovasi Ibu Hamil &amp; Nifas</h3>
@@ -148,13 +159,13 @@
         </div>
         <div class="card-toolbar">
             <div class="d-flex flex-wrap align-items-center gap-2 nav-pills-custom">
-                <button type="button" class="btn fw-bold fs-7 nav-link active-kek" id="bm-tab-kek" onclick="bmSwitchTab('kek')">
+                <button type="button" class="btn fw-bold fs-7 nav-link active-kek" id="bm-tab-kek" onclick="bmSwitchTab('kek', false)">
                     <i class="ki-outline ki-element-plus fs-5 me-1"></i> Ibu Hamil KEK
                 </button>
-                <button type="button" class="btn fw-bold fs-7 nav-link" id="bm-tab-resti" onclick="bmSwitchTab('resti')">
+                <button type="button" class="btn fw-bold fs-7 nav-link" id="bm-tab-resti" onclick="bmSwitchTab('resti', false)">
                     <i class="ki-outline ki-shield-cross fs-5 me-1"></i> Ibu Hamil Resti
                 </button>
-                <button type="button" class="btn fw-bold fs-7 nav-link" id="bm-tab-nifas" onclick="bmSwitchTab('nifas')">
+                <button type="button" class="btn fw-bold fs-7 nav-link" id="bm-tab-nifas" onclick="bmSwitchTab('nifas', false)">
                     <i class="ki-outline ki-heart fs-5 me-1"></i> Ibu Nifas
                 </button>
             </div>
@@ -206,26 +217,33 @@
     </div>
 </div>
 
-<!-- Section Tabel Data Detail -->
-<div class="card card-flush border-0 shadow-sm rounded-4">
+<!-- Tabel Data Ibu Hamil -->
+<div class="card card-flush border-0 shadow-sm rounded-4 mb-6" id="bm-sec-h">
+    <div class="card-header align-items-center border-0 pt-6 px-6">
+        <div class="d-flex align-items-center gap-2">
+            <span class="w-8px h-24px rounded-2" style="background-color:#d4608f;"></span>
+            <div>
+                <h3 class="card-title fw-bolder text-gray-900 fs-4 m-0">Data Ibu Hamil</h3>
+                <span class="text-gray-500 fs-8 fw-semibold">Ibu hamil yang belum melahirkan (otomatis hilang dari sini begitu melahirkan)</span>
+            </div>
+        </div>
+    </div>
     <div class="card-body p-6">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-6">
             <div class="d-flex align-items-center gap-2">
-                <select class="form-select form-select-solid w-75px fs-7 fw-bold" id="bm-table-length">
+                <select class="form-select form-select-solid w-75px fs-7 fw-bold" id="bm-h-length">
                     <option value="10">10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
                 </select>
             </div>
-
             <div class="d-flex align-items-center ms-auto">
                 <label class="fs-7 fw-semibold text-gray-700 me-2">Search:</label>
-                <input type="text" id="bm-input-search" class="form-control form-control-solid w-225px fs-7 fw-semibold" />
+                <input type="text" id="bm-h-search" class="form-control form-control-solid w-225px fs-7 fw-semibold" />
             </div>
         </div>
-
         <div class="table-responsive">
-            <table class="table align-middle table-row-dashed fs-7 gy-4 gs-4" id="bm-table">
+            <table class="table align-middle table-row-dashed fs-7 gy-4 gs-4 bm-table">
                 <thead>
                     <tr class="fw-bolder bg-light-subtle text-uppercase border-bottom">
                         <th class="w-50px text-center">NO</th>
@@ -233,18 +251,121 @@
                         <th>NIK</th>
                         <th>NAMA</th>
                         <th>ALAMAT DOMISILI</th>
+                        <th class="text-center">HAMIL KE</th>
+                        <th class="text-center">TAHUN HAMIL</th>
                         <th class="text-center">AKSI</th>
                     </tr>
                 </thead>
-                <tbody class="fw-semibold" id="bm-tbody">
-                    <tr><td colspan="6" class="text-center py-5 text-gray-500">Memuat data...</td></tr>
+                <tbody class="fw-semibold" id="bm-h-tbody">
+                    <tr><td colspan="8" class="text-center py-5 text-gray-500">Memuat data...</td></tr>
                 </tbody>
             </table>
         </div>
-
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4">
-            <span class="text-gray-600 fs-8 fw-semibold" id="bm-info"></span>
-            <ul class="pagination pagination-outline bm-pg mb-0" id="bm-pagination"></ul>
+            <span class="text-gray-600 fs-8 fw-semibold" id="bm-h-info"></span>
+            <ul class="pagination pagination-outline bm-pg mb-0" id="bm-h-pagination"></ul>
+        </div>
+    </div>
+</div>
+
+<!-- Tabel Data Ibu Hamil Resti -->
+<div class="card card-flush border-0 shadow-sm rounded-4 mb-6 d-none" id="bm-sec-r">
+    <div class="card-header align-items-center border-0 pt-6 px-6">
+        <div class="d-flex align-items-center gap-2">
+            <span class="w-8px h-24px rounded-2" style="background-color:#e5655d;"></span>
+            <div>
+                <h3 class="card-title fw-bolder text-gray-900 fs-4 m-0">Data Ibu Hamil Resti</h3>
+                <span class="text-gray-500 fs-8 fw-semibold">Ibu hamil dengan risiko tinggi, belum melahirkan</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-6">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-6">
+            <div class="d-flex align-items-center gap-2">
+                <select class="form-select form-select-solid w-75px fs-7 fw-bold" id="bm-r-length">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                </select>
+            </div>
+            <div class="d-flex align-items-center ms-auto">
+                <label class="fs-7 fw-semibold text-gray-700 me-2">Search:</label>
+                <input type="text" id="bm-r-search" class="form-control form-control-solid w-225px fs-7 fw-semibold" />
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle table-row-dashed fs-7 gy-4 gs-4 bm-table">
+                <thead>
+                    <tr class="fw-bolder bg-light-subtle text-uppercase border-bottom">
+                        <th class="w-50px text-center">NO</th>
+                        <th>NO KK</th>
+                        <th>NIK</th>
+                        <th>NAMA</th>
+                        <th>ALAMAT DOMISILI</th>
+                        <th class="text-center">HAMIL KE</th>
+                        <th class="text-center">TAHUN HAMIL</th>
+                        <th class="text-center">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody class="fw-semibold" id="bm-r-tbody">
+                    <tr><td colspan="8" class="text-center py-5 text-gray-500">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4">
+            <span class="text-gray-600 fs-8 fw-semibold" id="bm-r-info"></span>
+            <ul class="pagination pagination-outline bm-pg mb-0" id="bm-r-pagination"></ul>
+        </div>
+    </div>
+</div>
+
+<!-- Tabel Data Ibu Nifas -->
+<div class="card card-flush border-0 shadow-sm rounded-4 mb-6 d-none" id="bm-sec-n">
+    <div class="card-header align-items-center border-0 pt-6 px-6">
+        <div class="d-flex align-items-center gap-2">
+            <span class="w-8px h-24px rounded-2" style="background-color:#b57bbf;"></span>
+            <div>
+                <h3 class="card-title fw-bolder text-gray-900 fs-4 m-0">Data Ibu Nifas</h3>
+                <span class="text-gray-500 fs-8 fw-semibold">Ibu yang sudah melahirkan dan dalam masa nifas</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-6">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-6">
+            <div class="d-flex align-items-center gap-2">
+                <select class="form-select form-select-solid w-75px fs-7 fw-bold" id="bm-n-length">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                </select>
+            </div>
+            <div class="d-flex align-items-center ms-auto">
+                <label class="fs-7 fw-semibold text-gray-700 me-2">Search:</label>
+                <input type="text" id="bm-n-search" class="form-control form-control-solid w-225px fs-7 fw-semibold" />
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle table-row-dashed fs-7 gy-4 gs-4 bm-table">
+                <thead>
+                    <tr class="fw-bolder bg-light-subtle text-uppercase border-bottom">
+                        <th class="w-50px text-center">NO</th>
+                        <th>NO KK</th>
+                        <th>NIK</th>
+                        <th>NAMA</th>
+                        <th>ALAMAT DOMISILI</th>
+                        <th class="text-center">HAMIL KE</th>
+                        <th class="text-center">TAHUN HAMIL</th>
+                        <th class="text-center">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody class="fw-semibold" id="bm-n-tbody">
+                    <tr><td colspan="8" class="text-center py-5 text-gray-500">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4">
+            <span class="text-gray-600 fs-8 fw-semibold" id="bm-n-info"></span>
+            <ul class="pagination pagination-outline bm-pg mb-0" id="bm-n-pagination"></ul>
         </div>
     </div>
 </div>
@@ -270,12 +391,16 @@
 <script>
 (function () {
     const $ = function (id) { return document.getElementById(id); };
-    const KOLOM = 6;
+    const KOLOM = 8;
 
     let wilayah = {};
     let semuaData = [];
     let mode = 'kek';          // kek | resti | nifas
-    let page = 1;
+    const TBL = {
+        hamil: { p: 'bm-h', page: 1 },
+        resti: { p: 'bm-r', page: 1 },
+        nifas: { p: 'bm-n', page: 1 }
+    };
     let chart = null;
     let pluginTerdaftar = false;
 
@@ -291,6 +416,21 @@
     }
     function norm(v) { return String(v || '').trim().toUpperCase(); }
     function angka(v) { return (Number(v) || 0).toLocaleString('id-ID'); }
+
+    // Ibu hamil aktif = kategori hamil DAN belum melahirkan (kalau sudah melahirkan otomatis hilang dari daftar hamil/resti)
+    function sudahLahir(r) {
+        return !!(r.sudah_melahirkan || r.tanggal_melahirkan || r.tgl_melahirkan || r.tanggal_lahir_bayi);
+    }
+    function aktifHamil(r) { return r.kategori === 'hamil' && !sudahLahir(r); }
+    function hamilKe(r) {
+        const v = r.hamil_ke !== undefined && r.hamil_ke !== null && r.hamil_ke !== '' ? r.hamil_ke : (r.kehamilan_ke || r.gravida);
+        return v ? v : '-';
+    }
+    function tahunHamil(r) {
+        if (r.tahun_hamil) return r.tahun_hamil;
+        const t = String(r.tanggal || '').substring(0, 4);
+        return /^\d{4}$/.test(t) ? t : '-';
+    }
 
     // ---------- Filter dasar (kecamatan, bulan, tahun) ----------
     function lolosFilter(r) {
@@ -309,7 +449,7 @@
 
     // ---------- KPI ----------
     function updateKpi() {
-        const hamil = semuaData.filter(function (r) { return r.kategori === 'hamil'; });
+        const hamil = semuaData.filter(aktifHamil);
         $('bm-kpi-hamil').textContent = angka(hamil.length);
         $('bm-kpi-resti').textContent = angka(hamil.filter(function (r) { return r.resti; }).length);
         $('bm-kpi-nifas').textContent = angka(semuaData.filter(function (r) { return r.kategori === 'nifas'; }).length);
@@ -352,13 +492,13 @@
         const g = labelGrafik();
         let dataset = [];
         if (mode === 'kek') {
-            const hamil = function (r) { return r.kategori === 'hamil'; };
+            const hamil = aktifHamil;
             dataset = [
                 garis('Ibu Hamil KEK', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.status_kek === 'KEK'; }), '#d4608f', false),
                 garis('Ibu Hamil Tidak KEK', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.status_kek !== 'KEK'; }), '#6f9c86', true)
             ];
         } else if (mode === 'resti') {
-            const hamil = function (r) { return r.kategori === 'hamil'; };
+            const hamil = aktifHamil;
             dataset = [
                 garis('Ibu Hamil Resti', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && r.resti; }), '#e5655d', false),
                 garis('Ibu Hamil Tidak Resti', hitung(g.daftar, g.kunci, function (r) { return hamil(r) && !r.resti; }), '#7f9bb8', true)
@@ -395,12 +535,16 @@
         });
     }
 
-    // ---------- Tabel ----------
-    function dataTabel() {
-        const q = $('bm-input-search').value.trim().toLowerCase();
+    // ---------- Tabel (3 tabel terpisah: hamil, resti, nifas) ----------
+    function dataTabel(jenis) {
+        const q = $(TBL[jenis].p + '-search').value.trim().toLowerCase();
         return semuaData.filter(function (r) {
-            if (mode === 'nifas' ? r.kategori !== 'nifas' : r.kategori !== 'hamil') return false;
-            if (mode === 'resti' && !r.resti) return false;
+            if (jenis === 'nifas') { if (r.kategori !== 'nifas') return false; }
+            else {
+                if (!aktifHamil(r)) return false;
+                if (jenis === 'resti' && !r.resti) return false;
+                if (jenis === 'hamil' && r.resti) return false;
+            }
             if (!lolosFilter(r)) return false;
             if (q) {
                 const teks = [r.no_kk, r.nik, r.nama, r.alamat, r.kecamatan, r.kelurahan].join(' ').toLowerCase();
@@ -410,40 +554,45 @@
         });
     }
 
-    function renderTabel() {
-        const rows = dataTabel();
-        const perPage = parseInt($('bm-table-length').value, 10) || 10;
+    function renderTabel(jenis) {
+        const T = TBL[jenis], p = T.p;
+        const rows = dataTabel(jenis);
+        const perPage = parseInt($(p + '-length').value, 10) || 10;
         const totalPage = Math.max(1, Math.ceil(rows.length / perPage));
-        if (page > totalPage) page = totalPage;
+        if (T.page > totalPage) T.page = totalPage;
+        const page = T.page;
         const mulai = (page - 1) * perPage;
         const tampil = rows.slice(mulai, mulai + perPage);
 
         if (!tampil.length) {
-            $('bm-tbody').innerHTML = '<tr><td colspan="' + KOLOM + '" class="text-center py-5 text-gray-500">Belum ada data tersedia</td></tr>';
+            $(p + '-tbody').innerHTML = '<tr><td colspan="' + KOLOM + '" class="text-center py-5 text-gray-500">Belum ada data tersedia</td></tr>';
         } else {
-            $('bm-tbody').innerHTML = tampil.map(function (r, i) {
+            $(p + '-tbody').innerHTML = tampil.map(function (r, i) {
                 return '<tr>' +
                     '<td class="text-center fw-bold">' + (mulai + i + 1) + '</td>' +
                     '<td>' + esc(r.no_kk || '-') + '</td>' +
                     '<td>' + esc(r.nik || '-') + '</td>' +
                     '<td class="fw-bold">' + esc(r.nama) + '</td>' +
                     '<td>' + esc(r.alamat || '-') + '</td>' +
+                    '<td class="text-center fw-bold">' + esc(hamilKe(r)) + '</td>' +
+                    '<td class="text-center">' + esc(tahunHamil(r)) + '</td>' +
                     '<td class="text-center"><button class="btn btn-sm btn-icon rounded-circle bm-btn-lihat" data-id="' + esc(r.id) + '" title="Lihat"><i class="ki-outline ki-eye fs-5"></i></button></td>' +
                     '</tr>';
             }).join('');
         }
 
-        $('bm-info').textContent = rows.length
+        $(p + '-info').textContent = rows.length
             ? 'Menampilkan ' + (mulai + 1) + ' - ' + (mulai + tampil.length) + ' dari ' + rows.length + ' data'
             : 'Tidak ada data';
 
-        let pg = '<li class="page-item ' + (page === 1 ? 'disabled' : '') + '"><a class="page-link bm-page" href="#" data-page="' + (page - 1) + '">Sebelumnya</a></li>';
-        for (let p = 1; p <= totalPage; p++) {
-            pg += '<li class="page-item ' + (p === page ? 'active' : '') + '"><a class="page-link bm-page" href="#" data-page="' + p + '">' + p + '</a></li>';
+        let pg = '<li class="page-item ' + (page === 1 ? 'disabled' : '') + '"><a class="page-link bm-page" href="#" data-page="' + (page - 1) + '" title="Sebelumnya">&lsaquo;</a></li>';
+        for (let n = 1; n <= totalPage; n++) {
+            pg += '<li class="page-item ' + (n === page ? 'active' : '') + '"><a class="page-link bm-page" href="#" data-page="' + n + '">' + n + '</a></li>';
         }
-        pg += '<li class="page-item ' + (page === totalPage ? 'disabled' : '') + '"><a class="page-link bm-page" href="#" data-page="' + (page + 1) + '">Berikutnya</a></li>';
-        $('bm-pagination').innerHTML = pg;
+        pg += '<li class="page-item ' + (page === totalPage ? 'disabled' : '') + '"><a class="page-link bm-page" href="#" data-page="' + (page + 1) + '" title="Berikutnya">&rsaquo;</a></li>';
+        $(p + '-pagination').innerHTML = pg;
     }
+    function renderSemuaTabel() { Object.keys(TBL).forEach(renderTabel); }
 
     // ---------- Popup lihat (riwayat ibu) ----------
     function fmtAngka(v, maks) {
@@ -473,26 +622,88 @@
     function itemInfo(label, nilai) {
         return '<div class="col-6 col-md-3 bm-info-item mb-3"><label>' + label + '</label><span>' + (nilai || '-') + '</span></div>';
     }
-    function tabelMini(kolom, rows, pesanKosong) {
-        let h = '<div class="table-responsive"><table class="bm-mini-table"><thead><tr><th>No</th>' +
-            kolom.map(function (k) { return '<th>' + k.judul + '</th>'; }).join('') + '</tr></thead><tbody>';
-        if (!rows.length) {
-            h += '<tr><td colspan="' + (kolom.length + 1) + '" class="text-gray-500 py-5">' + pesanKosong + '</td></tr>';
+    // Tabel riwayat dengan urut kolom + halaman (5 baris per halaman)
+    const RW = {};
+    function pasangTabel(id, kolom, rows, pesanKosong) {
+        RW[id] = { kolom: kolom, rows: rows, kosong: pesanKosong, page: 1, sort: null, asc: true, per: 5 };
+        gambarTabel(id);
+    }
+    function nilaiUrut(k, r) {
+        if (k.urut) return k.urut(r);
+        return String(k.nilai(r)).replace(/<[^>]*>/g, '');
+    }
+    function gambarTabel(id) {
+        const T = RW[id], el = $(id);
+        if (!el) return;
+        let rows = T.rows.slice();
+        if (T.sort !== null) {
+            const k = T.kolom[T.sort];
+            rows.sort(function (x, y) {
+                const c = String(nilaiUrut(k, x)).localeCompare(String(nilaiUrut(k, y)), 'id', { numeric: true });
+                return T.asc ? c : -c;
+            });
+        } else if (!T.asc) { rows.reverse(); }
+        const total = rows.length;
+        const totalPage = Math.max(1, Math.ceil(total / T.per));
+        if (T.page > totalPage) T.page = totalPage;
+        const mulai = (T.page - 1) * T.per;
+        const tampil = rows.slice(mulai, mulai + T.per);
+        const panah = function (aktif) { return '<span class="bm-arah">' + (aktif ? (T.asc ? '&#9650;' : '&#9660;') : '&#8645;') + '</span>'; };
+
+        let h = '<div class="table-responsive"><table class="bm-mini-table"><thead><tr>' +
+            '<th class="bm-sort" data-k="-1">No' + panah(T.sort === null && !T.asc) + '</th>' +
+            T.kolom.map(function (k, i) { return '<th class="bm-sort" data-k="' + i + '">' + k.judul + panah(T.sort === i) + '</th>'; }).join('') +
+            '</tr></thead><tbody>';
+        if (!tampil.length) {
+            h += '<tr><td colspan="' + (T.kolom.length + 1) + '" class="text-gray-500 py-5">' + T.kosong + '</td></tr>';
         } else {
-            h += rows.map(function (r, i) {
-                return '<tr><td>' + (i + 1) + '.</td>' + kolom.map(function (k) { return '<td>' + k.nilai(r) + '</td>'; }).join('') + '</tr>';
+            h += tampil.map(function (r, i) {
+                return '<tr><td>' + (mulai + i + 1) + '.</td>' + T.kolom.map(function (k) { return '<td>' + k.nilai(r) + '</td>'; }).join('') + '</tr>';
             }).join('');
         }
-        return h + '</tbody></table></div>';
+        h += '</tbody></table></div>';
+
+        let pg = '<li class="page-item ' + (T.page === 1 ? 'disabled' : '') + '"><a class="page-link bm-rw-page" href="#" data-page="' + (T.page - 1) + '">&lsaquo;</a></li>';
+        for (let n = 1; n <= totalPage; n++) {
+            pg += '<li class="page-item ' + (n === T.page ? 'active' : '') + '"><a class="page-link bm-rw-page" href="#" data-page="' + n + '">' + n + '</a></li>';
+        }
+        pg += '<li class="page-item ' + (T.page === totalPage ? 'disabled' : '') + '"><a class="page-link bm-rw-page" href="#" data-page="' + (T.page + 1) + '">&rsaquo;</a></li>';
+        h += '<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-3">' +
+            '<span class="bm-rw-info">' + (total ? 'Menampilkan ' + (mulai + 1) + ' - ' + (mulai + tampil.length) + ' dari ' + total + ' data' : 'Tidak ada data') + '</span>' +
+            '<ul class="pagination pagination-outline bm-pg mb-0">' + pg + '</ul></div>';
+        el.innerHTML = h;
     }
-    function kartuRiwayat(kelas, ikon, judul, jumlah, isi) {
-        return '<div class="bm-riwayat mb-5"><div class="bm-riwayat-head ' + kelas + '">' +
+    document.addEventListener('click', function (e) {
+        const wadah = e.target.closest('[data-rw]');
+        if (!wadah) return;
+        const id = wadah.id, T = RW[id];
+        if (!T) return;
+        const a = e.target.closest('.bm-rw-page');
+        if (a) {
+            e.preventDefault();
+            const n = parseInt(a.dataset.page, 10);
+            if (n >= 1) { T.page = n; gambarTabel(id); }
+            return;
+        }
+        const th = e.target.closest('th.bm-sort');
+        if (th) {
+            const k = parseInt(th.dataset.k, 10);
+            if (k === -1) { T.sort = null; T.asc = !T.asc; }
+            else if (T.sort === k) { T.asc = !T.asc; }
+            else { T.sort = k; T.asc = true; }
+            T.page = 1;
+            gambarTabel(id);
+        }
+    });
+    function kartuRiwayat(kelas, ikon, judul, id, jumlah) {
+        return '<div class="bm-riwayat ' + (kelas === 'bm-riwayat-a' ? 'rw-a' : 'rw-b') + ' mb-5"><div class="bm-riwayat-head ' + kelas + '">' +
             '<div class="d-flex align-items-center gap-2"><i class="ki-outline ' + ikon + ' fs-2 text-white"></i><span class="fw-bolder fs-5">' + judul + '</span></div>' +
-            '<span class="bm-chip">' + jumlah + ' catatan</span></div><div class="p-4">' + isi + '</div></div>';
+            '<span class="bm-chip" id="' + id + '-chip">' + (jumlah === null ? '...' : jumlah + ' catatan') + '</span></div>' +
+            '<div class="p-4" id="' + id + '" data-rw="1"><div class="text-center text-gray-500 py-6"><span class="spinner-border spinner-border-sm me-2"></span>Memuat riwayat...</div></div></div>';
     }
 
     const KOLOM_KEHAMILAN = [
-        { judul: 'Tanggal',         nilai: function (r) { return esc(fmtTgl(r.tanggal)); } },
+        { judul: 'Tanggal',         nilai: function (r) { return esc(fmtTgl(r.tanggal)); }, urut: function (r) { return String(r.tanggal || ''); } },
         { judul: 'Usia Kehamilan',  nilai: function (r) { return satuan(r.usia_kehamilan, 'minggu', 0); } },
         { judul: 'HB',              nilai: function (r) { return satuan(r.hb, 'g/dL'); } },
         { judul: 'BB',              nilai: function (r) { return satuan(r.bb, 'kg'); } },
@@ -505,7 +716,7 @@
     ];
     const KOLOM_CATIN = [
         { judul: 'NIK',               nilai: function (r) { return esc(r.nik || '-'); } },
-        { judul: 'Tanggal',           nilai: function (r) { return esc(fmtTgl(r.tanggal)); } },
+        { judul: 'Tanggal',           nilai: function (r) { return esc(fmtTgl(r.tanggal)); }, urut: function (r) { return String(r.tanggal || ''); } },
         { judul: 'Hasil Pemeriksaan', nilai: function (r) { return esc(r.hasil_pemeriksaan || '-'); } },
         { judul: 'BB',                nilai: function (r) { return satuan(r.bb, 'kg'); } },
         { judul: 'TB',                nilai: function (r) { return satuan(r.tb, 'cm'); } },
@@ -540,54 +751,71 @@
                 itemInfo('Kecamatan', esc(r.kecamatan)) +
                 itemInfo('Kelurahan', esc(r.kelurahan)) +
                 itemInfo('RW / RT', esc((r.rw || '-') + ' / ' + (r.rt || '-'))) +
+                itemInfo('Hamil Ke', esc(hamilKe(r))) +
+                itemInfo('Tahun Hamil', esc(tahunHamil(r))) +
                 '<div class="col-12 bm-info-item mb-3"><label>Alamat Domisili</label><span>' + esc(r.alamat || '-') + '</span></div>' +
             '</div>' +
-            '<div id="bm-riwayat-isi"><div class="text-center text-gray-500 py-8"><span class="spinner-border spinner-border-sm me-2"></span>Memuat riwayat...</div></div>';
+            '<div id="bm-riwayat-isi">' +
+                kartuRiwayat('bm-riwayat-a', 'ki-heart', 'Riwayat Kehamilan Ibu', 'bm-rw-kh', null) +
+                kartuRiwayat('bm-riwayat-b', 'ki-profile-user', 'Riwayat Calon Pengantin', 'bm-rw-cp', null) +
+            '</div>';
 
         bootstrap.Modal.getOrCreateInstance($('modal_detail_bumil')).show();
 
+        function isi(kh, cp) {
+            $('bm-rw-kh-chip').textContent = kh.length + ' catatan';
+            $('bm-rw-cp-chip').textContent = cp.length + ' catatan';
+            pasangTabel('bm-rw-kh', KOLOM_KEHAMILAN, kh, 'Belum ada riwayat kehamilan');
+            pasangTabel('bm-rw-cp', KOLOM_CATIN, cp, 'Belum ada riwayat calon pengantin');
+        }
         ambil('/bumil-data/' + r.id + '/riwayat')
-            .then(function (res) {
-                const kh = res.kehamilan || [];
-                const cp = res.calon_pengantin || [];
-                $('bm-riwayat-isi').innerHTML =
-                    kartuRiwayat('bm-riwayat-a', 'ki-heart', 'Riwayat Kehamilan Ibu', kh.length, tabelMini(KOLOM_KEHAMILAN, kh, 'Belum ada riwayat kehamilan')) +
-                    kartuRiwayat('bm-riwayat-b', 'ki-profile-user', 'Riwayat Calon Pengantin', cp.length, tabelMini(KOLOM_CATIN, cp, 'Belum ada riwayat calon pengantin'));
-            })
+            .then(function (res) { isi(res.kehamilan || [], res.calon_pengantin || res.catin || []); })
             .catch(function () {
-                $('bm-riwayat-isi').innerHTML = '<div class="text-center text-danger py-6">Gagal memuat riwayat.</div>';
+                isi([], []);
+                $('bm-rw-kh').insertAdjacentHTML('afterbegin', '<div class="text-center text-danger fs-8 fw-bold mb-2">Gagal memuat riwayat dari server.</div>');
             });
     }
 
     // ---------- Tab + filter ----------
-    function perbaruiSemua() { page = 1; renderChart(); renderTabel(); }
+    function perbaruiSemua() { Object.keys(TBL).forEach(function (k) { TBL[k].page = 1; }); renderChart(); renderSemuaTabel(); }
 
-    window.bmSwitchTab = function (m) {
+    // Klik kartu / tab: tampilkan grafik + tabel jenis itu saja
+    const SEKSI = { kek: 'bm-sec-h', resti: 'bm-sec-r', nifas: 'bm-sec-n' };
+    window.bmSwitchTab = function (m, dariKlik) {
         mode = m;
         Object.keys(TAB).forEach(function (k) {
             $(TAB[k].tombol).className = 'btn fw-bold fs-7 nav-link' + (k === m ? ' ' + TAB[k].kelas : '');
+            $('bm-card-' + k).classList.toggle('kpi-aktif', k === m);
+            $(SEKSI[k]).classList.toggle('d-none', k !== m);
         });
         $('bm-judul').textContent = TAB[m].judul;
         $('bm-indicator').style.backgroundColor = TAB[m].warna;
-        perbaruiSemua();
+        renderChart();
+        if (dariKlik !== false) {
+            const c = $('bm-chart-card');
+            if (c && c.scrollIntoView) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     };
 
     ['bm-filter-bulan', 'bm-filter-tahun', 'bm-filter-kecamatan'].forEach(function (id) {
         $(id).addEventListener('change', perbaruiSemua);
     });
-    $('bm-table-length').addEventListener('change', function () { page = 1; renderTabel(); });
-    $('bm-input-search').addEventListener('input', function () { page = 1; renderTabel(); });
 
-    $('bm-pagination').addEventListener('click', function (e) {
-        const a = e.target.closest('.bm-page');
-        if (!a) return;
-        e.preventDefault();
-        const p = parseInt(a.dataset.page, 10);
-        if (p >= 1) { page = p; renderTabel(); }
-    });
-    $('bm-tbody').addEventListener('click', function (e) {
-        const b = e.target.closest('.bm-btn-lihat');
-        if (b) lihat(b.dataset.id);
+    Object.keys(TBL).forEach(function (jenis) {
+        const p = TBL[jenis].p;
+        $(p + '-length').addEventListener('change', function () { TBL[jenis].page = 1; renderTabel(jenis); });
+        $(p + '-search').addEventListener('input', function () { TBL[jenis].page = 1; renderTabel(jenis); });
+        $(p + '-pagination').addEventListener('click', function (e) {
+            const a = e.target.closest('.bm-page');
+            if (!a) return;
+            e.preventDefault();
+            const n = parseInt(a.dataset.page, 10);
+            if (n >= 1) { TBL[jenis].page = n; renderTabel(jenis); }
+        });
+        $(p + '-tbody').addEventListener('click', function (e) {
+            const b = e.target.closest('.bm-btn-lihat');
+            if (b) lihat(b.dataset.id);
+        });
     });
 
     // ---------- Ambil data ----------
@@ -611,12 +839,12 @@
             .then(function (data) { semuaData = data; })
             .catch(function () {
                 semuaData = [];
-                $('bm-tbody').innerHTML = '<tr><td colspan="' + KOLOM + '" class="text-center text-danger py-5">Gagal memuat data. Pastikan migrasi sudah dijalankan dan route sudah ditambahkan.</td></tr>';
+                Object.keys(TBL).forEach(function (k) { $(TBL[k].p + '-tbody').innerHTML = '<tr><td colspan="' + KOLOM + '" class="text-center text-danger py-5">Gagal memuat data. Pastikan migrasi sudah dijalankan dan route sudah ditambahkan.</td></tr>'; });
             })
             .then(function () {
                 updateKpi();
-                renderChart();
-                if (semuaData.length || !$('bm-tbody').textContent.includes('Gagal')) renderTabel();
+                window.bmSwitchTab(mode, false);
+                if (semuaData.length || !$('bm-h-tbody').textContent.includes('Gagal')) renderSemuaTabel();
             });
     }
 
@@ -625,26 +853,29 @@
 </script>
 
 <script>
-// Ganti banner hijau "INOVASI KOTA" di atas halaman dengan banner pink saat sub menu ini dibuka
+// Banner pastel Ibu Hamil menggantikan banner hijau saat sub menu ini dibuka
 (function () {
     function mulai() {
-        var pink = document.getElementById('bmb-top');
+        if (document.getElementById('kb-banner')) return; // sudah ditangani index.blade.php
+        var baru = document.getElementById('bmb-top');
         var kontainer = document.getElementById('content-pendampingan-bumil');
+        var area = document.getElementById('kt_app_content_container') || document.body;
+        var pilihEl = document.getElementById('select-filter-inovasi');
         var sub = document.getElementById('banner-subtitle-inovasi');
-        var asli = (sub && sub.closest('.card')) || document.querySelector('.banner-inovasi-kota');
-        if (!pink || !kontainer || !asli) return;
-        asli.parentNode.insertBefore(pink, asli);
+        if (!baru || !kontainer) return;
+        var titik = sub || pilihEl;
+        if (titik && pilihEl) { while (titik.parentElement && !titik.parentElement.contains(pilihEl)) titik = titik.parentElement; }
+        if (titik && titik.parentNode) titik.parentNode.insertBefore(baru, titik);
 
         function sinkron() {
             var tampil = kontainer.offsetParent !== null;
-            pink.classList.toggle('d-none', !tampil);
-            asli.style.display = tampil ? 'none' : '';
+            baru.classList.toggle('d-none', !tampil);
+            area.classList.toggle('ik-aktif-bmb', tampil);
         }
         var ob = new MutationObserver(sinkron);
         ob.observe(kontainer, { attributes: true, attributeFilter: ['class', 'style'] });
         if (kontainer.parentElement) ob.observe(kontainer.parentElement, { attributes: true, attributeFilter: ['class', 'style'] });
-        var pilih = document.getElementById('select-filter-inovasi');
-        if (pilih) pilih.addEventListener('change', function () { setTimeout(sinkron, 50); });
+        if (pilihEl) pilihEl.addEventListener('change', function () { setTimeout(sinkron, 50); });
         sinkron();
     }
     document.addEventListener('DOMContentLoaded', mulai);

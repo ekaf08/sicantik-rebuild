@@ -420,11 +420,11 @@
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">RT <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-solid" id="mk-add-rt" required>
+                            <input type="text" class="form-control form-control-solid" id="mk-add-rt" placeholder="Contoh: 1" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">RW <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-solid" id="mk-add-rw" required>
+                            <input type="text" class="form-control form-control-solid" id="mk-add-rw" placeholder="Contoh: 1" required>
                         </div>
                     </div>
 
@@ -440,7 +440,14 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">JUARA</label>
-                            <input type="text" class="form-control form-control-solid" id="mk-add-juara" placeholder="Contoh: Juara 1">
+                            <select class="form-select form-select-solid" id="mk-add-juara">
+                                <option value="">-- Pilih Juara --</option>
+                                <option value="Juara 1">Juara 1</option>
+                                <option value="Juara 2">Juara 2</option>
+                                <option value="Juara 3">Juara 3</option>
+                                <option value="Juara 4">Juara 4</option>
+                                <option value="Juara 5">Juara 5</option>
+                            </select>
                         </div>
                     </div>
 
@@ -556,11 +563,11 @@
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">RT <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-solid" id="mk-edit-rt" required>
+                            <input type="text" class="form-control form-control-solid" id="mk-edit-rt" placeholder="Contoh: 1" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">RW <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-solid" id="mk-edit-rw" required>
+                            <input type="text" class="form-control form-control-solid" id="mk-edit-rw" placeholder="Contoh: 1" required>
                         </div>
                     </div>
 
@@ -575,7 +582,14 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fs-8 fw-bold text-uppercase text-gray-700">JUARA</label>
-                            <input type="text" class="form-control form-control-solid" id="mk-edit-juara">
+                            <select class="form-select form-select-solid" id="mk-edit-juara">
+                                <option value="">-- Pilih Juara --</option>
+                                <option value="Juara 1">Juara 1</option>
+                                <option value="Juara 2">Juara 2</option>
+                                <option value="Juara 3">Juara 3</option>
+                                <option value="Juara 4">Juara 4</option>
+                                <option value="Juara 5">Juara 5</option>
+                            </select>
                         </div>
                     </div>
 
@@ -800,7 +814,12 @@
         document.getElementById('mk-edit-rt').value = row.rt || '';
         document.getElementById('mk-edit-rw').value = row.rw || '';
         document.getElementById('mk-edit-tahun').value = row.tahun;
-        document.getElementById('mk-edit-juara').value = row.juara || '';
+        var selJuara = document.getElementById('mk-edit-juara');
+        // data lama yang isinya bukan Juara 1-5 tetap ditampilkan agar tidak hilang
+        if (row.juara && !Array.prototype.some.call(selJuara.options, function (o) { return o.value === row.juara; })) {
+            selJuara.appendChild(new Option(row.juara, row.juara));
+        }
+        selJuara.value = row.juara || '';
         document.getElementById('mk-edit-preview-1').innerHTML = photoBoxHtml(row.foto_1_url);
         document.getElementById('mk-edit-preview-2').innerHTML = photoBoxHtml(row.foto_2_url);
         document.getElementById('mk-edit-foto1').value = '';
@@ -974,28 +993,34 @@
 })();
 </script>
 
-{{-- Tukar banner: banner pastel Makan Ketan naik ke posisi banner atas, banner hijau disembunyikan --}}
+<style>
+    [class*="ik-aktif-"] .banner-inovasi-kota { display: none !important; }
+</style>
 <script>
+// Banner pastel menggantikan banner hijau saat sub menu ini dibuka
 (function () {
-    var banner = document.getElementById('mk-top-banner');
-    if (!banner) return;
-    var item = banner.closest('.inovasi-item-view');   // wadah konten Makan Ketan (tampil/sembunyi sesuai dropdown)
-    var hijau = document.querySelector('#banner-inovasi-default, .banner-inovasi-kota');   // banner hijau di index.blade.php
-
-    // Pindahkan banner pastel ke posisi banner hijau (tepat di bawahnya)
-    if (hijau && item) hijau.insertAdjacentElement('afterend', banner);
-
-    function sync() {
-        var tampil = !item || item.offsetParent !== null;
-        banner.classList.toggle('d-none', !tampil);
-        // Banner hijau tampil hanya jika tidak ada banner submenu yang sedang aktif
-        if (hijau) hijau.classList.toggle('d-none', !!document.querySelector('.sub-banner-top:not(.d-none)'));
+    function mulai() {
+        if (document.getElementById('kb-banner')) return;
+        var baru = document.getElementById('mk-top-banner');
+        var kontainer = document.getElementById('content-makan-ketan');
+        var area = document.getElementById('kt_app_content_container') || document.body;
+        var pilihEl = document.getElementById('select-filter-inovasi');
+        var sub = document.getElementById('banner-subtitle-inovasi');
+        if (!baru || !kontainer) return;
+        var titik = sub || pilihEl;
+        if (titik && pilihEl) { while (titik.parentElement && !titik.parentElement.contains(pilihEl)) titik = titik.parentElement; }
+        if (titik && titik.parentNode) titik.parentNode.insertBefore(baru, titik);
+        function sinkron() {
+            var tampil = kontainer.offsetParent !== null;
+            baru.classList.toggle('d-none', !tampil);
+            area.classList.toggle('ik-aktif-mkt', tampil);
+        }
+        var ob = new MutationObserver(sinkron);
+        ob.observe(kontainer, { attributes: true, attributeFilter: ['class', 'style'] });
+        if (kontainer.parentElement) ob.observe(kontainer.parentElement, { attributes: true, attributeFilter: ['class', 'style'] });
+        if (pilihEl) pilihEl.addEventListener('change', function () { setTimeout(sinkron, 50); });
+        sinkron();
     }
-
-    if (item) new MutationObserver(sync).observe(item, { attributes: true, attributeFilter: ['class', 'style'] });
-    document.addEventListener('change', function (e) {
-        if (e.target && (e.target.id === 'select-filter-inovasi' || e.target.id === 'select-filter-pokja')) setTimeout(sync, 0);
-    });
-    sync();
+    document.addEventListener('DOMContentLoaded', mulai);
 })();
 </script>
