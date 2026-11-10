@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class DataUmumController extends Controller
 {
-    public function kelurahan($idKec)
+    public function kelurahan($idKec, $activeTab = 'data_umum')
     {
         $kec = DB::table('m_kecamatan')->where('id_kec', $idKec)->first();
         abort_if(!$kec, 404);
@@ -101,8 +101,34 @@ class DataUmumController extends Controller
             $data[$idKel]->rw = $total;
         }
 
+        // Pokja 2 level kelurahan: angka dari d_kader_2026
+        $dataPokja2 = collect();
+
+        $mapPokja2 = [
+            'warga_3_buta' => 'warga_buta',   'tpk3_pkk' => 'tpk3_pkk',
+            'damas_pkk' => 'damas_pkk',       'pemula_psrt' => 'up2k_pemula',
+            'madya_psrt' => 'up2k_madya',     'anggota' => 'koperasi_anggota',
+            'tutor_kf' => 'tutor_kf',         'kader_koperasi' => 'kader_koperasi',
+            'kader_keterampilan' => 'kader_keterampilan',
+            'kader_bkb' => 'kader_bkb',       'lp3_pkk' => 'lp3_pkk',
+        ];
+
+        $cacah = DB::table('d_kader_2026')
+            ->where('id_kec', $idKec)->where('periode', 2026)->whereNull('deleted_at')
+            ->whereIn('jenis_kader', array_values($mapPokja2))
+            ->selectRaw('id_kel, jenis_kader, COUNT(*) AS total')
+            ->groupBy('id_kel', 'jenis_kader')->get();
+
+        $aliasDariJenis = array_flip($mapPokja2);
+        foreach ($cacah as $r) {
+            if (!$dataPokja2->has($r->id_kel)) {
+                $dataPokja2[$r->id_kel] = (object) ['id_kel' => $r->id_kel];
+            }
+            $dataPokja2[$r->id_kel]->{$aliasDariJenis[$r->jenis_kader]} = $r->total;
+        }
+
         return view('bo.pages.dashboard', [
-            'activeTab' => request()->query('tab', 'data_umum'),
+            'activeTab' => request()->query('tab', $activeTab),
             'level'       => 'kelurahan',
             'kec'         => $kec,
             'baris'       => $baris,
@@ -111,14 +137,15 @@ class DataUmumController extends Controller
             'data'        => $data,   // UBAH: sebelumnya collect()
             'kolomPokja1' => collect(),
             'dataPokja1'  => collect(),
-            'kolomPokja2' => collect(),
-            'dataPokja2'  => collect(),
+            'kolomPokja2' => $this->kolom('d_pokja_2_2026'),
+            'dataPokja2'  => $dataPokja2,
             'kolomPokja3' => $this->kolom('d_pokja_3_2026'),
             'dataPokja3'  => $this->dataKelurahan('d_pokja_3_2026', $idKec),
             'kolomPokja4' => $this->kolom('d_pokja_4_2026'),
             'dataPokja4'  => $this->dataKelurahan('d_pokja_4_2026', $idKec),
         ]);
     }
+
 
     private function dataKelurahan(string $tabel, $idKec)
     {

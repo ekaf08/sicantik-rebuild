@@ -20,6 +20,43 @@
     .lt-blob-1 { width: 260px; height: 260px; right: -60px; top: -90px; background: rgba(238,82,111,.14); }
     .lt-blob-2 { width: 170px; height: 170px; right: 150px; bottom: -85px; background: rgba(255,186,0,.22); }
     .lt-blob-3 { width: 90px;  height: 90px;  right: 40px;  bottom: 30px; background: rgba(13,131,166,.14); }
+
+    .sc-card .table-custom thead th { background-color: #FDE9ED !important; border-color: #FDE9ED !important; }
+
+    .lt-title-hover {
+        color: #181C32;
+        transition: color 0.2s ease-in-out;
+        text-decoration: none;
+    }
+    .lt-title-hover:hover {
+        color: #0D83A6 !important; 
+    }
+
+    .btn-play-video {
+        transition: transform 0.2s ease, opacity 0.2s ease;
+        text-decoration: none !important;
+    }
+    .btn-play-video:hover {
+        transform: translateY(-2px);
+        opacity: 0.85;
+    }
+    .btn-play-video i {
+        transition: transform 0.2s ease;
+    }
+    .btn-play-video:hover i {
+        transform: scale(1.15);
+    }
+
+    .btn-preview-img {
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn-preview-img img {
+        transition: transform 0.3s ease, filter 0.3s ease;
+    }
+    .btn-preview-img:hover img {
+        transform: scale(1.08);
+        filter: brightness(0.92);
+    }
 </style>
 
 <div class="lt">
@@ -40,7 +77,6 @@
     <div class="card-body p-8 p-lg-10 position-relative" style="z-index:1;">
         <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-5">
             <div style="max-width:520px;">
-
                 <h1 class="text-dark fw-bolder mb-3 fs-2hx">Dapur Resep MPASI 🥑</h1>
                 <p class="text-gray-700 fw-semibold fs-6 mb-6">
                     Catat dan bagikan panduan resep makanan pendamping ASI yang lezat dan mudah dibuat.
@@ -67,13 +103,14 @@
     <!--begin::Card Header / Toolbar-->
     <div class="card-header border-0 pt-6">
         <div class="card-title">
-             <div class="card-toolbar">
-                <div class="d-flex align-items-center gap-2 gap-lg-3">
-                 <!-- Search Bar -->
-                    <div class="d-flex align-items-center position-relative my-1">
-                        <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4 text-gray-500"></i>
-                        <input type="text" id="searchInput" class="form-control form-control-solid w-200px w-sm-250px ps-12" placeholder="Cari resep..." />
-                    </div>   
+            <!-- Search Bar -->
+            <div class="d-flex align-items-center position-relative my-1">
+                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4 text-gray-500"></i>
+                <input type="text" id="searchInput" class="form-control form-control-solid w-200px w-sm-250px ps-12" placeholder="Cari resep..." />
+            </div>
+        </div>
+        <div class="card-toolbar">
+            <div class="d-flex align-items-center gap-2 gap-lg-3">
                 <!-- Filter Usia -->
                 <select id="filterUsia" class="form-select form-select-solid w-150px">
                     <option value="">Semua Usia</option>
@@ -83,7 +120,6 @@
                 </select>
             </div>
         </div>
-        </div>
     </div>
     <!--end::Card Header-->
 
@@ -91,16 +127,16 @@
     <div class="card-body py-3">
 
         <!--begin::Table container-->
-        <div class="table-responsive">
+        <div class="table-responsive sc-card">
             <!--begin::Table-->
-            <table class="table table-row-bordered table-row-gray-200 align-middle gs-0 gy-4">
+            <table class="table table-custom table-row-bordered table-row-gray-200 align-middle gs-0 gy-4">
                 <!--begin::Table head-->
                 <thead>
-                    <tr class="fw-bold text-muted bg-light">
+                    <tr class="fw-bold text-dark">
                         <th class="ps-4 min-w-50px rounded-start">No</th>
                         <th class="min-w-250px">Judul & Gambar</th>
                         <th class="min-w-150px">Kategori Usia</th>
-                        <th class="min-w-300px">Deskripsi / Bahan</th>
+                        <th class="min-w-300px text-center">Deskripsi / Bahan</th>
                         <th class="min-w-150px {{ $showAksi ? '' : 'rounded-end' }}">Dibuat Oleh</th>
                         @if($showAksi)
                             <th class="min-w-100px text-center rounded-end">Aksi</th>
@@ -129,14 +165,16 @@
                                              onerror="this.onerror=null;this.src='{{ $fallbackImg }}';" />
                                     </div>
                                     <div class="d-flex justify-content-start flex-column">
-                                        <a href="javascript:void(0)" class="text-gray-900 fw-bold text-hover-primary mb-1 fs-6">{{ $item->judul }}</a>
+                                        <a href="javascript:void(0)" class="fw-bold lt-title-hover mb-1 fs-6 text-wrap">
+                                            {{ Str::limit($item->judul, 120) }}
+                                        </a>
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="text-muted fw-semibold fs-7">Resep MPASI</span>
-                                            @if($item->url_video)
-                                                <button type="button" class="btn btn-link p-0 text-danger fs-8 fw-bold btn-play-video"
+                                            @if($item->url_video) 
+                                                <button type="button" class="btn btn-link p-0 text-danger fs-8 fw-bold btn-play-video" 
                                                         data-embed="{{ $item->embed_video_url }}"
                                                         data-title="{{ $item->judul }}">
-                                                    <i class="ki-outline ki-youtube fs-5 text-danger me-1"></i> Video
+                                                    <i class="ki-outline ki-youtube fs-3x text-danger"></i> Video
                                                 </button>
                                             @endif
                                         </div>
@@ -383,6 +421,7 @@
 $(document).ready(function () {
 
     const FALLBACK_IMG = @json($fallbackImg);
+    const STORAGE_BASE = @json(asset('storage'));
 
     const showModal = (id) =>
         bootstrap.Modal.getOrCreateInstance(document.getElementById(id)).show();
@@ -471,7 +510,7 @@ $(document).ready(function () {
                     $('#previewGambarLama').html(`
                         <div class="mt-2">
                             <small class="text-muted d-block mb-1">Foto saat ini:</small>
-                            <img src="/storage/${data.mpasi_foto}" class="rounded h-60px object-fit-cover border"
+                            <img src="${STORAGE_BASE}/${data.mpasi_foto}" class="rounded h-60px object-fit-cover border"
                                  onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">
                         </div>
                     `);

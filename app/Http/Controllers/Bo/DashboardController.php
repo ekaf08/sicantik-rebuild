@@ -112,6 +112,30 @@ class DashboardController extends Controller
             ->get()
             ->keyBy('id_kec');
 
+        // Pokja 2: angka dari d_kader_2026, alias kolom => jenis_kader
+        $mapPokja2 = [
+            'warga_3_buta' => 'warga_buta',   'tpk3_pkk' => 'tpk3_pkk',
+            'damas_pkk' => 'damas_pkk',       'pemula_psrt' => 'up2k_pemula',
+            'madya_psrt' => 'up2k_madya',     'anggota' => 'koperasi_anggota',
+            'tutor_kf' => 'tutor_kf',         'kader_koperasi' => 'kader_koperasi',
+            'kader_keterampilan' => 'kader_keterampilan',
+            'kader_bkb' => 'kader_bkb',       'lp3_pkk' => 'lp3_pkk',
+        ];
+
+        $cacahPokja2 = DB::table('d_kader_2026')
+            ->where('periode', 2026)->whereNull('deleted_at')
+            ->whereIn('jenis_kader', array_values($mapPokja2))
+            ->selectRaw('id_kec, jenis_kader, COUNT(*) AS total')
+            ->groupBy('id_kec', 'jenis_kader')->get();
+
+        $aliasDariJenis = array_flip($mapPokja2);
+        foreach ($cacahPokja2 as $r) {
+            if (!$dataPokja2->has($r->id_kec)) {
+                $dataPokja2[$r->id_kec] = (object) ['id_kec' => $r->id_kec];
+            }
+            $dataPokja2[$r->id_kec]->{$aliasDariJenis[$r->jenis_kader]} = $r->total;
+        }
+
         // Pokja 3 dan 4 
         $kolomPokja3 = $this->kolom('d_pokja_3_2026');
         $dataPokja3  = $this->sumPerKecamatan('d_pokja_3_2026', $kolomPokja3);
