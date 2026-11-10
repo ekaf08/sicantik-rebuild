@@ -13,7 +13,7 @@ class CheckMenuPermission
         '/dashboard', '/logout', '/refresh_captcha',
     ];
     private const OPEN_PREFIXES = [
-        '/get-kecamatan/', '/get-kelurahan/',
+        '/get-kecamatan/', '/get-kelurahan/', '/modal/', '/pokja-2/',
     ];
 
     private const FIELD_BY_ROUTE = [
@@ -77,5 +77,5 @@ class CheckMenuPermission
             ->filter(fn ($u) => $u !== '/')
             ->unique()
             ->values();
-    }
+    }   
 }

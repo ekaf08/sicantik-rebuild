@@ -6,11 +6,11 @@ use Illuminate\Support\Facades\DB;
 
 class Access
 {
-    protected const BYPASS_ROLE_IDS = [1]; // ID Super Admin
-    protected const BYPASS_USER_IDS = [2]; // Bypass khusus User ID 2 (Super User tanpa role)
+    protected const BYPASS_ROLE_IDS = []; 
+    protected const BYPASS_USER_IDS = [];
 
     protected const SUPER_ONLY_PATHS = [
-        '/master/user', '/master/role', '/master/menu', '/master/permission',
+        
     ];
 
     protected static ?array $cache = null;
