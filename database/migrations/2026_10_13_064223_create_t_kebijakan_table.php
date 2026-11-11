@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('perihal');
             $table->string('id_kec')->nullable();
             $table->string('id_kel')->nullable();
+            $table->string('nama_kec')->nullable();
+            $table->string('nama_kel')->nullable();
             $table->date('tgl_mulai');
             $table->date('tgl_selesai')->nullable();
             $table->string('file_sk')->nullable();

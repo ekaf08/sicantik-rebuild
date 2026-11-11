@@ -14,21 +14,23 @@ class Kebijakan extends Model
     protected $table = 't_kebijakan';
 
     protected $fillable = [
-        'no_sk',
-        'perihal',
-        'id_kec',
-        'id_kel',
-        'tgl_mulai',
-        'tgl_selesai',
-        'file_sk',
-        'keterangan',
-        'kota',
-        'tahun',
-        'pokja',
-        'created_by',
-        'updated_by',
-        'deleted_by',
-    ];
+    'no_sk',
+    'perihal',
+    'id_kec',
+    'id_kel',
+    'nama_kec',
+    'nama_kel',
+    'tgl_mulai',
+    'tgl_selesai',
+    'file_sk',
+    'keterangan',
+    'kota',
+    'tahun',
+    'pokja',
+    'created_by',
+    'updated_by',
+    'deleted_by',
+];
 
     protected $casts = [
         'tgl_mulai'   => 'date:Y-m-d',

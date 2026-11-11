@@ -12,7 +12,7 @@
     .banner-kebijakan-card {
         background: #0f5847 radial-gradient(#197862 1.5px, transparent 1.5px);
         background-size: 16px 16px;
-        min-height: 180px;
+        min-height: 260px;
         position: relative;
         overflow: hidden;
         border-radius: 12px;
@@ -34,8 +34,8 @@
         position: absolute;
         right: 25px;
         bottom: -10px;
-        height: 190px;
-        width: 190px;
+        height: 250px;
+        width: 250px;
         opacity: 1;
         pointer-events: none;
     }
@@ -89,12 +89,33 @@
         pointer-events: none;
     }
     .btn-action-pdf {
-        background: #d1f2e4;
-        border-color: #bbf7d0;
+        width: auto;
+        height: 36px;
+        padding: 0 12px;
+        gap: 6px;
+        background: #0f5847;
+        border-color: #0f5847;
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        text-decoration: none;
+        box-shadow: 0 2px 6px rgba(15, 88, 71, 0.25);
     }
     .btn-action-pdf:hover {
-        background: #bbf7d0;
-        border-color: #86efac;
+        background: #197862;
+        border-color: #197862;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(15, 88, 71, 0.35);
+    }
+    .btn-action-preview {
+        background: #f5f3ff;
+        border-color: #ddd6fe;
+    }
+    .btn-action-preview:hover {
+        background: #ede9fe;
+        border-color: #c4b5fd;
         transform: translateY(-1px);
     }
     .btn-action-edit {
@@ -119,7 +140,7 @@
 
 <div class="d-flex flex-column gap-5 w-100">
     <div class="card card-flush shadow-sm banner-kebijakan-card border-0">
-        <div class="card-body p-6 p-md-8 d-flex flex-column flex-md-row justify-content-between align-items-md-center position-relative z-index-2 gap-4">
+        <div class="card-body p-8 p-md-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center position-relative z-index-2 gap-4">
             <div class="text-white">
                 <h1 class="fs-2x fw-bolder text-white mb-2 tracking-wide">Data Lampiran SK</h1>
                 <p class="fs-6 text-white text-opacity-80 mb-0">
@@ -194,7 +215,7 @@
                         <option value="all" selected>Pilih Kecamatan</option>
                     </select>
 
-                    <select id="filter_kebijakan_id_kel" class="form-select form-select-sm compact-select" style="width: 140px;" onchange="handleFilterKelurahanChange()">
+                    <select id="filter_kebijakan_id_kel" class="form-select form-select-sm compact-select" style="width: 140px;" disabled onchange="handleFilterKelurahanChange()">
                         <option value="all" selected>Pilih Kelurahan</option>
                     </select>
 
@@ -241,10 +262,10 @@
                             <th class="min-w-100px">Pokja</th>
                             <th class="text-center min-w-90px">Tgl Mulai</th>
                             <th class="text-center min-w-90px">Tgl Selesai</th>
-                            <th class="text-center min-w-60px">File</th>
+                            <th class="text-center min-w-100px">File</th>
                             <th class="min-w-150px">Keterangan</th>
                             <th class="min-w-110px">Dibuat Oleh</th>
-                            <th class="text-center min-w-90px">Action</th>
+                            <th class="text-center min-w-120px">Action</th>
                         </tr>
                     </thead>
                     <tbody id="tabel_kebijakan_body">
@@ -278,7 +299,7 @@
                 <div class="modal-body py-5 px-lg-8">
                     <div class="mb-4">
                         <label class="required form-label fw-semibold fs-7 mb-1">No SK</label>
-                        <input type="text" id="kebijakan_no_sk" name="no_sk" class="form-control form-control-sm form-control-solid" placeholder="Contoh: 188.45/123/436.7.2/2026" required>
+                        <input type="text" id="kebijakan_no_sk" name="no_sk" class="form-control form-control-sm form-control-solid" placeholder="Contoh: 188.45/123/436.7.2/2026" maxlength="23" required>
                     </div>
 
                     <div class="mb-4">
@@ -289,13 +310,13 @@
                     <div class="row g-4 mb-4">
                         <div class="col-12 col-md-6">
                             <label class="required form-label fw-semibold fs-7 mb-1">Kecamatan</label>
-                            <select id="kebijakan_id_kec" name="id_kec" class="form-select form-select-sm form-select-solid" onchange="handleModalKecamatanChange()">
+                            <select id="kebijakan_id_kec" name="id_kec" class="form-select form-select-sm form-select-solid" required onchange="handleModalKecamatanChange()">
                                 <option value="">Pilih Kecamatan</option>
                             </select>
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="required form-label fw-semibold fs-7 mb-1">Kelurahan</label>
-                            <select id="kebijakan_id_kel" name="id_kel" class="form-select form-select-sm form-select-solid" onchange="handleModalKelurahanChange()">
+                            <select id="kebijakan_id_kel" name="id_kel" class="form-select form-select-sm form-select-solid" required disabled>
                                 <option value="">Pilih Kelurahan</option>
                             </select>
                         </div>
@@ -308,7 +329,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label fw-semibold fs-7 mb-1">Tanggal Selesai</label>
-                            <input type="date" id="kebijakan_tgl_selesai" name="tgl_selesai" class="form-control form-control-sm form-control-solid">
+                            <input type="date" id="kebijakan_tgl_selesai" name="tgl_selesai" class="form-control form-control-sm form-control-solid" onchange="handleTanggalSelesaiChange()">
                         </div>
                     </div>
 
@@ -353,59 +374,17 @@
         <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
             <div class="modal-body p-0">
                 <div class="mb-4 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 72px; height: 72px; background-color: #fee2e2;">
-                    <svg class="banner-silhouette-vector d-none d-md-block" viewBox="0 0 160 170" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <circle cx="80" cy="85" r="72" fill="#197862" opacity="0.45"/>
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </div>
 
-            <rect x="44" y="22" width="84" height="116" rx="2" fill="#d3cbb0" transform="rotate(10 86 80)"/>
-            <rect x="44" y="22" width="84" height="116" rx="2" fill="#e3dcc5" transform="rotate(5 86 80)"/>
-
-            <g transform="rotate(-5 84 80)">
-                <path d="M44 22 H114 L134 42 V144 H44Z" fill="#07382c" opacity="0.35"/>
-                <path d="M40 18 H110 L130 38 V140 H40Z" fill="#fbf8ee"/>
-                <path d="M110 18 V38 H130Z" fill="#e3dcc5"/>
-
-                <circle cx="52" cy="32" r="5" stroke="#0f5847" stroke-width="1"/>
-                <circle cx="52" cy="32" r="1.8" fill="#0f5847"/>
-                <rect x="62" y="28" width="40" height="3" rx="1.5" fill="#0f5847"/>
-                <rect x="62" y="34" width="28" height="2.4" rx="1.2" fill="#0f5847" opacity="0.45"/>
-                <line x1="46" y1="43" x2="124" y2="43" stroke="#0f5847" stroke-width="0.7"/>
-
-                <rect x="57" y="51" width="56" height="5" rx="2.5" fill="#0f5847"/>
-                <rect x="64" y="60" width="42" height="2.4" rx="1.2" fill="#0f5847" opacity="0.45"/>
-
-                <g fill="#0f5847" opacity="0.28">
-                    <rect x="48" y="74" width="76" height="2.2" rx="1"/>
-                    <rect x="48" y="80" width="76" height="2.2" rx="1"/>
-                    <rect x="48" y="86" width="68" height="2.2" rx="1"/>
-                    <rect x="48" y="92" width="76" height="2.2" rx="1"/>
-                    <rect x="48" y="98" width="46" height="2.2" rx="1"/>
-                </g>
-
-                <rect x="84" y="104" width="24" height="2.2" rx="1" fill="#0f5847" opacity="0.45"/>
-                <path d="M86 116 q4 -8 7 0 t7 0 t7 -3" stroke="#0f5847" stroke-width="1.2" stroke-linecap="round" fill="none"/>
-                <rect x="84" y="122" width="34" height="2.4" rx="1.2" fill="#0f5847" opacity="0.6"/>
-
-                <path d="M50 10 v17 a2.6 2.6 0 0 0 5.2 0 v-19 a1.7 1.7 0 0 0 -3.4 0 v15" stroke="#aeb7b3" stroke-width="1.2" stroke-linecap="round"/>
-
-                <g transform="translate(62 118) rotate(-12)" opacity="0.85">
-                    <circle r="12" stroke="#1d8e74" stroke-width="1"/>
-                    <circle r="9.6" stroke="#1d8e74" stroke-width="1.4" stroke-dasharray="1.2 1.6"/>
-                    <circle r="7.2" stroke="#1d8e74" stroke-width="0.6"/>
-                    <polygon points="0,-3.6 0.9,-1.1 3.4,-1.1 1.4,0.4 2.1,2.9 0,1.4 -2.1,2.9 -1.4,0.4 -3.4,-1.1 -0.9,-1.1" fill="#1d8e74"/>
-                </g>
-            </g>
-
-            <path d="M117 135 L110 160 L118 156 L122 164 L125 140Z" fill="#f4ead0"/>
-            <path d="M131 135 L138 160 L130 156 L126 164 L123 140Z" fill="#e0cfa3"/>
-            <circle cx="124" cy="126" r="16" fill="#d9a441"/>
-            <circle cx="124" cy="126" r="11.5" fill="#f2c15c"/>
-            <path d="M118 126 l4.5 4.5 l9 -10" stroke="#0f5847" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-                        </div>
-
-                        <h3 class="fw-bolder text-gray-900 fs-4 mb-2">Hapus Lmapiran Dokumen SK?</h3>
+                        <h3 class="fw-bolder text-gray-900 fs-4 mb-2">Hapus Lampiran Dokumen SK?</h3>
                         <p class="text-gray-600 fs-7 mb-6">
-                            Apakah Anda yakin ingin menghapus data SK ini?.
+                            Apakah Anda yakin ingin menghapus data SK ini?
                         </p>
 
                         <div class="d-flex justify-content-center gap-3">
@@ -436,26 +415,37 @@
             </div>
         </div>
 
-        <div class="modal fade" id="modalNotifikasiPesan" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered mw-350px">
-                <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
-                    <div class="modal-body p-0">
-                        <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background-color: #d1fae5;">
-                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                        </div>
-                <h4 class="fw-bolder text-gray-900 fs-5 mb-2" id="notifikasiPesanTitle">Sukses</h4>
-                <p class="text-gray-600 fs-7 mb-5" id="notifikasiPesanText">Data berhasil diproses</p>
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-primary btn-sm fw-semibold px-6 rounded-3" style="background-color: #0f5847; border-color: #0f5847;" data-bs-dismiss="modal">
-                        Tutup
-                    </button>
+        <div class="modal fade" id="modalDetailKebijakan" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable mw-650px">
+                <div class="modal-content">
+                    <div class="modal-header py-4 px-6 border-bottom">
+                        <h2 class="fw-bold fs-4 mb-0">Ringkasan Lampiran SK</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body py-5 px-lg-8" id="detailKebijakanBody"></div>
+                    <div class="modal-footer flex-center py-4 border-top">
+                        <button type="button" class="btn btn-primary btn-sm fw-semibold px-6 rounded-3" style="background-color: #0f5847; border-color: #0f5847;" data-bs-dismiss="modal">Tutup</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+
+        <div class="modal fade" id="modalNotifikasiPesan" tabindex="-1" aria-hidden="true" style="z-index: 2000;">
+            <div class="modal-dialog modal-dialog-centered mw-350px">
+                <div class="modal-content text-center p-6 border-0 shadow-lg rounded-4">
+                    <div class="modal-body p-0">
+                        <div id="notifikasiPesanIcon" class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background-color: #d1fae5;"></div>
+                        <h4 class="fw-bolder text-gray-900 fs-5 mb-2" id="notifikasiPesanTitle">Sukses</h4>
+                        <p class="text-gray-600 fs-7 mb-5" id="notifikasiPesanText" style="white-space: pre-line;">Data berhasil diproses</p>
+                        <div class="d-flex justify-content-center">
+                            <button type="button" class="btn btn-primary btn-sm fw-semibold px-6 rounded-3" style="background-color: #0f5847; border-color: #0f5847;" data-bs-dismiss="modal">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 <script>
     const ROUTES_KEBIJAKAN = {
@@ -642,10 +632,11 @@
     let urlPreviewBaru = null;
 
     const svgPdfIcon = `
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f6345" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14 2 14 8 20 8"/>
-            <path d="M9.5 16.5c-1.5 0-2-.8-2-1.5 0-1.2 1.8-1.5 3.5-1.5s2.5.8 2.5 1.8c0 1.2-1.2 1.2-2.5 1.2-1.5 0-3-1-3-3 0-1.8 1.2-3.5 2.5-3.5 1 0 1.5.8 1.5 1.5 0 2.2-2.5 4.5-4 5"/>
+            <line x1="8" y1="13" x2="16" y2="13"/>
+            <line x1="8" y1="17" x2="14" y2="17"/>
         </svg>
     `;
 
@@ -664,17 +655,155 @@
         </svg>
     `;
 
-    function tampilkanPopUpNotifikasi(judul, pesan) {
+    const svgPreviewIcon = `
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+    `;
+
+    const TIPE_POPUP = {
+        success: {
+            bg: '#d1fae5',
+            svg: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+        },
+        error: {
+            bg: '#fee2e2',
+            svg: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>'
+        },
+        warning: {
+            bg: '#fef3c7',
+            svg: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
+        },
+        info: {
+            bg: '#dbeafe',
+            svg: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
+        }
+    };
+
+    const POLA_NO_SK = /^[0-9A-Za-z.\/\-]+$/;
+    const POLA_PERIHAL = /^[\p{L}\p{N} .,\-\/()&:%'"]+$/u;
+    const POLA_KETERANGAN = /^[\p{L}\p{N} .,\-\/()&:%'"\r\n]+$/u;
+    const POLA_BAHAYA = /(https?|ftp|sftp)\s*:|javascript\s*:|vbscript\s*:|mailto\s*:|www\s*\.|:\s*\/\/|[a-z0-9\-]+\.(com|net|org|xyz|info|biz|top|site|online|link|click|app|dev|go\.id|co\.id|or\.id|web\.id|sch\.id)\b/i;
+
+    function tampilkanPopUpNotifikasi(judul, pesan, tipe = 'success') {
+        const cfg = TIPE_POPUP[tipe] || TIPE_POPUP.info;
+        const iconEl = document.getElementById('notifikasiPesanIcon');
         const titleEl = document.getElementById('notifikasiPesanTitle');
         const textEl = document.getElementById('notifikasiPesanText');
+        const modalEl = document.getElementById('modalNotifikasiPesan');
+        if (!modalEl) return;
+
+        if (iconEl) {
+            iconEl.style.backgroundColor = cfg.bg;
+            iconEl.innerHTML = cfg.svg;
+        }
         if (titleEl) titleEl.textContent = judul;
         if (textEl) textEl.textContent = pesan;
 
-        const modalEl = document.getElementById('modalNotifikasiPesan');
-        if (modalEl) {
-            const notifModal = new bootstrap.Modal(modalEl);
-            notifModal.show();
+        const instance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        instance.show();
+    }
+
+    function bacaJson(res) {
+        return res.json().catch(() => null);
+    }
+
+    function ambilPesanError(res, data, bawaan) {
+        if (res.status === 419) return 'Sesi Anda telah berakhir. Muat ulang halaman lalu coba lagi.';
+        if (res.status === 401) return 'Sesi login berakhir. Silakan login kembali.';
+        if (res.status === 403) return 'Anda tidak memiliki izin untuk melakukan aksi ini.';
+        if (res.status === 413) return 'Ukuran data atau file terlalu besar.';
+        if (res.status === 429) return 'Terlalu banyak permintaan. Mohon tunggu sebentar lalu coba lagi.';
+        if (data && data.errors) {
+            const daftar = Object.values(data.errors).flat();
+            if (daftar.length > 0) return daftar.join('\n');
         }
+        if (data && data.message) return data.message;
+        return bawaan;
+    }
+
+    function pesanDariError(err, bawaan) {
+        if (err instanceof TypeError) return 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+        return (err && err.message) ? err.message : bawaan;
+    }
+
+    function nilaiInput(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+    }
+
+    function validasiFormKebijakan() {
+        const galat = [];
+
+        const noSk = nilaiInput('kebijakan_no_sk');
+        if (!noSk) {
+            galat.push('No SK wajib diisi.');
+        } else if (noSk.length > 23) {
+            galat.push('No SK maksimal 23 karakter.');
+        } else if (!POLA_NO_SK.test(noSk) || POLA_BAHAYA.test(noSk)) {
+            galat.push('No SK hanya boleh berisi huruf, angka, titik, garis miring, dan tanda hubung.');
+        }
+
+        const perihal = nilaiInput('kebijakan_perihal');
+        if (!perihal) {
+            galat.push('Perihal wajib diisi.');
+        } else if (perihal.length > 255) {
+            galat.push('Perihal maksimal 255 karakter.');
+        } else if (!POLA_PERIHAL.test(perihal)) {
+            galat.push('Perihal mengandung karakter yang tidak diizinkan. Hanya huruf, angka, spasi, dan tanda . , - / ( ) & : % \' " yang boleh digunakan.');
+        } else if (POLA_BAHAYA.test(perihal)) {
+            galat.push('Perihal tidak boleh berisi link atau script.');
+        }
+
+        const kec = nilaiInput('kebijakan_id_kec');
+        const kel = nilaiInput('kebijakan_id_kel');
+        if (!kec) {
+            galat.push('Kecamatan wajib dipilih.');
+        } else if (!kel) {
+            galat.push('Kelurahan wajib dipilih.');
+        } else if (Math.floor(parseInt(kel, 10) / 100) !== parseInt(kec, 10)) {
+            galat.push('Kelurahan tidak sesuai dengan kecamatan yang dipilih.');
+        }
+
+        const tglMulai = nilaiInput('kebijakan_tgl_mulai');
+        const tglSelesai = nilaiInput('kebijakan_tgl_selesai');
+        if (!tglMulai) {
+            galat.push('Tanggal mulai wajib diisi.');
+        } else if (tglMulai < '2000-01-01' || tglMulai > '2100-12-31') {
+            galat.push('Tanggal mulai harus antara tahun 2000 dan 2100.');
+        }
+        if (tglMulai && tglSelesai) {
+            if (tglSelesai < tglMulai) {
+                galat.push('Tanggal selesai tidak boleh kurang dari tanggal mulai.');
+            } else if (tglSelesai > '2100-12-31') {
+                galat.push('Tanggal selesai tidak boleh melebihi tahun 2100.');
+            }
+        }
+
+        const keterangan = nilaiInput('kebijakan_keterangan');
+        if (keterangan) {
+            if (keterangan.length > 1000) {
+                galat.push('Keterangan maksimal 1000 karakter.');
+            } else if (!POLA_KETERANGAN.test(keterangan)) {
+                galat.push('Keterangan mengandung karakter yang tidak diizinkan.');
+            } else if (POLA_BAHAYA.test(keterangan)) {
+                galat.push('Keterangan tidak boleh berisi link atau script.');
+            }
+        }
+
+        const inputFile = document.getElementById('kebijakan_file_sk');
+        if (inputFile && inputFile.files && inputFile.files[0]) {
+            const file = inputFile.files[0];
+            const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+            if (!isPdf) {
+                galat.push('File SK harus berformat PDF.');
+            } else if (file.size > 2 * 1024 * 1024) {
+                galat.push('File SK harus di bawah 2MB.');
+            }
+        }
+
+        return galat;
     }
 
     function inisialisasiDropdownKecamatan() {
@@ -700,8 +829,7 @@
             filterKec.innerHTML = '<option value="all" selected>Pilih Kecamatan</option>';
             kecamatanUnik.forEach(kec => {
                 const opt = document.createElement('option');
-                opt.value = kec.nama_kec;
-                opt.setAttribute('data-id-kec', kec.id_kec);
+                opt.value = kec.id_kec;
                 opt.textContent = kec.nama_kec;
                 filterKec.appendChild(opt);
             });
@@ -711,8 +839,7 @@
             modalKec.innerHTML = '<option value="">Pilih Kecamatan</option>';
             kecamatanUnik.forEach(kec => {
                 const opt = document.createElement('option');
-                opt.value = kec.nama_kec;
-                opt.setAttribute('data-id-kec', kec.id_kec);
+                opt.value = kec.id_kec;
                 opt.textContent = kec.nama_kec;
                 modalKec.appendChild(opt);
             });
@@ -720,54 +847,51 @@
     }
 
     function inisialisasiDropdownKelurahan(idKec = 'all') {
-    const filterKel = document.getElementById('filter_kebijakan_id_kel');
-    if (!filterKel) return;
+        const filterKel = document.getElementById('filter_kebijakan_id_kel');
+        if (!filterKel) return;
 
-    filterKel.innerHTML = '<option value="all" selected>Pilih Kelurahan</option>';
+        filterKel.innerHTML = '<option value="all" selected>Pilih Kelurahan</option>';
 
-    let dataFiltered = daftarKelurahanSurabaya;
-    
-    if (idKec !== 'all' && idKec !== '') {
-        dataFiltered = daftarKelurahanSurabaya.filter(item => 
-            String(item.id_kec) === String(idKec) || 
-            item.nama_kec.toUpperCase() === String(idKec).toUpperCase()
-        );
+        if (idKec === 'all' || idKec === '') {
+            filterKel.disabled = true;
+            return;
+        }
+
+        daftarKelurahanSurabaya
+            .filter(item => String(item.id_kec) === String(idKec))
+            .sort((a, b) => a.nama_kel.localeCompare(b.nama_kel))
+            .forEach(kel => {
+                const opt = document.createElement('option');
+                opt.value = kel.id_kel;
+                opt.textContent = kel.nama_kel;
+                filterKel.appendChild(opt);
+            });
+
+        filterKel.disabled = false;
     }
 
-    dataFiltered.sort((a, b) => a.nama_kel.localeCompare(b.nama_kel));
-
-    dataFiltered.forEach(kel => {
-        const opt = document.createElement('option');
-        opt.value = kel.nama_kel; 
-        opt.setAttribute('data-id-kel', kel.id_kel);
-        opt.textContent = kel.nama_kel;
-        filterKel.appendChild(opt);
-    });
-}
-
-    function inisialisasiModalKelurahan(idKec = '', namaKec = '') {
+    function inisialisasiModalKelurahan(idKec = '') {
         const modalKel = document.getElementById('kebijakan_id_kel');
         if (!modalKel) return;
 
         modalKel.innerHTML = '<option value="">Pilih Kelurahan</option>';
 
-        let dataFiltered = daftarKelurahanSurabaya;
-        if (idKec) {
-            dataFiltered = daftarKelurahanSurabaya.filter(item => String(item.id_kec) === String(idKec));
-        } else if (namaKec) {
-            dataFiltered = daftarKelurahanSurabaya.filter(item => item.nama_kec.toUpperCase() === namaKec.toUpperCase());
+        if (!idKec) {
+            modalKel.disabled = true;
+            return;
         }
 
-        dataFiltered.sort((a, b) => a.nama_kel.localeCompare(b.nama_kel));
+        daftarKelurahanSurabaya
+            .filter(item => String(item.id_kec) === String(idKec))
+            .sort((a, b) => a.nama_kel.localeCompare(b.nama_kel))
+            .forEach(kel => {
+                const opt = document.createElement('option');
+                opt.value = kel.id_kel;
+                opt.textContent = kel.nama_kel;
+                modalKel.appendChild(opt);
+            });
 
-        dataFiltered.forEach(kel => {
-            const opt = document.createElement('option');
-            opt.value = kel.nama_kel;
-            opt.setAttribute('data-id-kec', kel.id_kec);
-            opt.setAttribute('data-nama-kec', kel.nama_kec);
-            opt.textContent = kel.nama_kel;
-            modalKel.appendChild(opt);
-        });
+        modalKel.disabled = false;
     }
 
     function handleFilterKecamatanChange() {
@@ -779,64 +903,70 @@
     }
 
     function handleFilterKelurahanChange() {
-        const filterKel = document.getElementById('filter_kebijakan_id_kel');
-        const filterKec = document.getElementById('filter_kebijakan_id_kec');
-        const selectedKel = filterKel ? filterKel.value : 'all';
-
-        if (selectedKel !== 'all') {
-            const foundKel = daftarKelurahanSurabaya.find(item => item.nama_kel.toLowerCase() === selectedKel.toLowerCase());
-            if (foundKel && filterKec && (filterKec.value === 'all' || filterKec.value.toUpperCase() !== foundKel.nama_kec.toUpperCase())) {
-                filterKec.value = foundKel.nama_kec;
-                inisialisasiDropdownKelurahan(foundKel.nama_kec);
-                if (filterKel) filterKel.value = foundKel.nama_kel;
-            }
-        }
-
         fetchTableKebijakan(1);
     }
 
     function handleModalKecamatanChange() {
         const modalKec = document.getElementById('kebijakan_id_kec');
-        const selectedOpt = modalKec ? modalKec.options[modalKec.selectedIndex] : null;
-        const idKec = selectedOpt ? selectedOpt.getAttribute('data-id-kec') : '';
-        const namaKec = modalKec ? modalKec.value : '';
-
-        inisialisasiModalKelurahan(idKec, namaKec);
+        inisialisasiModalKelurahan(modalKec ? modalKec.value : '');
     }
 
-    function handleModalKelurahanChange() {
-        const modalKec = document.getElementById('kebijakan_id_kec');
-        const modalKel = document.getElementById('kebijakan_id_kel');
-        const selectedOpt = modalKel ? modalKel.options[modalKel.selectedIndex] : null;
-        const namaKec = selectedOpt ? selectedOpt.getAttribute('data-nama-kec') : '';
+    function sinkronTanggal() {
+        const mulai = document.getElementById('kebijakan_tgl_mulai');
+        const selesai = document.getElementById('kebijakan_tgl_selesai');
+        if (!mulai || !selesai) return;
 
-        if (namaKec && modalKec) {
-            modalKec.value = namaKec;
+        if (mulai.value) {
+            selesai.min = mulai.value;
+        } else {
+            selesai.removeAttribute('min');
+        }
+
+        if (selesai.value) {
+            mulai.max = selesai.value;
+        } else {
+            mulai.removeAttribute('max');
         }
     }
 
     function handleTanggalMulaiChange() {
-        const tglMulai = document.getElementById('kebijakan_tgl_mulai')?.value;
-        const tglSelesaiInput = document.getElementById('kebijakan_tgl_selesai');
-        if (tglMulai && tglSelesaiInput) {
-            tglSelesaiInput.min = tglMulai;
-            if (tglSelesaiInput.value && tglSelesaiInput.value < tglMulai) {
-                tglSelesaiInput.value = tglMulai;
-            }
+        const mulai = document.getElementById('kebijakan_tgl_mulai');
+        const selesai = document.getElementById('kebijakan_tgl_selesai');
+        if (mulai && selesai && mulai.value && selesai.value && mulai.value > selesai.value) {
+            mulai.value = selesai.value;
+            tampilkanPopUpNotifikasi('Peringatan', 'Tanggal mulai tidak boleh melebihi tanggal selesai. Tanggal mulai disesuaikan.', 'warning');
         }
+        sinkronTanggal();
+    }
+
+    function handleTanggalSelesaiChange() {
+        const mulai = document.getElementById('kebijakan_tgl_mulai');
+        const selesai = document.getElementById('kebijakan_tgl_selesai');
+        if (mulai && selesai && mulai.value && selesai.value && selesai.value < mulai.value) {
+            selesai.value = mulai.value;
+            tampilkanPopUpNotifikasi('Peringatan', 'Tanggal selesai tidak boleh kurang dari tanggal mulai. Tanggal selesai disesuaikan.', 'warning');
+        }
+        sinkronTanggal();
     }
 
     function tampilkanPreviewUpload(url) {
         const box = document.getElementById('file_sk_sebelumnya');
         if (!box) return;
 
+        box.innerHTML = '';
+
         if (!url) {
-            box.innerHTML = '';
             box.classList.add('d-none');
             return;
         }
 
-        box.innerHTML = `<iframe src="${url}" width="100%" height="320" style="border: 1px solid #d1d5db; border-radius: 6px;"></iframe>`;
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.width = '100%';
+        iframe.height = '320';
+        iframe.style.border = '1px solid #d1d5db';
+        iframe.style.borderRadius = '6px';
+        box.appendChild(iframe);
         box.classList.remove('d-none');
     }
 
@@ -858,6 +988,11 @@
             if (!isPdf || !isUnder2MB) {
                 input.value = '';
                 tampilkanPreviewUpload(urlFileSebelumnya);
+                tampilkanPopUpNotifikasi(
+                    'File Ditolak',
+                    !isPdf ? 'File harus berformat PDF.' : 'Ukuran file harus di bawah 2MB.',
+                    'warning'
+                );
                 return;
             }
 
@@ -870,51 +1005,55 @@
     }
 
     function fetchTableKebijakan(page = 1) {
-    kebijakanCurrentPage = page;
-    const tbody = document.getElementById('tabel_kebijakan_body');
-    if (!tbody) return;
+        kebijakanCurrentPage = page;
+        const tbody = document.getElementById('tabel_kebijakan_body');
+        if (!tbody) return;
 
-    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-gray-500"><span class="spinner-border spinner-border-sm me-2"></span>Memuat data...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-gray-500"><span class="spinner-border spinner-border-sm me-2"></span>Memuat data...</td></tr>`;
 
-    const idKec = document.getElementById('filter_kebijakan_id_kec')?.value || 'all';
-    const idKel = document.getElementById('filter_kebijakan_id_kel')?.value || 'all';
-    const tahun = document.getElementById('filter_kebijakan_tahun')?.value || 'all';
-    const pokja = document.getElementById('filter_kebijakan_pokja')?.value || 'all';
+        const idKec = document.getElementById('filter_kebijakan_id_kec')?.value || 'all';
+        const idKel = document.getElementById('filter_kebijakan_id_kel')?.value || 'all';
+        const tahun = document.getElementById('filter_kebijakan_tahun')?.value || 'all';
+        const pokja = document.getElementById('filter_kebijakan_pokja')?.value || 'all';
 
-    const params = new URLSearchParams({
-        page: page,
-        limit: kebijakanPageSize,
-        tahun: tahun,
-        pokja: pokja,
-        id_kec: idKec,
-        id_kel: idKel,
-        search: kebijakanSearchQuery
-    });
-
-    fetch(`${ROUTES_KEBIJAKAN.data}?${params.toString()}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-    })
-    .then(data => {
-        renderTableKebijakan(data);
-    })
-    .catch(() => {
-        renderTableKebijakan({
-            total: 0,
-            current_page: 1,
-            per_page: kebijakanPageSize,
-            last_page: 1,
-            data: []
+        const params = new URLSearchParams({
+            page: page,
+            limit: kebijakanPageSize,
+            tahun: tahun,
+            pokja: pokja,
+            id_kec: idKec,
+            id_kel: idKel,
+            search: kebijakanSearchQuery
         });
-    });
-}
+
+        fetch(`${ROUTES_KEBIJAKAN.data}?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(async (res) => {
+            const data = await bacaJson(res);
+            if (!res.ok) throw new Error(ambilPesanError(res, data, 'Gagal memuat data.'));
+            return data;
+        })
+        .then(data => {
+            renderTableKebijakan(data);
+        })
+        .catch(err => {
+            console.error(err);
+            renderTableKebijakan({
+                total: 0,
+                current_page: 1,
+                per_page: kebijakanPageSize,
+                last_page: 1,
+                data: []
+            });
+            tampilkanPopUpNotifikasi('Gagal Memuat Data', pesanDariError(err, 'Gagal memuat data.'), 'error');
+        });
+    }
+
     function renderTableKebijakan(res) {
         const tbody = document.getElementById('tabel_kebijakan_body');
         const infoRecords = document.getElementById('kebijakan_info_records');
@@ -940,11 +1079,6 @@
             mapDataKebijakan.set(hash, row);
 
             const no = (currentPage - 1) * perPage + (idx + 1);
-            const fileBtn = row.file_sk 
-                ? `<button type="button" class="btn-action-icon btn-action-pdf shadow-none" onclick="bukaPreviewPdf('${ROUTES_KEBIJAKAN.uploadBaseUrl}/${row.file_sk}', '${row.no_sk}')" title="Preview Dokumen PDF">
-                    ${svgPdfIcon}
-                   </button>` 
-                : `<span class="text-muted fs-8">-</span>`;
 
             const tr = document.createElement('tr');
             
@@ -974,7 +1108,19 @@
 
             const tdFile = document.createElement('td');
             tdFile.className = 'text-center';
-            tdFile.innerHTML = fileBtn;
+            if (row.file_sk) {
+                const btnPdf = document.createElement('button');
+                btnPdf.type = 'button';
+                btnPdf.className = 'btn-action-icon btn-action-pdf shadow-none';
+                btnPdf.title = 'Preview Dokumen PDF';
+                btnPdf.innerHTML = svgPdfIcon + '<span>PDF</span>';
+                btnPdf.addEventListener('click', function() {
+                    bukaPreviewPdf(`${ROUTES_KEBIJAKAN.uploadBaseUrl}/${encodeURIComponent(row.file_sk)}`, row.no_sk);
+                });
+                tdFile.appendChild(btnPdf);
+            } else {
+                tdFile.innerHTML = '<span class="text-muted fs-8">-</span>';
+            }
 
             const tdKeterangan = document.createElement('td');
             tdKeterangan.className = 'text-gray-700';
@@ -989,6 +1135,15 @@
 
             const actionContainer = document.createElement('div');
             actionContainer.className = 'd-flex justify-content-center align-items-center gap-1';
+
+            const btnPreview = document.createElement('button');
+            btnPreview.type = 'button';
+            btnPreview.className = 'btn-action-icon btn-action-preview';
+            btnPreview.title = 'Lihat Ringkasan SK';
+            btnPreview.innerHTML = svgPreviewIcon;
+            btnPreview.addEventListener('click', function() {
+                bukaDetailKebijakan(hash);
+            });
 
             const btnEdit = document.createElement('button');
             btnEdit.type = 'button';
@@ -1008,14 +1163,11 @@
                 hapusKebijakan(hash);
             });
 
+            actionContainer.appendChild(btnPreview);
             if (PERM_KEBIJAKAN.update) actionContainer.appendChild(btnEdit);
             if (PERM_KEBIJAKAN.delete) actionContainer.appendChild(btnDelete);
 
-            if (PERM_KEBIJAKAN.update || PERM_KEBIJAKAN.delete) {
-                tdAction.appendChild(actionContainer);
-            } else {
-                tdAction.textContent = '-';
-            }
+            tdAction.appendChild(actionContainer);
 
             tr.appendChild(tdNo);
             tr.appendChild(tdNoSk);
@@ -1134,10 +1286,9 @@
         urlFileSebelumnya = '';
         tampilkanPreviewUpload('');
 
-        const tglSelesaiInput = document.getElementById('kebijakan_tgl_selesai');
-        if (tglSelesaiInput) tglSelesaiInput.removeAttribute('min');
+        sinkronTanggal();
+        inisialisasiModalKelurahan('');
 
-        inisialisasiModalKelurahan('', '');
         const modal = new bootstrap.Modal(document.getElementById('modalKebijakan'));
         modal.show();
     }
@@ -1163,10 +1314,6 @@
         return '';
     }
 
-    function escapeRegex(teks) {
-        return String(teks).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
     function gabungDataSk(row, detail) {
         const hasil = Object.assign({}, row);
         Object.keys(detail || {}).forEach(key => {
@@ -1176,60 +1323,6 @@
             }
         });
         return hasil;
-    }
-
-    function cariWilayahSk(data) {
-        const kecRaw = String(data.kecamatan ?? data.nama_kecamatan ?? data.nama_kec ?? data.id_kec ?? '').trim();
-        const kelRaw = String(data.kelurahan ?? data.nama_kelurahan ?? data.nama_kel ?? data.id_kel ?? '').trim();
-
-        let kecamatan = '';
-        let kelurahan = '';
-
-        if (kecRaw) {
-            const foundKec = daftarKelurahanSurabaya.find(item =>
-                String(item.id_kec) === kecRaw || item.nama_kec.toLowerCase() === kecRaw.toLowerCase()
-            );
-            if (foundKec) kecamatan = foundKec.nama_kec;
-        }
-
-        if (kelRaw) {
-            const foundKel = daftarKelurahanSurabaya.find(item =>
-                (String(item.id_kel) === kelRaw || item.nama_kel.toLowerCase() === kelRaw.toLowerCase()) &&
-                (!kecamatan || item.nama_kec === kecamatan)
-            );
-            if (foundKel) {
-                kelurahan = foundKel.nama_kel;
-                kecamatan = foundKel.nama_kec;
-            }
-        }
-
-        const teksGabungan = (data.perihal || '') + ' ' + (data.keterangan || '');
-
-        if (!kelurahan) {
-            const kandidat = kecamatan
-                ? daftarKelurahanSurabaya.filter(item => item.nama_kec === kecamatan)
-                : daftarKelurahanSurabaya;
-            for (let i = 0; i < kandidat.length; i++) {
-                const pattern = new RegExp('\\b' + escapeRegex(kandidat[i].nama_kel) + '\\b', 'i');
-                if (pattern.test(teksGabungan)) {
-                    kelurahan = kandidat[i].nama_kel;
-                    kecamatan = kandidat[i].nama_kec;
-                    break;
-                }
-            }
-        }
-
-        if (!kecamatan) {
-            for (let i = 0; i < daftarKelurahanSurabaya.length; i++) {
-                const pattern = new RegExp('\\b' + escapeRegex(daftarKelurahanSurabaya[i].nama_kec) + '\\b', 'i');
-                if (pattern.test(teksGabungan)) {
-                    kecamatan = daftarKelurahanSurabaya[i].nama_kec;
-                    break;
-                }
-            }
-        }
-
-        return { kecamatan, kelurahan };
     }
 
     function bukaModalEditKebijakan(hash) {
@@ -1243,9 +1336,10 @@
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.json();
+        .then(async (res) => {
+            const data = await bacaJson(res);
+            if (!res.ok) throw new Error(ambilPesanError(res, data, 'Gagal mengambil data SK.'));
+            return data;
         })
         .then(json => {
             const detail = json && json.data && typeof json.data === 'object' && !Array.isArray(json.data) ? json.data : json;
@@ -1256,7 +1350,7 @@
             if (Object.keys(row).length > 0) {
                 isiFormModalEdit(hash, row);
             } else {
-                alert('Gagal mengambil data SK.');
+                tampilkanPopUpNotifikasi('Gagal', pesanDariError(err, 'Gagal mengambil data SK.'), 'error');
             }
         });
     }
@@ -1266,33 +1360,20 @@
         document.getElementById('kebijakan_no_sk').value = data.no_sk || '';
         document.getElementById('kebijakan_perihal').value = data.perihal || '';
 
-        const wilayah = cariWilayahSk(data);
-
         const modalKec = document.getElementById('kebijakan_id_kec');
         if (modalKec) {
-            modalKec.value = wilayah.kecamatan;
-            const selectedOpt = modalKec.options[modalKec.selectedIndex];
-            const idKec = selectedOpt ? selectedOpt.getAttribute('data-id-kec') : '';
-            inisialisasiModalKelurahan(idKec, wilayah.kecamatan);
+            modalKec.value = data.id_kec ? String(data.id_kec) : '';
+            inisialisasiModalKelurahan(modalKec.value);
         }
 
         const modalKel = document.getElementById('kebijakan_id_kel');
         if (modalKel) {
-            modalKel.value = wilayah.kelurahan;
+            modalKel.value = data.id_kel ? String(data.id_kel) : '';
         }
 
-        const tglMulaiVal = normalisasiTanggal(data.tgl_mulai);
-        document.getElementById('kebijakan_tgl_mulai').value = tglMulaiVal;
-
-        const tglSelesaiInput = document.getElementById('kebijakan_tgl_selesai');
-        if (tglSelesaiInput) {
-            if (tglMulaiVal) {
-                tglSelesaiInput.min = tglMulaiVal;
-            } else {
-                tglSelesaiInput.removeAttribute('min');
-            }
-            tglSelesaiInput.value = normalisasiTanggal(data.tgl_selesai);
-        }
+        document.getElementById('kebijakan_tgl_mulai').value = normalisasiTanggal(data.tgl_mulai);
+        document.getElementById('kebijakan_tgl_selesai').value = normalisasiTanggal(data.tgl_selesai);
+        sinkronTanggal();
 
         const modalPokja = document.getElementById('kebijakan_pokja');
         if (modalPokja) {
@@ -1307,13 +1388,91 @@
         if (inputFile) inputFile.value = '';
 
         bersihkanPreviewBaru();
-        urlFileSebelumnya = data.file_sk ? `${ROUTES_KEBIJAKAN.uploadBaseUrl}/${data.file_sk}` : '';
+        urlFileSebelumnya = data.file_sk ? `${ROUTES_KEBIJAKAN.uploadBaseUrl}/${encodeURIComponent(data.file_sk)}` : '';
         tampilkanPreviewUpload(urlFileSebelumnya);
 
         document.getElementById('modalKebijakanTitle').textContent = 'Ubah Lampiran SK';
 
         const modal = new bootstrap.Modal(document.getElementById('modalKebijakan'));
         modal.show();
+    }
+
+    function ambilNamaWilayah(row) {
+        const kel = daftarKelurahanSurabaya.find(item => String(item.id_kel) === String(row.id_kel));
+        const kec = daftarKelurahanSurabaya.find(item => String(item.id_kec) === String(row.id_kec));
+        return {
+            namaKec: row.nama_kec || (kec ? kec.nama_kec : ''),
+            namaKel: row.nama_kel || (kel ? kel.nama_kel : '')
+        };
+    }
+
+    function tambahBarisDetail(container, label, isi) {
+        const baris = document.createElement('div');
+        baris.className = 'row g-2 py-3 border-bottom';
+
+        const kolomLabel = document.createElement('div');
+        kolomLabel.className = 'col-12 col-sm-4 fw-semibold fs-7 text-gray-600';
+        kolomLabel.textContent = label;
+
+        const kolomIsi = document.createElement('div');
+        kolomIsi.className = 'col-12 col-sm-8 fs-7 text-gray-900';
+        kolomIsi.style.whiteSpace = 'pre-wrap';
+        kolomIsi.style.wordBreak = 'break-word';
+
+        if (isi instanceof Node) {
+            kolomIsi.appendChild(isi);
+        } else {
+            kolomIsi.textContent = isi || '-';
+        }
+
+        baris.appendChild(kolomLabel);
+        baris.appendChild(kolomIsi);
+        container.appendChild(baris);
+    }
+
+    function bukaDetailKebijakan(hash) {
+        const row = mapDataKebijakan.get(hash);
+        if (!row) {
+            tampilkanPopUpNotifikasi('Gagal', 'Data SK tidak ditemukan.', 'error');
+            return;
+        }
+
+        const body = document.getElementById('detailKebijakanBody');
+        if (!body) return;
+        body.innerHTML = '';
+
+        const wilayah = ambilNamaWilayah(row);
+        const teksKec = wilayah.namaKec || '-';
+        const teksKel = wilayah.namaKel || '-';
+
+        tambahBarisDetail(body, 'No SK', row.no_sk);
+        tambahBarisDetail(body, 'Perihal', row.perihal);
+        tambahBarisDetail(body, 'Pokja', row.pokja);
+        tambahBarisDetail(body, 'Kecamatan', teksKec);
+        tambahBarisDetail(body, 'Kelurahan', teksKel);
+        tambahBarisDetail(body, 'Tahun', row.tahun ? String(row.tahun) : '');
+        tambahBarisDetail(body, 'Tanggal Mulai', row.tgl_mulai);
+        tambahBarisDetail(body, 'Tanggal Selesai', row.tgl_selesai);
+        tambahBarisDetail(body, 'Keterangan', row.keterangan);
+
+        if (row.file_sk) {
+            const link = document.createElement('a');
+            link.href = `${ROUTES_KEBIJAKAN.uploadBaseUrl}/${encodeURIComponent(row.file_sk)}`;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.className = 'btn-action-icon btn-action-pdf';
+            link.style.whiteSpace = 'normal';
+            link.innerHTML = svgPdfIcon + '<span>Buka PDF</span>';
+            tambahBarisDetail(body, 'File SK', link);
+        } else {
+            tambahBarisDetail(body, 'File SK', '');
+        }
+
+                tambahBarisDetail(body, 'Dibuat Oleh', row.created_by);
+
+        const modalEl = document.getElementById('modalDetailKebijakan');
+        const instance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        instance.show();
     }
 
     function bukaPreviewPdf(url, noSk) {
@@ -1328,7 +1487,7 @@
     function submitFormKebijakan(e) {
         e.preventDefault();
         const form = e.target;
-        
+
         const hashInput = document.getElementById('kebijakan_hash');
         const hash = hashInput && hashInput.value ? hashInput.value.trim() : '';
 
@@ -1336,13 +1495,9 @@
         const spinner = document.getElementById('btnSimpanSpinner');
         const btnText = document.getElementById('btnSimpanText');
 
-        const inputKec = document.getElementById('kebijakan_id_kec')?.value || '';
-        const inputKel = document.getElementById('kebijakan_id_kel')?.value || '';
-        const tglMulai = document.getElementById('kebijakan_tgl_mulai')?.value || '';
-        const tglSelesai = document.getElementById('kebijakan_tgl_selesai')?.value || '';
-
-        if (tglMulai && tglSelesai && tglSelesai < tglMulai) {
-            alert('Tanggal selesai tidak boleh kurang dari tanggal mulai.');
+        const galat = validasiFormKebijakan();
+        if (galat.length > 0) {
+            tampilkanPopUpNotifikasi('Data Belum Valid', galat.join('\n'), 'warning');
             return;
         }
 
@@ -1352,8 +1507,8 @@
 
         const formData = new FormData(form);
         const isUpdate = Boolean(hash && hash !== 'undefined');
-        const postUrl = isUpdate 
-            ? `${ROUTES_KEBIJAKAN.update}/${encodeURIComponent(hash)}` 
+        const postUrl = isUpdate
+            ? `${ROUTES_KEBIJAKAN.update}/${encodeURIComponent(hash)}`
             : ROUTES_KEBIJAKAN.store;
 
         fetch(postUrl, {
@@ -1366,18 +1521,17 @@
             body: formData
         })
         .then(async (res) => {
-            const data = await res.json();
+            const data = await bacaJson(res);
             if (!res.ok) {
-                const errorMsg = data.message || Object.values(data.errors || {}).flat().join('\n') || 'Gagal menyimpan data';
-                throw new Error(errorMsg);
+                throw new Error(ambilPesanError(res, data, 'Gagal menyimpan data.'));
             }
             return data;
         })
-        .then(() => {
+        .then((data) => {
             const modalEl = document.getElementById('modalKebijakan');
             const modalInstance = bootstrap.Modal.getInstance(modalEl);
             if (modalInstance) modalInstance.hide();
-            
+
             const filterTahun = document.getElementById('filter_kebijakan_tahun');
             if (filterTahun) filterTahun.value = 'all';
 
@@ -1396,18 +1550,20 @@
             const searchInput = document.getElementById('kebijakan_search');
             if (searchInput) searchInput.value = '';
             kebijakanSearchQuery = '';
-            
-            if (isUpdate) {
-                tampilkanPopUpNotifikasi('Sukses', 'Data terupdate');
+
+            if (data && data.status === 'partial') {
+                tampilkanPopUpNotifikasi('Sebagian Berhasil', data.message, 'warning');
+            } else if (isUpdate) {
+                tampilkanPopUpNotifikasi('Sukses', 'Data terupdate', 'success');
             } else {
-                tampilkanPopUpNotifikasi('Sukses', 'Data tersimpan');
+                tampilkanPopUpNotifikasi('Sukses', 'Data tersimpan', 'success');
             }
 
             fetchTableKebijakan(1);
         })
         .catch(err => {
             console.error(err);
-            alert(err.message || 'Terjadi kesalahan saat menyimpan data.');
+            tampilkanPopUpNotifikasi('Gagal Menyimpan', pesanDariError(err, 'Terjadi kesalahan saat menyimpan data.'), 'error');
         })
         .finally(() => {
             spinner.classList.add('d-none');
@@ -1450,24 +1606,27 @@
             })
         })
         .then(async (res) => {
+            const data = await bacaJson(res);
             if (!res.ok) {
-                const errData = await res.json();
-                throw new Error(errData.message || 'Gagal menghapus data.');
+                throw new Error(ambilPesanError(res, data, 'Gagal menghapus data.'));
             }
-            return res.json();
+            return data;
         })
         .then(() => {
             const modalEl = document.getElementById('modalKonfirmasiHapus');
             const modalInstance = bootstrap.Modal.getInstance(modalEl);
             if (modalInstance) modalInstance.hide();
-            
+
             targetHashHapus = null;
-            tampilkanPopUpNotifikasi('Sukses', 'Data telah dihapus');
+            tampilkanPopUpNotifikasi('Sukses', 'Data telah dihapus', 'success');
             fetchTableKebijakan(kebijakanCurrentPage);
         })
         .catch(err => {
             console.error(err);
-            alert(err.message || 'Terjadi kesalahan saat menghapus data.');
+            const modalEl = document.getElementById('modalKonfirmasiHapus');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+            tampilkanPopUpNotifikasi('Gagal Menghapus', pesanDariError(err, 'Terjadi kesalahan saat menghapus data.'), 'error');
         })
         .finally(() => {
             btn.disabled = false;
@@ -1487,6 +1646,17 @@
                 bersihkanPreviewBaru();
                 urlFileSebelumnya = '';
                 tampilkanPreviewUpload('');
+                inisialisasiModalKelurahan('');
+                sinkronTanggal();
+            });
+        }
+
+        const modalNotifEl = document.getElementById('modalNotifikasiPesan');
+        if (modalNotifEl) {
+            modalNotifEl.addEventListener('hidden.bs.modal', function() {
+                if (document.querySelector('.modal.show')) {
+                    document.body.classList.add('modal-open');
+                }
             });
         }
     });
@@ -1497,14 +1667,15 @@
     window.bukaModalTambahKebijakan = bukaModalTambahKebijakan;
     window.bukaModalEditKebijakan = bukaModalEditKebijakan;
     window.bukaPreviewPdf = bukaPreviewPdf;
+    window.bukaDetailKebijakan = bukaDetailKebijakan;
     window.submitFormKebijakan = submitFormKebijakan;
     window.hapusKebijakan = hapusKebijakan;
     window.validasiFilePdf = validasiFilePdf;
     window.handleFilterKecamatanChange = handleFilterKecamatanChange;
     window.handleFilterKelurahanChange = handleFilterKelurahanChange;
     window.handleModalKecamatanChange = handleModalKecamatanChange;
-    window.handleModalKelurahanChange = handleModalKelurahanChange;
     window.handleTanggalMulaiChange = handleTanggalMulaiChange;
+    window.handleTanggalSelesaiChange = handleTanggalSelesaiChange;
     window.tampilkanPopUpNotifikasi = tampilkanPopUpNotifikasi;
 </script>
 @endsection
