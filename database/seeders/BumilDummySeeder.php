@@ -5,6 +5,10 @@ namespace Database\Seeders;
 use App\Models\Bumil;
 use App\Models\BumilCalonPengantin;
 use App\Models\BumilKehamilan;
+use App\Models\BumilAnak;
+use App\Models\BumilNifas;
+use App\Models\BumilPersalinan;
+use App\Models\BumilRisiko;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -35,8 +39,15 @@ class BumilDummySeeder extends Seeder
             $this->command?->warn('Tabel riwayat belum ada: hanya data ibu yang dibuat (tanpa riwayat).');
         }
 
+        $adaBaru = Schema::hasTable('bumil_risiko') && Schema::hasTable('bumil_persalinan')
+            && Schema::hasTable('bumil_nifas') && Schema::hasTable('bumil_anak');
+        if (!$adaBaru) {
+            $this->command?->warn('Tabel risiko/persalinan/nifas/anak belum ada: data tambahan dilewati. Jalankan migrasinya dulu.');
+        }
+        $adaHamilKe = Schema::hasColumn('bumil', 'hamil_ke') && Schema::hasColumn('bumil', 'tanggal_melahirkan');
+
         mt_srand(20261028);
-        $this->bersihkan($adaRiwayat);
+        $this->bersihkan($adaRiwayat, $adaBaru);
 
         $wilayah = $this->ambilWilayah();
         $namaDepan = ['Siti', 'Dewi', 'Ayu', 'Rina', 'Fitri', 'Lestari', 'Wulan', 'Putri', 'Indah', 'Nur', 'Sri', 'Yuni', 'Rahma', 'Maya', 'Citra', 'Dian', 'Eka', 'Nia', 'Tika', 'Sari'];
@@ -49,6 +60,19 @@ class BumilDummySeeder extends Seeder
             'LILA kurang, perlu pendampingan gizi',
             'Sehat, disarankan konsultasi pra nikah',
         ];
+
+        $daftarRisiko = [
+            ['Anemia', 'Hb di bawah 11 g/dL'],
+            ['Hipertensi', 'Tekanan darah di atas 140/90'],
+            ['Terlalu muda (< 20 tahun)', 'Usia ibu di bawah 20 tahun'],
+            ['Terlalu tua (> 35 tahun)', 'Usia ibu di atas 35 tahun'],
+            ['Jarak kehamilan terlalu dekat', 'Jarak dengan persalinan sebelumnya kurang dari 2 tahun'],
+            ['Riwayat operasi sesar', 'Persalinan sebelumnya melalui sesar'],
+        ];
+        $caraPersalinan = ['Normal', 'Normal', 'Normal', 'Sectio Caesarea', 'Vakum'];
+        $tempatPersalinan = ['Puskesmas', 'Rumah Sakit', 'Klinik Bersalin', 'Bidan Praktik Mandiri'];
+        $namaAnak = ['Aisyah', 'Zahra', 'Naufal', 'Rafa', 'Alya', 'Khanza', 'Arkan', 'Nabila', 'Fajar', 'Keisha'];
+        $kondisiNifas = ['Baik, tidak ada keluhan', 'Sehat, ASI lancar', 'Nyeri jahitan ringan', 'Perlu pantauan tekanan darah'];
 
         $hari = Carbon::create(2026, 10, 28);
         $jumlah = 70;      // 55 ibu hamil + 15 ibu nifas
@@ -91,6 +115,100 @@ class BumilDummySeeder extends Seeder
                 'tanggal'    => $tanggal->toDateString(),
             ]);
 
+            // ---- Kehamilan ke berapa + tanggal melahirkan (nifas) ----
+            $hamilKe = mt_rand(1, 4);
+            $tglLahir = $nifas ? $tanggal->copy()->subWeeks(mt_rand(2, 6)) : null;
+            if ($adaHamilKe) {
+                $ibu->forceFill([
+                    'hamil_ke'           => $hamilKe,
+                    'tanggal_melahirkan' => $tglLahir?->toDateString(),
+                ])->save();
+            }
+
+            if ($adaBaru) {
+                // ---- Risiko kehamilan ----
+                if (!$nifas) {
+                    if ($kek) {
+                        BumilRisiko::create([
+                            'bumil_id'     => $ibu->id,
+                            'jenis_risiko' => 'KEK',
+                            'keterangan'   => 'LILA ' . $lila . ' cm (di bawah 23,5 cm)',
+                            'tanggal'      => $tanggal->toDateString(),
+                        ]);
+                    }
+                    if ($resti) {
+                        $jumlahRisiko = mt_rand(1, 2);
+                        $pilihan = array_rand($daftarRisiko, $jumlahRisiko);
+                        foreach ((array) $pilihan as $idx) {
+                            BumilRisiko::create([
+                                'bumil_id'     => $ibu->id,
+                                'jenis_risiko' => $daftarRisiko[$idx][0],
+                                'keterangan'   => $daftarRisiko[$idx][1],
+                                'tanggal'      => $tanggal->toDateString(),
+                            ]);
+                        }
+                    }
+                }
+
+                // ---- Persalinan (kehamilan yang sudah berakhir) + anak + nifas ----
+                // Ibu hamil: kehamilan sebelumnya saja. Ibu nifas: termasuk persalinan terakhir.
+                $jumlahPersalinan = $nifas ? $hamilKe : $hamilKe - 1;
+                for ($ke = 1; $ke <= $jumlahPersalinan; $ke++) {
+                    $terakhir = $nifas && $ke === $hamilKe;
+                    $tglP = $terakhir
+                        ? $tglLahir->copy()
+                        : $tanggal->copy()->subMonths(($hamilKe - $ke) * 22 + mt_rand(0, 6));
+
+                    $r = mt_rand(1, 100);
+                    if ($terakhir) {
+                        $status = $r <= 93 ? 'lahir_hidup' : 'lahir_mati';
+                    } else {
+                        $status = $r <= 85 ? 'lahir_hidup' : ($r <= 92 ? 'keguguran' : 'lahir_mati');
+                    }
+
+                    $persalinan = BumilPersalinan::create([
+                        'bumil_id'          => $ibu->id,
+                        'hamil_ke'          => $ke,
+                        'tanggal'           => $tglP->toDateString(),
+                        'cara_persalinan'   => $status === 'keguguran' ? null : $caraPersalinan[mt_rand(0, count($caraPersalinan) - 1)],
+                        'tempat_persalinan' => $tempatPersalinan[mt_rand(0, count($tempatPersalinan) - 1)],
+                        'status_kelahiran'  => $status,
+                    ]);
+
+                    if ($status !== 'keguguran') {
+                        $kembar = mt_rand(1, 100) <= 4;
+                        for ($a = 0; $a < ($kembar ? 2 : 1); $a++) {
+                            BumilAnak::create([
+                                'persalinan_id' => $persalinan->id,
+                                'nama'          => $status === 'lahir_hidup' ? $namaAnak[mt_rand(0, count($namaAnak) - 1)] : null,
+                                'jenis_kelamin' => mt_rand(0, 1) ? 'Laki-laki' : 'Perempuan',
+                                'tanggal_lahir' => $tglP->toDateString(),
+                                'berat_lahir'   => $kembar ? mt_rand(1900, 3000) : mt_rand(2200, 3800),
+                                'panjang_lahir' => mt_rand(440, 520) / 10,
+                            ]);
+                        }
+                    }
+
+                    if ($terakhir) {
+                        foreach ([3, 14, 40] as $hariNifas) {
+                            $tglN = $tglP->copy()->addDays($hariNifas);
+                            if ($tglN->gt($tanggal)) {
+                                continue;
+                            }
+                            BumilNifas::create([
+                                'bumil_id'      => $ibu->id,
+                                'persalinan_id' => $persalinan->id,
+                                'tanggal'       => $tglN->toDateString(),
+                                'hari_nifas'    => $hariNifas,
+                                'tensi'         => mt_rand(100, 125) . '/' . mt_rand(65, 80),
+                                'suhu'          => mt_rand(362, 375) / 10,
+                                'kondisi_ibu'   => $kondisiNifas[mt_rand(0, count($kondisiNifas) - 1)],
+                            ]);
+                        }
+                    }
+                }
+            }
+
             if (!$adaRiwayat) {
                 continue;
             }
@@ -98,7 +216,7 @@ class BumilDummySeeder extends Seeder
             // Riwayat kehamilan: 1 sampai 3 kunjungan, tiap 4 minggu
             $kunjungan = mt_rand(1, 3);
             $usiaAkhir = $nifas ? mt_rand(36, 40) : mt_rand(10, 38);
-            $akhir = $nifas ? $tanggal->copy()->subWeeks(mt_rand(2, 6)) : $tanggal->copy();
+            $akhir = $nifas ? $tglLahir->copy() : $tanggal->copy();
             for ($k = 0; $k < $kunjungan; $k++) {
                 $mundur = $kunjungan - 1 - $k;
                 $usia = max(4, $usiaAkhir - 4 * $mundur);
@@ -137,11 +255,18 @@ class BumilDummySeeder extends Seeder
         $this->command?->info("Selesai: {$jumlah} data dummy ibu hamil dan nifas dibuat.");
     }
 
-    private function bersihkan(bool $adaRiwayat): void
+    private function bersihkan(bool $adaRiwayat, bool $adaBaru = false): void
     {
         $ids = Bumil::withTrashed()->where('no_kk', 'like', self::AWALAN . '%')->pluck('id');
         if ($ids->isEmpty()) {
             return;
+        }
+        if ($adaBaru) {
+            $idPersalinan = BumilPersalinan::withTrashed()->whereIn('bumil_id', $ids)->pluck('id');
+            BumilAnak::withTrashed()->whereIn('persalinan_id', $idPersalinan)->forceDelete();
+            BumilNifas::withTrashed()->whereIn('bumil_id', $ids)->forceDelete();
+            BumilPersalinan::withTrashed()->whereIn('bumil_id', $ids)->forceDelete();
+            BumilRisiko::withTrashed()->whereIn('bumil_id', $ids)->forceDelete();
         }
         if ($adaRiwayat) {
             BumilKehamilan::withTrashed()->whereIn('bumil_id', $ids)->forceDelete();

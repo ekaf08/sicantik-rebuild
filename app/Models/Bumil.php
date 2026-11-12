@@ -17,6 +17,7 @@ class Bumil extends Model
         'nik',
         'nama',
         'usia',
+        'hamil_ke',             // kehamilan yang ke berapa
         'alamat',
         'kecamatan',
         'kelurahan',
@@ -25,11 +26,13 @@ class Bumil extends Model
         'status_kek',   // KEK / Tidak KEK (untuk ibu hamil)
         'resti',        // true = ibu hamil risiko tinggi
         'tanggal',      // tanggal pendataan (dipakai filter bulan dan tahun)
+        'tanggal_melahirkan',   // terisi = sudah melahirkan (pindah ke nifas)
     ];
 
     protected $casts = [
-        'resti'   => 'boolean',
-        'tanggal' => 'date:Y-m-d',
+        'resti'              => 'boolean',
+        'tanggal'            => 'date:Y-m-d',
+        'tanggal_melahirkan' => 'date:Y-m-d',
     ];
 
     public function kehamilan()
@@ -40,5 +43,20 @@ class Bumil extends Model
     public function calonPengantin()
     {
         return $this->hasMany(BumilCalonPengantin::class, 'bumil_id');
+    }
+
+    public function risiko()
+    {
+        return $this->hasMany(BumilRisiko::class, 'bumil_id');
+    }
+
+    public function persalinan()
+    {
+        return $this->hasMany(BumilPersalinan::class, 'bumil_id');
+    }
+
+    public function nifas()
+    {
+        return $this->hasMany(BumilNifas::class, 'bumil_id');
     }
 }

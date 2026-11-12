@@ -39,7 +39,7 @@ class BumilController extends Controller
         return response()->json($data);
     }
 
-    // Riwayat satu ibu (untuk popup Lihat): riwayat kehamilan + riwayat calon pengantin
+    // Riwayat satu ibu (untuk popup Lihat): kehamilan, calon pengantin, risiko, persalinan + anak, nifas
     public function riwayat(string $id)
     {
         $id = IdCipher::decodeOrFail($id);
@@ -47,9 +47,22 @@ class BumilController extends Controller
 
         $sembunyi = ['id', 'bumil_id', 'created_at', 'updated_at', 'deleted_at'];
 
+        $sembunyiAnak = array_merge($sembunyi, ['persalinan_id']);
+
+        // Persalinan beserta anak yang lahir (satu persalinan bisa punya lebih dari satu anak)
+        $persalinan = $bumil->persalinan()->with('anak')->orderBy('tanggal')->get()
+            ->makeHidden($sembunyi)
+            ->each(function ($p) use ($sembunyiAnak) {
+                $p->anak->makeHidden($sembunyiAnak);
+            })
+            ->values();
+
         return response()->json([
             'kehamilan'       => $bumil->kehamilan()->orderBy('tanggal')->get()->makeHidden($sembunyi)->values(),
             'calon_pengantin' => $bumil->calonPengantin()->orderBy('tanggal')->get()->makeHidden($sembunyi)->values(),
+            'risiko'          => $bumil->risiko()->orderBy('tanggal')->get()->makeHidden($sembunyi)->values(),
+            'persalinan'      => $persalinan,
+            'nifas'           => $bumil->nifas()->orderBy('tanggal')->get()->makeHidden($sembunyiAnak)->values(),
         ]);
     }
 }

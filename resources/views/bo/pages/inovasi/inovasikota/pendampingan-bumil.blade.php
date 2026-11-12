@@ -724,6 +724,33 @@
         { judul: 'IMT',               nilai: function (r) { return esc(hitungImt(r)); } }
     ];
 
+    const STATUS_LAHIR = { lahir_hidup: 'Lahir hidup', lahir_mati: 'Lahir mati', keguguran: 'Keguguran' };
+    const KOLOM_RISIKO = [
+        { judul: 'Tanggal',      nilai: function (r) { return esc(fmtTgl(r.tanggal)); }, urut: function (r) { return String(r.tanggal || ''); } },
+        { judul: 'Jenis Risiko', nilai: function (r) { return esc(r.jenis_risiko || '-'); } },
+        { judul: 'Keterangan',   nilai: function (r) { return esc(r.keterangan || '-'); } }
+    ];
+    const KOLOM_PERSALINAN = [
+        { judul: 'Hamil Ke',        nilai: function (r) { return esc(r.hamil_ke || '-'); } },
+        { judul: 'Tanggal',         nilai: function (r) { return esc(fmtTgl(r.tanggal)); }, urut: function (r) { return String(r.tanggal || ''); } },
+        { judul: 'Cara Persalinan', nilai: function (r) { return esc(r.cara_persalinan || '-'); } },
+        { judul: 'Tempat',          nilai: function (r) { return esc(r.tempat_persalinan || '-'); } },
+        { judul: 'Status Kelahiran', nilai: function (r) { return esc(STATUS_LAHIR[r.status_kelahiran] || r.status_kelahiran || '-'); } },
+        { judul: 'Anak', nilai: function (r) {
+            const a = (r.anak || []).map(function (x) {
+                return esc([x.nama, x.jenis_kelamin, x.berat_lahir ? x.berat_lahir + ' g' : null, x.panjang_lahir ? x.panjang_lahir + ' cm' : null].filter(Boolean).join(', '));
+            }).filter(Boolean);
+            return a.length ? a.join('<br>') : '-';
+        } }
+    ];
+    const KOLOM_NIFAS = [
+        { judul: 'Tanggal',    nilai: function (r) { return esc(fmtTgl(r.tanggal)); }, urut: function (r) { return String(r.tanggal || ''); } },
+        { judul: 'Hari Nifas', nilai: function (r) { return satuan(r.hari_nifas, 'hari', 0); } },
+        { judul: 'Tensi',      nilai: function (r) { return esc(r.tensi ? String(r.tensi).replace('/', ' / ') : '-'); } },
+        { judul: 'Suhu',       nilai: function (r) { return satuan(r.suhu, '\u00b0C'); } },
+        { judul: 'Kondisi Ibu', nilai: function (r) { return esc(r.kondisi_ibu || '-'); } }
+    ];
+
     function lihat(id) {
         const r = semuaData.find(function (d) { return String(d.id) === String(id); });
         if (!r) return;
@@ -757,20 +784,29 @@
             '<div id="bm-riwayat-isi">' +
                 kartuRiwayat('bm-riwayat-a', 'ki-heart', 'Riwayat Kehamilan Ibu', 'bm-rw-kh', null) +
                 kartuRiwayat('bm-riwayat-b', 'ki-profile-user', 'Riwayat Calon Pengantin', 'bm-rw-cp', null) +
+                kartuRiwayat('bm-riwayat-a', 'ki-shield-cross', 'Risiko Kehamilan', 'bm-rw-rs', null) +
+                kartuRiwayat('bm-riwayat-b', 'ki-heart', 'Persalinan dan Kelahiran Anak', 'bm-rw-ps', null) +
+                kartuRiwayat('bm-riwayat-a', 'ki-heart', 'Riwayat Nifas', 'bm-rw-nf', null) +
             '</div>';
 
         bootstrap.Modal.getOrCreateInstance($('modal_detail_bumil')).show();
 
-        function isi(kh, cp) {
+        function isi(kh, cp, rs, ps, nf) {
             $('bm-rw-kh-chip').textContent = kh.length + ' catatan';
             $('bm-rw-cp-chip').textContent = cp.length + ' catatan';
             pasangTabel('bm-rw-kh', KOLOM_KEHAMILAN, kh, 'Belum ada riwayat kehamilan');
             pasangTabel('bm-rw-cp', KOLOM_CATIN, cp, 'Belum ada riwayat calon pengantin');
+            $('bm-rw-rs-chip').textContent = rs.length + ' catatan';
+            $('bm-rw-ps-chip').textContent = ps.length + ' catatan';
+            $('bm-rw-nf-chip').textContent = nf.length + ' catatan';
+            pasangTabel('bm-rw-rs', KOLOM_RISIKO, rs, 'Belum ada catatan risiko kehamilan');
+            pasangTabel('bm-rw-ps', KOLOM_PERSALINAN, ps, 'Belum ada catatan persalinan');
+            pasangTabel('bm-rw-nf', KOLOM_NIFAS, nf, 'Belum ada catatan nifas');
         }
         ambil('/inovasi/kota/bumil-data/' + r.id + '/riwayat')
-            .then(function (res) { isi(res.kehamilan || [], res.calon_pengantin || res.catin || []); })
+            .then(function (res) { isi(res.kehamilan || [], res.calon_pengantin || res.catin || [], res.risiko || [], res.persalinan || [], res.nifas || []); })
             .catch(function () {
-                isi([], []);
+                isi([], [], [], [], []);
                 $('bm-rw-kh').insertAdjacentHTML('afterbegin', '<div class="text-center text-danger fs-8 fw-bold mb-2">Gagal memuat riwayat dari server.</div>');
             });
     }
