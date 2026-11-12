@@ -700,7 +700,7 @@
         const tbody = document.getElementById('mk-tbody');
         tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted py-5">Memuat data...</td></tr>';
 
-        fetch('/makan-ketan', { headers: { 'Accept': 'application/json' } })
+        fetch('/inovasi/kota/makan-ketan', { headers: { 'Accept': 'application/json' } })
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 allData = data;
@@ -861,7 +861,7 @@
         if (foto1) formData.append('foto_1', foto1);
         if (foto2) formData.append('foto_2', foto2);
 
-        fetch('/makan-ketan', {
+        fetch('/inovasi/kota/makan-ketan', {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
             body: formData
@@ -905,7 +905,7 @@
         if (foto1) formData.append('foto_1', foto1);
         if (foto2) formData.append('foto_2', foto2);
 
-        fetch('/makan-ketan/' + id, {
+        fetch('/inovasi/kota/makan-ketan/' + id, {
             method: 'POST', // Laravel baca _method=PUT dari FormData
             headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
             body: formData
@@ -926,7 +926,7 @@
 
     // ===================== Hapus (popup sama seperti Penghargaan) =====================
     function kirimHapus(id, nama) {
-        fetch('/makan-ketan/' + id, {
+        fetch('/inovasi/kota/makan-ketan/' + id, {
             method: 'DELETE',
             headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
         })
@@ -985,7 +985,7 @@
     });
 
     // Ambil daftar kecamatan & kelurahan dari database dulu, baru tampilkan data
-    fetch('/makan-ketan/wilayah', { headers: { 'Accept': 'application/json' } })
+    fetch('/inovasi/kota/makan-ketan/wilayah', { headers: { 'Accept': 'application/json' } })
         .then(function (res) { return res.json(); })
         .then(function (data) { kelurahanByKecamatan = data; })
         .catch(function () { alert('Gagal mengambil data kecamatan/kelurahan dari database.'); })

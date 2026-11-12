@@ -10,6 +10,7 @@
     .kmb__art svg { width: 100%; height: 100%; display: block; }
     @media (max-width: 991px) { .kmb__art { width: 300px; height: 167px; } .kmb__tx { max-width: 70%; } }
     @media (max-width: 767px) { .kmb__art { display: none; } .kmb__tx { max-width: 100%; padding: 1.25rem; } .kmb__judul { font-size: 1.5rem; } }
+    .ik-sub-aktif .banner-inovasi-kota, [class*="ik-aktif-"] .banner-inovasi-kota { display: none !important; }
     /* Warna Kemangi: lavender pastel, senada dengan banner */
     #content-kemanggi .card { border: 1px solid #e6e0f2 !important; }
     #content-kemanggi h2.fw-bolder { color: #3b2f66 !important; }
@@ -25,7 +26,7 @@
 </style>
 
 <!-- Banner Kemangi (dipindah ke atas halaman oleh skrip di akhir file) -->
-<div class="kmb sub-banner-top d-none" id="kmb-top">
+<div class="kmb d-none" id="kmb-top">
     <div class="kmb__tx">
         <div class="kmb__kecil">Inovasi Kota</div>
         <h2 class="kmb__judul">Kemangi</h2>
@@ -429,7 +430,7 @@
         const canvas = $(canvasId);
         if (!canvas) return null;
         if (lama) lama.destroy();
-        const bawaan = Chart.getChart(canvas);      // jaga-jaga kalau sudah pernah digambar
+        const bawaan = (typeof Chart.getChart === 'function') ? Chart.getChart(canvas) : null;   // jaga-jaga kalau sudah pernah digambar
         if (bawaan) bawaan.destroy();
         const garis = function (nama, data, warna) {
             return { label: nama, data: data, borderColor: warna, backgroundColor: warna, borderWidth: 3, tension: 0.35, pointRadius: 4, pointHoverRadius: 6 };
@@ -454,11 +455,18 @@
         const thn = $('filter_periode').value;
         $('kmg-badge-remaja').textContent = 'Periode: ' + thn;
         $('kmg-badge-ortu').textContent = 'Periode: ' + thn;
+        // Grafik hanya digambar saat sub menu Kemangi terlihat (kalau masih tersembunyi ukurannya 0 dan grafik kosong).
+        // Begitu sub menu dibuka, skrip banner di bawah memanggil fungsi ini lagi.
+        const wadah = $('content-kemanggi');
+        if (wadah && wadah.offsetParent === null) return;
         siapkanChart(function () {
-            chartRemaja = gambar('chartKemanggiRemaja', chartRemaja, dataGrafik('Remaja'));
-            chartOrtu = gambar('chartKemanggiOrangTua', chartOrtu, dataGrafik('Orang Tua'));
+            try {
+                chartRemaja = gambar('chartKemanggiRemaja', chartRemaja, dataGrafik('Remaja'));
+                chartOrtu = gambar('chartKemanggiOrangTua', chartOrtu, dataGrafik('Orang Tua'));
+            } catch (err) { console.error('Grafik Kemangi gagal digambar:', err); }
         });
     }
+    window.kmgRenderGrafik = renderGrafik;
 
     // ---------- Filter + tabel ----------
     function filtered() {
@@ -524,7 +532,7 @@
     }
 
     function loadData() {
-        return api('/kemangi-data')
+        return api('/inovasi/kota/kemangi-data')
             .then(function (data) { semuaData = data; render(); renderGrafik(); })
             .catch(function () {
                 $('kmg-tbody').innerHTML = '<tr><td colspan="' + KOLOM + '" class="text-center text-danger py-5">Gagal memuat data. Pastikan migrasi sudah dijalankan dan route sudah ditambahkan.</td></tr>';
@@ -589,7 +597,7 @@
         btn.disabled = true;
 
         const fd = new FormData(this);
-        let url = '/kemangi-data';
+        let url = '/inovasi/kota/kemangi-data';
         if (id) { url += '/' + id; }
 
         api(url, { method: 'POST', body: fd })
@@ -619,7 +627,7 @@
             buttonsStyling: false
         }).then(function (result) {
             if (!result.isConfirmed) return;
-            api('/kemangi-data/' + id, { method: 'DELETE' })
+            api('/inovasi/kota/kemangi-data/' + id, { method: 'DELETE' })
                 .then(function (res) { sukses(nama + ' berhasil dihapus'); return loadData(); })
                 .catch(function (err) { gagal(err.message); });
         });
@@ -630,7 +638,7 @@
             $('kmg-btn-tambah').classList.add('d-none');
             $('kmg-th-aksi').classList.add('d-none');
         }
-        api('/kemangi-data/wilayah')
+        api('/inovasi/kota/kemangi-data/wilayah')
             .then(function (data) { wilayah = data; })
             .catch(function () { gagal('Gagal mengambil data kecamatan/kelurahan dari database.'); })
             .finally(function () { initWilayah(); loadData(); });
@@ -639,39 +647,32 @@
 </script>
 
 <script>
-// Banner pastel Kemangi naik menggantikan banner hijau "Inovasi Kota" saat submenu ini dibuka
+// Banner pastel Kemangi menggantikan banner hijau saat sub menu ini dibuka
 (function () {
-    var banner = document.getElementById('kmb-top');
-    if (!banner) return;
-    var item = document.getElementById('content-kemanggi') || banner.closest('.inovasi-item-view');   // wadah konten Kemangi
-
-    // Cari banner hijau "Inovasi Kota" di index.blade.php (tidak bergantung pada nama class tertentu)
-    function cariBannerHijau() {
-        var el = document.querySelector('#banner-inovasi-default, .banner-inovasi-kota');
-        if (el) return el;
+    function mulai() {
+        if (document.getElementById('kb-banner')) return; // sudah ditangani index.blade.php
+        var baru = document.getElementById('kmb-top');
+        var kontainer = document.getElementById('content-kemanggi');
+        var area = document.getElementById('kt_app_content_container') || document.body;
+        var pilihEl = document.getElementById('select-filter-inovasi');
         var sub = document.getElementById('banner-subtitle-inovasi');
-        var pilih = document.getElementById('select-filter-inovasi');
-        if (!sub || !pilih) return null;
-        el = sub;
-        while (el.parentElement && !el.parentElement.contains(pilih)) el = el.parentElement;
-        return el;
+        if (!baru || !kontainer) return;
+        var titik = sub || pilihEl;
+        if (titik && pilihEl) { while (titik.parentElement && !titik.parentElement.contains(pilihEl)) titik = titik.parentElement; }
+        if (titik && titik.parentNode) titik.parentNode.insertBefore(baru, titik);
+
+        function sinkron() {
+            var tampil = kontainer.offsetParent !== null;
+            baru.classList.toggle('d-none', !tampil);
+            area.classList.toggle('ik-aktif-kmb', tampil);
+            if (tampil && window.kmgRenderGrafik) setTimeout(window.kmgRenderGrafik, 150);
+        }
+        var ob = new MutationObserver(sinkron);
+        ob.observe(kontainer, { attributes: true, attributeFilter: ['class', 'style'] });
+        if (kontainer.parentElement) ob.observe(kontainer.parentElement, { attributes: true, attributeFilter: ['class', 'style'] });
+        if (pilihEl) pilihEl.addEventListener('change', function () { setTimeout(sinkron, 50); });
+        sinkron();
     }
-    var hijau = cariBannerHijau();
-
-    // Pindahkan banner pastel ke posisi banner hijau (tepat di bawahnya)
-    if (hijau && item) hijau.insertAdjacentElement('afterend', banner);
-
-    function sync() {
-        var tampil = !item || item.offsetParent !== null;
-        banner.classList.toggle('d-none', !tampil);
-        // Banner hijau tampil hanya jika tidak ada banner submenu yang sedang aktif
-        if (hijau) hijau.classList.toggle('d-none', !!document.querySelector('.sub-banner-top:not(.d-none)'));
-    }
-
-    if (item) new MutationObserver(sync).observe(item, { attributes: true, attributeFilter: ['class', 'style'] });
-    document.addEventListener('change', function (e) {
-        if (e.target && (e.target.id === 'select-filter-inovasi' || e.target.id === 'select-filter-pokja')) setTimeout(sync, 0);
-    });
-    sync();
+    document.addEventListener('DOMContentLoaded', mulai);
 })();
 </script>

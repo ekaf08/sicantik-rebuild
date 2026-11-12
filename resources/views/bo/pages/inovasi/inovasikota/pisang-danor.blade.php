@@ -948,7 +948,7 @@
     }
 
     function loadAll() {
-        return Promise.all([api('/pisang-danor/bsi'), api('/pisang-danor/organik')])
+        return Promise.all([api('/inovasi/kota/pisang-danor/bsi'), api('/inovasi/kota/pisang-danor/organik')])
             .then(function (hasil) {
                 dataBsi = hasil[0];
                 dataOrganik = hasil[1];
@@ -1134,7 +1134,7 @@
         const btn = this.querySelector('button[type=submit]');
         btn.disabled = true;
 
-        api('/pisang-danor/bsi', { method: 'POST', body: new FormData(this) })
+        api('/inovasi/kota/pisang-danor/bsi', { method: 'POST', body: new FormData(this) })
             .then(function (res) {
                 modal('modal_tambah_danor').hide();
                 sukses(res.message || 'Data berhasil ditambahkan');
@@ -1196,7 +1196,7 @@
 
         const fd = new FormData(this);
 
-        api('/pisang-danor/bsi/' + $('edit-id-danor').value, { method: 'POST', body: fd })
+        api('/inovasi/kota/pisang-danor/bsi/' + $('edit-id-danor').value, { method: 'POST', body: fd })
             .then(function (res) {
                 modal('modal_edit_danor').hide();
                 sukses(res.message || 'Data berhasil diubah');
@@ -1226,7 +1226,7 @@
         const fd = new FormData(this);
         document.querySelectorAll('.po-metode:checked').forEach(function (cb) { fd.append('metode_pengolahan[]', cb.value); });
 
-        let url = '/pisang-danor/organik';
+        let url = '/inovasi/kota/pisang-danor/organik';
         if (id) { url += '/' + id; }
 
         api(url, { method: 'POST', body: fd })
@@ -1255,7 +1255,7 @@
             buttonsStyling: false
         }).then(function (result) {
             if (!result.isConfirmed) return;
-            const url = (kategori === 'anorganik' ? '/pisang-danor/bsi/' : '/pisang-danor/organik/') + id;
+            const url = (kategori === 'anorganik' ? '/inovasi/kota/pisang-danor/bsi/' : '/inovasi/kota/pisang-danor/organik/') + id;
             api(url, { method: 'DELETE' })
                 .then(function (res) { sukses(res.message || 'Data berhasil dihapus'); return loadAll(); })
                 .catch(function (err) { gagal(err.message); });
@@ -1458,7 +1458,7 @@
     };
 
     document.addEventListener('DOMContentLoaded', function () {
-        api('/pisang-danor/wilayah')
+        api('/inovasi/kota/pisang-danor/wilayah')
             .then(function (data) { wilayah = data; })
             .catch(function () { gagal('Gagal mengambil data kecamatan/kelurahan dari database.'); })
             .finally(function () { initWilayah(); loadAll(); });
@@ -1467,26 +1467,34 @@
 </script>
 
 {{-- Tukar banner: banner pastel Pisang Danor naik ke posisi banner atas, banner hijau disembunyikan --}}
+<style>
+    [class*="ik-aktif-"] .banner-inovasi-kota { display: none !important; }
+</style>
 <script>
+// Banner pastel menggantikan banner hijau saat sub menu ini dibuka
 (function () {
-    var banner = document.getElementById('pd-top-banner');
-    if (!banner) return;
-    var item = banner.closest('.inovasi-item-view');   // wadah konten Pisang Danor (tampil/sembunyi sesuai dropdown)
-    var hijau = document.querySelector('#banner-inovasi-default, .banner-inovasi-kota');   // banner hijau di index.blade.php
-
-    if (hijau && item) hijau.insertAdjacentElement('afterend', banner);   // naik ke posisi banner atas
-
-    function sync() {
-        var tampil = !item || item.offsetParent !== null;
-        banner.classList.toggle('d-none', !tampil);
-        // Banner hijau tampil hanya jika tidak ada banner submenu yang sedang aktif
-        if (hijau) hijau.classList.toggle('d-none', !!document.querySelector('.sub-banner-top:not(.d-none)'));
+    function mulai() {
+        if (document.getElementById('kb-banner')) return;
+        var baru = document.getElementById('pd-top-banner');
+        var kontainer = document.getElementById('content-pisang-danor');
+        var area = document.getElementById('kt_app_content_container') || document.body;
+        var pilihEl = document.getElementById('select-filter-inovasi');
+        var sub = document.getElementById('banner-subtitle-inovasi');
+        if (!baru || !kontainer) return;
+        var titik = sub || pilihEl;
+        if (titik && pilihEl) { while (titik.parentElement && !titik.parentElement.contains(pilihEl)) titik = titik.parentElement; }
+        if (titik && titik.parentNode) titik.parentNode.insertBefore(baru, titik);
+        function sinkron() {
+            var tampil = kontainer.offsetParent !== null;
+            baru.classList.toggle('d-none', !tampil);
+            area.classList.toggle('ik-aktif-pdn', tampil);
+        }
+        var ob = new MutationObserver(sinkron);
+        ob.observe(kontainer, { attributes: true, attributeFilter: ['class', 'style'] });
+        if (kontainer.parentElement) ob.observe(kontainer.parentElement, { attributes: true, attributeFilter: ['class', 'style'] });
+        if (pilihEl) pilihEl.addEventListener('change', function () { setTimeout(sinkron, 50); });
+        sinkron();
     }
-
-    if (item) new MutationObserver(sync).observe(item, { attributes: true, attributeFilter: ['class', 'style'] });
-    document.addEventListener('change', function (e) {
-        if (e.target && (e.target.id === 'select-filter-inovasi' || e.target.id === 'select-filter-pokja')) setTimeout(sync, 0);
-    });
-    sync();
+    document.addEventListener('DOMContentLoaded', mulai);
 })();
 </script>

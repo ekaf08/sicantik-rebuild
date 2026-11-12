@@ -740,21 +740,20 @@
             chips.push('Masa Nifas');
         }
 
+        const badge = chips.map(function (c) { return '<span class="badge fw-bold me-1" style="background:#fbe0ea;color:#a8406f;">' + esc(c) + '</span>'; }).join('');
+
         $('bm-detail-isi').innerHTML =
-            '<div class="bm-hero mb-5"><div class="d-flex align-items-center gap-4 flex-wrap">' +
-                '<div class="bm-avatar">' + esc(inisial(r.nama)) + '</div>' +
-                '<div class="flex-grow-1"><div class="fw-bold fs-7" style="opacity:.85;">NIK ' + esc(r.nik || '-') + ' &nbsp;|&nbsp; No KK ' + esc(r.no_kk || '-') + '</div>' +
-                '<div class="d-flex flex-wrap gap-2 mt-2">' + chips.map(function (c) { return '<span class="bm-chip">' + esc(c) + '</span>'; }).join('') + '</div></div>' +
-            '</div></div>' +
-            '<div class="row mb-2">' +
+            '<div class="bmb-info p-5 mb-5"><div class="row">' +
+                itemInfo('NIK', esc(r.nik || '-')) +
+                itemInfo('No KK', esc(r.no_kk || '-')) +
                 itemInfo('Usia', r.usia ? esc(r.usia) + ' Tahun' : '') +
+                itemInfo('Status', badge) +
                 itemInfo('Kecamatan', esc(r.kecamatan)) +
                 itemInfo('Kelurahan', esc(r.kelurahan)) +
                 itemInfo('RW / RT', esc((r.rw || '-') + ' / ' + (r.rt || '-'))) +
-                itemInfo('Hamil Ke', esc(hamilKe(r))) +
-                itemInfo('Tahun Hamil', esc(tahunHamil(r))) +
-                '<div class="col-12 bm-info-item mb-3"><label>Alamat Domisili</label><span>' + esc(r.alamat || '-') + '</span></div>' +
-            '</div>' +
+                itemInfo('Hamil Ke / Tahun', esc(hamilKe(r)) + ' / ' + esc(tahunHamil(r))) +
+                '<div class="col-12 bm-info-item"><label>Alamat Domisili</label><span>' + esc(r.alamat || '-') + '</span></div>' +
+            '</div></div>' +
             '<div id="bm-riwayat-isi">' +
                 kartuRiwayat('bm-riwayat-a', 'ki-heart', 'Riwayat Kehamilan Ibu', 'bm-rw-kh', null) +
                 kartuRiwayat('bm-riwayat-b', 'ki-profile-user', 'Riwayat Calon Pengantin', 'bm-rw-cp', null) +
@@ -768,7 +767,7 @@
             pasangTabel('bm-rw-kh', KOLOM_KEHAMILAN, kh, 'Belum ada riwayat kehamilan');
             pasangTabel('bm-rw-cp', KOLOM_CATIN, cp, 'Belum ada riwayat calon pengantin');
         }
-        ambil('/bumil-data/' + r.id + '/riwayat')
+        ambil('/inovasi/kota/bumil-data/' + r.id + '/riwayat')
             .then(function (res) { isi(res.kehamilan || [], res.calon_pengantin || res.catin || []); })
             .catch(function () {
                 isi([], []);
@@ -827,14 +826,14 @@
     }
 
     function mulaiHalaman() {
-        ambil('/bumil-data/wilayah')
+        ambil('/inovasi/kota/bumil-data/wilayah')
             .then(function (data) { wilayah = data; })
             .catch(function () { wilayah = {}; })
             .then(function () {
                 const sel = $('bm-filter-kecamatan');
                 sel.innerHTML = '<option value="">Semua Kecamatan</option>';
                 Object.keys(wilayah).sort().forEach(function (k) { sel.appendChild(new Option(k, k)); });
-                return ambil('/bumil-data');
+                return ambil('/inovasi/kota/bumil-data');
             })
             .then(function (data) { semuaData = data; })
             .catch(function () {

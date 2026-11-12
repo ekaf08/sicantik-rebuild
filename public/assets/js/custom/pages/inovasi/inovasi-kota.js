@@ -932,7 +932,7 @@ function renderGrafikKampungAsi() {
 
 function fetchChartKampungAsi() {
     const kec = document.getElementById('filter_kampung_asi_kecamatan_top')?.value || 'all';
-    const chartUrl = window.API_ROUTES?.kampungAsiChart || '/kampung-asi/chart';
+    const chartUrl = window.API_ROUTES?.kampungAsiChart || '/inovasi/kota/kampung-asi/chart';
 
     fetch(`${chartUrl}?kecamatan=${encodeURIComponent(kec)}`, {
         headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
@@ -977,7 +977,7 @@ function fetchTableKampungAsi(page = 1) {
     tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-gray-500"><span class="spinner-border spinner-border-sm me-2"></span>Memuat data...</td></tr>`;
 
     const kec = document.getElementById('filter_kampung_asi_kecamatan_top')?.value || 'all';
-    const baseUrl = window.API_ROUTES?.kampungAsi || '/kampung-asi/data';
+    const baseUrl = window.API_ROUTES?.kampungAsi || '/inovasi/kota/kampung-asi/data';
     const params = new URLSearchParams({
         page: kampungAsiCurrentPage,
         limit: kampungAsiPageSize,
@@ -1330,7 +1330,7 @@ function fetchChartSurabayaEmas() {
     const kel = document.getElementById('filter_surabaya_emas_kelurahan')?.value || 'all';
     const thn = document.getElementById('filter_surabaya_emas_tahun')?.value || 'all';
 
-    const chartUrl = window.API_ROUTES?.surabayaEmasChart || '/surabaya-emas/chart';
+    const chartUrl = window.API_ROUTES?.surabayaEmasChart || '/inovasi/kota/surabaya-emas/chart';
     const params = new URLSearchParams({ kecamatan: kec, kelurahan: kel, tahun: thn });
 
     fetch(`${chartUrl}?${params.toString()}`, {
@@ -1364,7 +1364,7 @@ function fetchTableSurabayaEmas(page = 1) {
     const kec = document.getElementById('filter_surabaya_emas_kecamatan')?.value || 'all';
     const kel = document.getElementById('filter_surabaya_emas_kelurahan')?.value || 'all';
     const thn = document.getElementById('filter_surabaya_emas_tahun')?.value || 'all';
-    const baseUrl = window.API_ROUTES?.surabayaEmas || '/surabaya-emas/data';
+    const baseUrl = window.API_ROUTES?.surabayaEmas || '/inovasi/kota/surabaya-emas/data';
 
     const params = new URLSearchParams({
         page: surabayaEmasCurrentPage,
@@ -1550,7 +1550,7 @@ function lihatDetailBalita(id) {
 
     if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4">Memuat data detail...</td></tr>`;
 
-    const detailUrl = window.API_ROUTES?.surabayaEmasDetail || '/surabaya-emas/detail';
+    const detailUrl = window.API_ROUTES?.surabayaEmasDetail || '/inovasi/kota/surabaya-emas/detail';
 
     fetch(`${detailUrl}/${encodeURIComponent(id)}`, {
         headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }

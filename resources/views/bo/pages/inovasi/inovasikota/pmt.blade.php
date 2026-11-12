@@ -544,7 +544,7 @@
     }
 
     function loadData() {
-        return api('/pmt-data')
+        return api('/inovasi/kota/pmt-data')
             .then(function (data) { semuaData = data; render(); })
             .catch(function () {
                 $('tbody-pmt').innerHTML = '<tr><td colspan="' + KOLOM + '" class="text-center text-danger py-5">Gagal memuat data. Pastikan migration sudah dijalankan dan route sudah ditambahkan.</td></tr>';
@@ -670,7 +670,7 @@
         btn.disabled = true;
 
         const fd = new FormData(this);
-        let url = '/pmt-data';
+        let url = '/inovasi/kota/pmt-data';
         if (id) { url += '/' + id; }
 
         api(url, { method: 'POST', body: fd })
@@ -698,14 +698,14 @@
             buttonsStyling: false
         }).then(function (result) {
             if (!result.isConfirmed) return;
-            api('/pmt-data/' + id, { method: 'DELETE' })
+            api('/inovasi/kota/pmt-data/' + id, { method: 'DELETE' })
                 .then(function (res) { sukses(res.message || 'Data berhasil dihapus'); return loadData(); })
                 .catch(function (err) { gagal(err.message); });
         });
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        api('/pmt-data/wilayah')
+        api('/inovasi/kota/pmt-data/wilayah')
             .then(function (data) { wilayah = data; })
             .catch(function () { gagal('Gagal mengambil data kecamatan/kelurahan dari database.'); })
             .finally(function () { initWilayah(); loadData(); });
@@ -714,38 +714,34 @@
 </script>
 
 {{-- Tukar banner: banner pastel PMT naik ke posisi banner atas, banner hijau disembunyikan --}}
+<style>
+    [class*="ik-aktif-"] .banner-inovasi-kota { display: none !important; }
+</style>
 <script>
+// Banner pastel menggantikan banner hijau saat sub menu ini dibuka
 (function () {
-    var banner = document.getElementById('pmt-top-banner');
-    if (!banner) return;
-    var item = banner.closest('.inovasi-item-view') || document.getElementById('content-pmt');   // wadah konten PMT (tampil/sembunyi sesuai dropdown)
-
-    // Cari banner hijau "Inovasi Kota" di index.blade.php (tidak bergantung pada nama class tertentu)
-    function cariBannerHijau() {
-        var el = document.querySelector('#banner-inovasi-default, .banner-inovasi-kota');
-        if (el) return el;
+    function mulai() {
+        if (document.getElementById('kb-banner')) return;
+        var baru = document.getElementById('pmt-top-banner');
+        var kontainer = document.getElementById('content-pmt');
+        var area = document.getElementById('kt_app_content_container') || document.body;
+        var pilihEl = document.getElementById('select-filter-inovasi');
         var sub = document.getElementById('banner-subtitle-inovasi');
-        var pilih = document.getElementById('select-filter-inovasi');
-        if (!sub || !pilih) return null;
-        el = sub;
-        while (el.parentElement && !el.parentElement.contains(pilih)) el = el.parentElement;
-        return el;
+        if (!baru || !kontainer) return;
+        var titik = sub || pilihEl;
+        if (titik && pilihEl) { while (titik.parentElement && !titik.parentElement.contains(pilihEl)) titik = titik.parentElement; }
+        if (titik && titik.parentNode) titik.parentNode.insertBefore(baru, titik);
+        function sinkron() {
+            var tampil = kontainer.offsetParent !== null;
+            baru.classList.toggle('d-none', !tampil);
+            area.classList.toggle('ik-aktif-pmt', tampil);
+        }
+        var ob = new MutationObserver(sinkron);
+        ob.observe(kontainer, { attributes: true, attributeFilter: ['class', 'style'] });
+        if (kontainer.parentElement) ob.observe(kontainer.parentElement, { attributes: true, attributeFilter: ['class', 'style'] });
+        if (pilihEl) pilihEl.addEventListener('change', function () { setTimeout(sinkron, 50); });
+        sinkron();
     }
-    var hijau = cariBannerHijau();
-
-    if (hijau && item) hijau.insertAdjacentElement('afterend', banner);   // naik ke posisi banner atas
-
-    function sync() {
-        var tampil = !item || item.offsetParent !== null;
-        banner.classList.toggle('d-none', !tampil);
-        // Banner hijau tampil hanya jika tidak ada banner submenu yang sedang aktif
-        if (hijau) hijau.classList.toggle('d-none', !!document.querySelector('.sub-banner-top:not(.d-none)'));
-    }
-
-    if (item) new MutationObserver(sync).observe(item, { attributes: true, attributeFilter: ['class', 'style'] });
-    document.addEventListener('change', function (e) {
-        if (e.target && (e.target.id === 'select-filter-inovasi' || e.target.id === 'select-filter-pokja')) setTimeout(sync, 0);
-    });
-    sync();
+    document.addEventListener('DOMContentLoaded', mulai);
 })();
 </script>

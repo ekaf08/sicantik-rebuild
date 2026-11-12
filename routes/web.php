@@ -139,12 +139,19 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::put('/penghargaan/update/{id}', [PenghargaanController::class, 'update'])->name('penghargaan.update');
     Route::delete('/penghargaan/delete/{id}', [PenghargaanController::class, 'destroy'])->name('penghargaan.destroy');
 
-    // Makan Ketan
+       // Makan Ketan
     Route::get('/makan-ketan/wilayah', [MakanKetanController::class, 'wilayah']);
     Route::get('/makan-ketan', [MakanKetanController::class, 'index']);
     Route::post('/makan-ketan', [MakanKetanController::class, 'store']);
     Route::post('/makan-ketan/{id}', [MakanKetanController::class, 'update']);
     Route::delete('/makan-ketan/{id}', [MakanKetanController::class, 'destroy']);
+
+    // Alias: JS memanggil alamat relatif dari /inovasi/kota
+    Route::get('/inovasi/kota/makan-ketan/wilayah', [MakanKetanController::class, 'wilayah']);
+    Route::get('/inovasi/kota/makan-ketan', [MakanKetanController::class, 'index']);
+    Route::post('/inovasi/kota/makan-ketan', [MakanKetanController::class, 'store']);
+    Route::post('/inovasi/kota/makan-ketan/{id}', [MakanKetanController::class, 'update']);
+    Route::delete('/inovasi/kota/makan-ketan/{id}', [MakanKetanController::class, 'destroy']);
 
     // Pisang Danor
     Route::get('/pisang-danor/wilayah', [PisangDanorController::class, 'wilayah']);
@@ -159,6 +166,16 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::post('/pisang-danor/organik/{id}', [PisangDanorController::class, 'updateOrganik']);
     Route::delete('/pisang-danor/organik/{id}', [PisangDanorController::class, 'destroyOrganik']);
 
+    // Alias Pisang Danor
+    Route::get('/inovasi/kota/pisang-danor/wilayah', [PisangDanorController::class, 'wilayah']);
+    Route::get('/inovasi/kota/pisang-danor/bsi', [PisangDanorController::class, 'indexBsi']);
+    Route::post('/inovasi/kota/pisang-danor/bsi', [PisangDanorController::class, 'storeBsi']);
+    Route::post('/inovasi/kota/pisang-danor/bsi/{id}', [PisangDanorController::class, 'updateBsi']);
+    Route::delete('/inovasi/kota/pisang-danor/bsi/{id}', [PisangDanorController::class, 'destroyBsi']);
+    Route::get('/inovasi/kota/pisang-danor/organik', [PisangDanorController::class, 'indexOrganik']);
+    Route::post('/inovasi/kota/pisang-danor/organik', [PisangDanorController::class, 'storeOrganik']);
+    Route::post('/inovasi/kota/pisang-danor/organik/{id}', [PisangDanorController::class, 'updateOrganik']);
+    Route::delete('/inovasi/kota/pisang-danor/organik/{id}', [PisangDanorController::class, 'destroyOrganik']);
 
     // PMT
      Route::get('/pmt-data/wilayah', [PmtController::class, 'wilayah']);
@@ -166,6 +183,13 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
      Route::post('/pmt-data', [PmtController::class, 'store']);
      Route::post('/pmt-data/{id}', [PmtController::class, 'update']);
      Route::delete('/pmt-data/{id}', [PmtController::class, 'destroy']);
+
+     // Alias PMT
+    Route::get('/inovasi/kota/pmt-data/wilayah', [PmtController::class, 'wilayah']);
+    Route::get('/inovasi/kota/pmt-data', [PmtController::class, 'index']);
+    Route::post('/inovasi/kota/pmt-data', [PmtController::class, 'store']);
+    Route::post('/inovasi/kota/pmt-data/{id}', [PmtController::class, 'update']);
+    Route::delete('/inovasi/kota/pmt-data/{id}', [PmtController::class, 'destroy']);
 
      //Daftar-Ketua-PKK
     Route::get('/daftar-ketua-pkk', [DaftarKetuaPkkController::class, 'index'])->name('ketua-pkk.index');
@@ -179,22 +203,34 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::post('/kemangi-data/{id}', [KemangiController::class, 'update']);
     Route::delete('/kemangi-data/{id}', [KemangiController::class, 'destroy']);
 
+    // Alias Kemangi
+    Route::get('/inovasi/kota/kemangi-data/wilayah', [KemangiController::class, 'wilayah']);
+    Route::get('/inovasi/kota/kemangi-data', [KemangiController::class, 'index']);
+    Route::post('/inovasi/kota/kemangi-data', [KemangiController::class, 'store']);
+    Route::post('/inovasi/kota/kemangi-data/{id}', [KemangiController::class, 'update']);
+    Route::delete('/inovasi/kota/kemangi-data/{id}', [KemangiController::class, 'destroy']);
+
     // Pendampingan Ibu Hamil
     Route::get('/bumil-data/wilayah', [BumilController::class, 'wilayah']);
     Route::get('/bumil-data', [BumilController::class, 'index']);
     Route::get('/bumil-data/{id}/riwayat', [BumilController::class, 'riwayat']);
 
+    // Alias Pendampingan Ibu Hamil
+    Route::get('/inovasi/kota/bumil-data/wilayah', [BumilController::class, 'wilayah']);
+    Route::get('/inovasi/kota/bumil-data', [BumilController::class, 'index']);
+    Route::get('/inovasi/kota/bumil-data/{id}/riwayat', [BumilController::class, 'riwayat']);
+
     // Surabaya Emas
-    Route::get('/surabaya-emas/data', [InovasiController::class, 'getSurabayaEmasData'])->name('surabaya.emas.data');
-    Route::get('/surabaya-emas/chart', [InovasiController::class, 'getSurabayaEmasChart'])->name('surabaya.emas.chart');
-    Route::get('/surabaya-emas/detail/{id}', [InovasiController::class, 'getSurabayaEmasDetail'])->name('surabaya.emas.detail');
+    Route::get('/inovasi/kota/surabaya-emas/data', [InovasiController::class, 'getSurabayaEmasData'])->name('surabaya.emas.data');
+    Route::get('/inovasi/kota/surabaya-emas/chart', [InovasiController::class, 'getSurabayaEmasChart'])->name('surabaya.emas.chart');
+    Route::get('/inovasi/kota/surabaya-emas/detail/{id}', [InovasiController::class, 'getSurabayaEmasDetail'])->name('surabaya.emas.detail');
 
     // Kampung Asi
-    Route::get('/kampung-asi/data', [InovasiController::class, 'getKampungAsiData'])->name('kampung-asi.data');
-    Route::get('/kampung-asi/chart', [InovasiController::class, 'getKampungAsiChart'])->name('kampung-asi.chart');
+    Route::get('/inovasi/kota/kampung-asi/data', [InovasiController::class, 'getKampungAsiData'])->name('kampung-asi.data');
+    Route::get('/inovasi/kota/kampung-asi/chart', [InovasiController::class, 'getKampungAsiChart'])->name('kampung-asi.chart');
 
-    // SiCantik 
-    Route::get('/inovasi/sicantik/get-data', [InovasiController::class, 'getDataSiCantik'])->name('inovasi.sicantik.getData');    
+    // SiCantik
+    Route::get('/inovasi/sicantik/get-data', [InovasiController::class, 'getDataSiCantik'])->name('inovasi.sicantik.getData');
     // CATCH-ALL: harus paling bawah
     Route::get('/{slug}', [MenuController::class, 'handleDynamicPage']) ->where('slug', '.*')->name('menu.dynamic');
 });
