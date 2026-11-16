@@ -41,13 +41,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/modal/{id}', [ModalController::class, 'show']);
     Route::get('/data-umum', [DataUmumController::class, 'index']);
     Route::get('/data-umum/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->name('data-umum.kelurahan');
-    Route::get('/pokja-2/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])
-    ->defaults('activeTab', 'pokja2')
-    ->name('pokja-2.kelurahan');
-    Route::get('/cari-nik', [Pokja3Controller::class, 'cariNik'])->name('cari-nik');
-    Route::post('/kader', [Pokja3Controller::class, 'storeKader'])->name('kader.store');
-    Route::delete('/kader/{id}', [Pokja3Controller::class, 'destroyKader'])->name('kader.destroy');
-    Route::post('/agregat', [Pokja3Controller::class, 'updateAgregat'])->name('agregat.update');
+    Route::get('/pokja-2/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->defaults('activeTab', 'pokja2')->name('pokja-2.kelurahan');
 
     // Mpasi
     Route::get('/mpasi', [MpasiController::class, 'index'])->name('mpasi.index');
