@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Bo;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Support\Pokja1;
 
 class DashboardController extends Controller
 {
@@ -100,17 +101,20 @@ class DashboardController extends Controller
         }
 
         $kolomPokja1 = $this->kolom('d_pokja_1_2026');
-        $dataPokja1  = DB::table('d_pokja_1_2026')
-            ->where('periode', 2026)
-            ->whereNull('id_kel')
-            ->get()
-            ->keyBy('id_kec');
+        $dataPokja1  = Pokja1::perKecamatan();
 
         $kolomPokja2 = $this->kolom('d_pokja_2_2026');
-        $dataPokja2  = DB::table('d_pokja_2_2026')
-            ->where('periode', 2026)
-            ->get()
-            ->keyBy('id_kec');
+        //$dataPokja2  = DB::table('d_pokja_2_2026')
+        //    ->where('periode', 2026)
+        //    ->get()
+        //    ->keyBy('id_kec');
+
+        $dataPokja2 = collect();
+        foreach ($kecamatan as $kec) {
+            $o = (object) ['id_kec' => $kec->id_kec];
+            foreach ($kolomPokja2 as $k) { $o->{$k->alias} = 0; }
+            $dataPokja2[$kec->id_kec] = $o;
+        }
 
         // Pokja 2: angka dari d_kader_2026, alias kolom => jenis_kader
         $mapPokja2 = [
@@ -134,6 +138,77 @@ class DashboardController extends Controller
                 $dataPokja2[$r->id_kec] = (object) ['id_kec' => $r->id_kec];
             }
             $dataPokja2[$r->id_kec]->{$aliasDariJenis[$r->jenis_kader]} = $r->total;
+        }
+
+        // Pokja 2: BKB dari tabel kelompok dan ibu
+        $bkb = DB::table('d_bkb_kelompok_2026')
+            ->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kec, COUNT(*) AS kelp, COALESCE(SUM(jumlah_ape),0) AS ape,
+                        COUNT(*) FILTER (WHERE is_simulasi) AS simulasi')
+            ->groupBy('id_kec')->get();
+
+        foreach ($bkb as $r) {
+            if (!$dataPokja2->has($r->id_kec)) {
+                $dataPokja2[$r->id_kec] = (object) ['id_kec' => $r->id_kec];
+            }
+            $dataPokja2[$r->id_kec]->bkb_kelp = $r->kelp;
+            $dataPokja2[$r->id_kec]->bkb_ape = $r->ape;
+            $dataPokja2[$r->id_kec]->bkb_kelp_simulasi = $r->simulasi;
+        }
+
+        $ibu = DB::table('d_bkb_ibu_2026')
+            ->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kec, COUNT(*) AS total')
+            ->groupBy('id_kec')->pluck('total', 'id_kec');
+
+        foreach ($ibu as $idKec => $total) {
+            if (!$dataPokja2->has($idKec)) {
+                $dataPokja2[$idKec] = (object) ['id_kec' => $idKec];
+            }
+            $dataPokja2[$idKec]->bkb_ibu_peserta = $total;
+        }
+
+        // Pokja 2: PAUD, taman bacaan, kelompok dan warga belajar
+        // Pokja 2: kelompok belajar, dihitung per id_pertanyaan
+        $kl = DB::table('d_kelompok_belajar_2026 as d')
+            ->join('m_pertanyaan_dashboard_2026 as p', 'p.id', '=', 'd.id_pertanyaan')
+            ->where('d.periode', 2026)->whereNull('d.deleted_at')
+            ->selectRaw('d.id_kec, p.alias, COUNT(*) AS total')
+            ->groupBy('d.id_kec', 'p.alias')->get();
+
+        foreach ($kl as $r) {
+            if (!$dataPokja2->has($r->id_kec)) { $dataPokja2[$r->id_kec] = (object) ['id_kec' => $r->id_kec]; }
+            $dataPokja2[$r->id_kec]->{$r->alias} = $r->total;
+        }
+
+        $wb = DB::table('d_warga_belajar_2026')
+            ->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kec, jenis_paket, COUNT(*) AS total')
+            ->groupBy('id_kec', 'jenis_paket')->get();
+        foreach ($wb as $r) {
+            $p = strtolower($r->jenis_paket);
+            $alias = $p === 'kf' ? 'kf_warga' : "paket_{$p}_warga";
+            if (!$dataPokja2->has($r->id_kec)) { $dataPokja2[$r->id_kec] = (object) ['id_kec' => $r->id_kec]; }
+            $dataPokja2[$r->id_kec]->$alias = $r->total;
+        }
+
+        $pd = DB::table('d_paud_2026')
+            ->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kec, COUNT(DISTINCT npsn) AS lembaga,
+                        COUNT(*) FILTER (WHERE nama_pegawai IS NOT NULL) AS tutor')
+            ->groupBy('id_kec')->get();
+        foreach ($pd as $r) {
+            if (!$dataPokja2->has($r->id_kec)) { $dataPokja2[$r->id_kec] = (object) ['id_kec' => $r->id_kec]; }
+            $dataPokja2[$r->id_kec]->paud_sejenis = $r->lembaga;
+            $dataPokja2[$r->id_kec]->tutor_paud_sejenis = $r->tutor;
+        }
+
+        $tb = DB::table('d_taman_bacaan_2026')
+            ->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kec, COUNT(*) AS total')->groupBy('id_kec')->pluck('total', 'id_kec');
+        foreach ($tb as $idKec => $total) {
+            if (!$dataPokja2->has($idKec)) { $dataPokja2[$idKec] = (object) ['id_kec' => $idKec]; }
+            $dataPokja2[$idKec]->taman_bacaan = $total;
         }
 
         // Pokja 3 dan 4 

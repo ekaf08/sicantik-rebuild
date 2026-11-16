@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Support\Pokja1;
 
 class DataUmumController extends Controller
 {
@@ -127,6 +128,90 @@ class DataUmumController extends Controller
             $dataPokja2[$r->id_kel]->{$aliasDariJenis[$r->jenis_kader]} = $r->total;
         }
 
+        $bkb = DB::table('d_bkb_kelompok_2026')
+            ->where('id_kec', $idKec)->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kel, COUNT(*) AS kelp, COALESCE(SUM(jumlah_ape),0) AS ape,
+                        COUNT(*) FILTER (WHERE is_simulasi) AS simulasi')
+            ->groupBy('id_kel')->get();
+
+        foreach ($bkb as $r) {
+            if (!$dataPokja2->has($r->id_kel)) {
+                $dataPokja2[$r->id_kel] = (object) ['id_kel' => $r->id_kel];
+            }
+            $dataPokja2[$r->id_kel]->bkb_kelp = $r->kelp;
+            $dataPokja2[$r->id_kel]->bkb_ape = $r->ape;
+            $dataPokja2[$r->id_kel]->bkb_kelp_simulasi = $r->simulasi;
+        }
+
+        $ibu = DB::table('d_bkb_ibu_2026')
+            ->where('id_kec', $idKec)->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kel, COUNT(*) AS total')
+            ->groupBy('id_kel')->pluck('total', 'id_kel');
+
+        foreach ($ibu as $idKel => $total) {
+            if (!$dataPokja2->has($idKel)) {
+                $dataPokja2[$idKel] = (object) ['id_kel' => $idKel];
+            }
+            $dataPokja2[$idKel]->bkb_ibu_peserta = $total;
+        }
+
+                // Kelompok belajar (sama seperti level kecamatan: lewat id_pertanyaan)
+        $kl = DB::table('d_kelompok_belajar_2026 as d')
+            ->join('m_pertanyaan_dashboard_2026 as p', 'p.id', '=', 'd.id_pertanyaan')
+            ->where('d.id_kec', $idKec)->where('d.periode', 2026)->whereNull('d.deleted_at')
+            ->selectRaw('d.id_kel, p.alias, COUNT(*) AS total')
+            ->groupBy('d.id_kel', 'p.alias')->get();
+
+        foreach ($kl as $r) {
+            if (!$dataPokja2->has($r->id_kel)) {
+                $dataPokja2[$r->id_kel] = (object) ['id_kel' => $r->id_kel];
+            }
+            $dataPokja2[$r->id_kel]->{$r->alias} = $r->total;
+        }
+
+        // Warga belajar
+        $wb = DB::table('d_warga_belajar_2026')
+            ->where('id_kec', $idKec)->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kel, jenis_paket, COUNT(*) AS total')
+            ->groupBy('id_kel', 'jenis_paket')->get();
+
+        foreach ($wb as $r) {
+            $p = strtolower($r->jenis_paket);
+            $alias = $p === 'kf' ? 'kf_warga' : "paket_{$p}_warga";
+            if (!$dataPokja2->has($r->id_kel)) {
+                $dataPokja2[$r->id_kel] = (object) ['id_kel' => $r->id_kel];
+            }
+            $dataPokja2[$r->id_kel]->$alias = $r->total;
+        }
+
+        // PAUD
+        $pd = DB::table('d_paud_2026')
+            ->where('id_kec', $idKec)->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kel, COUNT(DISTINCT npsn) AS lembaga,
+                         COUNT(*) FILTER (WHERE nama_pegawai IS NOT NULL) AS tutor')
+            ->groupBy('id_kel')->get();
+
+        foreach ($pd as $r) {
+            if (!$dataPokja2->has($r->id_kel)) {
+                $dataPokja2[$r->id_kel] = (object) ['id_kel' => $r->id_kel];
+            }
+            $dataPokja2[$r->id_kel]->paud_sejenis = $r->lembaga;
+            $dataPokja2[$r->id_kel]->tutor_paud_sejenis = $r->tutor;
+        }
+
+        // Taman bacaan
+        $tb = DB::table('d_taman_bacaan_2026')
+            ->where('id_kec', $idKec)->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kel, COUNT(*) AS total')
+            ->groupBy('id_kel')->pluck('total', 'id_kel');
+
+        foreach ($tb as $idKel => $total) {
+            if (!$dataPokja2->has($idKel)) {
+                $dataPokja2[$idKel] = (object) ['id_kel' => $idKel];
+            }
+            $dataPokja2[$idKel]->taman_bacaan = $total;
+        }
+
         return view('bo.pages.dashboard', [
             'activeTab' => request()->query('tab', $activeTab),
             'level'       => 'kelurahan',
@@ -135,8 +220,8 @@ class DataUmumController extends Controller
             'kecamatan'   => collect(),
             'kolom'       => $kolom,
             'data'        => $data,   // UBAH: sebelumnya collect()
-            'kolomPokja1' => collect(),
-            'dataPokja1'  => collect(),
+            'kolomPokja1' => $this->kolom('d_pokja_1_2026'),
+            'dataPokja1'  => Pokja1::perKelurahan($idKec),
             'kolomPokja2' => $this->kolom('d_pokja_2_2026'),
             'dataPokja2'  => $dataPokja2,
             'kolomPokja3' => $this->kolom('d_pokja_3_2026'),
