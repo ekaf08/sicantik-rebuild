@@ -131,3 +131,16 @@
     </table>
 </div>
 <!--end::Table Container-->
+<!--begin::Petunjuk Pengisian-->
+<div class="mt-8 text-center">
+    <img src="{{ asset('img/new_d_pokja_1/halaman-3.jpg') }}"
+         alt="Petunjuk Pengisian Pokja 1 PKK halaman 1"
+         class="img-fluid border rounded d-block mx-auto mb-4"
+         style="width: 100%; max-width: 1300px;">
+
+    <img src="{{ asset('img/new_d_pokja_1/halaman-4.jpg') }}"
+         alt="Petunjuk Pengisian Pokja 1 PKK halaman 2"
+         class="img-fluid border rounded d-block mx-auto"
+         style="width: 100%; max-width: 1300px;">
+</div>
+<!--end::Petunjuk Pengisian-->

@@ -129,4 +129,14 @@
     </table>
 </div>
 <!--end::Table Container-->
+<!--begin::Petunjuk Pengisian-->
+<div class="mt-8 text-center">
+    <img src="{{ asset(($level ?? 'kecamatan') === 'kelurahan'
+                ? 'img/new_d_data_umum/3dataumum_kelurahan.jpg'
+                : 'img/new_d_data_umum/2dataumum_kecamatan.jpg') }}"
+         alt="Petunjuk Pengisian Data Umum PKK"
+         class="img-fluid border rounded"
+         style="width: 100%; max-width: 1300px;">
+</div>
+<!--end::Petunjuk Pengisian-->
 
