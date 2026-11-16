@@ -767,6 +767,9 @@
             chips.push('Masa Nifas');
         }
 
+        const tampilRisiko = hamil && !!r.resti;       // Risiko Kehamilan: hanya ibu hamil resti
+        const tampilNifas = r.kategori === 'nifas';    // Persalinan + Riwayat Nifas: hanya ibu nifas
+
         const badge = chips.map(function (c) { return '<span class="badge fw-bold me-1" style="background:#fbe0ea;color:#a8406f;">' + esc(c) + '</span>'; }).join('');
 
         $('bm-detail-isi').innerHTML =
@@ -784,9 +787,10 @@
             '<div id="bm-riwayat-isi">' +
                 kartuRiwayat('bm-riwayat-a', 'ki-heart', 'Riwayat Kehamilan Ibu', 'bm-rw-kh', null) +
                 kartuRiwayat('bm-riwayat-b', 'ki-profile-user', 'Riwayat Calon Pengantin', 'bm-rw-cp', null) +
-                kartuRiwayat('bm-riwayat-a', 'ki-shield-cross', 'Risiko Kehamilan', 'bm-rw-rs', null) +
-                kartuRiwayat('bm-riwayat-b', 'ki-heart', 'Persalinan dan Kelahiran Anak', 'bm-rw-ps', null) +
-                kartuRiwayat('bm-riwayat-a', 'ki-heart', 'Riwayat Nifas', 'bm-rw-nf', null) +
+                // Bagian khusus: Risiko hanya untuk ibu resti; Persalinan & Nifas hanya untuk ibu nifas
+                (tampilRisiko ? kartuRiwayat('bm-riwayat-a', 'ki-shield-cross', 'Risiko Kehamilan', 'bm-rw-rs', null) : '') +
+                (tampilNifas ? kartuRiwayat('bm-riwayat-b', 'ki-heart', 'Persalinan dan Kelahiran Anak', 'bm-rw-ps', null) : '') +
+                (tampilNifas ? kartuRiwayat('bm-riwayat-a', 'ki-heart', 'Riwayat Nifas', 'bm-rw-nf', null) : '') +
             '</div>';
 
         bootstrap.Modal.getOrCreateInstance($('modal_detail_bumil')).show();
@@ -796,12 +800,16 @@
             $('bm-rw-cp-chip').textContent = cp.length + ' catatan';
             pasangTabel('bm-rw-kh', KOLOM_KEHAMILAN, kh, 'Belum ada riwayat kehamilan');
             pasangTabel('bm-rw-cp', KOLOM_CATIN, cp, 'Belum ada riwayat calon pengantin');
-            $('bm-rw-rs-chip').textContent = rs.length + ' catatan';
-            $('bm-rw-ps-chip').textContent = ps.length + ' catatan';
-            $('bm-rw-nf-chip').textContent = nf.length + ' catatan';
-            pasangTabel('bm-rw-rs', KOLOM_RISIKO, rs, 'Belum ada catatan risiko kehamilan');
-            pasangTabel('bm-rw-ps', KOLOM_PERSALINAN, ps, 'Belum ada catatan persalinan');
-            pasangTabel('bm-rw-nf', KOLOM_NIFAS, nf, 'Belum ada catatan nifas');
+            if (tampilRisiko) {
+                $('bm-rw-rs-chip').textContent = rs.length + ' catatan';
+                pasangTabel('bm-rw-rs', KOLOM_RISIKO, rs, 'Belum ada catatan risiko kehamilan');
+            }
+            if (tampilNifas) {
+                $('bm-rw-ps-chip').textContent = ps.length + ' catatan';
+                $('bm-rw-nf-chip').textContent = nf.length + ' catatan';
+                pasangTabel('bm-rw-ps', KOLOM_PERSALINAN, ps, 'Belum ada catatan persalinan');
+                pasangTabel('bm-rw-nf', KOLOM_NIFAS, nf, 'Belum ada catatan nifas');
+            }
         }
         ambil('/inovasi/kota/bumil-data/' + r.id + '/riwayat')
             .then(function (res) { isi(res.kehamilan || [], res.calon_pengantin || res.catin || [], res.risiko || [], res.persalinan || [], res.nifas || []); })
