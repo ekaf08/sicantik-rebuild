@@ -22,6 +22,22 @@ class ModalController extends Controller
             $jenis = (int) $p->jenis_form;
 
             abort_if($kel && !preg_match('/:kel\b/', $sql), 422, 'Detail tingkat kelurahan belum tersedia');
+        } elseif ($p->is_kader && $p->tb_dashboard === 'd_pokja_3_2026') {
+            $alias = str_replace("'", "''", $p->alias);
+            $sql   = "SELECT id, nik, no_kk, nama, jenis_kelamin, jabatan, no_hp, rw, rt, alamat
+                        FROM d_kader_2026
+                    WHERE id_kec = :kec
+                        AND (:kel = 0 OR id_kel = :kel)
+                        AND jenis_kader = '$alias'
+                        AND periode = :periode
+                        AND deleted_at IS NULL
+                    ORDER BY CASE jabatan
+                        WHEN 'Ketua' THEN 1
+                        WHEN 'Wakil Ketua' THEN 2
+                        WHEN 'Sekretaris' THEN 3
+                        ELSE 4
+                    END, nama ASC";
+            $jenis = (int) $p->jenis_form;
         } else {
             [$sql, $jenis] = $this->queryBawaan($p, $kel);
         }

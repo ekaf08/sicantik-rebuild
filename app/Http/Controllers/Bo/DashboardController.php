@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bo;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Support\Pokja1;
+use App\Http\Controllers\Bo\Pokja3Controller;
 
 class DashboardController extends Controller
 {
