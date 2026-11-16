@@ -76,27 +76,38 @@
         <!--end::Table head-->
         <!--begin::Table body-->
         <tbody>
-        @foreach ($kecamatan as $i => $kec)
+        @foreach ($baris as $i => $b)
+            @php
+                $lv   = $level ?? 'kecamatan';
+                $id   = $lv === 'kelurahan' ? $b->id_kel : $b->id_kec;
+                $nama = $lv === 'kelurahan' ? $b->nama_kel : $b->nama_kec;
+            @endphp
             <tr>
                 <td>{{ $i + 1 }}</td>
-                <td class="text-start fw-bold text-uppercase">{{ $kec->nama_kec }}</td>
+                <td class="text-start fw-bold text-uppercase">
+                    @if ($lv === 'kecamatan')
+                        <a href="{{ route('data-umum.kelurahan', ['idKec' => $id, 'tab' => 'pokja1']) }}"
+                        class="text-primary text-hover-dark">
+                            {{ $nama }}
+                        </a>
+                    @else
+                        {{ $nama }}
+                    @endif
+                </td>
 
                 @foreach ($kolomPokja1 as $k)
                     @php
-                        $teks = \Illuminate\Support\Str::endsWith($k->alias, ['_kegiatan', '_metode']);
-                        $nilai = $dataPokja1[$kec->id_kec]->{$k->alias} ?? null;
+                        $teks  = \Illuminate\Support\Str::endsWith($k->alias, ['_kegiatan', '_metode']);
+                        $nilai = $dataPokja1[$id]->{$k->alias} ?? null;
                     @endphp
                     <td @class(['agregat-trigger fw-bold' => !$k->is_disable])
                         @unless ($k->is_disable)
                             data-id="{{ $k->id }}"
-                            data-kec-id="{{ $kec->id_kec }}"
-                            data-kec-nama="{{ $kec->nama_kec }}"
+                            data-kec-id="{{ $lv === 'kelurahan' ? $kec->id_kec : $b->id_kec }}"
+                            data-kec-nama="{{ $nama }}"
+                            data-kel-id="{{ $lv === 'kelurahan' ? $b->id_kel : 0 }}"
                         @endunless>
-                        @if ($teks)
-                            {{ $nilai ?? '' }}
-                        @else
-                            {{ number_format($nilai ?? 0, 0, ',', '.') }}
-                        @endif
+                        @if ($teks) {{ $nilai ?? '' }} @else {{ number_format($nilai ?? 0, 0, ',', '.') }} @endif
                     </td>
                 @endforeach
             </tr>
