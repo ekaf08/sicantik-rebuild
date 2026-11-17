@@ -45,6 +45,26 @@ class Pokja1
             $data[$idKec]->jumlah_kader = $total;
         }
 
+        $lotus = DB::table('d_lotus_2026')
+            ->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kec, kelompok, COUNT(*) AS total')
+            ->groupBy('id_kec', 'kelompok')->get();
+
+        foreach ($lotus as $r) {
+            if (!$data->has($r->id_kec)) { $data[$r->id_kec] = (object) ['id_kec' => $r->id_kec]; }
+            $data[$r->id_kec]->{$r->kelompok . '_volume'} = $r->total;
+        }
+
+        $pes = DB::table('peserta_lotus')
+            ->whereNull('deleted_at')
+            ->selectRaw('id_kec, flag_kolom, COUNT(*) AS total')
+            ->groupBy('id_kec', 'flag_kolom')->get();
+
+        foreach ($pes as $r) {
+            if (!$data->has($r->id_kec)) { $data[$r->id_kec] = (object) ['id_kec' => $r->id_kec]; }
+            $data[$r->id_kec]->{$r->flag_kolom . '_peserta'} = $r->total;
+}
+
         return $data;
     }
 
@@ -62,6 +82,26 @@ class Pokja1
         foreach ($kader as $idKel => $total) {
             if (!$data->has($idKel)) { $data[$idKel] = (object) ['id_kel' => $idKel]; }
             $data[$idKel]->jumlah_kader = $total;
+        }
+
+        $lotus = DB::table('d_lotus_2026')
+            ->where('id_kec', $idKec)->where('periode', 2026)->whereNull('deleted_at')
+            ->selectRaw('id_kel, kelompok, COUNT(*) AS total')
+            ->groupBy('id_kel', 'kelompok')->get();
+
+        foreach ($lotus as $r) {
+            if (!$data->has($r->id_kel)) { $data[$r->id_kel] = (object) ['id_kel' => $r->id_kel]; }
+            $data[$r->id_kel]->{$r->kelompok . '_volume'} = $r->total;
+        }
+
+        $pes = DB::table('peserta_lotus')
+            ->where('id_kec', $idKec)->whereNull('deleted_at')
+            ->selectRaw('id_kel, flag_kolom, COUNT(*) AS total')
+            ->groupBy('id_kel', 'flag_kolom')->get();
+
+        foreach ($pes as $r) {
+            if (!$data->has($r->id_kel)) { $data[$r->id_kel] = (object) ['id_kel' => $r->id_kel]; }
+            $data[$r->id_kel]->{$r->flag_kolom . '_peserta'} = $r->total;
         }
 
         return $data;
