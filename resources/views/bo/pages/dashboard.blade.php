@@ -2090,21 +2090,50 @@
 
 @push('js')
     <script src="{{ asset('assets/js/custom/pages/dashboard-pkk/index.js') }}"></script>
-    <script>
+<script>
 const modal = new bootstrap.Modal(document.getElementById('modalDinamis'));
+const CSRF  = '{{ csrf_token() }}';
+let ctx = {};
+let berubah = false;
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+document.getElementById('modalDinamis').addEventListener('hidden.bs.modal', () => {
+  if (berubah) { berubah = false; location.reload(); }
+});
 
 document.addEventListener('click', function (e) {
   const el = e.target.closest('.agregat-trigger[data-id]');
   if (!el) return;
-
-  fetch(`/modal/${el.dataset.id}?kec=${el.dataset.kecId}&kel=${el.dataset.kelId ?? 0}`)
-    .then(r => r.json())
-    .then(hasil => tampilkan(hasil, el.dataset.kecNama));
+  ctx = { id: el.dataset.id, kec: el.dataset.kecId, kel: el.dataset.kelId ?? 0, nama: el.dataset.kecNama };
+  muat();
 });
 
-function tampilkan(hasil, kecNama) {
+function muat() {
+  fetch(`/modal/${ctx.id}?kec=${ctx.kec}&kel=${ctx.kel}`, { headers: { 'Accept': 'application/json' } })
+    .then(r => r.json())
+    .then(tampilkan);
+}
+
+function kirim(url, method, body) {
+  return fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF },
+    body: body ? JSON.stringify(body) : undefined,
+  }).then(async r => {
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      const pesan = j.errors ? Object.values(j.errors).flat().join('\n') : (j.message || 'Terjadi kesalahan.');
+      throw new Error(pesan);
+    }
+    return j;
+  });
+}
+
+function tampilkan(hasil) {
   document.getElementById('modalJudul').textContent =
-    `DETAIL ${hasil.judul.replace(/_/g, ' ')} - ${kecNama}`;
+    `DETAIL ${hasil.judul.replace(/_/g, ' ')} - ${ctx.nama ?? ''}`;
   const isi = document.getElementById('modalIsi');
 
   if ($.fn.DataTable && $.fn.DataTable.isDataTable('#tabelModal')) {
@@ -2112,17 +2141,36 @@ function tampilkan(hasil, kecNama) {
   }
 
   if (hasil.jenis_form == 1) {
-    isi.innerHTML = `<input class="form-control" value="${hasil.rows[0]?.nilai ?? ''}" readonly>`;
+    const nilai = hasil.rows[0]?.nilai ?? 0;
+    if (+ctx.kel > 0 && hasil.bisa_input) {
+      isi.innerHTML = `
+        <label class="form-label fw-bold">Jumlah</label>
+        <div class="input-group">
+          <input type="number" min="0" step="1" id="inputAgregat" class="form-control" value="${esc(nilai)}">
+          <button class="btn btn-primary" id="btnSimpanAgregat">Simpan</button>
+        </div>`;
+      document.getElementById('btnSimpanAgregat').onclick = () => {
+        kirim('/pokja-3/agregat', 'POST', {
+          id_pertanyaan: ctx.id, id_kec: +ctx.kec, id_kel: +ctx.kel,
+          nilai: document.getElementById('inputAgregat').value,
+        }).then(() => { berubah = true; modal.hide(); })
+          .catch(err => alert(err.message));
+      };
+    } else {
+      isi.innerHTML = `<input class="form-control" value="${esc(nilai)}" readonly>`;
+    }
+
   } else {
-    const kolom = hasil.kolom;
-    const baris = hasil.rows
-      .map((r, i) =>
-        `<tr><td>${i + 1}</td>${kolom.map(k => `<td>${r[k] ?? ''}</td>`).join('')}</tr>`
-      ).join('');
+    const kolom = hasil.kolom.filter(k => !(hasil.bisa_ubah && k === 'id'));
+    const baris = hasil.rows.map((r, i) =>
+      `<tr><td>${i + 1}</td>${kolom.map(k => `<td>${esc(r[k])}</td>`).join('')}
+        ${hasil.bisa_ubah ? `<td><button class="btn btn-sm btn-light-danger btn-hapus" data-kader="${esc(r.id)}">Hapus</button></td>` : ''}
+      </tr>`).join('');
 
     isi.innerHTML = `
+      ${hasil.bisa_tambah ? '<div class="mb-4"><button class="btn btn-sm btn-primary" id="btnTambah">+ Tambah Data</button></div><div id="formTambah"></div>' : ''}
       <table id="tabelModal" class="table table-bordered table-striped">
-        <thead><tr><th>NO</th>${kolom.map(k => `<th>${k.replace(/_/g, ' ').toUpperCase()}</th>`).join('')}</tr></thead>
+        <thead><tr><th>NO</th>${kolom.map(k => `<th>${esc(k.replace(/_/g, ' ').toUpperCase())}</th>`).join('')}${hasil.bisa_ubah ? '<th>AKSI</th>' : ''}</tr></thead>
         <tbody>${baris}</tbody>
       </table>`;
 
@@ -2130,23 +2178,78 @@ function tampilkan(hasil, kecNama) {
       $('#tabelModal').DataTable({
         pageLength: 10,
         language: {
-            emptyTable: 'Tidak ada data untuk ditampilkan',
-            lengthMenu: '_MENU_',
-            info: 'Showing _START_ to _END_ of _TOTAL_ records',
-            infoEmpty: 'Showing no records',
-            search: 'Search:',
-            paginate: { previous: '‹', next: '›' }
+          emptyTable: 'Tidak ada data untuk ditampilkan', lengthMenu: '_MENU_',
+          info: 'Showing _START_ to _END_ of _TOTAL_ records', infoEmpty: 'Showing no records',
+          search: 'Search:', paginate: { previous: '‹', next: '›' }
         },
         dom:
-            "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
-            "<'row'<'col-sm-12'tr>>" +
-            "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>"
-        });
+          "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+          "<'row'<'col-sm-12'tr>>" +
+          "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>"
+      });
     }
+
+    isi.onclick = (e) => {
+      const b = e.target.closest('.btn-hapus');
+      if (!b) return;
+      if (!confirm('Hapus kader ini?')) return;
+      kirim(`/pokja-3/kader/${b.dataset.kader}`, 'DELETE')
+        .then(() => { berubah = true; muat(); })
+        .catch(err => alert(err.message));
+    };
+
+    const btnTambah = document.getElementById('btnTambah');
+    if (btnTambah) btnTambah.onclick = formTambahKader;
   }
   modal.show();
 }
+
+function formTambahKader() {
+  const f = document.getElementById('formTambah');
+  f.innerHTML = `
+    <div class="border rounded p-4 mb-4">
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">NIK</label>
+          <div class="input-group"><input id="fNik" class="form-control" maxlength="16" inputmode="numeric">
+          <button class="btn btn-secondary" id="btnCari" type="button">Cari</button></div></div>
+        <div class="col-md-6"><label class="form-label">No KK</label><input id="fNoKk" class="form-control" maxlength="20"></div>
+        <div class="col-md-6"><label class="form-label">Nama</label><input id="fNama" class="form-control"></div>
+        <div class="col-md-3"><label class="form-label">Jenis Kelamin</label>
+          <select id="fJk" class="form-select"><option value="">-</option><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div>
+        <div class="col-md-3"><label class="form-label">Jabatan</label>
+          <select id="fJabatan" class="form-select"><option>Ketua</option><option>Wakil Ketua</option><option>Sekretaris</option><option selected>Anggota</option></select></div>
+        <div class="col-md-4"><label class="form-label">No HP</label><input id="fHp" class="form-control"></div>
+        <div class="col-md-2"><label class="form-label">RW</label><input id="fRw" class="form-control"></div>
+        <div class="col-md-2"><label class="form-label">RT</label><input id="fRt" class="form-control"></div>
+        <div class="col-md-4"><label class="form-label">Alamat</label><input id="fAlamat" class="form-control"></div>
+      </div>
+      <div class="mt-4"><button class="btn btn-success" id="btnSimpanKader" type="button">Simpan</button></div>
+    </div>`;
+
+  const v = id => document.getElementById(id).value;
+
+  document.getElementById('btnCari').onclick = () => {
+    fetch(`/pokja-3/cari-nik?nik=${encodeURIComponent(v('fNik'))}`, { headers: { 'Accept': 'application/json' } })
+      .then(async r => ({ ok: r.ok, j: await r.json() }))
+      .then(({ ok, j }) => {
+        if (!ok) return alert(j.message || 'NIK tidak ditemukan, lengkapi manual.');
+        const d = j.data;
+        fNoKk.value = d.no_kk; fNama.value = d.nama; fJk.value = d.jenis_kelamin;
+        fHp.value = d.no_hp; fRw.value = d.rw; fRt.value = d.rt; fAlamat.value = d.alamat;
+      });
+  };
+
+  document.getElementById('btnSimpanKader').onclick = () => {
+    kirim('/pokja-3/kader', 'POST', {
+      id_pertanyaan: ctx.id, id_kec: +ctx.kec, id_kel: +ctx.kel,
+      nik: v('fNik'), no_kk: v('fNoKk'), nama: v('fNama'), jenis_kelamin: v('fJk'),
+      jabatan: v('fJabatan'), no_hp: v('fHp'), rw: v('fRw'), rt: v('fRt'), alamat: v('fAlamat'),
+    }).then(() => { berubah = true; muat(); })
+      .catch(err => alert(err.message));
+  };
+}
 </script>
+
 @endpush
 @include('bo.pages.dashboard.modals.pokja1-modal')
 @include('bo.pages.dashboard.modals.pokja2-modal')

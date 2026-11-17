@@ -16,7 +16,12 @@ class CheckMenuPermission
         '/get-kecamatan/', '/get-kelurahan/', '/modal/', '/pokja-2/',
     ];
 
+    private const PATH_ALIAS = [
+        '/pokja-3' => '/data-umum',
+    ];
+
     private const FIELD_BY_ROUTE = [
+        'pokja-3.agregat.update' => 'update',
         'permission.access'   => 'update',
         'user.reset-password' => 'update',
         'kebijakan.update'    => 'update', 
@@ -34,6 +39,13 @@ class CheckMenuPermission
         }
 
         $path = '/' . trim($request->path(), '/');
+
+        foreach (self::PATH_ALIAS as $dari => $ke) {
+            if ($path === $dari || str_starts_with($path, $dari . '/')) {
+                $path = $ke;
+                break;
+            }
+        }
 
         if (Access::isSuperOnlyPath($path)) {
             abort(403, 'Akses ditolak.');

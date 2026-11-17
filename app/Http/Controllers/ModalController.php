@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Access;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class ModalController extends Controller
 {
+    // Menu yang izinnya dipakai untuk aksi Pokja 3 (harus sama dengan PATH_ALIAS di CheckMenuPermission)
+    private const MENU_POKJA3 = '/data-umum';
+
     public function show(Request $request, $id)
     {
         $p = DB::table('m_pertanyaan_dashboard_2026')
@@ -15,7 +19,7 @@ class ModalController extends Controller
 
         abort_if(!$p, 404);
 
-        $kel = (int) $request->query('kel'); // 0 = tingkat kecamatan
+        $kel = (int) $request->query('kel'); 
 
         if (filled($p->query_detail)) {
             $sql   = $p->query_detail;
@@ -70,7 +74,24 @@ class ModalController extends Controller
             $kolom[] = $stmt->getColumnMeta($i)['name'];
         }
 
+        $kaderPokja3 = $p->is_kader && $p->is_tarik && $p->tb_dashboard === 'd_pokja_3_2026';
+
+        $bolehTambah = Access::isSuperUser() || Access::can(self::MENU_POKJA3, 'create');
+        $bolehUbah   = Access::isSuperUser() || Access::can(self::MENU_POKJA3, 'update');
+        $bolehHapus  = Access::isSuperUser() || Access::can(self::MENU_POKJA3, 'delete');
+
+        $bisaInput = $p->tb_dashboard === 'd_pokja_3_2026'
+            && !$p->is_kader
+            && in_array((int) $p->jenis_form, [1, 2], true)
+            && !$p->is_disable
+            && $kel > 0
+            && $bolehUbah;
+
         return response()->json([
+            'id'          => $p->id,
+            'bisa_ubah'   => (bool) ($kaderPokja3 && $bolehHapus),  // tombol hapus kader
+            'bisa_input'  => (bool) $bisaInput,
+            'bisa_tambah' => (bool) ($kaderPokja3 && $kel && $bolehTambah), // hanya tingkat kelurahan
             'judul'      => strtoupper($p->nama_pertanyaan),
             'jenis_form' => $jenis,
             'kolom'      => $kolom,

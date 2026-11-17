@@ -21,6 +21,7 @@ use App\Http\Controllers\Bo\KebijakanController;
 use App\Http\Controllers\DataUmumController;
 use App\Http\Controllers\Bo\DaftarKetuaPkkController;
 use App\Http\Controllers\KemangiController;
+use App\Http\Controllers\Bo\Pokja3Controller;
 use App\Http\Controllers\BumilController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,12 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/data-umum', [DataUmumController::class, 'index']);
     Route::get('/data-umum/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->name('data-umum.kelurahan');
     Route::get('/pokja-2/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->defaults('activeTab', 'pokja2')->name('pokja-2.kelurahan');
+    Route::prefix('pokja-3')->group(function () {
+            Route::get('/cari-nik', [Pokja3Controller::class, 'cariNik'])->name('cari-nik');
+            Route::post('/kader', [Pokja3Controller::class, 'storeKader'])->name('kader.store');
+            Route::delete('/kader/{id}', [Pokja3Controller::class, 'destroyKader'])->name('kader.destroy')->whereNumber('id');
+            Route::post('/agregat', [Pokja3Controller::class, 'updateAgregat'])->name('agregat.update');
+        });
 
     // Mpasi
     Route::get('/mpasi', [MpasiController::class, 'index'])->name('mpasi.index');

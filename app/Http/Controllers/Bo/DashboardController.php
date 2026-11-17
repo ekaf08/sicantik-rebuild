@@ -213,9 +213,11 @@ class DashboardController extends Controller
         }
 
         // Pokja 3 dan 4 
-        $kolomPokja3 = $this->kolom('d_pokja_3_2026');
-        $dataPokja3  = $this->sumPerKecamatan('d_pokja_3_2026', $kolomPokja3);
+        $pokja3      = Pokja3Controller::getRekapData(2026);
+        $kolomPokja3 = $pokja3['kolomPokja3'];
+        $dataPokja3  = $pokja3['dataPokja3'];
 
+        // Pokja 4
         $kolomPokja4 = $this->kolom('d_pokja_4_2026');
         $dataPokja4  = $this->sumPerKecamatan('d_pokja_4_2026', $kolomPokja4);
 
