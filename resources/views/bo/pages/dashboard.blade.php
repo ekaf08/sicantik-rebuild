@@ -2089,7 +2089,8 @@
 </div>
 
 @push('js')
-    <script src="{{ asset('assets/js/custom/pages/dashboard-pkk/index.js') }}"></script>
+  {{-- Ganti blok dari <script src=index.js> sampai </script> penutup (sebelum @endpush) dengan isi file ini --}}
+  <script src="{{ asset('assets/js/custom/pages/dashboard-pkk/index.js') }}"></script>
 <script>
 const modal = new bootstrap.Modal(document.getElementById('modalDinamis'));
 const CSRF  = '{{ csrf_token() }}';
@@ -2140,7 +2141,7 @@ function tampilkan(hasil) {
     $('#tabelModal').DataTable().destroy();
   }
 
-  if (hasil.jenis_form == 1) {
+  if (hasil.tampilan === 'angka') {
     const nilai = hasil.rows[0]?.nilai ?? 0;
     if (+ctx.kel > 0 && hasil.bisa_input) {
       isi.innerHTML = `
@@ -2150,7 +2151,7 @@ function tampilkan(hasil) {
           <button class="btn btn-primary" id="btnSimpanAgregat">Simpan</button>
         </div>`;
       document.getElementById('btnSimpanAgregat').onclick = () => {
-        kirim('/pokja-3/agregat', 'POST', {
+        kirim(hasil.url_agregat || '/pokja-3/agregat', 'POST', {
           id_pertanyaan: ctx.id, id_kec: +ctx.kec, id_kel: +ctx.kel,
           nilai: document.getElementById('inputAgregat').value,
         }).then(() => { berubah = true; modal.hide(); })
@@ -2161,16 +2162,21 @@ function tampilkan(hasil) {
     }
 
   } else {
-    const kolom = hasil.kolom.filter(k => !(hasil.bisa_ubah && k === 'id'));
+    const adaAksi = hasil.bisa_ubah || hasil.bisa_edit;
+    const kolom = hasil.kolom.filter(k => !(adaAksi && k === 'id'));
     const baris = hasil.rows.map((r, i) =>
       `<tr><td>${i + 1}</td>${kolom.map(k => `<td>${esc(r[k])}</td>`).join('')}
-        ${hasil.bisa_ubah ? `<td><button class="btn btn-sm btn-light-danger btn-hapus" data-kader="${esc(r.id)}">Hapus</button></td>` : ''}
+        ${adaAksi ? `<td class="text-nowrap">
+          ${hasil.bisa_edit ? `<button class="btn btn-sm btn-light-warning btn-edit me-1" data-idx="${i}">Edit</button>` : ''}
+          ${hasil.bisa_ubah ? `<button class="btn btn-sm btn-light-danger btn-hapus" data-kader="${esc(r.id)}">Hapus</button>` : ''}
+        </td>` : ''}
       </tr>`).join('');
 
     isi.innerHTML = `
-      ${hasil.bisa_tambah ? '<div class="mb-4"><button class="btn btn-sm btn-primary" id="btnTambah">+ Tambah Data</button></div><div id="formTambah"></div>' : ''}
+      ${hasil.bisa_tambah ? '<div class="mb-4"><button class="btn btn-sm btn-primary" id="btnTambah">+ Tambah Data</button></div>' : ''}
+      ${(hasil.bisa_tambah || hasil.bisa_edit) ? '<div id="formTambah"></div>' : ''}
       <table id="tabelModal" class="table table-bordered table-striped">
-        <thead><tr><th>NO</th>${kolom.map(k => `<th>${esc(k.replace(/_/g, ' ').toUpperCase())}</th>`).join('')}${hasil.bisa_ubah ? '<th>AKSI</th>' : ''}</tr></thead>
+        <thead><tr><th>NO</th>${kolom.map(k => `<th>${esc(k.replace(/_/g, ' ').toUpperCase())}</th>`).join('')}${adaAksi ? '<th>AKSI</th>' : ''}</tr></thead>
         <tbody>${baris}</tbody>
       </table>`;
 
@@ -2190,6 +2196,12 @@ function tampilkan(hasil) {
     }
 
     isi.onclick = (e) => {
+      const ed = e.target.closest('.btn-edit');
+      if (ed) {
+        formTambahKader(hasil.rows[+ed.dataset.idx]);
+        document.getElementById('formTambah').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
       const b = e.target.closest('.btn-hapus');
       if (!b) return;
       if (!confirm('Hapus kader ini?')) return;
@@ -2199,15 +2211,16 @@ function tampilkan(hasil) {
     };
 
     const btnTambah = document.getElementById('btnTambah');
-    if (btnTambah) btnTambah.onclick = formTambahKader;
+    if (btnTambah) btnTambah.onclick = () => formTambahKader();
   }
   modal.show();
 }
 
-function formTambahKader() {
+function formTambahKader(data = null) {
   const f = document.getElementById('formTambah');
   f.innerHTML = `
     <div class="border rounded p-4 mb-4">
+      <div class="fw-bold mb-3">${data ? 'Edit Data Kader' : 'Tambah Data Kader'}</div>
       <div class="row g-3">
         <div class="col-md-6"><label class="form-label">NIK</label>
           <div class="input-group"><input id="fNik" class="form-control" maxlength="16" inputmode="numeric">
@@ -2228,6 +2241,13 @@ function formTambahKader() {
 
   const v = id => document.getElementById(id).value;
 
+  if (data) {
+    const isi = (id, val) => { document.getElementById(id).value = val ?? ''; };
+    isi('fNik', data.nik); isi('fNoKk', data.no_kk); isi('fNama', data.nama);
+    isi('fJk', data.jenis_kelamin); isi('fJabatan', data.jabatan); isi('fHp', data.no_hp);
+    isi('fRw', data.rw); isi('fRt', data.rt); isi('fAlamat', data.alamat);
+  }
+
   document.getElementById('btnCari').onclick = () => {
     fetch(`/pokja-3/cari-nik?nik=${encodeURIComponent(v('fNik'))}`, { headers: { 'Accept': 'application/json' } })
       .then(async r => ({ ok: r.ok, j: await r.json() }))
@@ -2240,11 +2260,14 @@ function formTambahKader() {
   };
 
   document.getElementById('btnSimpanKader').onclick = () => {
-    kirim('/pokja-3/kader', 'POST', {
-      id_pertanyaan: ctx.id, id_kec: +ctx.kec, id_kel: +ctx.kel,
+    const isiForm = {
       nik: v('fNik'), no_kk: v('fNoKk'), nama: v('fNama'), jenis_kelamin: v('fJk'),
       jabatan: v('fJabatan'), no_hp: v('fHp'), rw: v('fRw'), rt: v('fRt'), alamat: v('fAlamat'),
-    }).then(() => { berubah = true; muat(); })
+    };
+    const req = data
+      ? kirim(`/pokja-3/kader/${data.id}`, 'PUT', isiForm)
+      : kirim('/pokja-3/kader', 'POST', { id_pertanyaan: ctx.id, id_kec: +ctx.kec, id_kel: +ctx.kel, ...isiForm });
+    req.then(() => { berubah = true; muat(); })
       .catch(err => alert(err.message));
   };
 }

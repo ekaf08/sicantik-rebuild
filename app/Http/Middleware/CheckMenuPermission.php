@@ -18,10 +18,12 @@ class CheckMenuPermission
 
     private const PATH_ALIAS = [
         '/pokja-3' => '/data-umum',
+        '/pokja-4' => '/data-umum',
     ];
 
     private const FIELD_BY_ROUTE = [
         'pokja-3.agregat.update' => 'update',
+        'pokja-4.agregat.update' => 'update',
         'permission.access'   => 'update',
         'user.reset-password' => 'update',
         'kebijakan.update'    => 'update', 

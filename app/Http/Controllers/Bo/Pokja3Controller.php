@@ -23,7 +23,6 @@ class Pokja3Controller extends Controller
         $aliases      = $kolomPokja3->pluck('alias')->all();
         $kaderAliases = $kolomPokja3->filter(fn ($k) => (bool) $k->is_kader)->pluck('alias')->all();
 
-        // 1. Nilai tersimpan per kelurahan (sumber dasar; tingkat kecamatan dijumlahkan dari sini)
         $perKel = DB::table('d_pokja_3_2026')
             ->where('periode', $periode)
             ->whereNotNull('id_kel')
@@ -37,7 +36,6 @@ class Pokja3Controller extends Controller
             }
         };
 
-        // 2. Kader: hitung ulang dari d_kader_2026 per kelurahan 
         $cacahKader = DB::table('d_kader_2026')
             ->where('periode', $periode)
             ->whereNull('deleted_at')
@@ -53,7 +51,6 @@ class Pokja3Controller extends Controller
             $perKel[$r->id_kel]->{$r->jenis_kader} = $r->total;
         }
 
-        // 3. TOGA: hitung ulang dari d_toga_2026 per kelurahan
         $cacahToga = DB::table('d_toga_2026')
             ->where('periode', $periode)
             ->where('nama_jawaban', 'Ya')
@@ -73,7 +70,6 @@ class Pokja3Controller extends Controller
             return ['kolomPokja3' => $kolomPokja3, 'dataPokja3' => $perKel];
         }
 
-        // 4. Tingkat kecamatan = jumlah dari kelurahan
         $dataPokja3 = $perKel->groupBy('id_kec')->map(function ($rows, $kec) use ($aliases) {
             $o = new \stdClass();
             $o->id_kec = $kec;
@@ -94,13 +90,11 @@ class Pokja3Controller extends Controller
 
         $nik = trim($request->query('nik'));
 
-        // Cek di d_penduduk_2026 terlebih dahulu
         $warga = DB::table('d_penduduk_2026')
             ->where('nik', $nik)
             ->whereNull('deleted_at')
             ->first();
 
-        // Fallback: cek riwayat di d_kader_2026 jika sudah pernah diinput di pokja lain
         if (!$warga) {
             $warga = DB::table('d_kader_2026')
                 ->where('nik', $nik)
@@ -131,9 +125,6 @@ class Pokja3Controller extends Controller
         ]);
     }
 
-    /**
-     * 3. Simpan kader baru dari Modal Tambah Data + Auto-Sync ke d_pokja_3_2026
-     */
     public function storeKader(Request $request)
     {
         $validated = $request->validate([
@@ -156,7 +147,6 @@ class Pokja3Controller extends Controller
 
         abort_unless($this->wilayahValid($validated['id_kec'], $validated['id_kel']), 422, 'Kelurahan tidak sesuai dengan kecamatan.');
 
-        // Ambil metadata pertanyaan untuk menentukan jenis_kader dari kolom alias
         $pertanyaan = DB::table('m_pertanyaan_dashboard_2026')
             ->where('id', $validated['id_pertanyaan'])
             ->where('tb_dashboard', 'd_pokja_3_2026')
@@ -218,6 +208,16 @@ class Pokja3Controller extends Controller
 
         abort_if(!$kader, 404, 'Data kader tidak ditemukan.');
 
+        // Hanya kader Pokja 3 yang boleh dihapus lewat endpoint ini
+        $kaderPokja3 = DB::table('m_pertanyaan_dashboard_2026')
+            ->where('tb_dashboard', 'd_pokja_3_2026')
+            ->where('is_kader', true)
+            ->whereNull('deleted_at')
+            ->where('alias', $kader->jenis_kader)
+            ->exists();
+
+        abort_unless($kaderPokja3, 422, 'Data ini bukan kader Pokja 3.');
+
         DB::transaction(function () use ($kader) {
             DB::table('d_kader_2026')
                 ->where('id', $kader->id)
@@ -234,6 +234,64 @@ class Pokja3Controller extends Controller
             'message' => 'Data kader berhasil dihapus.',
         ]);
     }
+    public function updateKader(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'nik'           => 'required|digits:16',
+            'no_kk'         => 'nullable|string|max:20',
+            'nama'          => 'required|string|max:255',
+            'no_hp'         => 'nullable|string|max:20',
+            'alamat'        => 'nullable|string',
+            'rw'            => 'nullable|string|max:10',
+            'rt'            => 'nullable|string|max:10',
+            'jenis_kelamin' => ['required', Rule::in(['L', 'P'])],
+            'jabatan'       => ['required', Rule::in(['Ketua', 'Wakil Ketua', 'Sekretaris', 'Anggota'])],
+        ]);
+
+        $kader = DB::table('d_kader_2026')
+            ->where('id', $id)
+            ->whereNull('deleted_at')
+            ->first();
+
+        abort_if(!$kader, 404, 'Data kader tidak ditemukan.');
+
+        $kaderPokja3 = DB::table('m_pertanyaan_dashboard_2026')
+            ->where('tb_dashboard', 'd_pokja_3_2026')
+            ->where('is_kader', true)
+            ->whereNull('deleted_at')
+            ->where('alias', $kader->jenis_kader)
+            ->exists();
+
+        abort_unless($kaderPokja3, 422, 'Data ini bukan kader Pokja 3.');
+
+        try {
+            DB::table('d_kader_2026')->where('id', $kader->id)->update([
+                'nik'           => $validated['nik'],
+                'nama'          => $validated['nama'],
+                'jenis_kelamin' => $validated['jenis_kelamin'],
+                'no_kk'         => $validated['no_kk'] ?? null,
+                'rw'            => $validated['rw'] ?? null,
+                'rt'            => $validated['rt'] ?? null,
+                'alamat'        => $validated['alamat'] ?? null,
+                'no_hp'         => $validated['no_hp'] ?? null,
+                'jabatan'       => $validated['jabatan'],
+                'updated_at'    => now(),
+            ]);
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23505') {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'NIK tersebut sudah terdaftar pada kategori kader ini di periode ' . $kader->periode . '.',
+                ], 422);
+            }
+            throw $e;
+        }
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data kader berhasil diperbarui.',
+        ]);
+    }
 
     public function updateAgregat(Request $request)
     {
@@ -242,14 +300,13 @@ class Pokja3Controller extends Controller
             'id_kec'        => 'required|integer',
             'id_kel'        => 'required|integer|min:1',
             'periode'       => 'nullable|integer',
-            'nilai'         => 'required|numeric|min:0',
+            'nilai'         => 'required|integer|min:0|max:2147483647',
         ]);
 
         $periode = (int) ($validated['periode'] ?? 2026);
 
         abort_unless($this->wilayahValid($validated['id_kec'], $validated['id_kel']), 422, 'Kelurahan tidak sesuai dengan kecamatan.');
 
-        // jenis_form 3 (TOGA, read-only) sengaja tidak boleh diisi manual
         $pertanyaan = DB::table('m_pertanyaan_dashboard_2026')
             ->where('id', $validated['id_pertanyaan'])
             ->where('tb_dashboard', 'd_pokja_3_2026')
@@ -289,6 +346,7 @@ class Pokja3Controller extends Controller
         $this->upsertPokja3($idKec, $idKel, $periode, [$jenisKader => $total]);
     }
 
+     
     public function syncJumlahToga(int $idKec, int $idKel, int $periode): void
     {
         if ($idKel <= 0) {
@@ -320,9 +378,6 @@ class Pokja3Controller extends Controller
         }
     }
 
-    /**
-     * Pastikan kelurahan memang milik kecamatan tersebut.
-     */
     private function wilayahValid(int $idKec, int $idKel): bool
     {
         return DB::table('m_kelurahan as kl')
