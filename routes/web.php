@@ -24,6 +24,7 @@ use App\Http\Controllers\KemangiController;
 use App\Http\Controllers\Bo\Pokja3Controller;
 use App\Http\Controllers\Bo\Pokja4Controller;
 use App\Http\Controllers\BumilController;
+use App\Http\Controllers\Bo\Pokja1Controller;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -44,6 +45,9 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/data-umum', [DataUmumController::class, 'index']);
     Route::get('/data-umum/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->name('data-umum.kelurahan');
     Route::get('/pokja-2/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->defaults('activeTab', 'pokja2')->name('pokja-2.kelurahan');
+    Route::prefix('pokja-1')->name('pokja-1.')->group(function () {
+        Route::get('/detail', [Pokja1Controller::class, 'detail'])->name('detail');
+    });
     Route::prefix('pokja-3')->name('pokja-3.')->group(function () {
         Route::get('/cari-nik', [Pokja3Controller::class, 'cariNik'])->name('cari-nik');
         Route::post('/kader', [Pokja3Controller::class, 'storeKader'])->name('kader.store');

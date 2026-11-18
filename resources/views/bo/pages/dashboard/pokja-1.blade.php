@@ -97,21 +97,116 @@
 
                 @foreach ($kolomPokja1 as $k)
                     @php
-                        $teks  = \Illuminate\Support\Str::endsWith($k->alias, ['_kegiatan', '_metode']);
-                        $nilai = $dataPokja1[$id]->{$k->alias} ?? null;
+                        $teks     = \Illuminate\Support\Str::endsWith($k->alias, ['_kegiatan', '_metode']);
+                        $isKader  = $k->alias === 'jumlah_kader';
+                        $isDetail = \Illuminate\Support\Str::endsWith($k->alias, ['_volume', '_peserta']);
+                        $nilai    = $dataPokja1[$id]->{$k->alias} ?? null;
+
+                        // Pisahkan alias (contoh: 'kisah_volume' -> flag_kolom: 'kisah', tipe: 'volume')
+                        $parts     = explode('_', $k->alias);
+                        $flagKolom = $parts[0] ?? '';
+                        $tipe      = $parts[1] ?? '';
+
+                        $kecIdVal  = $lv === 'kelurahan' ? $kec->id_kec : $b->id_kec;
+                        $kelIdVal  = $lv === 'kelurahan' ? $b->id_kel : 0;
                     @endphp
-                    <td @class(['agregat-trigger fw-bold' => !$k->is_disable])
-                        @unless ($k->is_disable)
+
+                    @if ($isKader && !$k->is_disable)
+                        {{-- 1. JUMLAH KADER: Tetap pakai sistem modal pengurus lama --}}
+                        <td class="agregat-trigger fw-bold"
+                            style="cursor: pointer;"
                             data-id="{{ $k->id }}"
-                            data-kec-id="{{ $lv === 'kelurahan' ? $kec->id_kec : $b->id_kec }}"
+                            data-kec-id="{{ $kecIdVal }}"
                             data-kec-nama="{{ $nama }}"
-                            data-kel-id="{{ $lv === 'kelurahan' ? $b->id_kel : 0 }}"
-                        @endunless>
-                        @if ($teks) {{ $nilai ?? '' }} @else {{ number_format($nilai ?? 0, 0, ',', '.') }} @endif
-                    </td>
+                            data-kel-id="{{ $kelIdVal }}">
+                            {{ number_format($nilai ?? 0, 0, ',', '.') }}
+                        </td>
+
+                    @elseif ($isDetail && !$k->is_disable)
+                        {{-- 2. VOLUME & PESERTA POKJA 1: Pakai trigger khusus ke Pokja1Controller --}}
+                        <td class="pokja1-detail-trigger fw-bold text-primary"
+                            style="cursor: pointer;"
+                            data-flag-kolom="{{ $flagKolom }}"
+                            data-tipe="{{ $tipe }}"
+                            data-judul="{{ strtoupper(str_replace('_', ' ', $k->alias)) }} - {{ strtoupper($nama) }}"
+                            data-kec-id="{{ $kecIdVal }}"
+                            data-kel-id="{{ $kelIdVal }}"
+                            data-pertanyaan-id="{{ $dataPokja1[$id]->id ?? '' }}">
+                            {{ number_format($nilai ?? 0, 0, ',', '.') }}
+                        </td>
+
+                    @else
+                        {{-- 3. KEGIATAN & METODE (Teks biasa / tidak diklik) --}}
+                        <td>
+                            @if ($teks)
+                                {{ $nilai ?? '' }}
+                            @else
+                                {{ number_format($nilai ?? 0, 0, ',', '.') }}
+                            @endif
+                        </td>
+                    @endif
                 @endforeach
             </tr>
         @endforeach
+
+        {{-- BARIS TAMBAHAN: TP PKK KECAMATAN / TP PKK KOTA --}}
+        @if (isset($dataPokja1['tp_pkk']))
+            @php
+                $tpRow      = $dataPokja1['tp_pkk'];
+                $namaTpPkk  = $lv === 'kelurahan' ? 'TP PKK KECAMATAN' : 'TP PKK KOTA';
+                $kecIdTp    = $lv === 'kelurahan' ? $kec->id_kec : 32;
+            @endphp
+            <tr class="fw-bold bg-light-warning">
+                <td>{{ $baris->count() + 1 }}</td>
+                <td class="text-start fw-bold text-uppercase">{{ $namaTpPkk }}</td>
+
+                @foreach ($kolomPokja1 as $k)
+                    @php
+                        $teks     = \Illuminate\Support\Str::endsWith($k->alias, ['_kegiatan', '_metode']);
+                        $isKader  = $k->alias === 'jumlah_kader';
+                        $isDetail = \Illuminate\Support\Str::endsWith($k->alias, ['_volume', '_peserta']);
+                        $nilai    = $tpRow->{$k->alias} ?? null;
+
+                        $parts     = explode('_', $k->alias);
+                        $flagKolom = $parts[0] ?? '';
+                        $tipe      = $parts[1] ?? '';
+                    @endphp
+
+                    @if ($isKader && !$k->is_disable)
+                        <td class="agregat-trigger fw-bold"
+                            style="cursor: pointer;"
+                            data-id="{{ $k->id }}"
+                            data-kec-id="{{ $kecIdTp }}"
+                            data-kec-nama="{{ $namaTpPkk }}"
+                            data-kel-id="0">
+                            {{ number_format($nilai ?? 0, 0, ',', '.') }}
+                        </td>
+                    @elseif ($lv === 'kelurahan' && $isDetail && !$k->is_disable)
+                        {{-- Khusus TP PKK KECAMATAN (di level kota kolom kegiatan dikosongkan) --}}
+                        <td class="pokja1-detail-trigger fw-bold text-primary"
+                            style="cursor: pointer;"
+                            data-flag-kolom="{{ $flagKolom }}"
+                            data-tipe="{{ $tipe }}"
+                            data-judul="{{ strtoupper(str_replace('_', ' ', $k->alias)) }} - {{ $namaTpPkk }}"
+                            data-kec-id="{{ $kecIdTp }}"
+                            data-kel-id="tp_pkk"
+                            data-pertanyaan-id="{{ $tpRow->id ?? '' }}">
+                            {{ number_format($nilai ?? 0, 0, ',', '.') }}
+                        </td>
+                    @else
+                        <td>
+                            @if ($lv === 'kecamatan')
+                                {{-- TP PKK KOTA: semua kolom kegiatan dikosongkan --}}
+                            @elseif ($teks)
+                                {{ $nilai ?? '' }}
+                            @else
+                                {{ number_format($nilai ?? 0, 0, ',', '.') }}
+                            @endif
+                        </td>
+                    @endif
+                @endforeach
+            </tr>
+        @endif
         </tbody>
         <!--end::Table body-->
         <!--begin::Table foot (Total)-->

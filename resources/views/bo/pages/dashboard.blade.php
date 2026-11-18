@@ -2111,6 +2111,120 @@ document.addEventListener('click', function (e) {
   muat();
 });
 
+// Listener klik sel Volume & Jumlah Peserta Pokja 1
+document.addEventListener('click', function (e) {
+  const el = e.target.closest('.pokja1-detail-trigger');
+  if (!el) return;
+
+  ctx = {
+    isPokja1: true,
+    flagKolom: el.dataset.flagKolom,
+    tipe: el.dataset.tipe,
+    pertanyaanId: el.dataset.pertanyaanId ?? '',
+    kec: el.dataset.kecId,
+    kel: el.dataset.kelId ?? 0,
+    nama: el.dataset.judul ?? ''
+  };
+  muatPokja1();
+});
+
+function muatPokja1() {
+  const params = new URLSearchParams({
+    flag_kolom: ctx.flagKolom,
+    tipe: ctx.tipe,
+    kec: ctx.kec,
+    kel: ctx.kel,
+    pertanyaan_id: ctx.pertanyaanId
+  });
+
+  fetch(`{{ route('pokja-1.detail') }}?${params.toString()}`, {
+    headers: { 'Accept': 'application/json' }
+  })
+    .then(async r => {
+      const hasil = await r.json();
+      if (!r.ok) {
+        throw new Error(hasil.message || `HTTP Error ${r.status}`);
+      }
+      return hasil;
+    })
+    .then(hasil => {
+      document.getElementById('modalJudul').textContent = `DETAIL ${ctx.nama}`;
+      tampilkanPokja1(hasil);
+    })
+    .catch(err => alert('Gagal memuat detail Pokja 1:\n' + err.message));
+}
+
+function alertAksesKota() {
+  if (typeof Swal !== 'undefined') {
+    Swal.fire({
+      icon: 'info',
+      title: 'Akses Dibatasi',
+      text: 'Perubahan data hanya bisa dilakukan di akun kecamatan atau kelurahan',
+      confirmButtonText: 'Mengerti',
+      customClass: {
+        confirmButton: 'btn btn-primary'
+      }
+    });
+  } else {
+    alert('Perubahan data hanya bisa dilakukan di akun kecamatan atau kelurahan');
+  }
+}
+
+function tampilkanPokja1(hasil) {
+  const isi = document.getElementById('modalIsi');
+
+  if ($.fn.DataTable && $.fn.DataTable.isDataTable('#tabelModal')) {
+    $('#tabelModal').DataTable().destroy();
+  }
+
+  // Untuk Kota tetap tampilkan kolom AKSI (tombol terkunci), untuk Kec/Kel tampilkan Edit & Hapus
+  const kolom = hasil.kolom.filter(k => k !== 'id');
+  const baris = hasil.rows.map((r, i) => {
+    const tombolAksi = hasil.is_kota
+      ? `<button type="button" class="btn btn-sm btn-warning me-1" onclick="alertAksesKota()"><i class="fas fa-edit"></i></button>
+         <button type="button" class="btn btn-sm btn-danger" onclick="alertAksesKota()"><i class="fas fa-trash"></i></button>`
+      : `<button type="button" class="btn btn-sm btn-warning btn-edit-pj1 me-1" data-idx="${i}"><i class="fas fa-edit"></i></button>
+         <button type="button" class="btn btn-sm btn-danger btn-hapus-pj1" data-id="${esc(r.id)}"><i class="fas fa-trash"></i></button>`;
+
+    return `<tr>
+      <td>${i + 1}</td>
+      ${kolom.map(k => `<td>${esc(r[k] ?? '-')}</td>`).join('')}
+      <td class="text-nowrap">${tombolAksi}</td>
+    </tr>`;
+  }).join('');
+
+  isi.innerHTML = `
+    ${hasil.bisa_tambah ? '<div class="mb-4"><button class="btn btn-sm btn-primary" id="btnTambahPj1">+ Tambah Data</button></div>' : ''}
+    ${hasil.bisa_tambah ? '<div id="formTambahPj1"></div>' : ''}
+    <table id="tabelModal" class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>NO</th>
+          ${kolom.map(k => `<th>${esc(k.replace(/_/g, ' ').toUpperCase())}</th>`).join('')}
+          <th>AKSI</th>
+        </tr>
+      </thead>
+      <tbody>${baris}</tbody>
+    </table>`;
+
+  if ($.fn.DataTable) {
+    $('#tabelModal').DataTable({
+      pageLength: 10,
+      language: {
+        emptyTable: 'Tidak ada data untuk ditampilkan', lengthMenu: '_MENU_',
+        info: 'Showing _START_ to _END_ of _TOTAL_ records', infoEmpty: 'Showing no records',
+        search: 'Search:', paginate: { previous: '‹', next: '›' }
+      },
+      dom:
+        "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'f>>" +
+        "<'row'<'col-sm-12'tr>>" +
+        "<'row mt-3'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>"
+    });
+  }
+
+  modal.show();
+}
+
 function muat() {
   fetch(`/modal/${ctx.id}?kec=${ctx.kec}&kel=${ctx.kel}`, { headers: { 'Accept': 'application/json' } })
     .then(r => r.json())
