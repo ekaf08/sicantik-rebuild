@@ -17,7 +17,8 @@ class CheckMenuPermission
     ];
 
     private const PATH_ALIAS = [
-        '/pokja-1' => '/data-umum',
+        'data-umum' => '/data-umum',
+        '/pokja-1' => '/dashboard',
         '/pokja-3' => '/data-umum',
         '/pokja-4' => '/data-umum',
     ];

@@ -108,7 +108,7 @@
                         $tipe      = $parts[1] ?? '';
 
                         $kecIdVal  = $lv === 'kelurahan' ? $kec->id_kec : $b->id_kec;
-                        $kelIdVal  = $lv === 'kelurahan' ? $b->id_kel : 0;
+                        $kelIdVal  = $lv === 'kelurahan' ? $b->id_kel : 'tp_pkk';
                     @endphp
 
                     @if ($isKader && !$k->is_disable)

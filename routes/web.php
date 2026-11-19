@@ -45,9 +45,14 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/data-umum', [DataUmumController::class, 'index']);
     Route::get('/data-umum/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->name('data-umum.kelurahan');
     Route::get('/pokja-2/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->defaults('activeTab', 'pokja2')->name('pokja-2.kelurahan');
+    
     Route::prefix('pokja-1')->name('pokja-1.')->group(function () {
         Route::get('/detail', [Pokja1Controller::class, 'detail'])->name('detail');
+        Route::post('/store', [Pokja1Controller::class, 'store'])->name('store');
+        Route::put('/update/{id}', [Pokja1Controller::class, 'update'])->name('update')->whereNumber('id');
+        Route::delete('/delete/{id}', [Pokja1Controller::class, 'destroy'])->name('destroy')->whereNumber('id');
     });
+
     Route::prefix('pokja-3')->name('pokja-3.')->group(function () {
         Route::get('/cari-nik', [Pokja3Controller::class, 'cariNik'])->name('cari-nik');
         Route::post('/kader', [Pokja3Controller::class, 'storeKader'])->name('kader.store');

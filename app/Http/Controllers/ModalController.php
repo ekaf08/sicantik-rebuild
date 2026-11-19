@@ -27,7 +27,29 @@ class ModalController extends Controller
 
         $kel = (int) $request->query('kel'); // 0 = tingkat kecamatan
 
-        if (filled($p->query_detail)) {
+        if ($p->alias === 'jumlah_kader' && (($p->bagian ?? '') === 'pokja1' || str_contains((string) $p->tb_dashboard, 'pokja'))) {
+            $sql = "SELECT nik,
+                           nama,
+                           jenis_kelamin AS kelamin,
+                           rw,
+                           rt,
+                           alamat,
+                           no_hp,
+                           jabatan
+                      FROM d_kader_2026
+                     WHERE id_kec = :kec
+                       AND (:kel = 0 OR id_kel = :kel)
+                       AND jenis_kader IN ('pengurus_pokja1', 'pokja1', 'pokja_1')
+                       AND periode = :periode
+                       AND deleted_at IS NULL
+                     ORDER BY CASE jabatan
+                       WHEN 'Ketua' THEN 1
+                       WHEN 'Wakil Ketua' THEN 2
+                       WHEN 'Sekretaris' THEN 3
+                       ELSE 4
+                     END, nama ASC";
+            $jenis = 0;
+        } elseif (filled($p->query_detail)) {
             $sql   = $p->query_detail;
             $jenis = (int) $p->jenis_form;
 
@@ -86,6 +108,7 @@ class ModalController extends Controller
         }
 
         $kaderPokja3 = $p->is_kader && $p->is_tarik && $p->tb_dashboard === 'd_pokja_3_2026';
+        $kaderPokja1 = $p->alias === 'jumlah_kader' && (($p->bagian ?? '') === 'pokja1' || str_contains((string) $p->tb_dashboard, 'pokja'));
 
         // Tombol UI mengikuti izin role; pengecekan sebenarnya ada di middleware
         $bolehTambah = Access::isSuperUser() || Access::can(self::MENU_POKJA3, 'create');
@@ -105,16 +128,16 @@ class ModalController extends Controller
 
         return response()->json([
             'id'          => $p->id,
-            'bisa_ubah'   => (bool) ($kaderPokja3 && $bolehHapus),  // tombol hapus kader
-            'bisa_edit'   => (bool) ($kaderPokja3 && $bolehUbah),   // tombol edit kader
+            'bisa_ubah'   => (bool) (($kaderPokja3 || $kaderPokja1) && $bolehHapus),  // tombol hapus kader
+            'bisa_edit'   => (bool) (($kaderPokja3 || $kaderPokja1) && $bolehUbah),   // tombol edit kader
             'bisa_input'  => (bool) $bisaInput,
             'url_agregat' => self::URL_AGREGAT[$p->tb_dashboard] ?? null,
             'bisa_tambah' => (bool) ($kaderPokja3 && $kel && $bolehTambah), // hanya tingkat kelurahan
-            'judul'      => strtoupper($p->nama_pertanyaan),
-            'jenis_form' => (int) $p->jenis_form,   // selalu nilai master, tidak ditimpa
-            'tampilan'   => $tampilan,              // 'angka' (satu nilai) atau 'tabel' (daftar)
-            'kolom'      => $kolom,
-            'rows'       => $stmt->fetchAll(\PDO::FETCH_ASSOC),
+            'judul'       => strtoupper($p->nama_pertanyaan),
+            'jenis_form'  => (int) $p->jenis_form,   // selalu nilai master, tidak ditimpa
+            'tampilan'    => $tampilan,              // 'angka' (satu nilai) atau 'tabel' (daftar)
+            'kolom'       => $kolom,
+            'rows'        => $stmt->fetchAll(\PDO::FETCH_ASSOC),
         ]);
     }
 

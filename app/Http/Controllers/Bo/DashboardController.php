@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Support\Pokja1;
 use App\Http\Controllers\Bo\Pokja3Controller;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -221,9 +222,30 @@ class DashboardController extends Controller
         $kolomPokja4 = $this->kolom('d_pokja_4_2026');
         $dataPokja4  = $this->sumPerKecamatan('d_pokja_4_2026', $kolomPokja4);
 
+        // === TAMBAHAN: Deteksi akun Kelurahan / Kecamatan ===
+        $user     = Auth::user();
+        $level    = 'kecamatan';
+        $baris    = $kecamatan;
+        $kecAktif = null;
+
+        if (!empty($user->id_kel)) {
+            // Akun Kelurahan: tampilkan 1 kelurahan miliknya saja (tanpa TP PKK Kecamatan)
+            $level      = 'kelurahan';
+            $kecAktif   = DB::table('m_kecamatan')->where('id_kec', $user->id_kec)->first();
+            $baris      = DB::table('m_kelurahan')->where('id_kel', $user->id_kel)->get();
+            $dataPokja1 = Pokja1::perKelurahan($user->id_kec, 2026, $user->id_kel);
+        } elseif (!empty($user->id_kec) && (int) $user->id_kec !== 32) {
+            // Akun Kecamatan: tampilkan semua kelurahan di kecamatannya + TP PKK Kecamatan
+            $level      = 'kelurahan';
+            $kecAktif   = DB::table('m_kecamatan')->where('id_kec', $user->id_kec)->first();
+            $baris      = DB::table('m_kelurahan')->where('kode_kec_bpjs', $kecAktif->kode_bpjs ?? '')->orderBy('nama_kel')->get();
+            $dataPokja1 = Pokja1::perKelurahan($user->id_kec, 2026);
+        }
+
         return view('bo.pages.dashboard', [
-            'level'       => 'kecamatan',
-            'baris'       => $kecamatan,
+            'level'       => $level,
+            'kec'         => $kecAktif,
+            'baris'       => $baris,
             'kecamatan'   => $kecamatan,
             'kolom'       => $kolom,
             'data'        => $data,

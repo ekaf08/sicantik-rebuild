@@ -145,7 +145,7 @@
         <!--end::Filter Periode-->
 
         
-        @if (($level ?? '') === 'kelurahan')
+        @if (($level ?? '') === 'kelurahan' && empty(auth()->user()->id_kec) && empty(auth()->user()->id_kel))
             <div class="mb-5 d-flex align-items-center">
                 <a href="{{ route('dashboard') }}"
                 class="btn btn-light btn-sm d-inline-flex align-items-center gap-2 rounded-2 px-4 py-2">
@@ -2088,6 +2088,23 @@
   </div>
 </div>
 
+<!--begin::Modal - Form Pokja 1-->
+<div class="modal fade" id="modalFormPokja1" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-primary text-white py-4">
+        <h5 class="modal-title text-white fw-bold" id="judulFormPokja1">Tambah Data</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formDynamicPj1" class="modal-body p-6 row g-3"></form>
+      <div class="modal-footer border-0 pt-0 px-6 pb-6">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" form="formDynamicPj1" class="btn btn-primary"><i class="fas fa-save me-1"></i> Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 @push('js')
   {{-- Ganti blok dari <script src=index.js> sampai </script> penutup (sebelum @endpush) dengan isi file ini --}}
   <script src="{{ asset('assets/js/custom/pages/dashboard-pkk/index.js') }}"></script>
@@ -2171,13 +2188,14 @@ function alertAksesKota() {
 }
 
 function tampilkanPokja1(hasil) {
+    ctx.namaKec = hasil.pokja1_meta?.nama_kec ?? '';
+  ctx.namaKel = hasil.pokja1_meta?.nama_kel ?? '';
   const isi = document.getElementById('modalIsi');
 
   if ($.fn.DataTable && $.fn.DataTable.isDataTable('#tabelModal')) {
     $('#tabelModal').DataTable().destroy();
   }
 
-  // Untuk Kota tetap tampilkan kolom AKSI (tombol terkunci), untuk Kec/Kel tampilkan Edit & Hapus
   const kolom = hasil.kolom.filter(k => k !== 'id');
   const baris = hasil.rows.map((r, i) => {
     const tombolAksi = hasil.is_kota
@@ -2195,7 +2213,6 @@ function tampilkanPokja1(hasil) {
 
   isi.innerHTML = `
     ${hasil.bisa_tambah ? '<div class="mb-4"><button class="btn btn-sm btn-primary" id="btnTambahPj1">+ Tambah Data</button></div>' : ''}
-    ${hasil.bisa_tambah ? '<div id="formTambahPj1"></div>' : ''}
     <table id="tabelModal" class="table table-bordered table-striped">
       <thead>
         <tr>
@@ -2222,7 +2239,92 @@ function tampilkanPokja1(hasil) {
     });
   }
 
+  // Event klik Edit & Hapus untuk akun Kecamatan/Kelurahan
+  isi.onclick = (e) => {
+    const ed = e.target.closest('.btn-edit-pj1');
+    if (ed) {
+      formPokja1(hasil.rows[+ed.dataset.idx]);
+      return;
+    }
+    const del = e.target.closest('.btn-hapus-pj1');
+    if (!del) return;
+    if (!confirm('Hapus data ini?')) return;
+
+    kirim(`/pokja-1/delete/${del.dataset.id}`, 'DELETE', { tipe: ctx.tipe })
+      .then(() => { berubah = true; muatPokja1(); })
+      .catch(err => alert(err.message));
+  };
+
+  const btnTambah = document.getElementById('btnTambahPj1');
+  if (btnTambah) btnTambah.onclick = () => formPokja1();
+
   modal.show();
+}
+
+const modalFormPj1 = new bootstrap.Modal(document.getElementById('modalFormPokja1'));
+
+// Sembunyikan modal tabel saat modal form dibuka
+document.getElementById('modalFormPokja1').addEventListener('show.bs.modal', () => {
+  modal.hide();
+});
+
+function formPokja1(data = null) {
+  const isVol = ctx.tipe === 'volume';
+  const kegiatan = ({ kisah: 'Kemangi', krisan: 'Krisan', kilas: 'Kilas', kiat: 'Kiat', kisak: 'Kisak', pkbn: 'PKBN' })[ctx.flagKolom] || ctx.flagKolom.toUpperCase();
+
+  document.getElementById('judulFormPokja1').innerHTML =
+    `<i class="fas ${data ? 'fa-edit' : 'fa-plus-circle'} text-white me-2"></i>${data ? 'Edit' : 'Tambah'} Data ${isVol ? 'Lotus' : 'Peserta'}`;
+
+  const fields = isVol ? [
+    ['nama', `Nama ${kegiatan}`, 12, 'text', true, { placeholder: 'Masukkan nama' }],
+    ['alamat', `Alamat ${kegiatan}`, 12, 'textarea', true, { placeholder: 'Masukkan alamat', rows: 3 }],
+    ['nama_kec', 'Kecamatan', 6, 'text', false, { value: ctx.namaKec, disabled: true }],
+    ['nama_kel', 'Kelurahan', 6, 'text', false, { value: ctx.namaKel, disabled: true }],
+    ['rw', 'RW', 6, 'text', true, { placeholder: 'Contoh: 01', maxlength: 5 }],
+    ['rt', 'RT', 6, 'text', false, { placeholder: 'Contoh: 01', maxlength: 5 }],
+    ['tahun', 'Tahun', 6, 'select', true, { options: ['2025', '2026'], value: '2026' }],
+    ['tahap', 'Tahap', 6, 'select', true, { options: ['Tahap 1', 'Tahap 2', 'Tahap 3', 'Tahap 4'] }],
+  ] : [
+    ['nik', 'NIK', 6, 'text', true, { maxlength: 16, valKey: 'nik_asli' }],
+    ['no_kk', 'No KK', 6, 'text', false, { maxlength: 16, valKey: 'no_kk_asli' }],
+    ['nama', 'Nama Peserta', 12, 'text', true, {}],
+    ['pendamping', 'Nama Pendamping', 6, 'text', false, {}],
+    ['nik_pendamping', 'NIK Pendamping', 6, 'text', false, { maxlength: 16 }],
+    ['hubungan_keluarga', 'Hubungan Keluarga', 12, 'text', false, {}],
+    ['alamat', 'Alamat', 12, 'textarea', false, { rows: 2 }],
+    ['nama_kec', 'Kecamatan', 6, 'text', false, { value: ctx.namaKec, disabled: true }],
+    ['nama_kel', 'Kelurahan', 6, 'text', false, { value: ctx.namaKel, disabled: true }],
+    ['rw', 'RW', 4, 'text', false, { maxlength: 5 }],
+    ['rt', 'RT', 4, 'text', false, { maxlength: 5 }],
+    ['tahap', 'Tahap', 4, 'select', false, { options: ['Tahap 1', 'Tahap 2', 'Tahap 3', 'Tahap 4'] }],
+  ];
+
+  const form = document.getElementById('formDynamicPj1');
+  form.innerHTML = fields.map(([name, label, col, type, req, opt = {}]) => {
+    const val = data ? (data[opt.valKey || name] ?? '') : (opt.value ?? '');
+    const attr = `name="${name}" ${req ? 'required' : ''} ${opt.disabled ? 'disabled' : ''} ${opt.maxlength ? `maxlength="${opt.maxlength}"` : ''} placeholder="${opt.placeholder || ''}"`;
+
+    let input = `<input class="form-control form-control-solid ${opt.disabled ? 'bg-light' : ''}" value="${esc(val)}" ${attr}>`;
+    if (type === 'textarea') input = `<textarea class="form-control form-control-solid" rows="${opt.rows || 2}" ${attr}>${esc(val)}</textarea>`;
+    if (type === 'select') {
+      input = `<select class="form-select form-select-solid" ${attr}><option value="">-- PILIH --</option>` +
+        opt.options.map(o => `<option value="${o}" ${val == o ? 'selected' : ''}>${o}</option>`).join('') + `</select>`;
+    }
+    return `<div class="col-${col}"><label class="form-label fw-semibold">${label}${req ? ' <span class="text-danger">*</span>' : ''}</label>${input}</div>`;
+  }).join('');
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    const payload = Object.assign(Object.fromEntries(new FormData(form)), {
+      flag_kolom: ctx.flagKolom, tipe: ctx.tipe, pertanyaan_id: ctx.pertanyaanId, id_kec: ctx.kec, id_kel: ctx.kel
+    });
+
+    (data ? kirim(`/pokja-1/update/${data.id}`, 'PUT', payload) : kirim('/pokja-1/store', 'POST', payload))
+      .then(() => { berubah = true; modalFormPj1.hide(); muatPokja1(); })
+      .catch(err => alert(err.message));
+  };
+
+  modalFormPj1.show();
 }
 
 function muat() {

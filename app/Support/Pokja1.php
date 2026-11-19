@@ -28,6 +28,7 @@ class Pokja1
 
         $data = DB::table('kegiatan_pokja1')
             ->whereNull('deleted_at')
+            ->whereNull('id_kel')
             ->where('is_row', 1)
             ->selectRaw("id_kec, $sum")
             ->groupBy('id_kec')
@@ -56,6 +57,7 @@ class Pokja1
         $kader = DB::table('d_kader_2026')
             ->where('periode', $tahun)
             ->where('jenis_kader', 'pengurus_pokja1')
+            ->whereNull('id_kel')
             ->whereNull('deleted_at')
             ->selectRaw('id_kec, COUNT(*) AS total')
             ->groupBy('id_kec')
@@ -71,6 +73,7 @@ class Pokja1
         // Volume dari m_lotus (pakai flag_kolom & tahun)
         $lotus = DB::table('m_lotus')
             ->where('tahun', $tahun)
+            ->whereNull('id_kec')
             ->whereNull('deleted_at')
             ->selectRaw('id_kec, flag_kolom, COUNT(*) AS total')
             ->groupBy('id_kec', 'flag_kolom')
@@ -86,6 +89,7 @@ class Pokja1
         // Jumlah Peserta dari peserta_lotus (pakai flag_kolom & tahun)
         $pes = DB::table('peserta_lotus')
             ->where('tahun', $tahun)
+            ->whereNull('id_kec')
             ->whereNull('deleted_at')
             ->selectRaw('id_kec, flag_kolom, COUNT(*) AS total')
             ->groupBy('id_kec', 'flag_kolom')
@@ -121,7 +125,7 @@ class Pokja1
     }
 
     // Level kelurahan: satu baris kegiatan_pokja1 per id_kel (is_row = 1) + baris TP PKK KECAMATAN
-    public static function perKelurahan($idKec, $tahun = 2026)
+    public static function perKelurahan($idKec, $tahun = 2026, $onlyIdKel = null)
     {
         $data = DB::table('kegiatan_pokja1')
             ->where('id_kec', $idKec)
@@ -154,7 +158,7 @@ class Pokja1
         // Volume dari m_lotus per Kelurahan
         $lotus = DB::table('m_lotus')
             ->where('id_kec', $idKec)
-            ->whereNotNull('id_kel')
+            ->whereNull('id_kel')
             ->where('tahun', $tahun)
             ->whereNull('deleted_at')
             ->selectRaw('id_kel, flag_kolom, COUNT(*) AS total')
@@ -171,7 +175,7 @@ class Pokja1
         // Jumlah Peserta dari peserta_lotus per Kelurahan
         $pes = DB::table('peserta_lotus')
             ->where('id_kec', $idKec)
-            ->whereNotNull('id_kel')
+            ->whereNull('id_kel')
             ->where('tahun', $tahun)
             ->whereNull('deleted_at')
             ->selectRaw('id_kel, flag_kolom, COUNT(*) AS total')
@@ -183,6 +187,11 @@ class Pokja1
                 $data[$r->id_kel] = (object) ['id_kel' => $r->id_kel];
             }
             $data[$r->id_kel]->{$r->flag_kolom . '_peserta'} = $r->total;
+        }
+
+        // Jika login sebagai akun Kelurahan tertentu, hanya kembalikan kelurahan itu (tanpa TP PKK Kecamatan)
+        if (!empty($onlyIdKel)) {
+            return $data->only([(int) $onlyIdKel]);
         }
 
         // === BARIS TAMBAHAN: TP PKK KECAMATAN (id_kel IS NULL, is_row = 1) ===
