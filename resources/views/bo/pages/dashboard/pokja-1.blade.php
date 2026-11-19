@@ -108,17 +108,19 @@
                         $tipe      = $parts[1] ?? '';
 
                         $kecIdVal  = $lv === 'kelurahan' ? $kec->id_kec : $b->id_kec;
-                        $kelIdVal  = $lv === 'kelurahan' ? $b->id_kel : 'tp_pkk';
+                        $kelIdVal  = $lv === 'kelurahan' ? $b->id_kel : 0;
                     @endphp
 
                     @if ($isKader && !$k->is_disable)
-                        {{-- 1. JUMLAH KADER: Tetap pakai sistem modal pengurus lama --}}
-                        <td class="agregat-trigger fw-bold"
+                        {{-- 1. JUMLAH KADER POKJA 1: Pakai trigger ke Pokja1Controller (kader_pokja_1_2026) --}}
+                        <td class="pokja1-detail-trigger fw-bold text-primary"
                             style="cursor: pointer;"
-                            data-id="{{ $k->id }}"
+                            data-flag-kolom="kader"
+                            data-tipe="kader"
+                            data-judul="JUMLAH KADER POKJA I - {{ strtoupper($nama) }}"
                             data-kec-id="{{ $kecIdVal }}"
-                            data-kec-nama="{{ $nama }}"
-                            data-kel-id="{{ $kelIdVal }}">
+                            data-kel-id="{{ $kelIdVal }}"
+                            data-pertanyaan-id="{{ $dataPokja1[$id]->id ?? '' }}">
                             {{ number_format($nilai ?? 0, 0, ',', '.') }}
                         </td>
 
@@ -130,7 +132,7 @@
                             data-tipe="{{ $tipe }}"
                             data-judul="{{ strtoupper(str_replace('_', ' ', $k->alias)) }} - {{ strtoupper($nama) }}"
                             data-kec-id="{{ $kecIdVal }}"
-                            data-kel-id="{{ $kelIdVal }}"
+                            data-kel-id="{{ $lv === 'kelurahan' ? $b->id_kel : 'tp_pkk' }}"
                             data-pertanyaan-id="{{ $dataPokja1[$id]->id ?? '' }}">
                             {{ number_format($nilai ?? 0, 0, ',', '.') }}
                         </td>
@@ -150,7 +152,7 @@
         @endforeach
 
         {{-- BARIS TAMBAHAN: TP PKK KECAMATAN / TP PKK KOTA --}}
-        @if (isset($dataPokja1['tp_pkk']))
+        @if (!empty($dataPokja1['tp_pkk']))
             @php
                 $tpRow      = $dataPokja1['tp_pkk'];
                 $namaTpPkk  = $lv === 'kelurahan' ? 'TP PKK KECAMATAN' : 'TP PKK KOTA';
@@ -173,12 +175,14 @@
                     @endphp
 
                     @if ($isKader && !$k->is_disable)
-                        <td class="agregat-trigger fw-bold"
+                        <td class="pokja1-detail-trigger fw-bold text-primary"
                             style="cursor: pointer;"
-                            data-id="{{ $k->id }}"
+                            data-flag-kolom="kader"
+                            data-tipe="kader"
+                            data-judul="JUMLAH KADER POKJA I - {{ $namaTpPkk }}"
                             data-kec-id="{{ $kecIdTp }}"
-                            data-kec-nama="{{ $namaTpPkk }}"
-                            data-kel-id="0">
+                            data-kel-id="tp_pkk"
+                            data-pertanyaan-id="{{ $tpRow->id ?? '' }}">
                             {{ number_format($nilai ?? 0, 0, ',', '.') }}
                         </td>
                     @elseif ($lv === 'kelurahan' && $isDetail && !$k->is_disable)

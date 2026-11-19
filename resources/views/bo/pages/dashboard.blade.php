@@ -2188,7 +2188,7 @@ function alertAksesKota() {
 }
 
 function tampilkanPokja1(hasil) {
-    ctx.namaKec = hasil.pokja1_meta?.nama_kec ?? '';
+  ctx.namaKec = hasil.pokja1_meta?.nama_kec ?? '';
   ctx.namaKel = hasil.pokja1_meta?.nama_kel ?? '';
   const isi = document.getElementById('modalIsi');
 
@@ -2198,11 +2198,16 @@ function tampilkanPokja1(hasil) {
 
   const kolom = hasil.kolom.filter(k => k !== 'id');
   const baris = hasil.rows.map((r, i) => {
-    const tombolAksi = hasil.is_kota
-      ? `<button type="button" class="btn btn-sm btn-warning me-1" onclick="alertAksesKota()"><i class="fas fa-edit"></i></button>
-         <button type="button" class="btn btn-sm btn-danger" onclick="alertAksesKota()"><i class="fas fa-trash"></i></button>`
-      : `<button type="button" class="btn btn-sm btn-warning btn-edit-pj1 me-1" data-idx="${i}"><i class="fas fa-edit"></i></button>
-         <button type="button" class="btn btn-sm btn-danger btn-hapus-pj1" data-id="${esc(r.id)}"><i class="fas fa-trash"></i></button>`;
+    let tombolAksi = '';
+    if (hasil.is_kota) {
+      tombolAksi = ctx.tipe === 'kader'
+        ? `<button type="button" class="btn btn-sm" style="background-color:#d5d7e2; color:#4b5675;" onclick="alertAksesKota()"><i class="fas fa-lock"></i></button>`
+        : `<button type="button" class="btn btn-sm btn-warning me-1" onclick="alertAksesKota()"><i class="fas fa-edit"></i></button>
+           <button type="button" class="btn btn-sm btn-danger" onclick="alertAksesKota()"><i class="fas fa-trash"></i></button>`;
+    } else {
+      tombolAksi = `<button type="button" class="btn btn-sm btn-warning btn-edit-pj1 me-1" data-idx="${i}"><i class="fas fa-edit"></i></button>
+                    <button type="button" class="btn btn-sm btn-danger btn-hapus-pj1" data-id="${esc(r.id)}"><i class="fas fa-trash"></i></button>`;
+    }
 
     return `<tr>
       <td>${i + 1}</td>
@@ -2269,13 +2274,27 @@ document.getElementById('modalFormPokja1').addEventListener('show.bs.modal', () 
 });
 
 function formPokja1(data = null) {
-  const isVol = ctx.tipe === 'volume';
+  const isKader = ctx.tipe === 'kader';
+  const isVol   = ctx.tipe === 'volume';
   const kegiatan = ({ kisah: 'Kemangi', krisan: 'Krisan', kilas: 'Kilas', kiat: 'Kiat', kisak: 'Kisak', pkbn: 'PKBN' })[ctx.flagKolom] || ctx.flagKolom.toUpperCase();
 
+  const labelJudul = isKader ? 'Kader Pokja I' : (isVol ? 'Lotus' : 'Peserta');
   document.getElementById('judulFormPokja1').innerHTML =
-    `<i class="fas ${data ? 'fa-edit' : 'fa-plus-circle'} text-white me-2"></i>${data ? 'Edit' : 'Tambah'} Data ${isVol ? 'Lotus' : 'Peserta'}`;
+    `<i class="fas ${data ? 'fa-edit' : 'fa-plus-circle'} text-white me-2"></i>${data ? 'Edit' : 'Tambah'} Data ${labelJudul}`;
 
-  const fields = isVol ? [
+  const fields = isKader ? [
+    ['nik', 'NIK', 6, 'text', true, { maxlength: 16, valKey: 'nik_asli', placeholder: '16 digit NIK' }],
+    ['no_kk', 'No KK', 6, 'text', false, { maxlength: 16, valKey: 'no_kk_asli', placeholder: '16 digit No KK' }],
+    ['nama', 'Nama Kader', 12, 'text', true, { placeholder: 'Masukkan nama lengkap' }],
+    ['jenis_kelamin', 'Jenis Kelamin', 6, 'select', true, { options: ['L', 'P'], valKey: 'kelamin' }],
+    ['jabatan', 'Jabatan', 6, 'select', true, { options: ['Ketua POKJA I', 'Sekretaris POKJA I', 'Anggota POKJA I'] }],
+    ['no_hp', 'No HP', 6, 'text', false, { placeholder: 'Contoh: 08123456789' }],
+    ['rw', 'RW', 3, 'text', false, { maxlength: 5, placeholder: '01' }],
+    ['rt', 'RT', 3, 'text', false, { maxlength: 5, placeholder: '01' }],
+    ['alamat', 'Alamat', 12, 'textarea', false, { rows: 2, placeholder: 'Masukkan alamat lengkap' }],
+    ['nama_kec', 'Kecamatan', 6, 'text', false, { value: ctx.namaKec, disabled: true }],
+    ['nama_kel', 'Kelurahan', 6, 'text', false, { value: ctx.namaKel, disabled: true }],
+  ] : (isVol ? [
     ['nama', `Nama ${kegiatan}`, 12, 'text', true, { placeholder: 'Masukkan nama' }],
     ['alamat', `Alamat ${kegiatan}`, 12, 'textarea', true, { placeholder: 'Masukkan alamat', rows: 3 }],
     ['nama_kec', 'Kecamatan', 6, 'text', false, { value: ctx.namaKec, disabled: true }],
@@ -2297,7 +2316,7 @@ function formPokja1(data = null) {
     ['rw', 'RW', 4, 'text', false, { maxlength: 5 }],
     ['rt', 'RT', 4, 'text', false, { maxlength: 5 }],
     ['tahap', 'Tahap', 4, 'select', false, { options: ['Tahap 1', 'Tahap 2', 'Tahap 3', 'Tahap 4'] }],
-  ];
+  ]);
 
   const form = document.getElementById('formDynamicPj1');
   form.innerHTML = fields.map(([name, label, col, type, req, opt = {}]) => {
@@ -2490,7 +2509,6 @@ function formTambahKader(data = null) {
 </script>
 
 @endpush
-@include('bo.pages.dashboard.modals.pokja1-modal')
 @include('bo.pages.dashboard.modals.pokja2-modal')
 @include('bo.pages.dashboard.modals.detail-gkstb-pj4')
 @endsection

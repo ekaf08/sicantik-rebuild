@@ -53,11 +53,11 @@ class Pokja1
             }
         }
 
-        // Kader Pokja 1 per Kecamatan
-        $kader = DB::table('d_kader_2026')
+        // Kader Pokja 1 per Kecamatan (total seluruh kelurahan + kecamatan dari kader_pokja_1_2026)
+        $kader = DB::table('kader_pokja_1_2026')
             ->where('periode', $tahun)
-            ->where('jenis_kader', 'pengurus_pokja1')
-            ->whereNull('id_kel')
+            ->whereNotNull('nik')
+            ->whereNotNull('jenis_kelamin')
             ->whereNull('deleted_at')
             ->selectRaw('id_kec, COUNT(*) AS total')
             ->groupBy('id_kec')
@@ -70,10 +70,10 @@ class Pokja1
             $data[$idKec]->jumlah_kader = $total;
         }
 
-        // Volume dari m_lotus (pakai flag_kolom & tahun)
+        // Volume dari m_lotus level kecamatan (id_kel IS NULL)
         $lotus = DB::table('m_lotus')
             ->where('tahun', $tahun)
-            ->whereNull('id_kec')
+            ->whereNull('id_kel')
             ->whereNull('deleted_at')
             ->selectRaw('id_kec, flag_kolom, COUNT(*) AS total')
             ->groupBy('id_kec', 'flag_kolom')
@@ -86,10 +86,10 @@ class Pokja1
             $data[$r->id_kec]->{$r->flag_kolom . '_volume'} = $r->total;
         }
 
-        // Jumlah Peserta dari peserta_lotus (pakai flag_kolom & tahun)
+        // Jumlah Peserta dari peserta_lotus level kecamatan (id_kel IS NULL)
         $pes = DB::table('peserta_lotus')
             ->where('tahun', $tahun)
-            ->whereNull('id_kec')
+            ->whereNull('id_kel')
             ->whereNull('deleted_at')
             ->selectRaw('id_kec, flag_kolom, COUNT(*) AS total')
             ->groupBy('id_kec', 'flag_kolom')
@@ -103,11 +103,12 @@ class Pokja1
         }
 
         // === BARIS TAMBAHAN: TP PKK KOTA (id_kec = 32, kolom kegiatan dikosongkan) ===
-        $kaderKota = DB::table('d_kader_2026')
+        $kaderKota = DB::table('kader_pokja_1_2026')
             ->where('id_kec', 32)
             ->whereNull('id_kel')
             ->where('periode', $tahun)
-            ->where('jenis_kader', 'pengurus_pokja1')
+            ->whereNotNull('nik')
+            ->whereNotNull('jenis_kelamin')
             ->whereNull('deleted_at')
             ->count();
 
@@ -137,12 +138,13 @@ class Pokja1
             ->get()
             ->keyBy('id_kel');
 
-        // Kader Pokja 1 per Kelurahan
-        $kader = DB::table('d_kader_2026')
+        // Kader Pokja 1 per Kelurahan (dari kader_pokja_1_2026)
+        $kader = DB::table('kader_pokja_1_2026')
             ->where('id_kec', $idKec)
             ->whereNotNull('id_kel')
             ->where('periode', $tahun)
-            ->where('jenis_kader', 'pengurus_pokja1')
+            ->whereNotNull('nik')
+            ->whereNotNull('jenis_kelamin')
             ->whereNull('deleted_at')
             ->selectRaw('id_kel, COUNT(*) AS total')
             ->groupBy('id_kel')
@@ -155,10 +157,10 @@ class Pokja1
             $data[$idKel]->jumlah_kader = $total;
         }
 
-        // Volume dari m_lotus per Kelurahan
+        // Volume dari m_lotus per Kelurahan (id_kel NOT NULL)
         $lotus = DB::table('m_lotus')
             ->where('id_kec', $idKec)
-            ->whereNull('id_kel')
+            ->whereNotNull('id_kel')
             ->where('tahun', $tahun)
             ->whereNull('deleted_at')
             ->selectRaw('id_kel, flag_kolom, COUNT(*) AS total')
@@ -172,10 +174,10 @@ class Pokja1
             $data[$r->id_kel]->{$r->flag_kolom . '_volume'} = $r->total;
         }
 
-        // Jumlah Peserta dari peserta_lotus per Kelurahan
+        // Jumlah Peserta dari peserta_lotus per Kelurahan (id_kel NOT NULL)
         $pes = DB::table('peserta_lotus')
             ->where('id_kec', $idKec)
-            ->whereNull('id_kel')
+            ->whereNotNull('id_kel')
             ->where('tahun', $tahun)
             ->whereNull('deleted_at')
             ->selectRaw('id_kel, flag_kolom, COUNT(*) AS total')
@@ -207,11 +209,12 @@ class Pokja1
             $tpPkkKec = (object) ['id' => null, 'id_kec' => $idKec, 'id_kel' => null];
         }
 
-        $tpPkkKec->jumlah_kader = DB::table('d_kader_2026')
+        $tpPkkKec->jumlah_kader = DB::table('kader_pokja_1_2026')
             ->where('id_kec', $idKec)
             ->whereNull('id_kel')
             ->where('periode', $tahun)
-            ->where('jenis_kader', 'pengurus_pokja1')
+            ->whereNotNull('nik')
+            ->whereNotNull('jenis_kelamin')
             ->whereNull('deleted_at')
             ->count();
 
