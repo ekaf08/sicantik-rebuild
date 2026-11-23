@@ -262,7 +262,7 @@
                             <th class="min-w-100px">Pokja</th>
                             <th class="text-center min-w-90px">Tgl Mulai</th>
                             <th class="text-center min-w-90px">Tgl Selesai</th>
-                            <th class="text-center min-w-100px">File</th>
+                            <th class="text-center min-w-100px">File SK</th>
                             <th class="min-w-150px">Keterangan</th>
                             <th class="min-w-110px">Dibuat Oleh</th>
                             <th class="text-center min-w-120px">Action</th>
