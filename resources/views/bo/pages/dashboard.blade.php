@@ -2452,7 +2452,25 @@ function tampilkan(hasil) {
 }
 
 function formTambahKader(data = null) {
-  const f = document.getElementById('formTambah');
+ const isi = (id, val) => { document.getElementById(id).value = val ?? ''; };
+
+  if (data) {
+    isi('fNik', data.nik); isi('fNoKk', data.no_kk); isi('fNama', data.nama);
+    isi('fJk', data.jenis_kelamin); isi('fJabatan', data.jabatan); isi('fHp', data.no_hp);
+    isi('fRw', data.rw); isi('fRt', data.rt); isi('fAlamat', data.alamat);
+  }
+
+  document.getElementById('btnCari').onclick = () => {
+    fetch(`/pokja-3/cari-nik?nik=${encodeURIComponent(v('fNik'))}`, { headers: { 'Accept': 'application/json' } })
+      .then(async r => ({ ok: r.ok, j: await r.json() }))
+      .then(({ ok, j }) => {
+        if (!ok) return alert(j.message || 'NIK tidak ditemukan, lengkapi manual.');
+        const d = j.data;
+        isi('fNoKk', d.no_kk); isi('fNama', d.nama); isi('fJk', d.jenis_kelamin);
+        isi('fHp', d.no_hp); isi('fRw', d.rw); isi('fRt', d.rt); isi('fAlamat', d.alamat);
+      });
+  };
+  
   f.innerHTML = `
     <div class="border rounded p-4 mb-4">
       <div class="fw-bold mb-3">${data ? 'Edit Data Kader' : 'Tambah Data Kader'}</div>

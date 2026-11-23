@@ -63,7 +63,7 @@ class Pokja3Controller extends Controller
 
         foreach ($cacahToga as $r) {
             $pastikanBaris($r);
-            $perKel[$r->id_kel]->toga = $r->total;
+            $perKel[$r->id_kel]->pekarangan_toga = $r->total;
         }
 
         if ($idKec !== null) {
@@ -147,11 +147,11 @@ class Pokja3Controller extends Controller
 
         abort_unless($this->wilayahValid($validated['id_kec'], $validated['id_kel']), 422, 'Kelurahan tidak sesuai dengan kecamatan.');
 
-        $pertanyaan = DB::table('m_pertanyaan_dashboard_2026')
+       $pertanyaan = DB::table('m_pertanyaan_dashboard_2026')
             ->where('id', $validated['id_pertanyaan'])
             ->where('tb_dashboard', 'd_pokja_3_2026')
-            ->where('is_kader', true)
-            ->where('is_tarik', true)
+            ->where(fn ($q) => $q->whereNull('is_kader')->orWhere('is_kader', false))
+            ->whereIn('jenis_form', [1, 2])
             ->where(fn ($q) => $q->whereNull('is_disable')->orWhere('is_disable', false))
             ->whereNull('deleted_at')
             ->first();
@@ -361,7 +361,7 @@ class Pokja3Controller extends Controller
             ->whereNull('deleted_at')
             ->count();
 
-        $this->upsertPokja3($idKec, $idKel, $periode, ['toga' => $total]);
+        $this->upsertPokja3($idKec, $idKel, $periode, ['pekarangan_toga' => $total]);
     }
 
     private function upsertPokja3(int $idKec, int $idKel, int $periode, array $values): void

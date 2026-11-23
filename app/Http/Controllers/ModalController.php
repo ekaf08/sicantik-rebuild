@@ -55,10 +55,8 @@ class ModalController extends Controller
 
             abort_if($kel && !preg_match('/:kel\b/', $sql), 422, 'Detail tingkat kelurahan belum tersedia');
         } elseif (
-            // jenis_form 0 = daftar individu dari d_kader_2026 (jenis_kader = alias).
-            // Dibatasi ke Pokja 3 dan 4 agar modal Pokja 1/2 yang punya jalur sendiri tidak berubah.
             in_array($p->tb_dashboard, ['d_pokja_3_2026', 'd_pokja_4_2026'], true)
-            && ($p->is_kader || ($p->jenis_form !== null && (int) $p->jenis_form === 0))
+            && (bool) $p->is_kader
         ) {
             $alias = str_replace("'", "''", $p->alias);
             $sql   = "SELECT id, nik, no_kk, nama, jenis_kelamin, jabatan, no_hp, rw, rt, alamat
