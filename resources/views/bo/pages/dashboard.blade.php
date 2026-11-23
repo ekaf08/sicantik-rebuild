@@ -2332,8 +2332,8 @@ const fields = isKader ? [
   ] : (isVol ? [
     ['nama', `Nama ${kegiatan}`, 12, 'text', true, { placeholder: 'Masukkan nama' }],
     ['alamat', `Alamat ${kegiatan}`, 12, 'textarea', true, { placeholder: 'Masukkan alamat', rows: 3 }],
-    ['nama_kec', 'Kecamatan', 6, 'text', false, { value: ctx.namaKec, disabled: true }],
-    ['nama_kel', 'Kelurahan', 6, 'text', false, { value: ctx.namaKel, disabled: true }],
+    ['nama_kec', 'Kecamatan', 6, 'text', false, { value: data?.nama_kec || ctx.namaKec, disabled: true }],
+    ['nama_kel', 'Kelurahan', 6, 'text', false, { value: data?.nama_kel || ctx.namaKel, disabled: true }],
     ['rw', 'RW', 12, 'number', true, { min: 0, value: '0' }],
     ['tahun', 'Tahun', 6, 'select', true, { options: [tahunIni, tahunDepan], value: tahunIni }],
     ['tahap', 'Tahap', 6, 'select', true, { options: ['Tahap 1', 'Tahap 2', 'Tahap 3', 'Tahap 4'] }],
@@ -2354,7 +2354,7 @@ const fields = isKader ? [
 
   const form = document.getElementById('formDynamicPj1');
   form.innerHTML = fields.map(([name, label, col, type, req, opt = {}]) => {
-    const val = data ? (data[opt.valKey || name] ?? '') : (opt.value ?? '');
+    const val = data ? (data[opt.valKey || name] ?? opt.value ?? '') : (opt.value ?? '');
     const attr = `name="${name}" ${req ? 'required' : ''} ${opt.disabled ? 'disabled' : ''} ${opt.maxlength ? `maxlength="${opt.maxlength}"` : ''} ${opt.min !== undefined ? `min="${opt.min}"` : ''} placeholder="${opt.placeholder || ''}"`;
 
 const inputType = type === 'number' ? 'number' : (type === 'date' ? 'date' : 'text');
