@@ -13,7 +13,7 @@ class CheckMenuPermission
         '/dashboard', '/logout', '/refresh_captcha',
     ];
     private const OPEN_PREFIXES = [
-        '/get-kecamatan/', '/get-kelurahan/', '/modal/', '/pokja-2/', '/pokja-4/',
+        '/get-kecamatan/', '/get-kelurahan/', '/modal/', '/pokja-2/', '/pokja-3/', '/pokja-4/',
     ];
 
     private const PATH_ALIAS = [

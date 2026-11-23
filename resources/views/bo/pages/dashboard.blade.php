@@ -2164,6 +2164,38 @@ let kembaliKeModalUtama = true;
 const esc = s => String(s ?? '').replace(/[&<>"']/g,
   c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+// Notifikasi & konfirmasi (SweetAlert2, fallback ke bawaan browser kalau belum dimuat)
+function notif(pesan, tipe = 'info') {
+  if (typeof Swal === 'undefined') { alert(pesan); return; }
+  const judul = { error: 'Terjadi Kesalahan', warning: 'Perhatian', success: 'Berhasil', info: 'Informasi' }[tipe] ?? '';
+  Swal.fire({
+    icon: tipe,
+    title: judul,
+    text: pesan,
+    confirmButtonText: 'OK',
+    customClass: { confirmButton: 'btn btn-primary' },
+    buttonsStyling: false,
+    didOpen: el => { el.querySelector('.swal2-html-container').style.whiteSpace = 'pre-line'; },
+  });
+}
+
+async function konfirmasi(pesan, teksYa = 'Ya, hapus') {
+  if (typeof Swal === 'undefined') return confirm(pesan);
+  const r = await Swal.fire({
+    icon: 'warning',
+    title: 'Konfirmasi',
+    text: pesan,
+    showCancelButton: true,
+    confirmButtonText: teksYa,
+    cancelButtonText: 'Batal',
+    reverseButtons: true,
+    customClass: { confirmButton: 'btn btn-danger ms-2', cancelButton: 'btn btn-light' },
+    buttonsStyling: false,
+  });
+  return r.isConfirmed;
+}
+
+
 document.getElementById('modalDinamis').addEventListener('hidden.bs.modal', () => {
   if (pindahKeForm) { pindahKeForm = false; return; }
   if (berubah) { berubah = false; location.reload(); }
@@ -2245,7 +2277,7 @@ function muatPokja1() {
       document.getElementById('modalJudul').textContent = `DETAIL ${ctx.nama}`;
       tampilkanPokja1(hasil);
     })
-    .catch(err => alert('Gagal memuat detail Pokja 1:\n' + err.message));
+    .catch(err => notif('Gagal memuat detail Pokja 1:\n' + err.message, 'error'));
 }
 
 function alertAksesKota() {
@@ -2321,7 +2353,7 @@ function tampilkanPokja1(hasil) {
     });
   }
 
-  isi.onclick = (e) => {
+  isi.onclick = async (e) => {
     const ed = e.target.closest('.btn-edit-pj1');
     if (ed) {
       formPokja1(hasil.rows[+ed.dataset.idx]);
@@ -2329,11 +2361,11 @@ function tampilkanPokja1(hasil) {
     }
     const del = e.target.closest('.btn-hapus-pj1');
     if (!del) return;
-    if (!confirm('Hapus data ini?')) return;
+    if (!(await konfirmasi('Hapus data ini?'))) return;
 
     kirim(`/pokja-1/delete/${del.dataset.id}`, 'DELETE', { tipe: ctx.tipe })
       .then(() => { berubah = true; muatPokja1(); })
-      .catch(err => alert(err.message));
+      .catch(err => notif(err.message, 'error'));
   };
 
   const btnTambah = document.getElementById('btnTambahPj1');
@@ -2416,7 +2448,7 @@ function formPokja1(data = null) {
 
     (data ? kirim(`/pokja-1/update/${data.id}`, 'PUT', payload) : kirim('/pokja-1/store', 'POST', payload))
       .then(() => { berubah = true; modalFormPj1.hide(); muatPokja1(); })
-      .catch(err => alert(err.message));
+      .catch(err => notif(err.message, 'error'));
   };
 
   modalFormPj1.show();
@@ -2430,7 +2462,7 @@ function muat() {
       return j;
     })
     .then(tampilkan)
-    .catch(err => alert(err.message));
+    .catch(err => notif(err.message, 'error'));
 }
 
 function kirim(url, method, body) {
@@ -2441,7 +2473,9 @@ function kirim(url, method, body) {
   }).then(async r => {
     const j = await r.json().catch(() => ({}));
     if (!r.ok) {
-      const pesan = j.errors ? Object.values(j.errors).flat().join('\n') : (j.message || 'Terjadi kesalahan.');
+      const pesan = j.errors
+        ? Object.values(j.errors).flat().join('\n')
+        : (j.message || `Gagal memproses permintaan (${r.status})`);
       throw new Error(pesan);
     }
     return j;
@@ -2472,7 +2506,7 @@ function tampilkan(hasil) {
           id_pertanyaan: ctx.id, id_kec: +ctx.kec, id_kel: +ctx.kel,
           nilai: document.getElementById('inputAgregat').value,
         }).then(() => { berubah = true; modal.hide(); })
-          .catch(err => alert(err.message));
+          .catch(err => notif(err.message, 'error'));
       };
     } else {
       isi.innerHTML = `<input class="form-control" value="${esc(nilai)}" readonly>`;
@@ -2528,7 +2562,7 @@ function tampilkan(hasil) {
       });
     }
 
-    isi.onclick = (e) => {
+    isi.onclick = async (e) => {
       const ed = e.target.closest('.btn-edit');
       if (ed) {
         const row = hasil.rows[+ed.dataset.idx];
@@ -2539,7 +2573,7 @@ function tampilkan(hasil) {
       }
       const b = e.target.closest('.btn-hapus');
       if (!b) return;
-      if (!confirm('Hapus data ini?')) return;
+      if (!(await konfirmasi('Hapus data ini?'))) return;
 
       const urlHapus = isGkstb
         ? `/pokja-4/gkstb/${b.dataset.kader}`
@@ -2547,7 +2581,7 @@ function tampilkan(hasil) {
 
       kirim(urlHapus, 'DELETE')
         .then(() => { berubah = true; muat(); })
-        .catch(err => alert(err.message));
+        .catch(err => notif(err.message, 'error'));
     };
 
     const btnTambah = document.getElementById('btnTambah');
@@ -2630,7 +2664,7 @@ function formTambahKader(data = null) {
       kembaliKeModalUtama = false;
       modalForm.hide();
       muat();
-    }).catch(err => alert(err.message));
+    }).catch(err => notif(err.message, 'error'));
   });
 
   if (data) {
@@ -2644,7 +2678,7 @@ function formTambahKader(data = null) {
     fetch(`/pokja-3/cari-nik?nik=${encodeURIComponent(v('fNik'))}`, { headers: { 'Accept': 'application/json' } })
       .then(async r => ({ ok: r.ok, j: await r.json() }))
       .then(({ ok, j }) => {
-        if (!ok) return alert(j.message || 'NIK tidak ditemukan, lengkapi manual.');
+        if (!ok) return notif(j.message || 'NIK tidak ditemukan, lengkapi manual.', 'warning');
         const d = j.data;
         const set = (id, val) => { document.getElementById(id).value = val ?? ''; };
         set('fNoKk', d.no_kk); set('fNama', d.nama); set('fJk', d.jenis_kelamin);
@@ -2718,7 +2752,7 @@ function formDetailPokja4(data = null) {
       kembaliKeModalUtama = false;
       modalForm.hide();
       muat();
-    }).catch(err => alert(err.message));
+    }).catch(err => notif(err.message, 'error'));
   });
 
   if (data) {
@@ -2737,7 +2771,7 @@ function formDetailPokja4(data = null) {
     fetch(`/pokja-4/cari-nik?nik=${encodeURIComponent(v('p4Nik'))}`, { headers: { 'Accept': 'application/json' } })
       .then(async r => ({ ok: r.ok, j: await r.json() }))
       .then(({ ok, j }) => {
-        if (!ok) return alert(j.message || 'NIK tidak ditemukan, lengkapi manual.');
+        if (!ok) return notif(j.message || 'NIK tidak ditemukan, lengkapi manual.', 'warning');
         const d = j.data;
         const set = (id, val) => { document.getElementById(id).value = val ?? ''; };
         set('p4NoKk', d.no_kk);
@@ -2821,7 +2855,7 @@ function formGkstb(alias, data = null) {
       kembaliKeModalUtama = false;
       modalForm.hide();
       muat();
-    }).catch(err => alert(err.message));
+    }).catch(err => notif(err.message, 'error'));
   });
 }
 </script>

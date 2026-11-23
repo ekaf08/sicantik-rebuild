@@ -133,15 +133,11 @@ class ModalController extends Controller
         $isKelurahan = $user && !empty($user->id_kel);
         $kelSesuai   = $isKelurahan && $kel > 0 && (int) $user->id_kel === $kel;
 
-        $bolehPokja3Create = $kel > 0 && (Access::isSuperUser() || Access::can(self::MENU_DASHBOARD, 'create'));
-        $bolehPokja3Update = $kel > 0 && (Access::isSuperUser() || Access::can(self::MENU_DASHBOARD, 'update'));
-        $bolehPokja3Delete = $kel > 0 && (Access::isSuperUser() || Access::can(self::MENU_DASHBOARD, 'delete'));
-
         $bisaInput = isset(self::URL_AGREGAT[$p->tb_dashboard])
             && !(bool) $p->is_kader
             && in_array((int) $p->jenis_form, [1, 2], true)
             && !(bool) $p->is_disable
-            && ($isPokja4 ? $kelSesuai : $bolehPokja3Update);
+            && $kelSesuai;
 
         return response()->json([
             'id'            => $p->id,
@@ -153,9 +149,9 @@ class ModalController extends Controller
             'tampilan'      => $tampilan,
             'url_agregat'   => self::URL_AGREGAT[$p->tb_dashboard] ?? '/pokja-3/agregat',
             'bisa_input'    => (bool) $bisaInput,
-            'bisa_tambah'   => (bool) ($isPokja4 ? ($isDetailPokja4 && $kelSesuai) : ($kaderPokja3 && $bolehPokja3Create)),
-            'bisa_edit'     => (bool) ($isPokja4 ? ($isDetailPokja4 && $kelSesuai) : ($kaderPokja3 && $bolehPokja3Update)),
-            'bisa_ubah'     => (bool) ($isPokja4 ? ($isDetailPokja4 && $kelSesuai) : ($kaderPokja3 && $bolehPokja3Delete)),
+            'bisa_tambah'   => (bool) ($kelSesuai && ($kaderPokja3 || $isDetailPokja4)),
+            'bisa_edit'     => (bool) ($kelSesuai && ($kaderPokja3 || $isDetailPokja4)),
+            'bisa_ubah'     => (bool) ($kelSesuai && ($kaderPokja3 || $isDetailPokja4)),
             'kolom'         => $kolom,
             'rows'          => $rows,
         ]);
