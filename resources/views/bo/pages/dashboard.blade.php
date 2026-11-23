@@ -131,16 +131,23 @@
 
     <!--begin::Card body-->
     <div class="card-body pt-0">
-        <!--begin::Filter Periode-->
-        <div class="d-flex align-items-center mb-8">
-            <label class="fs-6 fw-bold text-gray-700 me-3">Periode</label>
-            <div class="w-150px">
-                <select class="form-select form-select-solid" data-control="select2" data-hide-search="true">
-                    <option value="2026" selected>2026</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                </select>
+<!--begin::Filter Periode-->
+        <div class="d-flex justify-content-between align-items-center mb-8">
+            <div class="d-flex align-items-center">
+                <label class="fs-6 fw-bold text-gray-700 me-3">Periode</label>
+                <div class="w-150px">
+                    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true">
+                        <option value="2026" selected>2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                </div>
             </div>
+
+            {{-- Tombol Lihat Panduan di pojok kanan --}}
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPanduanGlobal">
+                <i class="bi bi-info-circle-fill me-2"></i> Lihat Panduan
+            </button>
         </div>
         <!--end::Filter Periode-->
 
@@ -2088,6 +2095,22 @@
   </div>
 </div>
 
+<!--begin::Modal - Panduan Pengisian Data-->
+<div class="modal fade" id="modalPanduanGlobal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Panduan Pengisian Data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-6" id="modalPanduanBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!--begin::Modal - Form Pokja 1-->
 <div class="modal fade" id="modalFormPokja1" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -2196,23 +2219,26 @@ function tampilkanPokja1(hasil) {
     $('#tabelModal').DataTable().destroy();
   }
 
+const adaAksi = !hasil.is_tarikan;
   const kolom = hasil.kolom.filter(k => k !== 'id');
   const baris = hasil.rows.map((r, i) => {
     let tombolAksi = '';
-    if (hasil.is_kota) {
-      tombolAksi = ctx.tipe === 'kader'
-        ? `<button type="button" class="btn btn-sm" style="background-color:#d5d7e2; color:#4b5675;" onclick="alertAksesKota()"><i class="fas fa-lock"></i></button>`
-        : `<button type="button" class="btn btn-sm btn-warning me-1" onclick="alertAksesKota()"><i class="fas fa-edit"></i></button>
-           <button type="button" class="btn btn-sm btn-danger" onclick="alertAksesKota()"><i class="fas fa-trash"></i></button>`;
-    } else {
-      tombolAksi = `<button type="button" class="btn btn-sm btn-warning btn-edit-pj1 me-1" data-idx="${i}"><i class="fas fa-edit"></i></button>
-                    <button type="button" class="btn btn-sm btn-danger btn-hapus-pj1" data-id="${esc(r.id)}"><i class="fas fa-trash"></i></button>`;
+    if (adaAksi) {
+      if (hasil.is_kota) {
+        tombolAksi = ctx.tipe === 'kader'
+          ? `<button type="button" class="btn btn-sm" style="background-color:#d5d7e2; color:#4b5675;" onclick="alertAksesKota()"><i class="fas fa-lock"></i></button>`
+          : `<button type="button" class="btn btn-sm btn-warning me-1" onclick="alertAksesKota()"><i class="fas fa-edit"></i></button>
+             <button type="button" class="btn btn-sm btn-danger" onclick="alertAksesKota()"><i class="fas fa-trash"></i></button>`;
+      } else {
+        tombolAksi = `<button type="button" class="btn btn-sm btn-warning btn-edit-pj1 me-1" data-idx="${i}"><i class="fas fa-edit"></i></button>
+                      <button type="button" class="btn btn-sm btn-danger btn-hapus-pj1" data-id="${esc(r.id)}"><i class="fas fa-trash"></i></button>`;
+      }
     }
 
     return `<tr>
       <td>${i + 1}</td>
       ${kolom.map(k => `<td>${esc(r[k] ?? '-')}</td>`).join('')}
-      <td class="text-nowrap">${tombolAksi}</td>
+      ${adaAksi ? `<td class="text-nowrap">${tombolAksi}</td>` : ''}
     </tr>`;
   }).join('');
 
@@ -2223,7 +2249,7 @@ function tampilkanPokja1(hasil) {
         <tr>
           <th>NO</th>
           ${kolom.map(k => `<th>${esc(k.replace(/_/g, ' ').toUpperCase())}</th>`).join('')}
-          <th>AKSI</th>
+          ${adaAksi ? '<th>AKSI</th>' : ''}
         </tr>
       </thead>
       <tbody>${baris}</tbody>
@@ -2255,7 +2281,7 @@ function tampilkanPokja1(hasil) {
     if (!del) return;
     if (!confirm('Hapus data ini?')) return;
 
-    kirim(`/pokja-1/delete/${del.dataset.id}`, 'DELETE', { tipe: ctx.tipe })
+        kirim(`/pokja-1/delete/${del.dataset.id}`, 'DELETE', { tipe: ctx.tipe, flag_kolom: ctx.flagKolom })
       .then(() => { berubah = true; muatPokja1(); })
       .catch(err => alert(err.message));
   };
@@ -2274,67 +2300,160 @@ document.getElementById('modalFormPokja1').addEventListener('show.bs.modal', () 
 });
 
 function formPokja1(data = null) {
-  const isKader = ctx.tipe === 'kader';
-  const isVol   = ctx.tipe === 'volume';
-  const kegiatan = ({ kisah: 'Kemangi', krisan: 'Krisan', kilas: 'Kilas', kiat: 'Kiat', kisak: 'Kisak', pkbn: 'PKBN' })[ctx.flagKolom] || ctx.flagKolom.toUpperCase();
+  const tahunIni   = String(new Date().getFullYear());
+  const tahunDepan = String(new Date().getFullYear() + 1);
+  const isKader    = ctx.tipe === 'kader';
+  const isVol      = ctx.tipe === 'volume';
+  const isKisakVol = isVol && ctx.flagKolom === 'kisak';
+  const kegiatan   = ({ kisah: 'Kemangi', krisan: 'Krisan', kilas: 'Kilas', kiat: 'Kiat', kisak: 'KISAK', pkbn: 'PKBN' })[ctx.flagKolom] || ctx.flagKolom.toUpperCase();
+  const opsiPendamping = ['Ibu', 'Ayah', 'Suami', 'Istri', 'Kader', 'Lainnya'];
+  const valHubungan    = data?.hubungan_keluarga ?? 'Ibu';
+  const isLainnyaAwal  = data && valHubungan && !opsiPendamping.slice(0, -1).includes(valHubungan);
 
-  const labelJudul = isKader ? 'Kader Pokja I' : (isVol ? 'Lotus' : 'Peserta');
+  const labelJudul = isKader ? 'Kader Pokja I' : (isKisakVol ? 'KISAK' : (isVol ? 'Lotus' : 'Peserta Lotus'));
+  const iconJudul  = data ? 'fa-edit' : (isKisakVol ? 'fa-plus-circle' : 'fa-user-plus');
   document.getElementById('judulFormPokja1').innerHTML =
-    `<i class="fas ${data ? 'fa-edit' : 'fa-plus-circle'} text-white me-2"></i>${data ? 'Edit' : 'Tambah'} Data ${labelJudul}`;
+    `<i class="fas ${iconJudul} text-white me-2"></i>${data ? 'Edit' : 'Tambah'} ${isKader || isVol ? 'Data ' : ''}${labelJudul}`;
 
-  const fields = isKader ? [
-    ['nik', 'NIK', 6, 'text', true, { maxlength: 16, valKey: 'nik_asli', placeholder: '16 digit NIK' }],
-    ['no_kk', 'No KK', 6, 'text', false, { maxlength: 16, valKey: 'no_kk_asli', placeholder: '16 digit No KK' }],
-    ['nama', 'Nama Kader', 12, 'text', true, { placeholder: 'Masukkan nama lengkap' }],
-    ['jenis_kelamin', 'Jenis Kelamin', 6, 'select', true, { options: ['L', 'P'], valKey: 'kelamin' }],
-    ['jabatan', 'Jabatan', 6, 'select', true, { options: ['Ketua POKJA I', 'Sekretaris POKJA I', 'Anggota POKJA I'] }],
-    ['no_hp', 'No HP', 6, 'text', false, { placeholder: 'Contoh: 08123456789' }],
-    ['rw', 'RW', 3, 'text', false, { maxlength: 5, placeholder: '01' }],
-    ['rt', 'RT', 3, 'text', false, { maxlength: 5, placeholder: '01' }],
-    ['alamat', 'Alamat', 12, 'textarea', false, { rows: 2, placeholder: 'Masukkan alamat lengkap' }],
-    ['nama_kec', 'Kecamatan', 6, 'text', false, { value: ctx.namaKec, disabled: true }],
-    ['nama_kel', 'Kelurahan', 6, 'text', false, { value: ctx.namaKel, disabled: true }],
+const fields = isKader ? [
+    ['nik', 'NIK', 12, 'nik_search', true, { maxlength: 16, valKey: 'nik_asli', placeholder: 'Masukkan NIK', btnLabel: 'Cari' }],
+    ['no_kk', 'No KK', 12, 'text', false, { maxlength: 16, valKey: 'no_kk_asli', placeholder: 'Masukkan No KK' }],
+    ['nama', 'Nama', 12, 'text', true, { placeholder: 'Masukkan nama lengkap' }],
+    ['no_hp', 'No Hp (WhatsApp)', 12, 'text', false, { placeholder: 'Contoh: 08123456789' }],
+    ['alamat', 'Alamat (KTP)', 12, 'text', false, { placeholder: 'Masukkan alamat KTP' }],
+    ['rw', 'RW', 12, 'text', false, { maxlength: 5, placeholder: 'Contoh: 01' }],
+    ['rt', 'RT', 12, 'text', false, { maxlength: 5, placeholder: 'Contoh: 01' }],
+    ['jenis_kelamin', 'Jenis Kelamin', 12, 'select', true, { options: ['L', 'P'], valKey: 'kelamin', defaultLabel: '-- Pilih --' }],
+    ['jabatan', 'Jabatan', 12, 'select', true, { options: ['Ketua POKJA I', 'Sekretaris POKJA I', 'Anggota POKJA I'], defaultLabel: '-- Pilih Jabatan --' }],
+  ] : (isKisakVol ? [
+    ['tanggal', 'Tanggal', 12, 'date', true, { valKey: 'tanggal_asli' }],
+    ['tempat_pelaksanaan', 'Tempat Pelaksanaan', 12, 'text', true, { placeholder: 'Masukkan tempat pelaksanaan' }],
+    ['judul_materi', 'Judul Materi KISAK', 12, 'textarea', true, { rows: 3, placeholder: 'Masukkan judul materi KISAK' }],
   ] : (isVol ? [
     ['nama', `Nama ${kegiatan}`, 12, 'text', true, { placeholder: 'Masukkan nama' }],
     ['alamat', `Alamat ${kegiatan}`, 12, 'textarea', true, { placeholder: 'Masukkan alamat', rows: 3 }],
     ['nama_kec', 'Kecamatan', 6, 'text', false, { value: ctx.namaKec, disabled: true }],
     ['nama_kel', 'Kelurahan', 6, 'text', false, { value: ctx.namaKel, disabled: true }],
-    ['rw', 'RW', 6, 'text', true, { placeholder: 'Contoh: 01', maxlength: 5 }],
-    ['rt', 'RT', 6, 'text', false, { placeholder: 'Contoh: 01', maxlength: 5 }],
-    ['tahun', 'Tahun', 6, 'select', true, { options: ['2025', '2026'], value: '2026' }],
+    ['rw', 'RW', 12, 'number', true, { min: 0, value: '0' }],
+    ['tahun', 'Tahun', 6, 'select', true, { options: [tahunIni, tahunDepan], value: tahunIni }],
     ['tahap', 'Tahap', 6, 'select', true, { options: ['Tahap 1', 'Tahap 2', 'Tahap 3', 'Tahap 4'] }],
   ] : [
-    ['nik', 'NIK', 6, 'text', true, { maxlength: 16, valKey: 'nik_asli' }],
-    ['no_kk', 'No KK', 6, 'text', false, { maxlength: 16, valKey: 'no_kk_asli' }],
-    ['nama', 'Nama Peserta', 12, 'text', true, {}],
-    ['pendamping', 'Nama Pendamping', 6, 'text', false, {}],
-    ['nik_pendamping', 'NIK Pendamping', 6, 'text', false, { maxlength: 16 }],
-    ['hubungan_keluarga', 'Hubungan Keluarga', 12, 'text', false, {}],
-    ['alamat', 'Alamat', 12, 'textarea', false, { rows: 2 }],
-    ['nama_kec', 'Kecamatan', 6, 'text', false, { value: ctx.namaKec, disabled: true }],
-    ['nama_kel', 'Kelurahan', 6, 'text', false, { value: ctx.namaKel, disabled: true }],
-    ['rw', 'RW', 4, 'text', false, { maxlength: 5 }],
-    ['rt', 'RT', 4, 'text', false, { maxlength: 5 }],
-    ['tahap', 'Tahap', 4, 'select', false, { options: ['Tahap 1', 'Tahap 2', 'Tahap 3', 'Tahap 4'] }],
-  ]);
+    ['nik', 'NIK', 12, 'nik_search', true, { maxlength: 16, valKey: 'nik_asli', placeholder: 'Masukkan NIK', help: 'Masukkan NIK kemudian klik Cari NIK.' }],
+    ['no_kk', 'No KK', 12, 'text', true, { maxlength: 16, valKey: 'no_kk_asli', placeholder: 'Masukkan No KK' }],
+    ['nama', 'Nama', 12, 'text', true, { placeholder: 'Masukkan nama' }],
+    ['pendamping_select', 'Pendamping', 12, 'select', true, { options: opsiPendamping, value: isLainnyaAwal ? 'Lainnya' : valHubungan, defaultLabel: '-- PILIH PENDAMPING --' }],
+    ['nik_pendamping', 'NIK Ibu', 6, 'text', false, { maxlength: 16, valKey: 'nik_pendamping_asli', placeholder: 'NIK ibu', idLabel: 'lblNikPendamping' }],
+    ['pendamping', 'Nama Ibu', 6, 'text', false, { valKey: 'nama_pendamping', placeholder: 'Nama ibu', idLabel: 'lblNamaPendamping' }],
+    ['hubungan_keluarga_lainnya', 'Hubungan Keluarga', 12, 'text', true, { value: isLainnyaAwal ? valHubungan : '', placeholder: 'Contoh: NENEK, PAMAN, KAKAK', colId: 'wrapHubunganLainnya', hidden: !isLainnyaAwal }],
+    ['alamat', 'Alamat', 12, 'textarea', false, { rows: 3, placeholder: 'Masukkan alamat' }],
+    ['rw', 'RW', 6, 'text', false, { maxlength: 5, placeholder: 'Contoh: 01' }],
+    ['rt', 'RT', 6, 'text', false, { maxlength: 5, placeholder: 'Contoh: 01' }],
+    ['tahun', 'Tahun', 6, 'select', true, { options: [tahunIni, tahunDepan], defaultLabel: '-- PILIH TAHUN --' }],
+    ['tahap', 'Tahap', 6, 'select', true, { options: ['Tahap 1', 'Tahap 2', 'Tahap 3', 'Tahap 4'], defaultLabel: '-- PILIH TAHAP --' }],
+  ]));
 
   const form = document.getElementById('formDynamicPj1');
   form.innerHTML = fields.map(([name, label, col, type, req, opt = {}]) => {
     const val = data ? (data[opt.valKey || name] ?? '') : (opt.value ?? '');
-    const attr = `name="${name}" ${req ? 'required' : ''} ${opt.disabled ? 'disabled' : ''} ${opt.maxlength ? `maxlength="${opt.maxlength}"` : ''} placeholder="${opt.placeholder || ''}"`;
+    const attr = `name="${name}" ${req ? 'required' : ''} ${opt.disabled ? 'disabled' : ''} ${opt.maxlength ? `maxlength="${opt.maxlength}"` : ''} ${opt.min !== undefined ? `min="${opt.min}"` : ''} placeholder="${opt.placeholder || ''}"`;
 
-    let input = `<input class="form-control form-control-solid ${opt.disabled ? 'bg-light' : ''}" value="${esc(val)}" ${attr}>`;
-    if (type === 'textarea') input = `<textarea class="form-control form-control-solid" rows="${opt.rows || 2}" ${attr}>${esc(val)}</textarea>`;
-    if (type === 'select') {
-      input = `<select class="form-select form-select-solid" ${attr}><option value="">-- PILIH --</option>` +
+const inputType = type === 'number' ? 'number' : (type === 'date' ? 'date' : 'text');
+    let input = `<input type="${inputType}" class="form-control ${type === 'number' ? '' : 'form-control-solid'} ${opt.disabled ? 'bg-light' : ''}" value="${esc(val)}" ${attr}>`;
+    if (type === 'nik_search') {
+      const btnText = opt.btnLabel || '<i class="fas fa-search me-1"></i> Cari NIK';
+      input = `<div class="input-group">
+        <input type="text" id="inputNikPj1" class="form-control" value="${esc(val)}" ${attr}>
+        <button type="button" id="btnCariNikPj1" class="btn btn-primary">${btnText}</button>
+      </div>`;
+    } else if (type === 'textarea') {
+      input = `<textarea class="form-control form-control-solid" rows="${opt.rows || 2}" ${attr}>${esc(val)}</textarea>`;
+    } else if (type === 'select') {
+      input = `<select class="form-select form-select-solid" ${attr}><option value="">${opt.defaultLabel || '-- PILIH --'}</option>` +
         opt.options.map(o => `<option value="${o}" ${val == o ? 'selected' : ''}>${o}</option>`).join('') + `</select>`;
     }
-    return `<div class="col-${col}"><label class="form-label fw-semibold">${label}${req ? ' <span class="text-danger">*</span>' : ''}</label>${input}</div>`;
+    const labelIdAttr = opt.idLabel ? `id="${opt.idLabel}"` : '';
+    const colIdAttr   = opt.colId ? `id="${opt.colId}"` : '';
+    const hideClass   = opt.hidden ? 'd-none' : '';
+    const helpText    = opt.help ? `<div class="form-text text-muted fs-7 mt-1">${opt.help}</div>` : '';
+    return `<div ${colIdAttr} class="col-${col} ${hideClass}"><label ${labelIdAttr} class="form-label fw-semibold">${label}${req ? ' <span class="text-danger">*</span>' : ''}</label>${input}${helpText}</div>`;
   }).join('');
+
+  // Dinamis ubah label & placeholder NIK/Nama Pendamping sesuai pilihan dropdown Pendamping
+    const selPendamping = form.querySelector('[name="pendamping_select"]');
+  if (selPendamping) {
+    const syncLabelPendamping = () => {
+      const p         = selPendamping.value;
+      const isLainnya = p === 'Lainnya';
+      const lblNik    = document.getElementById('lblNikPendamping');
+      const lblNama   = document.getElementById('lblNamaPendamping');
+      const inpNik    = form.querySelector('[name="nik_pendamping"]');
+      const inpNama   = form.querySelector('[name="pendamping"]');
+      const wrapLain  = document.getElementById('wrapHubunganLainnya');
+      const inpLain   = form.querySelector('[name="hubungan_keluarga_lainnya"]');
+
+      if (isLainnya) {
+        if (lblNik)  lblNik.textContent  = 'NIK Pendamping';
+        if (lblNama) lblNama.textContent = 'Nama Pendamping';
+        if (inpNik)  inpNik.placeholder  = 'Ketik NIK pendamping';
+        if (inpNama) inpNama.placeholder = 'Ketik nama pendamping';
+        if (wrapLain) wrapLain.classList.remove('d-none');
+        if (inpLain)  inpLain.required = true;
+      } else {
+        const labelP = p || 'Pendamping';
+        if (lblNik)  lblNik.textContent  = `NIK ${labelP}`;
+        if (lblNama) lblNama.textContent = `Nama ${labelP}`;
+        if (inpNik)  inpNik.placeholder  = `NIK ${labelP.toLowerCase()}`;
+        if (inpNama) inpNama.placeholder = `Nama ${labelP.toLowerCase()}`;
+        if (wrapLain) wrapLain.classList.add('d-none');
+        if (inpLain) {
+          inpLain.required = false;
+          inpLain.value = '';
+        }
+      }
+    };
+    syncLabelPendamping();
+    selPendamping.addEventListener('change', syncLabelPendamping);
+  }
+
+  // Tombol Cari NIK otomatis isi No KK, Nama, Alamat, RW, RT
+  const btnCariNik = document.getElementById('btnCariNikPj1');
+  if (btnCariNik) {
+    btnCariNik.onclick = () => {
+      const nik = document.getElementById('inputNikPj1').value.trim();
+      if (!nik) return alert('Masukkan NIK terlebih dahulu.');
+      btnCariNik.disabled = true;
+      fetch(`/pokja-3/cari-nik?nik=${encodeURIComponent(nik)}`, { headers: { 'Accept': 'application/json' } })
+        .then(async r => ({ ok: r.ok, j: await r.json() }))
+        .then(({ ok, j }) => {
+          if (!ok) return alert(j.message || 'NIK tidak ditemukan, silakan lengkapi manual.');
+          const d = j.data;
+          if (form.elements.no_kk && d.no_kk)                 form.elements.no_kk.value         = d.no_kk;
+          if (form.elements.nama && d.nama)                   form.elements.nama.value          = d.nama;
+          if (form.elements.no_hp && d.no_hp)                 form.elements.no_hp.value         = d.no_hp;
+          if (form.elements.alamat && d.alamat)               form.elements.alamat.value        = d.alamat;
+          if (form.elements.tempat_lahir && d.tempat_lahir)   form.elements.tempat_lahir.value  = d.tempat_lahir;
+          if (form.elements.tgl_lahir && d.tgl_lahir)         form.elements.tgl_lahir.value     = d.tgl_lahir;
+          if (form.elements.rw && d.rw)                       form.elements.rw.value            = d.rw;
+          if (form.elements.rt && d.rt)                       form.elements.rt.value            = d.rt;
+          if (form.elements.jenis_kelamin && d.jenis_kelamin) form.elements.jenis_kelamin.value = d.jenis_kelamin;
+        })
+        .catch(() => alert('Gagal mencari data NIK.'))
+        .finally(() => { btnCariNik.disabled = false; });
+    };
+  }
 
   form.onsubmit = (e) => {
     e.preventDefault();
-    const payload = Object.assign(Object.fromEntries(new FormData(form)), {
+    const raw = Object.fromEntries(new FormData(form));
+    if (raw.pendamping_select !== undefined) {
+      raw.hubungan_keluarga = raw.pendamping_select === 'Lainnya'
+        ? (raw.hubungan_keluarga_lainnya || '').trim()
+        : raw.pendamping_select;
+      delete raw.pendamping_select;
+      delete raw.hubungan_keluarga_lainnya;
+    }
+
+    const payload = Object.assign(raw, {
       flag_kolom: ctx.flagKolom, tipe: ctx.tipe, pertanyaan_id: ctx.pertanyaanId, id_kec: ctx.kec, id_kel: ctx.kel
     });
 
@@ -2452,25 +2571,7 @@ function tampilkan(hasil) {
 }
 
 function formTambahKader(data = null) {
- const isi = (id, val) => { document.getElementById(id).value = val ?? ''; };
-
-  if (data) {
-    isi('fNik', data.nik); isi('fNoKk', data.no_kk); isi('fNama', data.nama);
-    isi('fJk', data.jenis_kelamin); isi('fJabatan', data.jabatan); isi('fHp', data.no_hp);
-    isi('fRw', data.rw); isi('fRt', data.rt); isi('fAlamat', data.alamat);
-  }
-
-  document.getElementById('btnCari').onclick = () => {
-    fetch(`/pokja-3/cari-nik?nik=${encodeURIComponent(v('fNik'))}`, { headers: { 'Accept': 'application/json' } })
-      .then(async r => ({ ok: r.ok, j: await r.json() }))
-      .then(({ ok, j }) => {
-        if (!ok) return alert(j.message || 'NIK tidak ditemukan, lengkapi manual.');
-        const d = j.data;
-        isi('fNoKk', d.no_kk); isi('fNama', d.nama); isi('fJk', d.jenis_kelamin);
-        isi('fHp', d.no_hp); isi('fRw', d.rw); isi('fRt', d.rt); isi('fAlamat', d.alamat);
-      });
-  };
-  
+  const f = document.getElementById('formTambah');
   f.innerHTML = `
     <div class="border rounded p-4 mb-4">
       <div class="fw-bold mb-3">${data ? 'Edit Data Kader' : 'Tambah Data Kader'}</div>
@@ -2493,9 +2594,9 @@ function formTambahKader(data = null) {
     </div>`;
 
   const v = id => document.getElementById(id).value;
+  const isi = (id, val) => { document.getElementById(id).value = val ?? ''; };
 
   if (data) {
-    const isi = (id, val) => { document.getElementById(id).value = val ?? ''; };
     isi('fNik', data.nik); isi('fNoKk', data.no_kk); isi('fNama', data.nama);
     isi('fJk', data.jenis_kelamin); isi('fJabatan', data.jabatan); isi('fHp', data.no_hp);
     isi('fRw', data.rw); isi('fRt', data.rt); isi('fAlamat', data.alamat);
@@ -2507,8 +2608,8 @@ function formTambahKader(data = null) {
       .then(({ ok, j }) => {
         if (!ok) return alert(j.message || 'NIK tidak ditemukan, lengkapi manual.');
         const d = j.data;
-        fNoKk.value = d.no_kk; fNama.value = d.nama; fJk.value = d.jenis_kelamin;
-        fHp.value = d.no_hp; fRw.value = d.rw; fRt.value = d.rt; fAlamat.value = d.alamat;
+        isi('fNoKk', d.no_kk); isi('fNama', d.nama); isi('fJk', d.jenis_kelamin);
+        isi('fHp', d.no_hp); isi('fRw', d.rw); isi('fRt', d.rt); isi('fAlamat', d.alamat);
       });
   };
 
@@ -2524,9 +2625,20 @@ function formTambahKader(data = null) {
       .catch(err => alert(err.message));
   };
 }
+
+document.getElementById('modalPanduanGlobal').addEventListener('show.bs.modal', function () {
+  const activeTab = document.querySelector('.tab-content .tab-pane.active');
+  const modalBody = document.getElementById('modalPanduanBody');
+  const sumberPanduan = activeTab ? activeTab.querySelector('.konten-panduan-tab') : null;
+
+  modalBody.innerHTML = sumberPanduan
+    ? sumberPanduan.innerHTML
+    : '<p class="text-center text-muted my-5">Panduan untuk tab ini belum tersedia.</p>';
+});
 </script>
 
 @endpush
+
 @include('bo.pages.dashboard.modals.pokja2-modal')
 @include('bo.pages.dashboard.modals.detail-gkstb-pj4')
 @endsection

@@ -33,7 +33,11 @@ class Pokja1Controller extends Controller
         $idKel     = $request->kel;
         $tahun     = $request->tahun ?? 2026;
 
-        // 1. KADER POKJA 1 (tabel kader_pokja_1_2026)
+        $namaKec = DB::table('m_kecamatan')->where('id_kec', $idKec)->value('nama_kec') ?? '-';
+        $namaKel = (!empty($idKel) && is_numeric($idKel) && (int) $idKel > 0)
+            ? (DB::table('m_kelurahan')->where('id_kel', $idKel)->value('nama_kel') ?? '-')
+            : ((int) $idKec === 32 ? 'TP PKK KOTA' : 'TP PKK KECAMATAN');
+
         // 1. KADER POKJA 1 (tabel kader_pokja_1_2026)
         if ($tipe === 'kader') {
             $q = DB::table('kader_pokja_1_2026 as k')
@@ -71,7 +75,32 @@ class Pokja1Controller extends Controller
             $kolom = ['id', 'nik', 'nama', 'kelamin', 'rw', 'rt', 'alamat', 'no_hp', 'jabatan'];
             $judul = 'JUMLAH KADER POKJA I';
         }
-        
+
+        // 2A. VOLUME KISAK (tabel kisak_pokja1)
+        elseif ($flagKolom === 'kisak' && $tipe === 'volume') {
+            $q = DB::table('kisak_pokja1')
+                ->whereNull('deleted_at')
+                ->whereYear('tgl_kegiatan', $tahun)
+                ->where('id_kec', $idKec);
+
+            if (!empty($idKel) && is_numeric($idKel) && (int) $idKel > 0) {
+                $q->where('id_kel', (int) $idKel);
+            } elseif ($idKel === 'tp_pkk') {
+                $q->whereNull('id_kel');
+            }
+
+            $rows = $q->select(
+                'id',
+                'tgl_kegiatan as tanggal',
+                'tempat as tempat_pelaksanaan',
+                'materi as judul_materi',
+                'tgl_kegiatan as tanggal_asli'
+            )->orderByDesc('tgl_kegiatan')->get();
+
+            $kolom = ['id', 'tanggal', 'tempat_pelaksanaan', 'judul_materi'];
+            $judul = 'DATA KISAK';
+        }
+
         // 2. VOLUME (tabel m_lotus untuk semua kegiatan Pokja I)
         elseif ($tipe === 'volume') {
             $q = DB::table('m_lotus')
@@ -93,14 +122,47 @@ class Pokja1Controller extends Controller
                 'nama_kec as kecamatan',
                 'nama_kel as kelurahan',
                 'rw',
-                'rt',
                 'tahap'
             )->orderByDesc('id')->get();
 
-            $kolom = ['id', 'nama', 'alamat', 'kecamatan', 'kelurahan', 'rw', 'rt', 'tahap'];
+            $kolom = ['id', 'nama', 'alamat', 'kecamatan', 'kelurahan', 'rw', 'tahap'];
             $judul = strtoupper("{$flagKolom} {$tipe}");
         }
-        // 3. PESERTA (tabel peserta_lotus)
+        // 3A. JUMLAH KISAK (tabel tarikan ibu_hamil_resiko - read only)
+        // 3A. JUMLAH KISAK (tabel tarikan ibu_hamil_resiko - read only)
+        elseif ($flagKolom === 'kisak' && $tipe === 'peserta') {
+            $q = DB::table('ibu_hamil_resiko')
+                ->whereRaw('UPPER(TRIM(kecamatan)) = ?', [strtoupper(trim($namaKec))]);
+
+            if (!empty($idKel) && is_numeric($idKel) && (int) $idKel > 0) {
+                $q->whereRaw('UPPER(TRIM(kelurahan)) = ?', [strtoupper(trim($namaKel))]);
+            } elseif ($idKel === 'tp_pkk') {
+                $q->where(function ($sub) {
+                    $sub->whereNull('kelurahan')->orWhereRaw("TRIM(kelurahan) = ''");
+                });
+            }
+
+            $rows = $q->select(
+                DB::raw('0 as id'),
+                'nik',
+                'namalengkap as nama',
+                'tgl_lahir as tanggal_lahir',
+                'resiko',
+                'tanggalperkiraan as tanggal_perkiraan',
+                'alamat',
+                'kelurahan',
+                'kecamatan'
+            )->orderBy('namalengkap')->get();
+
+            $rows->transform(function ($r) {
+                $r->nik = $r->nik ? substr($r->nik, 0, 2) . str_repeat('X', max(0, strlen($r->nik) - 2)) : '-';
+                return $r;
+            });
+
+            $kolom = ['id', 'nik', 'nama', 'tanggal_lahir', 'resiko', 'tanggal_perkiraan', 'alamat', 'kelurahan', 'kecamatan'];
+            $judul = 'DETAIL BUMIL RESTI';
+        }
+        // 3B. PESERTA (tabel peserta_lotus)
         else {
             $q = DB::table('peserta_lotus')
                 ->whereNull('deleted_at')
@@ -116,37 +178,38 @@ class Pokja1Controller extends Controller
 
             $rows = $q->select(
                 'id',
-                'nik',
                 'no_kk',
+                'nik',
                 'nama',
-                'nama_pendamping as pendamping',
+                'nik_pendamping',
+                'nama_pendamping',
+                'pendamping',
                 'alamat',
                 'nama_kec as kecamatan',
                 'nama_kel as kelurahan',
                 'rw',
                 'rt',
+                'tahun',
+                'tahap',
                 'nik as nik_asli',
                 'no_kk as no_kk_asli',
-                'nik_pendamping',
-                'hubungan_keluarga',
-                'tahap'
+                'nik_pendamping as nik_pendamping_asli',
+                'hubungan_keluarga'
             )->orderByDesc('id')->get();
 
             $rows->transform(function ($r) {
-                $r->nik   = $r->nik ? substr($r->nik, 0, 2) . str_repeat('X', max(0, strlen($r->nik) - 2)) : '-';
-                $r->no_kk = $r->no_kk ? substr($r->no_kk, 0, 2) . str_repeat('X', max(0, strlen($r->no_kk) - 2)) : '-';
+                $r->nik            = $r->nik ? substr($r->nik, 0, 2) . str_repeat('X', max(0, strlen($r->nik) - 2)) : '-';
+                $r->no_kk          = $r->no_kk ? substr($r->no_kk, 0, 2) . str_repeat('X', max(0, strlen($r->no_kk) - 2)) : '-';
+                $r->nik_pendamping = $r->nik_pendamping ? substr($r->nik_pendamping, 0, 2) . str_repeat('X', max(0, strlen($r->nik_pendamping) - 2)) : '-';
                 return $r;
             });
 
-            $kolom = ['id', 'nik', 'no_kk', 'nama', 'pendamping', 'alamat', 'kecamatan', 'kelurahan', 'rw', 'rt'];
+            $kolom = ['id', 'no_kk', 'nik', 'nama', 'nik_pendamping', 'nama_pendamping', 'pendamping', 'alamat', 'kecamatan', 'kelurahan', 'rw', 'rt', 'tahun', 'tahap'];
             $judul = strtoupper("{$flagKolom} {$tipe}");
         }
 
-        $bisaCrud = !$role->is_kota;
-        $namaKec  = DB::table('m_kecamatan')->where('id_kec', $idKec)->value('nama_kec') ?? '-';
-        $namaKel  = (!empty($idKel) && is_numeric($idKel) && (int) $idKel > 0)
-            ? (DB::table('m_kelurahan')->where('id_kel', $idKel)->value('nama_kel') ?? '-')
-            : ((int) $idKec === 32 ? 'TP PKK KOTA' : 'TP PKK KECAMATAN');
+        $isTarikan = ($flagKolom === 'kisak' && $tipe === 'peserta');
+        $bisaCrud  = !$role->is_kota && !$isTarikan;
 
         return response()->json([
             'judul'       => $judul,
@@ -156,6 +219,7 @@ class Pokja1Controller extends Controller
             'bisa_tambah' => $bisaCrud,
             'bisa_edit'   => $bisaCrud,
             'bisa_ubah'   => $bisaCrud,
+            'is_tarikan'  => $isTarikan,
             'is_kota'     => $role->is_kota,
             'pokja1_meta' => [
                 'nama_kec'      => $namaKec,
@@ -210,7 +274,27 @@ class Pokja1Controller extends Controller
                 'created_at'    => now(),
                 'updated_at'    => now(),
             ]);
-        } elseif ($tipe === 'volume') {
+
+        }   elseif ($flagKolom === 'kisak' && $tipe === 'volume') {
+            $request->validate([
+                'tanggal'            => 'required|date',
+                'tempat_pelaksanaan' => 'required|string|max:255',
+                'judul_materi'       => 'required|string',
+            ]);
+
+            DB::table('kisak_pokja1')->insert([
+                'pertanyaan_id' => $pertanyaanId,
+                'tgl_kegiatan'  => $request->input('tanggal'),
+                'tempat'        => $request->input('tempat_pelaksanaan'),
+                'materi'        => $request->input('judul_materi'),
+                'id_kec'        => $idKec,
+                'id_kel'        => $idKel,
+                'nama_kec'      => $namaKec,
+                'nama_kel'      => $namaKel,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
+        }   elseif ($tipe === 'volume') {
             $request->validate([
                 'nama'   => 'required|string|max:255',
                 'alamat' => 'nullable|string|max:255',
@@ -248,7 +332,7 @@ class Pokja1Controller extends Controller
                 'nama'              => $request->input('nama'),
                 'nik_pendamping'    => $request->input('nik_pendamping'),
                 'nama_pendamping'   => $request->input('pendamping'),
-                'pendamping'        => $request->input('pendamping'),
+                'pendamping'        => $request->input('hubungan_keluarga'),
                 'hubungan_keluarga' => $request->input('hubungan_keluarga'),
                 'alamat'            => $request->input('alamat'),
                 'id_kec'            => $idKec,
@@ -260,8 +344,8 @@ class Pokja1Controller extends Controller
                 'tahap'             => $request->input('tahap'),
                 'flag_kolom'        => $flagKolom,
                 'tahun'             => $tahun,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'created_at'        => now(),
+                'updated_at'        => now(),
             ]);
         }
 
@@ -296,6 +380,20 @@ class Pokja1Controller extends Controller
                 'updated_by'    => Auth::id(),
                 'updated_at'    => now(),
             ]);
+        } elseif ($request->input('flag_kolom') === 'kisak' && $tipe === 'volume') {
+            $request->validate([
+                'tanggal'            => 'required|date',
+                'tempat_pelaksanaan' => 'required|string|max:255',
+                'judul_materi'       => 'required|string',
+            ]);
+
+            DB::table('kisak_pokja1')->where('id', $id)->update([
+                'tgl_kegiatan' => $request->input('tanggal'),
+                'tempat'       => $request->input('tempat_pelaksanaan'),
+                'materi'       => $request->input('judul_materi'),
+                'updated_at'   => now(),
+            ]);
+
         } elseif ($tipe === 'volume') {
             $request->validate([
                 'nama' => 'required|string|max:255',
@@ -321,11 +419,12 @@ class Pokja1Controller extends Controller
                 'nama'              => $request->input('nama'),
                 'nik_pendamping'    => $request->input('nik_pendamping'),
                 'nama_pendamping'   => $request->input('pendamping'),
-                'pendamping'        => $request->input('pendamping'),
+                'pendamping'        => $request->input('hubungan_keluarga'),
                 'hubungan_keluarga' => $request->input('hubungan_keluarga'),
                 'alamat'            => $request->input('alamat'),
                 'rw'                => $request->input('rw'),
                 'rt'                => $request->input('rt'),
+                'tahun'             => (int) ($request->input('tahun') ?? 2026),
                 'tahap'             => $request->input('tahap'),
                 'updated_at'        => now(),
             ]);
@@ -339,11 +438,14 @@ class Pokja1Controller extends Controller
         $role = $this->getUserRole();
         abort_if($role->is_kota, 403, 'Perubahan data hanya bisa dilakukan di akun kecamatan atau kelurahan.');
 
-        $tipe  = $request->input('tipe');
-        $tabel = match ($tipe) {
-            'kader'  => 'kader_pokja_1_2026',
-            'volume' => 'm_lotus',
-            default  => 'peserta_lotus',
+        $tipe      = $request->input('tipe');
+        $flagKolom = $request->input('flag_kolom');
+
+        $tabel = match (true) {
+            $tipe === 'kader'                              => 'kader_pokja_1_2026',
+            $flagKolom === 'kisak' && $tipe === 'volume'   => 'kisak_pokja1',
+            $tipe === 'volume'                             => 'm_lotus',
+            default                                        => 'peserta_lotus',
         };
 
         $updateData = ['deleted_at' => now()];

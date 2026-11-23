@@ -86,9 +86,10 @@ class Pokja1
             $data[$r->id_kec]->{$r->flag_kolom . '_volume'} = $r->total;
         }
 
-        // Jumlah Peserta dari peserta_lotus level kecamatan (id_kel IS NULL)
+        // Jumlah Peserta dari peserta_lotus level kecamatan (kecuali kisak yang ambil dari ibu_hamil_resiko)
         $pes = DB::table('peserta_lotus')
             ->where('tahun', $tahun)
+            ->where('flag_kolom', '!=', 'kisak')
             ->whereNull('id_kel')
             ->whereNull('deleted_at')
             ->selectRaw('id_kec, flag_kolom, COUNT(*) AS total')
@@ -100,6 +101,21 @@ class Pokja1
                 $data[$r->id_kec] = (object) ['id_kec' => $r->id_kec];
             }
             $data[$r->id_kec]->{$r->flag_kolom . '_peserta'} = $r->total;
+        }
+
+        // Jumlah KISAK (kisak_peserta) per Kecamatan dari tabel tarikan ibu_hamil_resiko
+        $kisakKec = DB::table('ibu_hamil_resiko as ihr')
+            ->join('m_kecamatan as k', DB::raw('UPPER(TRIM(k.nama_kec))'), '=', DB::raw('UPPER(TRIM(ihr.kecamatan))'))
+            ->whereNull('k.deleted_at')
+            ->selectRaw('k.id_kec, COUNT(*) AS total')
+            ->groupBy('k.id_kec')
+            ->pluck('total', 'id_kec');
+
+        foreach ($kisakKec as $idKec => $total) {
+            if (!$data->has($idKec)) {
+                $data[$idKec] = (object) ['id_kec' => $idKec];
+            }
+            $data[$idKec]->kisak_peserta = $total;
         }
 
         // === BARIS TAMBAHAN: TP PKK KOTA (id_kec = 32, kolom kegiatan dikosongkan) ===
@@ -174,11 +190,12 @@ class Pokja1
             $data[$r->id_kel]->{$r->flag_kolom . '_volume'} = $r->total;
         }
 
-        // Jumlah Peserta dari peserta_lotus per Kelurahan (id_kel NOT NULL)
+        // Jumlah Peserta dari peserta_lotus per Kelurahan (kecuali kisak yang ambil dari ibu_hamil_resiko)
         $pes = DB::table('peserta_lotus')
             ->where('id_kec', $idKec)
             ->whereNotNull('id_kel')
             ->where('tahun', $tahun)
+            ->where('flag_kolom', '!=', 'kisak')
             ->whereNull('deleted_at')
             ->selectRaw('id_kel, flag_kolom, COUNT(*) AS total')
             ->groupBy('id_kel', 'flag_kolom')
@@ -189,6 +206,27 @@ class Pokja1
                 $data[$r->id_kel] = (object) ['id_kel' => $r->id_kel];
             }
             $data[$r->id_kel]->{$r->flag_kolom . '_peserta'} = $r->total;
+        }
+
+        // Jumlah KISAK (kisak_peserta) per Kelurahan dari tabel tarikan ibu_hamil_resiko
+        $kecRow = DB::table('m_kecamatan')->where('id_kec', $idKec)->first();
+        if ($kecRow) {
+            $kisakKel = DB::table('ibu_hamil_resiko as ihr')
+                ->join('m_kelurahan as l', function ($join) use ($kecRow) {
+                    $join->on(DB::raw('UPPER(TRIM(l.nama_kel))'), '=', DB::raw('UPPER(TRIM(ihr.kelurahan))'))
+                         ->where('l.kode_kec_bpjs', '=', $kecRow->kode_bpjs);
+                })
+                ->whereRaw('UPPER(TRIM(ihr.kecamatan)) = ?', [strtoupper(trim($kecRow->nama_kec))])
+                ->selectRaw('l.id_kel, COUNT(*) AS total')
+                ->groupBy('l.id_kel')
+                ->pluck('total', 'id_kel');
+
+            foreach ($kisakKel as $idKel => $total) {
+                if (!$data->has($idKel)) {
+                    $data[$idKel] = (object) ['id_kel' => $idKel];
+                }
+                $data[$idKel]->kisak_peserta = $total;
+            }
         }
 
         // Jika login sebagai akun Kelurahan tertentu, hanya kembalikan kelurahan itu (tanpa TP PKK Kecamatan)
@@ -235,6 +273,7 @@ class Pokja1
             ->where('id_kec', $idKec)
             ->whereNull('id_kel')
             ->where('tahun', $tahun)
+            ->where('flag_kolom', '!=', 'kisak')
             ->whereNull('deleted_at')
             ->selectRaw('flag_kolom, COUNT(*) AS total')
             ->groupBy('flag_kolom')
@@ -242,6 +281,16 @@ class Pokja1
 
         foreach ($pesKec as $r) {
             $tpPkkKec->{$r->flag_kolom . '_peserta'} = $r->total;
+        }
+
+        // KISAK di baris TP PKK Kecamatan (data yang kelurahannya kosong/tidak terpetakan di kecamatan tsb)
+        if ($kecRow) {
+            $tpPkkKec->kisak_peserta = DB::table('ibu_hamil_resiko')
+                ->whereRaw('UPPER(TRIM(kecamatan)) = ?', [strtoupper(trim($kecRow->nama_kec))])
+                ->where(function ($q) {
+                    $q->whereNull('kelurahan')->orWhereRaw("TRIM(kelurahan) = ''");
+                })
+                ->count();
         }
 
         $data['tp_pkk'] = $tpPkkKec;
