@@ -9,10 +9,8 @@ use Illuminate\Support\Facades\Schema;
 
 class ModalController extends Controller
 {
-    // Menu yang izinnya dipakai untuk aksi Pokja 3 (harus sama dengan PATH_ALIAS di CheckMenuPermission)
-    private const MENU_POKJA3 = '/data-umum';
+    private const MENU_DASHBOARD = '/dashboard';
 
-    // Endpoint input angka agregat per tabel dashboard
     private const URL_AGREGAT = [
         'd_pokja_3_2026' => '/pokja-3/agregat',
         'd_pokja_4_2026' => '/pokja-4/agregat',
@@ -21,11 +19,15 @@ class ModalController extends Controller
     public function show(Request $request, $id)
     {
         $p = DB::table('m_pertanyaan_dashboard_2026')
-            ->where('id', $id)->whereNull('deleted_at')->first();
+            ->where('id', $id)
+            ->whereNull('deleted_at')
+            ->first();
 
-        abort_if(!$p, 404);
+        abort_if(!$p, 404, 'Indikator tidak ditemukan.');
 
-        $kel = (int) $request->query('kel'); // 0 = tingkat kecamatan
+        $kec     = (int) $request->query('kec', 0);
+        $kel     = (int) $request->query('kel', 0); // 0 = tingkat kecamatan
+        $periode = (int) $request->query('periode', 2026);
 
         if ($p->alias === 'jumlah_kader' && (($p->bagian ?? '') === 'pokja1' || str_contains((string) $p->tb_dashboard, 'pokja'))) {
             $sql = "SELECT nik,
@@ -61,81 +63,101 @@ class ModalController extends Controller
             $alias = str_replace("'", "''", $p->alias);
             $sql   = "SELECT id, nik, no_kk, nama, jenis_kelamin, jabatan, no_hp, rw, rt, alamat
                         FROM d_kader_2026
-                    WHERE id_kec = :kec
-                        AND (:kel = 0 OR id_kel = :kel)
-                        AND jenis_kader = '$alias'
-                        AND periode = :periode
-                        AND deleted_at IS NULL
-                    ORDER BY CASE jabatan
-                        WHEN 'Ketua' THEN 1
-                        WHEN 'Wakil Ketua' THEN 2
-                        WHEN 'Sekretaris' THEN 3
-                        ELSE 4
-                    END, nama ASC";
+                       WHERE id_kec = :kec
+                         AND (:kel = 0 OR id_kel = :kel)
+                         AND jenis_kader = '$alias'
+                         AND periode = :periode
+                         AND deleted_at IS NULL
+                       ORDER BY CASE jabatan
+                           WHEN 'Ketua' THEN 1
+                           WHEN 'Wakil Ketua' THEN 2
+                           WHEN 'Sekretaris' THEN 3
+                           ELSE 4
+                       END, nama ASC";
             $jenis = (int) $p->jenis_form;
         } else {
             [$sql, $jenis] = $this->queryBawaan($p, $kel);
         }
 
-        abort_unless(preg_match('/^\s*select/i', $sql), 422);
+        abort_unless(preg_match('/^\s*select/i', $sql), 422, 'Query tidak valid.');
 
         $nilai = [
-            'kec'     => (int) $request->query('kec'),
-            'kel'     => $kel,
-            'periode' => (int) $request->query('periode', 2026),
+            'kec'           => $kec,
+            'kel'           => $kel,
+            'periode'       => $periode,
+            'id_pertanyaan' => (int) $p->id,
         ];
 
-        preg_match_all('/(?<!:):([a-z_]\w*)/i', $sql, $m);
-
         $bindings = [];
-        foreach (array_unique($m[1]) as $nama) {
-            abort_unless(
-                array_key_exists($nama, $nilai),
-                422,
-                "Parameter :$nama tidak dikenal"
-            );
-            $bindings[$nama] = $nilai[$nama];
-        }
+        $counter  = 0;
+        $sql = preg_replace_callback(
+            "/'[^']*'|(?<!:):([a-z_]\w*)\b/i",
+            function (array $m) use ($nilai, &$bindings, &$counter) {
+                if (empty($m[1])) {
+                    return $m[0];
+                }
+
+                $nama = $m[1];
+                abort_unless(
+                    array_key_exists($nama, $nilai),
+                    422,
+                    "Parameter :$nama tidak dikenal"
+                );
+
+                $unik = $nama . '_' . (++$counter);
+                $bindings[$unik] = $nilai[$nama];
+
+                return ':' . $unik;
+            },
+            $sql
+        );
 
         $stmt = DB::connection()->getPdo()->prepare($sql);
         $stmt->execute($bindings);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         $kolom = [];
         for ($i = 0; $i < $stmt->columnCount(); $i++) {
-            $kolom[] = $stmt->getColumnMeta($i)['name'];
+            $meta = $stmt->getColumnMeta($i);
+            if ($meta && isset($meta['name'])) {
+                $kolom[] = $meta['name'];
+            }
         }
 
-        $kaderPokja3 = $p->is_kader && $p->is_tarik && $p->tb_dashboard === 'd_pokja_3_2026';
-        $kaderPokja1 = $p->alias === 'jumlah_kader' && (($p->bagian ?? '') === 'pokja1' || str_contains((string) $p->tb_dashboard, 'pokja'));
+        $tampilan       = (count($kolom) === 1 && $kolom[0] === 'nilai') ? 'angka' : 'tabel';
+        $kaderPokja3    = (bool) $p->is_kader && (bool) $p->is_tarik && $p->tb_dashboard === 'd_pokja_3_2026';
+        $isPokja4       = $p->tb_dashboard === 'd_pokja_4_2026';
+        $isDetailPokja4 = $isPokja4 && !(bool) $p->is_kader && (int) $jenis === 2 && !(bool) $p->is_disable;
+        
+        $user        = auth()->user();
+        $isKelurahan = $user && !empty($user->id_kel);
+        $kelSesuai   = $isKelurahan && $kel > 0 && (int) $user->id_kel === $kel;
 
-        // Tombol UI mengikuti izin role; pengecekan sebenarnya ada di middleware
-        $bolehTambah = Access::isSuperUser() || Access::can(self::MENU_POKJA3, 'create');
-        $bolehUbah   = Access::isSuperUser() || Access::can(self::MENU_POKJA3, 'update');
-        $bolehHapus  = Access::isSuperUser() || Access::can(self::MENU_POKJA3, 'delete');
+        $bolehPokja3Create = $kel > 0 && (Access::isSuperUser() || Access::can(self::MENU_DASHBOARD, 'create'));
+        $bolehPokja3Update = $kel > 0 && (Access::isSuperUser() || Access::can(self::MENU_DASHBOARD, 'update'));
+        $bolehPokja3Delete = $kel > 0 && (Access::isSuperUser() || Access::can(self::MENU_DASHBOARD, 'delete'));
 
-        // Angka agregat non-kader boleh diedit hanya di tingkat kelurahan, jika ada izin update
         $bisaInput = isset(self::URL_AGREGAT[$p->tb_dashboard])
-            && !$p->is_kader
+            && !(bool) $p->is_kader
             && in_array((int) $p->jenis_form, [1, 2], true)
-            && !$p->is_disable
-            && $kel > 0
-            && $bolehUbah;
-
-        // Bentuk hasil query menentukan cara render: satu kolom 'nilai' = angka, selain itu tabel
-        $tampilan = (count($kolom) === 1 && $kolom[0] === 'nilai') ? 'angka' : 'tabel';
+            && !(bool) $p->is_disable
+            && ($isPokja4 ? $kelSesuai : $bolehPokja3Update);
 
         return response()->json([
-            'id'          => $p->id,
-            'bisa_ubah'   => (bool) (($kaderPokja3 || $kaderPokja1) && $bolehHapus),  // tombol hapus kader
-            'bisa_edit'   => (bool) (($kaderPokja3 || $kaderPokja1) && $bolehUbah),   // tombol edit kader
-            'bisa_input'  => (bool) $bisaInput,
-            'url_agregat' => self::URL_AGREGAT[$p->tb_dashboard] ?? null,
-            'bisa_tambah' => (bool) ($kaderPokja3 && $kel && $bolehTambah), // hanya tingkat kelurahan
-            'judul'       => strtoupper($p->nama_pertanyaan),
-            'jenis_form'  => (int) $p->jenis_form,   // selalu nilai master, tidak ditimpa
-            'tampilan'    => $tampilan,              // 'angka' (satu nilai) atau 'tabel' (daftar)
-            'kolom'       => $kolom,
-            'rows'        => $stmt->fetchAll(\PDO::FETCH_ASSOC),
+            'id'            => $p->id,
+            'id_pertanyaan' => (int) $p->id,
+            'alias'         => $p->alias,
+            'tb_dashboard'  => $p->tb_dashboard,
+            'judul'         => strtoupper($p->nama_pertanyaan),
+            'jenis_form'    => $jenis,
+            'tampilan'      => $tampilan,
+            'url_agregat'   => self::URL_AGREGAT[$p->tb_dashboard] ?? '/pokja-3/agregat',
+            'bisa_input'    => (bool) $bisaInput,
+            'bisa_tambah'   => (bool) ($isPokja4 ? ($isDetailPokja4 && $kelSesuai) : ($kaderPokja3 && $bolehPokja3Create)),
+            'bisa_edit'     => (bool) ($isPokja4 ? ($isDetailPokja4 && $kelSesuai) : ($kaderPokja3 && $bolehPokja3Update)),
+            'bisa_ubah'     => (bool) ($isPokja4 ? ($isDetailPokja4 && $kelSesuai) : ($kaderPokja3 && $bolehPokja3Delete)),
+            'kolom'         => $kolom,
+            'rows'          => $rows,
         ]);
     }
 
@@ -166,11 +188,10 @@ class ModalController extends Controller
             return [
                 "SELECT d.$c AS nilai FROM $t d
                   WHERE d.id_kec = :kec AND d.id_kel = :kel AND d.periode = :periode",
-                1, // modal agregat: satu angka (JS memutuskan input atau read-only lewat 'bisa_input')
+                1,
             ];
         }
 
-        // jenis_form = 1 di master: modal agregat (satu angka = jumlah seluruh kelurahan)
         if ((int) $p->jenis_form === 1) {
             return [
                 "SELECT SUM(d.$c) AS nilai FROM $t d

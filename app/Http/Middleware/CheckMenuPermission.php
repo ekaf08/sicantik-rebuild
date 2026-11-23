@@ -13,14 +13,14 @@ class CheckMenuPermission
         '/dashboard', '/logout', '/refresh_captcha',
     ];
     private const OPEN_PREFIXES = [
-        '/get-kecamatan/', '/get-kelurahan/', '/modal/', '/pokja-2/',
+        '/get-kecamatan/', '/get-kelurahan/', '/modal/', '/pokja-2/', '/pokja-4/',
     ];
 
     private const PATH_ALIAS = [
         'data-umum' => '/data-umum',
         '/pokja-1' => '/dashboard',
-        '/pokja-3' => '/data-umum',
-        '/pokja-4' => '/data-umum',
+        '/pokja-3'  => '/dashboard',
+        '/pokja-4'  => '/dashboard',
     ];
 
     private const FIELD_BY_ROUTE = [

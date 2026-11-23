@@ -2095,6 +2095,26 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalFormDinamis" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-success py-4">
+        <h5 class="modal-title text-white fw-bold" id="judulFormDinamis">
+          <i class="fas fa-plus-circle text-white me-2"></i>Tambah Data
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-6" id="isiFormDinamis"></div>
+      <div class="modal-footer border-0 pt-0 px-6 pb-6">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-success" id="btnSimpanFormDinamis">
+          <i class="fas fa-save me-1"></i> Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!--begin::Modal - Panduan Pengisian Data-->
 <div class="modal fade" id="modalPanduanGlobal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-scrollable">
@@ -2132,17 +2152,51 @@
   {{-- Ganti blok dari <script src=index.js> sampai </script> penutup (sebelum @endpush) dengan isi file ini --}}
   <script src="{{ asset('assets/js/custom/pages/dashboard-pkk/index.js') }}"></script>
 <script>
-const modal = new bootstrap.Modal(document.getElementById('modalDinamis'));
-const CSRF  = '{{ csrf_token() }}';
+const modal     = new bootstrap.Modal(document.getElementById('modalDinamis'));
+const modalForm = new bootstrap.Modal(document.getElementById('modalFormDinamis'));
+const CSRF      = '{{ csrf_token() }}';
+
 let ctx = {};
 let berubah = false;
+let pindahKeForm = false;
+let kembaliKeModalUtama = true;
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g,
   c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 document.getElementById('modalDinamis').addEventListener('hidden.bs.modal', () => {
+  if (pindahKeForm) { pindahKeForm = false; return; }
   if (berubah) { berubah = false; location.reload(); }
 });
+
+document.getElementById('modalFormDinamis').addEventListener('show.bs.modal', () => {
+  pindahKeForm = true;
+  modal.hide();
+});
+
+document.getElementById('modalFormDinamis').addEventListener('hidden.bs.modal', () => {
+  if (kembaliKeModalUtama) {
+    modal.show();
+  }
+});
+
+function bukaFormPopup(judul, isEdit, htmlBody, onSimpan) {
+  document.getElementById('judulFormDinamis').innerHTML =
+    `<i class="fas ${isEdit ? 'fa-edit' : 'fa-plus-circle'} text-white me-2"></i>${esc(judul)}`;
+  document.getElementById('isiFormDinamis').innerHTML = htmlBody;
+
+  const btnSimpan = document.getElementById('btnSimpanFormDinamis');
+  btnSimpan.disabled = false;
+  btnSimpan.onclick = () => {
+    btnSimpan.disabled = true;
+    Promise.resolve(onSimpan()).finally(() => {
+      btnSimpan.disabled = false;
+    });
+  };
+
+  kembaliKeModalUtama = true;
+  modalForm.show();
+}
 
 document.addEventListener('click', function (e) {
   const el = e.target.closest('.agregat-trigger[data-id]');
@@ -2219,26 +2273,23 @@ function tampilkanPokja1(hasil) {
     $('#tabelModal').DataTable().destroy();
   }
 
-const adaAksi = !hasil.is_tarikan;
   const kolom = hasil.kolom.filter(k => k !== 'id');
   const baris = hasil.rows.map((r, i) => {
     let tombolAksi = '';
-    if (adaAksi) {
-      if (hasil.is_kota) {
-        tombolAksi = ctx.tipe === 'kader'
-          ? `<button type="button" class="btn btn-sm" style="background-color:#d5d7e2; color:#4b5675;" onclick="alertAksesKota()"><i class="fas fa-lock"></i></button>`
-          : `<button type="button" class="btn btn-sm btn-warning me-1" onclick="alertAksesKota()"><i class="fas fa-edit"></i></button>
-             <button type="button" class="btn btn-sm btn-danger" onclick="alertAksesKota()"><i class="fas fa-trash"></i></button>`;
-      } else {
-        tombolAksi = `<button type="button" class="btn btn-sm btn-warning btn-edit-pj1 me-1" data-idx="${i}"><i class="fas fa-edit"></i></button>
-                      <button type="button" class="btn btn-sm btn-danger btn-hapus-pj1" data-id="${esc(r.id)}"><i class="fas fa-trash"></i></button>`;
-      }
+    if (hasil.is_kota) {
+      tombolAksi = ctx.tipe === 'kader'
+        ? `<button type="button" class="btn btn-sm" style="background-color:#d5d7e2; color:#4b5675;" onclick="alertAksesKota()"><i class="fas fa-lock"></i></button>`
+        : `<button type="button" class="btn btn-sm btn-warning me-1" onclick="alertAksesKota()"><i class="fas fa-edit"></i></button>
+           <button type="button" class="btn btn-sm btn-danger" onclick="alertAksesKota()"><i class="fas fa-trash"></i></button>`;
+    } else {
+      tombolAksi = `<button type="button" class="btn btn-sm btn-warning btn-edit-pj1 me-1" data-idx="${i}"><i class="fas fa-edit"></i></button>
+                    <button type="button" class="btn btn-sm btn-danger btn-hapus-pj1" data-id="${esc(r.id)}"><i class="fas fa-trash"></i></button>`;
     }
 
     return `<tr>
       <td>${i + 1}</td>
       ${kolom.map(k => `<td>${esc(r[k] ?? '-')}</td>`).join('')}
-      ${adaAksi ? `<td class="text-nowrap">${tombolAksi}</td>` : ''}
+      <td class="text-nowrap">${tombolAksi}</td>
     </tr>`;
   }).join('');
 
@@ -2249,7 +2300,7 @@ const adaAksi = !hasil.is_tarikan;
         <tr>
           <th>NO</th>
           ${kolom.map(k => `<th>${esc(k.replace(/_/g, ' ').toUpperCase())}</th>`).join('')}
-          ${adaAksi ? '<th>AKSI</th>' : ''}
+          <th>AKSI</th>
         </tr>
       </thead>
       <tbody>${baris}</tbody>
@@ -2270,7 +2321,6 @@ const adaAksi = !hasil.is_tarikan;
     });
   }
 
-  // Event klik Edit & Hapus untuk akun Kecamatan/Kelurahan
   isi.onclick = (e) => {
     const ed = e.target.closest('.btn-edit-pj1');
     if (ed) {
@@ -2281,7 +2331,7 @@ const adaAksi = !hasil.is_tarikan;
     if (!del) return;
     if (!confirm('Hapus data ini?')) return;
 
-        kirim(`/pokja-1/delete/${del.dataset.id}`, 'DELETE', { tipe: ctx.tipe, flag_kolom: ctx.flagKolom })
+    kirim(`/pokja-1/delete/${del.dataset.id}`, 'DELETE', { tipe: ctx.tipe })
       .then(() => { berubah = true; muatPokja1(); })
       .catch(err => alert(err.message));
   };
@@ -2294,166 +2344,73 @@ const adaAksi = !hasil.is_tarikan;
 
 const modalFormPj1 = new bootstrap.Modal(document.getElementById('modalFormPokja1'));
 
-// Sembunyikan modal tabel saat modal form dibuka
 document.getElementById('modalFormPokja1').addEventListener('show.bs.modal', () => {
+  pindahKeForm = true;
   modal.hide();
 });
 
 function formPokja1(data = null) {
-  const tahunIni   = String(new Date().getFullYear());
-  const tahunDepan = String(new Date().getFullYear() + 1);
-  const isKader    = ctx.tipe === 'kader';
-  const isVol      = ctx.tipe === 'volume';
-  const isKisakVol = isVol && ctx.flagKolom === 'kisak';
-  const kegiatan   = ({ kisah: 'Kemangi', krisan: 'Krisan', kilas: 'Kilas', kiat: 'Kiat', kisak: 'KISAK', pkbn: 'PKBN' })[ctx.flagKolom] || ctx.flagKolom.toUpperCase();
-  const opsiPendamping = ['Ibu', 'Ayah', 'Suami', 'Istri', 'Kader', 'Lainnya'];
-  const valHubungan    = data?.hubungan_keluarga ?? 'Ibu';
-  const isLainnyaAwal  = data && valHubungan && !opsiPendamping.slice(0, -1).includes(valHubungan);
+  const isKader = ctx.tipe === 'kader';
+  const isVol   = ctx.tipe === 'volume';
+  const kegiatan = ({ kisah: 'Kemangi', krisan: 'Krisan', kilas: 'Kilas', kiat: 'Kiat', kisak: 'Kisak', pkbn: 'PKBN' })[ctx.flagKolom] || ctx.flagKolom.toUpperCase();
 
-  const labelJudul = isKader ? 'Kader Pokja I' : (isKisakVol ? 'KISAK' : (isVol ? 'Lotus' : 'Peserta Lotus'));
-  const iconJudul  = data ? 'fa-edit' : (isKisakVol ? 'fa-plus-circle' : 'fa-user-plus');
+  const labelJudul = isKader ? 'Kader Pokja I' : (isVol ? 'Lotus' : 'Peserta');
   document.getElementById('judulFormPokja1').innerHTML =
-    `<i class="fas ${iconJudul} text-white me-2"></i>${data ? 'Edit' : 'Tambah'} ${isKader || isVol ? 'Data ' : ''}${labelJudul}`;
+    `<i class="fas ${data ? 'fa-edit' : 'fa-plus-circle'} text-white me-2"></i>${data ? 'Edit' : 'Tambah'} Data ${labelJudul}`;
 
-const fields = isKader ? [
-    ['nik', 'NIK', 12, 'nik_search', true, { maxlength: 16, valKey: 'nik_asli', placeholder: 'Masukkan NIK', btnLabel: 'Cari' }],
-    ['no_kk', 'No KK', 12, 'text', false, { maxlength: 16, valKey: 'no_kk_asli', placeholder: 'Masukkan No KK' }],
-    ['nama', 'Nama', 12, 'text', true, { placeholder: 'Masukkan nama lengkap' }],
-    ['no_hp', 'No Hp (WhatsApp)', 12, 'text', false, { placeholder: 'Contoh: 08123456789' }],
-    ['alamat', 'Alamat (KTP)', 12, 'text', false, { placeholder: 'Masukkan alamat KTP' }],
-    ['rw', 'RW', 12, 'text', false, { maxlength: 5, placeholder: 'Contoh: 01' }],
-    ['rt', 'RT', 12, 'text', false, { maxlength: 5, placeholder: 'Contoh: 01' }],
-    ['jenis_kelamin', 'Jenis Kelamin', 12, 'select', true, { options: ['L', 'P'], valKey: 'kelamin', defaultLabel: '-- Pilih --' }],
-    ['jabatan', 'Jabatan', 12, 'select', true, { options: ['Ketua POKJA I', 'Sekretaris POKJA I', 'Anggota POKJA I'], defaultLabel: '-- Pilih Jabatan --' }],
-  ] : (isKisakVol ? [
-    ['tanggal', 'Tanggal', 12, 'date', true, { valKey: 'tanggal_asli' }],
-    ['tempat_pelaksanaan', 'Tempat Pelaksanaan', 12, 'text', true, { placeholder: 'Masukkan tempat pelaksanaan' }],
-    ['judul_materi', 'Judul Materi KISAK', 12, 'textarea', true, { rows: 3, placeholder: 'Masukkan judul materi KISAK' }],
+  const fields = isKader ? [
+    ['nik', 'NIK', 6, 'text', true, { maxlength: 16, valKey: 'nik_asli', placeholder: '16 digit NIK' }],
+    ['no_kk', 'No KK', 6, 'text', false, { maxlength: 16, valKey: 'no_kk_asli', placeholder: '16 digit No KK' }],
+    ['nama', 'Nama Kader', 12, 'text', true, { placeholder: 'Masukkan nama lengkap' }],
+    ['jenis_kelamin', 'Jenis Kelamin', 6, 'select', true, { options: ['L', 'P'], valKey: 'kelamin' }],
+    ['jabatan', 'Jabatan', 6, 'select', true, { options: ['Ketua POKJA I', 'Sekretaris POKJA I', 'Anggota POKJA I'] }],
+    ['no_hp', 'No HP', 6, 'text', false, { placeholder: 'Contoh: 08123456789' }],
+    ['rw', 'RW', 3, 'text', false, { maxlength: 5, placeholder: '01' }],
+    ['rt', 'RT', 3, 'text', false, { maxlength: 5, placeholder: '01' }],
+    ['alamat', 'Alamat', 12, 'textarea', false, { rows: 2, placeholder: 'Masukkan alamat lengkap' }],
+    ['nama_kec', 'Kecamatan', 6, 'text', false, { value: ctx.namaKec, disabled: true }],
+    ['nama_kel', 'Kelurahan', 6, 'text', false, { value: ctx.namaKel, disabled: true }],
   ] : (isVol ? [
     ['nama', `Nama ${kegiatan}`, 12, 'text', true, { placeholder: 'Masukkan nama' }],
     ['alamat', `Alamat ${kegiatan}`, 12, 'textarea', true, { placeholder: 'Masukkan alamat', rows: 3 }],
-    ['nama_kec', 'Kecamatan', 6, 'text', false, { value: data?.nama_kec || ctx.namaKec, disabled: true }],
-    ['nama_kel', 'Kelurahan', 6, 'text', false, { value: data?.nama_kel || ctx.namaKel, disabled: true }],
-    ['rw', 'RW', 12, 'number', true, { min: 0, value: '0' }],
-    ['tahun', 'Tahun', 6, 'select', true, { options: [tahunIni, tahunDepan], value: tahunIni }],
+    ['nama_kec', 'Kecamatan', 6, 'text', false, { value: ctx.namaKec, disabled: true }],
+    ['nama_kel', 'Kelurahan', 6, 'text', false, { value: ctx.namaKel, disabled: true }],
+    ['rw', 'RW', 6, 'text', true, { placeholder: 'Contoh: 01', maxlength: 5 }],
+    ['rt', 'RT', 6, 'text', false, { placeholder: 'Contoh: 01', maxlength: 5 }],
+    ['tahun', 'Tahun', 6, 'select', true, { options: ['2025', '2026'], value: '2026' }],
     ['tahap', 'Tahap', 6, 'select', true, { options: ['Tahap 1', 'Tahap 2', 'Tahap 3', 'Tahap 4'] }],
   ] : [
-    ['nik', 'NIK', 12, 'nik_search', true, { maxlength: 16, valKey: 'nik_asli', placeholder: 'Masukkan NIK', help: 'Masukkan NIK kemudian klik Cari NIK.' }],
-    ['no_kk', 'No KK', 12, 'text', true, { maxlength: 16, valKey: 'no_kk_asli', placeholder: 'Masukkan No KK' }],
-    ['nama', 'Nama', 12, 'text', true, { placeholder: 'Masukkan nama' }],
-    ['pendamping_select', 'Pendamping', 12, 'select', true, { options: opsiPendamping, value: isLainnyaAwal ? 'Lainnya' : valHubungan, defaultLabel: '-- PILIH PENDAMPING --' }],
-    ['nik_pendamping', 'NIK Ibu', 6, 'text', false, { maxlength: 16, valKey: 'nik_pendamping_asli', placeholder: 'NIK ibu', idLabel: 'lblNikPendamping' }],
-    ['pendamping', 'Nama Ibu', 6, 'text', false, { valKey: 'nama_pendamping', placeholder: 'Nama ibu', idLabel: 'lblNamaPendamping' }],
-    ['hubungan_keluarga_lainnya', 'Hubungan Keluarga', 12, 'text', true, { value: isLainnyaAwal ? valHubungan : '', placeholder: 'Contoh: NENEK, PAMAN, KAKAK', colId: 'wrapHubunganLainnya', hidden: !isLainnyaAwal }],
-    ['alamat', 'Alamat', 12, 'textarea', false, { rows: 3, placeholder: 'Masukkan alamat' }],
-    ['rw', 'RW', 6, 'text', false, { maxlength: 5, placeholder: 'Contoh: 01' }],
-    ['rt', 'RT', 6, 'text', false, { maxlength: 5, placeholder: 'Contoh: 01' }],
-    ['tahun', 'Tahun', 6, 'select', true, { options: [tahunIni, tahunDepan], defaultLabel: '-- PILIH TAHUN --' }],
-    ['tahap', 'Tahap', 6, 'select', true, { options: ['Tahap 1', 'Tahap 2', 'Tahap 3', 'Tahap 4'], defaultLabel: '-- PILIH TAHAP --' }],
-  ]));
+    ['nik', 'NIK', 6, 'text', true, { maxlength: 16, valKey: 'nik_asli' }],
+    ['no_kk', 'No KK', 6, 'text', false, { maxlength: 16, valKey: 'no_kk_asli' }],
+    ['nama', 'Nama Peserta', 12, 'text', true, {}],
+    ['pendamping', 'Nama Pendamping', 6, 'text', false, {}],
+    ['nik_pendamping', 'NIK Pendamping', 6, 'text', false, { maxlength: 16 }],
+    ['hubungan_keluarga', 'Hubungan Keluarga', 12, 'text', false, {}],
+    ['alamat', 'Alamat', 12, 'textarea', false, { rows: 2 }],
+    ['nama_kec', 'Kecamatan', 6, 'text', false, { value: ctx.namaKec, disabled: true }],
+    ['nama_kel', 'Kelurahan', 6, 'text', false, { value: ctx.namaKel, disabled: true }],
+    ['rw', 'RW', 4, 'text', false, { maxlength: 5 }],
+    ['rt', 'RT', 4, 'text', false, { maxlength: 5 }],
+    ['tahap', 'Tahap', 4, 'select', false, { options: ['Tahap 1', 'Tahap 2', 'Tahap 3', 'Tahap 4'] }],
+  ]);
 
   const form = document.getElementById('formDynamicPj1');
   form.innerHTML = fields.map(([name, label, col, type, req, opt = {}]) => {
-    const val = data ? (data[opt.valKey || name] ?? opt.value ?? '') : (opt.value ?? '');
-    const attr = `name="${name}" ${req ? 'required' : ''} ${opt.disabled ? 'disabled' : ''} ${opt.maxlength ? `maxlength="${opt.maxlength}"` : ''} ${opt.min !== undefined ? `min="${opt.min}"` : ''} placeholder="${opt.placeholder || ''}"`;
+    const val = data ? (data[opt.valKey || name] ?? '') : (opt.value ?? '');
+    const attr = `name="${name}" ${req ? 'required' : ''} ${opt.disabled ? 'disabled' : ''} ${opt.maxlength ? `maxlength="${opt.maxlength}"` : ''} placeholder="${opt.placeholder || ''}"`;
 
-const inputType = type === 'number' ? 'number' : (type === 'date' ? 'date' : 'text');
-    let input = `<input type="${inputType}" class="form-control ${type === 'number' ? '' : 'form-control-solid'} ${opt.disabled ? 'bg-light' : ''}" value="${esc(val)}" ${attr}>`;
-    if (type === 'nik_search') {
-      const btnText = opt.btnLabel || '<i class="fas fa-search me-1"></i> Cari NIK';
-      input = `<div class="input-group">
-        <input type="text" id="inputNikPj1" class="form-control" value="${esc(val)}" ${attr}>
-        <button type="button" id="btnCariNikPj1" class="btn btn-primary">${btnText}</button>
-      </div>`;
-    } else if (type === 'textarea') {
-      input = `<textarea class="form-control form-control-solid" rows="${opt.rows || 2}" ${attr}>${esc(val)}</textarea>`;
-    } else if (type === 'select') {
-      input = `<select class="form-select form-select-solid" ${attr}><option value="">${opt.defaultLabel || '-- PILIH --'}</option>` +
+    let input = `<input class="form-control form-control-solid ${opt.disabled ? 'bg-light' : ''}" value="${esc(val)}" ${attr}>`;
+    if (type === 'textarea') input = `<textarea class="form-control form-control-solid" rows="${opt.rows || 2}" ${attr}>${esc(val)}</textarea>`;
+    if (type === 'select') {
+      input = `<select class="form-select form-select-solid" ${attr}><option value="">-- PILIH --</option>` +
         opt.options.map(o => `<option value="${o}" ${val == o ? 'selected' : ''}>${o}</option>`).join('') + `</select>`;
     }
-    const labelIdAttr = opt.idLabel ? `id="${opt.idLabel}"` : '';
-    const colIdAttr   = opt.colId ? `id="${opt.colId}"` : '';
-    const hideClass   = opt.hidden ? 'd-none' : '';
-    const helpText    = opt.help ? `<div class="form-text text-muted fs-7 mt-1">${opt.help}</div>` : '';
-    return `<div ${colIdAttr} class="col-${col} ${hideClass}"><label ${labelIdAttr} class="form-label fw-semibold">${label}${req ? ' <span class="text-danger">*</span>' : ''}</label>${input}${helpText}</div>`;
+    return `<div class="col-${col}"><label class="form-label fw-semibold">${label}${req ? ' <span class="text-danger">*</span>' : ''}</label>${input}</div>`;
   }).join('');
-
-  // Dinamis ubah label & placeholder NIK/Nama Pendamping sesuai pilihan dropdown Pendamping
-    const selPendamping = form.querySelector('[name="pendamping_select"]');
-  if (selPendamping) {
-    const syncLabelPendamping = () => {
-      const p         = selPendamping.value;
-      const isLainnya = p === 'Lainnya';
-      const lblNik    = document.getElementById('lblNikPendamping');
-      const lblNama   = document.getElementById('lblNamaPendamping');
-      const inpNik    = form.querySelector('[name="nik_pendamping"]');
-      const inpNama   = form.querySelector('[name="pendamping"]');
-      const wrapLain  = document.getElementById('wrapHubunganLainnya');
-      const inpLain   = form.querySelector('[name="hubungan_keluarga_lainnya"]');
-
-      if (isLainnya) {
-        if (lblNik)  lblNik.textContent  = 'NIK Pendamping';
-        if (lblNama) lblNama.textContent = 'Nama Pendamping';
-        if (inpNik)  inpNik.placeholder  = 'Ketik NIK pendamping';
-        if (inpNama) inpNama.placeholder = 'Ketik nama pendamping';
-        if (wrapLain) wrapLain.classList.remove('d-none');
-        if (inpLain)  inpLain.required = true;
-      } else {
-        const labelP = p || 'Pendamping';
-        if (lblNik)  lblNik.textContent  = `NIK ${labelP}`;
-        if (lblNama) lblNama.textContent = `Nama ${labelP}`;
-        if (inpNik)  inpNik.placeholder  = `NIK ${labelP.toLowerCase()}`;
-        if (inpNama) inpNama.placeholder = `Nama ${labelP.toLowerCase()}`;
-        if (wrapLain) wrapLain.classList.add('d-none');
-        if (inpLain) {
-          inpLain.required = false;
-          inpLain.value = '';
-        }
-      }
-    };
-    syncLabelPendamping();
-    selPendamping.addEventListener('change', syncLabelPendamping);
-  }
-
-  // Tombol Cari NIK otomatis isi No KK, Nama, Alamat, RW, RT
-  const btnCariNik = document.getElementById('btnCariNikPj1');
-  if (btnCariNik) {
-    btnCariNik.onclick = () => {
-      const nik = document.getElementById('inputNikPj1').value.trim();
-      if (!nik) return alert('Masukkan NIK terlebih dahulu.');
-      btnCariNik.disabled = true;
-      fetch(`/pokja-3/cari-nik?nik=${encodeURIComponent(nik)}`, { headers: { 'Accept': 'application/json' } })
-        .then(async r => ({ ok: r.ok, j: await r.json() }))
-        .then(({ ok, j }) => {
-          if (!ok) return alert(j.message || 'NIK tidak ditemukan, silakan lengkapi manual.');
-          const d = j.data;
-          if (form.elements.no_kk && d.no_kk)                 form.elements.no_kk.value         = d.no_kk;
-          if (form.elements.nama && d.nama)                   form.elements.nama.value          = d.nama;
-          if (form.elements.no_hp && d.no_hp)                 form.elements.no_hp.value         = d.no_hp;
-          if (form.elements.alamat && d.alamat)               form.elements.alamat.value        = d.alamat;
-          if (form.elements.tempat_lahir && d.tempat_lahir)   form.elements.tempat_lahir.value  = d.tempat_lahir;
-          if (form.elements.tgl_lahir && d.tgl_lahir)         form.elements.tgl_lahir.value     = d.tgl_lahir;
-          if (form.elements.rw && d.rw)                       form.elements.rw.value            = d.rw;
-          if (form.elements.rt && d.rt)                       form.elements.rt.value            = d.rt;
-          if (form.elements.jenis_kelamin && d.jenis_kelamin) form.elements.jenis_kelamin.value = d.jenis_kelamin;
-        })
-        .catch(() => alert('Gagal mencari data NIK.'))
-        .finally(() => { btnCariNik.disabled = false; });
-    };
-  }
 
   form.onsubmit = (e) => {
     e.preventDefault();
-    const raw = Object.fromEntries(new FormData(form));
-    if (raw.pendamping_select !== undefined) {
-      raw.hubungan_keluarga = raw.pendamping_select === 'Lainnya'
-        ? (raw.hubungan_keluarga_lainnya || '').trim()
-        : raw.pendamping_select;
-      delete raw.pendamping_select;
-      delete raw.hubungan_keluarga_lainnya;
-    }
-
-    const payload = Object.assign(raw, {
+    const payload = Object.assign(Object.fromEntries(new FormData(form)), {
       flag_kolom: ctx.flagKolom, tipe: ctx.tipe, pertanyaan_id: ctx.pertanyaanId, id_kec: ctx.kec, id_kel: ctx.kel
     });
 
@@ -2467,8 +2424,13 @@ const inputType = type === 'number' ? 'number' : (type === 'date' ? 'date' : 'te
 
 function muat() {
   fetch(`/modal/${ctx.id}?kec=${ctx.kec}&kel=${ctx.kel}`, { headers: { 'Accept': 'application/json' } })
-    .then(r => r.json())
-    .then(tampilkan);
+    .then(async r => {
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.message || `Error ${r.status}`);
+      return j;
+    })
+    .then(tampilkan)
+    .catch(err => alert(err.message));
 }
 
 function kirim(url, method, body) {
@@ -2487,8 +2449,9 @@ function kirim(url, method, body) {
 }
 
 function tampilkan(hasil) {
+  ctx.judulIndikator = hasil.judul.replace(/_/g, ' ');
   document.getElementById('modalJudul').textContent =
-    `DETAIL ${hasil.judul.replace(/_/g, ' ')} - ${ctx.nama ?? ''}`;
+    `DETAIL ${ctx.judulIndikator} - ${ctx.nama ?? ''}`;
   const isi = document.getElementById('modalIsi');
 
   if ($.fn.DataTable && $.fn.DataTable.isDataTable('#tabelModal')) {
@@ -2514,21 +2477,37 @@ function tampilkan(hasil) {
     } else {
       isi.innerHTML = `<input class="form-control" value="${esc(nilai)}" readonly>`;
     }
-
   } else {
+    const isGkstb  = ['kesehatan', 'kelestarian_lh', 'perencanaan_sehat'].includes(hasil.alias);
+    const isPokja4 = !isGkstb && (hasil.tb_dashboard === 'd_pokja_4_2026' || ['imunisasi', 'pkg', 'tbc'].includes(hasil.alias));
+
+    const parseKategori = raw => {
+      try {
+        const arr = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        return Array.isArray(arr) ? arr : [String(raw ?? '-')];
+      } catch {
+        return [String(raw ?? '-')];
+      }
+    };
+
     const adaAksi = hasil.bisa_ubah || hasil.bisa_edit;
-    const kolom = hasil.kolom.filter(k => !(adaAksi && k === 'id'));
+    const kolom = hasil.kolom.filter(k => k !== 'id');
     const baris = hasil.rows.map((r, i) =>
-      `<tr><td>${i + 1}</td>${kolom.map(k => `<td>${esc(r[k])}</td>`).join('')}
+      `<tr><td>${i + 1}</td>${kolom.map(k => {
+        if (isGkstb && k === 'KATEGORI') {
+          const items = parseKategori(r[k]).map(item => `<li>${esc(item)}</li>`).join('');
+          return `<td class="text-start"><ul class="mb-0 ps-4">${items}</ul></td>`;
+        }
+        return `<td>${esc(r[k])}</td>`;
+      }).join('')}
         ${adaAksi ? `<td class="text-nowrap">
-          ${hasil.bisa_edit ? `<button class="btn btn-sm btn-light-warning btn-edit me-1" data-idx="${i}">Edit</button>` : ''}
-          ${hasil.bisa_ubah ? `<button class="btn btn-sm btn-light-danger btn-hapus" data-kader="${esc(r.id)}">Hapus</button>` : ''}
+          ${hasil.bisa_edit ? `<button class="btn btn-sm btn-warning btn-edit me-1" data-idx="${i}"><i class="fas fa-edit"></i></button>` : ''}
+          ${hasil.bisa_ubah ? `<button class="btn btn-sm btn-danger btn-hapus" data-kader="${esc(r.id)}"><i class="fas fa-trash"></i></button>` : ''}
         </td>` : ''}
       </tr>`).join('');
 
     isi.innerHTML = `
       ${hasil.bisa_tambah ? '<div class="mb-4"><button class="btn btn-sm btn-primary" id="btnTambah">+ Tambah Data</button></div>' : ''}
-      ${(hasil.bisa_tambah || hasil.bisa_edit) ? '<div id="formTambah"></div>' : ''}
       <table id="tabelModal" class="table table-bordered table-striped">
         <thead><tr><th>NO</th>${kolom.map(k => `<th>${esc(k.replace(/_/g, ' ').toUpperCase())}</th>`).join('')}${adaAksi ? '<th>AKSI</th>' : ''}</tr></thead>
         <tbody>${baris}</tbody>
@@ -2552,54 +2531,113 @@ function tampilkan(hasil) {
     isi.onclick = (e) => {
       const ed = e.target.closest('.btn-edit');
       if (ed) {
-        formTambahKader(hasil.rows[+ed.dataset.idx]);
-        document.getElementById('formTambah').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        const row = hasil.rows[+ed.dataset.idx];
+        if (isGkstb) formGkstb(hasil.alias, row);
+        else if (isPokja4) formDetailPokja4(row);
+        else formTambahKader(row);
         return;
       }
       const b = e.target.closest('.btn-hapus');
       if (!b) return;
-      if (!confirm('Hapus kader ini?')) return;
-      kirim(`/pokja-3/kader/${b.dataset.kader}`, 'DELETE')
+      if (!confirm('Hapus data ini?')) return;
+
+      const urlHapus = isGkstb
+        ? `/pokja-4/gkstb/${b.dataset.kader}`
+        : (isPokja4 ? `/pokja-4/detail/${b.dataset.kader}` : `/pokja-3/kader/${b.dataset.kader}`);
+
+      kirim(urlHapus, 'DELETE')
         .then(() => { berubah = true; muat(); })
         .catch(err => alert(err.message));
     };
 
     const btnTambah = document.getElementById('btnTambah');
-    if (btnTambah) btnTambah.onclick = () => formTambahKader();
+    if (btnTambah) {
+      btnTambah.onclick = () => {
+        if (isGkstb) formGkstb(hasil.alias);
+        else if (isPokja4) formDetailPokja4();
+        else formTambahKader();
+      };
+    }
   }
   modal.show();
 }
 
 function formTambahKader(data = null) {
-  const f = document.getElementById('formTambah');
-  f.innerHTML = `
-    <div class="border rounded p-4 mb-4">
-      <div class="fw-bold mb-3">${data ? 'Edit Data Kader' : 'Tambah Data Kader'}</div>
-      <div class="row g-3">
-        <div class="col-md-6"><label class="form-label">NIK</label>
-          <div class="input-group"><input id="fNik" class="form-control" maxlength="16" inputmode="numeric">
-          <button class="btn btn-secondary" id="btnCari" type="button">Cari</button></div></div>
-        <div class="col-md-6"><label class="form-label">No KK</label><input id="fNoKk" class="form-control" maxlength="20"></div>
-        <div class="col-md-6"><label class="form-label">Nama</label><input id="fNama" class="form-control"></div>
-        <div class="col-md-3"><label class="form-label">Jenis Kelamin</label>
-          <select id="fJk" class="form-select"><option value="">-</option><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div>
-        <div class="col-md-3"><label class="form-label">Jabatan</label>
-          <select id="fJabatan" class="form-select"><option>Ketua</option><option>Wakil Ketua</option><option>Sekretaris</option><option selected>Anggota</option></select></div>
-        <div class="col-md-4"><label class="form-label">No HP</label><input id="fHp" class="form-control"></div>
-        <div class="col-md-2"><label class="form-label">RW</label><input id="fRw" class="form-control"></div>
-        <div class="col-md-2"><label class="form-label">RT</label><input id="fRt" class="form-control"></div>
-        <div class="col-md-4"><label class="form-label">Alamat</label><input id="fAlamat" class="form-control"></div>
+  const v = id => document.getElementById(id).value;
+  const html = `
+    <div class="row g-4">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">NIK <span class="text-danger">*</span></label>
+        <div class="input-group">
+          <input id="fNik" class="form-control form-control-solid" maxlength="16" inputmode="numeric" placeholder="16 digit NIK">
+          <button class="btn btn-secondary" id="btnCari" type="button">Cari</button>
+        </div>
       </div>
-      <div class="mt-4"><button class="btn btn-success" id="btnSimpanKader" type="button">Simpan</button></div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">No KK</label>
+        <input id="fNoKk" class="form-control form-control-solid" maxlength="20" placeholder="16 digit No KK">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Nama <span class="text-danger">*</span></label>
+        <input id="fNama" class="form-control form-control-solid" placeholder="Masukkan nama lengkap">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
+        <select id="fJk" class="form-select form-select-solid">
+          <option value="">-- PILIH --</option>
+          <option value="L">Laki-laki</option>
+          <option value="P">Perempuan</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">Jabatan <span class="text-danger">*</span></label>
+        <select id="fJabatan" class="form-select form-select-solid">
+          <option>Ketua</option>
+          <option>Wakil Ketua</option>
+          <option>Sekretaris</option>
+          <option selected>Anggota</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">No HP</label>
+        <input id="fHp" class="form-control form-control-solid" placeholder="Contoh: 08123456789">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">RW</label>
+        <input id="fRw" class="form-control form-control-solid" maxlength="5" placeholder="01">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">RT</label>
+        <input id="fRt" class="form-control form-control-solid" maxlength="5" placeholder="01">
+      </div>
+      <div class="col-12">
+        <label class="form-label fw-semibold">Alamat</label>
+        <textarea id="fAlamat" class="form-control form-control-solid" rows="2" placeholder="Masukkan alamat lengkap"></textarea>
+      </div>
     </div>`;
 
-  const v = id => document.getElementById(id).value;
-  const isi = (id, val) => { document.getElementById(id).value = val ?? ''; };
+  bukaFormPopup(`${data ? 'Edit' : 'Tambah'} Data Kader`, !!data, html, () => {
+    const isiForm = {
+      nik: v('fNik'), no_kk: v('fNoKk'), nama: v('fNama'), jenis_kelamin: v('fJk'),
+      jabatan: v('fJabatan'), no_hp: v('fHp'), rw: v('fRw'), rt: v('fRt'), alamat: v('fAlamat'),
+    };
+    const req = data
+      ? kirim(`/pokja-3/kader/${data.id}`, 'PUT', isiForm)
+      : kirim('/pokja-3/kader', 'POST', { id_pertanyaan: ctx.id, id_kec: +ctx.kec, id_kel: +ctx.kel, ...isiForm });
+
+    return req.then(() => {
+      berubah = true;
+      kembaliKeModalUtama = false;
+      modalForm.hide();
+      muat();
+    }).catch(err => alert(err.message));
+  });
 
   if (data) {
-    isi('fNik', data.nik); isi('fNoKk', data.no_kk); isi('fNama', data.nama);
-    isi('fJk', data.jenis_kelamin); isi('fJabatan', data.jabatan); isi('fHp', data.no_hp);
-    isi('fRw', data.rw); isi('fRt', data.rt); isi('fAlamat', data.alamat);
+    const set = (id, val) => { document.getElementById(id).value = val ?? ''; };
+    set('fNik', data.nik); set('fNoKk', data.no_kk); set('fNama', data.nama);
+    set('fJk', data.jenis_kelamin); set('fJabatan', data.jabatan); set('fHp', data.no_hp);
+    set('fRw', data.rw); set('fRt', data.rt); set('fAlamat', data.alamat);
   }
 
   document.getElementById('btnCari').onclick = () => {
@@ -2608,37 +2646,186 @@ function formTambahKader(data = null) {
       .then(({ ok, j }) => {
         if (!ok) return alert(j.message || 'NIK tidak ditemukan, lengkapi manual.');
         const d = j.data;
-        isi('fNoKk', d.no_kk); isi('fNama', d.nama); isi('fJk', d.jenis_kelamin);
-        isi('fHp', d.no_hp); isi('fRw', d.rw); isi('fRt', d.rt); isi('fAlamat', d.alamat);
+        const set = (id, val) => { document.getElementById(id).value = val ?? ''; };
+        set('fNoKk', d.no_kk); set('fNama', d.nama); set('fJk', d.jenis_kelamin);
+        set('fHp', d.no_hp); set('fRw', d.rw); set('fRt', d.rt); set('fAlamat', d.alamat);
       });
-  };
-
-  document.getElementById('btnSimpanKader').onclick = () => {
-    const isiForm = {
-      nik: v('fNik'), no_kk: v('fNoKk'), nama: v('fNama'), jenis_kelamin: v('fJk'),
-      jabatan: v('fJabatan'), no_hp: v('fHp'), rw: v('fRw'), rt: v('fRt'), alamat: v('fAlamat'),
-    };
-    const req = data
-      ? kirim(`/pokja-3/kader/${data.id}`, 'PUT', isiForm)
-      : kirim('/pokja-3/kader', 'POST', { id_pertanyaan: ctx.id, id_kec: +ctx.kec, id_kel: +ctx.kel, ...isiForm });
-    req.then(() => { berubah = true; muat(); })
-      .catch(err => alert(err.message));
   };
 }
 
-document.getElementById('modalPanduanGlobal').addEventListener('show.bs.modal', function () {
-  const activeTab = document.querySelector('.tab-content .tab-pane.active');
-  const modalBody = document.getElementById('modalPanduanBody');
-  const sumberPanduan = activeTab ? activeTab.querySelector('.konten-panduan-tab') : null;
+function formDetailPokja4(data = null) {
+  const v = id => document.getElementById(id).value;
+  const html = `
+    <div class="row g-4">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">NIK <span class="text-danger">*</span></label>
+        <div class="input-group">
+          <input id="p4Nik" class="form-control form-control-solid" maxlength="20" inputmode="numeric" placeholder="16 digit NIK">
+          <button class="btn btn-secondary" id="btnCariP4" type="button">Cari</button>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">No KK</label>
+        <input id="p4NoKk" class="form-control form-control-solid" maxlength="30" placeholder="16 digit No KK">
+      </div>
+      <div class="col-12">
+        <label class="form-label fw-semibold">Nama <span class="text-danger">*</span></label>
+        <input id="p4Nama" class="form-control form-control-solid" placeholder="Masukkan nama lengkap">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
+        <select id="p4Jk" class="form-select form-select-solid">
+          <option value="">-- PILIH --</option>
+          <option value="L">Laki-laki</option>
+          <option value="P">Perempuan</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">RT</label>
+        <input id="p4Rt" class="form-control form-control-solid" maxlength="5" placeholder="01">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">RW</label>
+        <input id="p4Rw" class="form-control form-control-solid" maxlength="5" placeholder="01">
+      </div>
+      <div class="col-12">
+        <label class="form-label fw-semibold">Alamat</label>
+        <textarea id="p4Alamat" class="form-control form-control-solid" rows="2" placeholder="Masukkan alamat lengkap"></textarea>
+      </div>
+    </div>`;
 
-  modalBody.innerHTML = sumberPanduan
-    ? sumberPanduan.innerHTML
-    : '<p class="text-center text-muted my-5">Panduan untuk tab ini belum tersedia.</p>';
-});
+  bukaFormPopup(`${data ? 'Edit' : 'Tambah'} Data ${ctx.judulIndikator ?? ''}`, !!data, html, () => {
+    const payload = {
+      nik: v('p4Nik'),
+      no_kk: v('p4NoKk'),
+      nama: v('p4Nama'),
+      jenis_kelamin: v('p4Jk'),
+      rt: v('p4Rt'),
+      rw: v('p4Rw'),
+      alamat: v('p4Alamat'),
+    };
+    const req = data
+      ? kirim(`/pokja-4/detail/${data.id}`, 'PUT', payload)
+      : kirim('/pokja-4/detail', 'POST', {
+          id_pertanyaan: ctx.id,
+          id_kec: +ctx.kec,
+          id_kel: +ctx.kel,
+          ...payload,
+        });
+
+    return req.then(() => {
+      berubah = true;
+      kembaliKeModalUtama = false;
+      modalForm.hide();
+      muat();
+    }).catch(err => alert(err.message));
+  });
+
+  if (data) {
+    const set = (id, val) => { document.getElementById(id).value = val ?? ''; };
+    set('p4Nik', data['NIK'] ?? data.nik);
+    set('p4NoKk', data['NO KK'] ?? data.no_kk);
+    set('p4Nama', data['NAMA'] ?? data.nama);
+    const jkRaw = data['JENIS KELAMIN'] ?? data.jenis_kelamin ?? '';
+    set('p4Jk', jkRaw === 'LAKI-LAKI' ? 'L' : (jkRaw === 'PEREMPUAN' ? 'P' : jkRaw));
+    set('p4Rt', data['RT'] ?? data.rt);
+    set('p4Rw', data['RW'] ?? data.rw);
+    set('p4Alamat', data['ALAMAT'] ?? data.alamat);
+  }
+
+  document.getElementById('btnCariP4').onclick = () => {
+    fetch(`/pokja-4/cari-nik?nik=${encodeURIComponent(v('p4Nik'))}`, { headers: { 'Accept': 'application/json' } })
+      .then(async r => ({ ok: r.ok, j: await r.json() }))
+      .then(({ ok, j }) => {
+        if (!ok) return alert(j.message || 'NIK tidak ditemukan, lengkapi manual.');
+        const d = j.data;
+        const set = (id, val) => { document.getElementById(id).value = val ?? ''; };
+        set('p4NoKk', d.no_kk);
+        set('p4Nama', d.nama);
+        set('p4Jk', d.jenis_kelamin);
+        set('p4Rt', d.rt);
+        set('p4Rw', d.rw);
+        set('p4Alamat', d.alamat);
+      });
+  };
+}
+
+const OPSI_GKSTTB = {
+  kesehatan: {
+    judul: '1. Kesehatan',
+    items: [
+      'Peduli Stunting',
+      'Menuju PHBS',
+      'Peduli Kesehatan Keluarga',
+    ],
+  },
+  kelestarian_lh: {
+    judul: '2. Kelestarian Lingkungan Hidup',
+    items: [
+      'Siaga Kebakaran Lingkungan',
+      'Mitigasi Bencana Alam',
+      'Peduli Lingkungan',
+    ],
+  },
+  perencanaan_sehat: {
+    judul: '3. Perencanaan Sehat',
+    items: [
+      'Menuju Keluarga Sehat Berkualitas',
+      'Menuju Keuangan Sehat',
+      'Menuju Keluarga Sehat Pasangan Usia Subur',
+    ],
+  },
+};
+
+function formGkstb(alias, data = null) {
+  const cfg = OPSI_GKSTTB[alias] || { judul: 'Kategori', items: [] };
+  let terpilih = [];
+  if (data && data['KATEGORI']) {
+    try {
+      terpilih = typeof data['KATEGORI'] === 'string' ? JSON.parse(data['KATEGORI']) : data['KATEGORI'];
+    } catch { terpilih = []; }
+  }
+
+  const html = `
+    <div class="mb-5">
+      <label class="form-label fw-semibold">Project Name <span class="text-danger">*</span></label>
+      <input id="gkProyek" class="form-control form-control-solid" placeholder="Masukkan Project Name" value="${esc(data ? data['NAMA PROYEK'] : '')}">
+    </div>
+    <div>
+      <label class="form-label fw-bold d-block mb-3">${esc(cfg.judul)}</label>
+      <div class="d-flex flex-column gap-3">
+        ${cfg.items.map(item => `
+          <label class="form-check form-check-custom form-check-solid">
+            <input class="form-check-input gk-kat" type="checkbox" value="${esc(item)}" ${terpilih.includes(item) ? 'checked' : ''}>
+            <span class="form-check-label text-gray-700">${esc(item)}</span>
+          </label>`).join('')}
+      </div>
+    </div>`;
+
+  bukaFormPopup(`${data ? 'Edit' : 'Tambah'} GKSTTB`, !!data, html, () => {
+    const namaProyek = document.getElementById('gkProyek').value.trim();
+    const kategori = [...document.querySelectorAll('.gk-kat:checked')].map(el => el.value);
+
+    const req = data
+      ? kirim(`/pokja-4/gkstb/${data.id}`, 'PUT', { nama_proyek: namaProyek, kategori })
+      : kirim('/pokja-4/gkstb', 'POST', {
+          id_pertanyaan: ctx.id,
+          id_kec: +ctx.kec,
+          id_kel: +ctx.kel,
+          nama_proyek: namaProyek,
+          kategori,
+        });
+
+    return req.then(() => {
+      berubah = true;
+      kembaliKeModalUtama = false;
+      modalForm.hide();
+      muat();
+    }).catch(err => alert(err.message));
+  });
+}
 </script>
-
 @endpush
 
 @include('bo.pages.dashboard.modals.pokja2-modal')
-@include('bo.pages.dashboard.modals.detail-gkstb-pj4')
 @endsection
