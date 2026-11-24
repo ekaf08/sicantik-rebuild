@@ -81,10 +81,17 @@ class ModalController extends Controller
 
         abort_unless(preg_match('/^\s*select/i', $sql), 422, 'Query tidak valid.');
 
+<<<<<<< Updated upstream
         $nilai = [
             'kec'           => $kec,
             'kel'           => $kel,
             'periode'       => $periode,
+=======
+       $nilai = [
+            'kec'           => (int) $request->query('kec'),
+            'kel'           => $kel,
+            'periode'       => (int) $request->query('periode', 2026),
+>>>>>>> Stashed changes
             'id_pertanyaan' => (int) $p->id,
         ];
 
@@ -124,6 +131,7 @@ class ModalController extends Controller
             }
         }
 
+<<<<<<< Updated upstream
         $tampilan       = (count($kolom) === 1 && $kolom[0] === 'nilai') ? 'angka' : 'tabel';
         $kaderPokja3    = (bool) $p->is_kader && (bool) $p->is_tarik && $p->tb_dashboard === 'd_pokja_3_2026';
         $isPokja4       = $p->tb_dashboard === 'd_pokja_4_2026';
@@ -132,6 +140,11 @@ class ModalController extends Controller
         $user        = auth()->user();
         $isKelurahan = $user && !empty($user->id_kel);
         $kelSesuai   = $isKelurahan && $kel > 0 && (int) $user->id_kel === $kel;
+=======
+        $kaderPokja3  = $p->is_kader && $p->is_tarik && $p->tb_dashboard === 'd_pokja_3_2026';
+        $kaderPokja1  = $p->alias === 'jumlah_kader' && (($p->bagian ?? '') === 'pokja1' || str_contains((string) $p->tb_dashboard, 'pokja'));
+        $detailPokja4 = $p->tb_dashboard === 'd_pokja_4_2026' && (int) $p->jenis_form === 2 && !$p->is_disable;
+>>>>>>> Stashed changes
 
         $bisaInput = isset(self::URL_AGREGAT[$p->tb_dashboard])
             && !(bool) $p->is_kader
@@ -140,6 +153,7 @@ class ModalController extends Controller
             && $kelSesuai;
 
         return response()->json([
+<<<<<<< Updated upstream
             'id'            => $p->id,
             'id_pertanyaan' => (int) $p->id,
             'alias'         => $p->alias,
@@ -154,6 +168,21 @@ class ModalController extends Controller
             'bisa_ubah'     => (bool) ($kelSesuai && ($kaderPokja3 || $isDetailPokja4)),
             'kolom'         => $kolom,
             'rows'          => $rows,
+=======
+            'id'           => $p->id,
+            'alias'        => $p->alias,
+            'tb_dashboard' => $p->tb_dashboard,
+            'bisa_ubah'    => (bool) (($kaderPokja3 || $kaderPokja1 || ($detailPokja4 && $kel > 0)) && $bolehHapus),
+            'bisa_edit'    => (bool) (($kaderPokja3 || $kaderPokja1 || ($detailPokja4 && $kel > 0)) && $bolehUbah),
+            'bisa_input'   => (bool) $bisaInput,
+            'url_agregat'  => self::URL_AGREGAT[$p->tb_dashboard] ?? null,
+            'bisa_tambah'  => (bool) (($kaderPokja3 || $detailPokja4) && $kel > 0 && $bolehTambah),
+            'judul'        => strtoupper($p->nama_pertanyaan),
+            'jenis_form'   => (int) $p->jenis_form,
+            'tampilan'     => $tampilan,
+            'kolom'        => $kolom,
+            'rows'         => $stmt->fetchAll(\PDO::FETCH_ASSOC),
+>>>>>>> Stashed changes
         ]);
     }
 
