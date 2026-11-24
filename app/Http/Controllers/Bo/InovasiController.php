@@ -1171,4 +1171,23 @@ public function destroySiCantik(Request $request, $encryptedId)
     }
 }
 
+public function getElearningData()
+    {
+        return DB::table('elearning_paaredi')
+            ->orderBy('kecamatan', 'asc')
+            ->orderBy('kelurahan', 'asc')
+            ->orderBy('nama_peserta', 'asc')
+            ->get()
+            ->map(function ($row) {
+                if (class_exists(\App\Helpers\IdCipher::class)) {
+                    $row->hash = \App\Helpers\IdCipher::encode($row->id);
+                } elseif (class_exists('IdCipher')) {
+                    $row->hash = \IdCipher::encode($row->id);
+                } else {
+                    $row->hash = (string) $row->id;
+                }
+                unset($row->id);
+                return $row;
+            });
+    }
 }
