@@ -130,6 +130,7 @@ class ModalController extends Controller
         $kaderDataUmum  = (int) $p->jenis_form === 2 && $p->tb_dashboard === 'data_umum_2026';
         $isPokja4       = $p->tb_dashboard === 'd_pokja_4_2026';
         $isDetailPokja4 = $isPokja4 && !(bool) $p->is_kader && (int) $jenis === 2 && !(bool) $p->is_disable;
+        $isKfPokja2     = $p->tb_dashboard === 'd_pokja_2_2026' && in_array($p->alias, ['kf_klp', 'kf_warga'], true) && (int) $jenis === 2;
 
         $user        = $request->user();
         $isKelurahan = $user && !empty($user->id_kel);
@@ -152,17 +153,17 @@ class ModalController extends Controller
             || $p->tb_dashboard === 'data_umum_2026';
 
         // Angka agregat non-kader boleh diedit hanya di tingkat kelurahan
-$bisaInput = isset(self::URL_AGREGAT[$p->tb_dashboard])
-    && (int) $jenis === 1
-    && !(bool) $p->is_disable
-    && ($kelSesuai || ($p->tb_dashboard === 'data_umum_2026' && $kel > 0 && $bolehUbah));
+        $bisaInput = isset(self::URL_AGREGAT[$p->tb_dashboard])
+            && (int) $jenis === 1
+            && !(bool) $p->is_disable
+            && ($kelSesuai || ($p->tb_dashboard === 'data_umum_2026' && $kel > 0 && $bolehUbah));
 
-        $bisaTambah = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4))
-            || ($kaderDataUmum && $kel > 0 && $bolehTambah);
-        $bisaEdit   = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4))
-            || ($kaderDataUmum && $kel > 0 && $bolehUbah);
-        $bisaHapus  = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4))
-            || ($kaderDataUmum && $kel > 0 && $bolehHapus);
+        $bisaTambah = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4 || $isKfPokja2))
+            || (($kaderDataUmum || $isKfPokja2) && $kel > 0 && $bolehTambah);
+        $bisaEdit   = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4 || $isKfPokja2))
+            || (($kaderDataUmum || $isKfPokja2) && $kel > 0 && $bolehUbah);
+        $bisaHapus  = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4 || $isKfPokja2))
+            || (($kaderDataUmum || $isKfPokja2) && $kel > 0 && $bolehHapus);
 
         $urlAgregat = match ($p->tb_dashboard) {
             'data_umum_2026' => '/data-umum/agregat',

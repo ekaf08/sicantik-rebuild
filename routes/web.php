@@ -21,6 +21,7 @@ use App\Http\Controllers\Bo\KebijakanController;
 use App\Http\Controllers\DataUmumController;
 use App\Http\Controllers\Bo\DaftarKetuaPkkController;
 use App\Http\Controllers\KemangiController;
+use App\Http\Controllers\Bo\Pokja2Controller;
 use App\Http\Controllers\Bo\Pokja3Controller;
 use App\Http\Controllers\Bo\Pokja4Controller;
 use App\Http\Controllers\BumilController;
@@ -55,6 +56,9 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/data-umum', [DataUmumController::class, 'index']);
     Route::get('/data-umum/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->name('data-umum.kelurahan');
     Route::get('/pokja-2/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->defaults('activeTab', 'pokja2')->name('pokja-2.kelurahan');
+    Route::post('/pokja-2/kf', [Pokja2Controller::class, 'storeKf']);
+    Route::put('/pokja-2/kf/{id}', [Pokja2Controller::class, 'updateKf']);
+    Route::delete('/pokja-2/kf/{id}', [Pokja2Controller::class, 'destroyKf']);
     
     Route::prefix('pokja-1')->name('pokja-1.')->group(function () {
         Route::get('/detail', [Pokja1Controller::class, 'detail'])->name('detail');

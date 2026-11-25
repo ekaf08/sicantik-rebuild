@@ -2512,6 +2512,7 @@ function tampilkan(hasil) {
     const isDataUmum = hasil.tb_dashboard === 'data_umum_2026';
     const isGkstb    = ['kesehatan', 'kelestarian_lh', 'perencanaan_sehat'].includes(hasil.alias);
     const isPokja4   = !isGkstb && (hasil.tb_dashboard === 'd_pokja_4_2026' || ['imunisasi', 'pkg', 'tbc'].includes(hasil.alias));
+    const isKfPokja2 = hasil.tb_dashboard === 'd_pokja_2_2026' && ['kf_klp', 'kf_warga'].includes(hasil.alias);
 
     const parseKategori = raw => {
       try {
@@ -2566,6 +2567,7 @@ function tampilkan(hasil) {
         const row = hasil.rows[+ed.dataset.idx];
         if (isGkstb) formGkstb(hasil.alias, row);
         else if (isPokja4) formDetailPokja4(row);
+        else if (isKfPokja2) formKfPokja2(hasil.alias, row);
         else formTambahKader(row, hasil);
         return;
       }
@@ -2577,9 +2579,11 @@ function tampilkan(hasil) {
         ? `/data-umum/detail/${b.dataset.kader}`
         : (isGkstb
             ? `/pokja-4/gkstb/${b.dataset.kader}`
-            : (isPokja4 ? `/pokja-4/detail/${b.dataset.kader}` : `/pokja-3/kader/${b.dataset.kader}`));
+            : (isPokja4
+                ? `/pokja-4/detail/${b.dataset.kader}`
+                : (isKfPokja2 ? `/pokja-2/kf/${b.dataset.kader}` : `/pokja-3/kader/${b.dataset.kader}`)));
 
-      kirim(urlHapus, 'DELETE')
+      kirim(urlHapus, 'DELETE', isKfPokja2 ? { alias: hasil.alias } : undefined)
         .then(() => { berubah = true; muat(); })
         .catch(err => notif(err.message, 'error'));
     };
@@ -2589,11 +2593,69 @@ function tampilkan(hasil) {
       btnTambah.onclick = () => {
         if (isGkstb) formGkstb(hasil.alias);
         else if (isPokja4) formDetailPokja4();
+        else if (isKfPokja2) formKfPokja2(hasil.alias);
         else formTambahKader(null, hasil);
       };
     }
   }
   modal.show();
+}
+
+function formKfPokja2(alias, data = null) {
+  const isKelompok = alias === 'kf_klp';
+  const labelNama  = isKelompok ? 'Nama Kelompok' : 'Nama Kelompok';
+  const judulPopup = `${data ? 'Edit' : 'Tambah'} ${isKelompok ? 'Kelompok Belajar' : 'Warga Belajar KF'}`;
+
+  const html = `
+    <div class="row g-4">
+      <div class="col-12">
+        <label class="form-label fw-semibold">${labelNama} <span class="text-danger">*</span></label>
+        <input id="kfNama" class="form-control form-control-solid" placeholder="Masukkan ${labelNama.toLowerCase()}" value="${esc(data ? (data['Nama'] ?? data.nama ?? '') : '')}">
+      </div>
+      <div class="col-12">
+        <label class="form-label fw-semibold">Alamat</label>
+        <textarea id="kfAlamat" class="form-control form-control-solid" rows="3" placeholder="Masukkan alamat">${esc(data ? (data['Alamat'] ?? data.alamat ?? '') : '')}</textarea>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">RT</label>
+        <input id="kfRt" class="form-control form-control-solid" maxlength="10" placeholder="001" value="${esc(data ? (data['Rt'] ?? data.rt ?? '') : '')}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">RW</label>
+        <input id="kfRw" class="form-control form-control-solid" maxlength="10" placeholder="001" value="${esc(data ? (data['Rw'] ?? data.rw ?? '') : '')}">
+      </div>
+      <div class="col-12">
+        <label class="form-label fw-semibold">Jenis Keterampilan</label>
+        <input id="kfKeterampilan" class="form-control form-control-solid" placeholder="Contoh: Menjahit, Tata Boga, dll." value="${esc(data ? (data['Jenis Keterampilan'] ?? data.jenis_keterampilan ?? '') : '')}">
+      </div>
+    </div>`;
+
+  bukaFormPopup(judulPopup, !!data, html, () => {
+    const payload = {
+      alias,
+      nama: document.getElementById('kfNama').value.trim(),
+      alamat: document.getElementById('kfAlamat').value.trim(),
+      rt: document.getElementById('kfRt').value.trim(),
+      rw: document.getElementById('kfRw').value.trim(),
+      jenis_keterampilan: document.getElementById('kfKeterampilan').value.trim(),
+    };
+
+    const req = data
+      ? kirim(`/pokja-2/kf/${data.id}`, 'PUT', payload)
+      : kirim('/pokja-2/kf', 'POST', {
+          id_pertanyaan: ctx.id,
+          id_kec: +ctx.kec,
+          id_kel: +ctx.kel,
+          ...payload,
+        });
+
+    return req.then(() => {
+      berubah = true;
+      kembaliKeModalUtama = false;
+      modalForm.hide();
+      muat();
+    }).catch(err => notif(err.message, 'error'));
+  });
 }
 
 function formTambahKader(data = null, hasil = null) {

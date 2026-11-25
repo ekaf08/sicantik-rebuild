@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Support\Pokja1;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Bo\Pokja2Controller;
 
 class DashboardController extends Controller
 {
@@ -202,31 +203,52 @@ class DashboardController extends Controller
             $dataPokja2[$idKec]->bkb_ibu_peserta = $total;
         }
 
-        $kl = DB::table('d_kelompok_belajar_2026 as d')
-            ->join('m_pertanyaan_dashboard_2026 as p', 'p.id', '=', 'd.id_pertanyaan')
-            ->where('d.periode', 2026)->whereNull('d.deleted_at')
-            ->selectRaw('d.id_kec, p.alias, COUNT(*) AS total')
-            ->groupBy('d.id_kec', 'p.alias')->get();
+        // Pokja 2: Kelompok Belajar & Warga Belajar (Paket A, B, C dari tabel tarikan)
+        $tabelBelajar = [
+            'paket_a_klp'   => 'm_detail_kelompok_belajar_a',
+            'paket_b_klp'   => 'm_detail_kelompok_belajar_b',
+            'paket_c_klp'   => 'm_detail_kelompok_belajar_c',
+            'paket_a_warga' => 'm_detail_warga_belajar_a',
+            'paket_b_warga' => 'm_detail_warga_belajar_b',
+            'paket_c_warga' => 'm_detail_warga_belajar_c',
+        ];
 
-        foreach ($kl as $r) {
-            if (!$dataPokja2->has($r->id_kec)) {
-                $dataPokja2[$r->id_kec] = (object) ['id_kec' => $r->id_kec];
+        foreach ($tabelBelajar as $alias => $namaTabel) {
+            $rows = DB::table($namaTabel)
+                ->whereNotNull('id_kec')
+                ->selectRaw('id_kec, COUNT(*) AS total')
+                ->groupBy('id_kec')
+                ->pluck('total', 'id_kec');
+
+            foreach ($rows as $idKec => $total) {
+                if (!$dataPokja2->has($idKec)) {
+                    $dataPokja2[$idKec] = (object) ['id_kec' => $idKec];
+                }
+                $dataPokja2[$idKec]->$alias = $total;
             }
-            $dataPokja2[$r->id_kec]->{$r->alias} = $r->total;
         }
 
-        $wb = DB::table('d_warga_belajar_2026')
-            ->where('periode', 2026)->whereNull('deleted_at')
-            ->selectRaw('id_kec, jenis_paket, COUNT(*) AS total')
-            ->groupBy('id_kec', 'jenis_paket')->get();
+        // Pokja 2: KF (Kelompok Belajar & Warga Belajar)
+        $tabelKf = [
+            'kf_klp'   => 'm_kelompok_belajar_pokja2_kf',
+            'kf_warga' => 'm_warga_belajar_pokja2_kf',
+        ];
 
-        foreach ($wb as $r) {
-            $p = strtolower($r->jenis_paket);
-            $alias = $p === 'kf' ? 'kf_warga' : "paket_{$p}_warga";
-            if (!$dataPokja2->has($r->id_kec)) {
-                $dataPokja2[$r->id_kec] = (object) ['id_kec' => $r->id_kec];
+        foreach ($tabelKf as $alias => $namaTabel) {
+            $rows = DB::table($namaTabel)
+                ->where('periode', 2026)
+                ->whereNull('deleted_at')
+                ->whereNotNull('id_kec')
+                ->selectRaw('id_kec, COUNT(*) AS total')
+                ->groupBy('id_kec')
+                ->pluck('total', 'id_kec');
+
+            foreach ($rows as $idKec => $total) {
+                if (!$dataPokja2->has($idKec)) {
+                    $dataPokja2[$idKec] = (object) ['id_kec' => $idKec];
+                }
+                $dataPokja2[$idKec]->$alias = $total;
             }
-            $dataPokja2[$r->id_kec]->$alias = $r->total;
         }
 
         $pd = DB::table('d_paud_2026')
@@ -418,33 +440,55 @@ class DashboardController extends Controller
             $dataPokja2[$kelId]->bkb_ibu_peserta = $total;
         }
 
-        $kl = DB::table('d_kelompok_belajar_2026 as d')
-            ->join('m_pertanyaan_dashboard_2026 as p', 'p.id', '=', 'd.id_pertanyaan')
-            ->where('d.id_kec', $idKec)->where('d.periode', 2026)->whereNull('d.deleted_at')
-            ->when($idKel !== null, fn ($q) => $q->where('d.id_kel', $idKel))
-            ->selectRaw('d.id_kel, p.alias, COUNT(*) AS total')
-            ->groupBy('d.id_kel', 'p.alias')->get();
+       $tabelBelajar = [
+            'paket_a_klp'   => 'm_detail_kelompok_belajar_a',
+            'paket_b_klp'   => 'm_detail_kelompok_belajar_b',
+            'paket_c_klp'   => 'm_detail_kelompok_belajar_c',
+            'paket_a_warga' => 'm_detail_warga_belajar_a',
+            'paket_b_warga' => 'm_detail_warga_belajar_b',
+            'paket_c_warga' => 'm_detail_warga_belajar_c',
+        ];
 
-        foreach ($kl as $r) {
-            if (!$dataPokja2->has($r->id_kel)) {
-                $dataPokja2[$r->id_kel] = (object) ['id_kel' => $r->id_kel];
+        foreach ($tabelBelajar as $alias => $namaTabel) {
+            $rows = DB::table($namaTabel)
+                ->where('id_kec', $idKec)
+                ->whereNotNull('id_kel')
+                ->tap($filterKel)
+                ->selectRaw('id_kel, COUNT(*) AS total')
+                ->groupBy('id_kel')
+                ->pluck('total', 'id_kel');
+
+            foreach ($rows as $kelId => $total) {
+                if (!$dataPokja2->has($kelId)) {
+                    $dataPokja2[$kelId] = (object) ['id_kel' => $kelId];
+                }
+                $dataPokja2[$kelId]->$alias = $total;
             }
-            $dataPokja2[$r->id_kel]->{$r->alias} = $r->total;
         }
 
-        $wb = DB::table('d_warga_belajar_2026')
-            ->where('id_kec', $idKec)->where('periode', 2026)->whereNull('deleted_at')
-            ->tap($filterKel)
-            ->selectRaw('id_kel, jenis_paket, COUNT(*) AS total')
-            ->groupBy('id_kel', 'jenis_paket')->get();
+        // Pokja 2: KF (Kelompok Belajar & Warga Belajar)
+        $tabelKf = [
+            'kf_klp'   => 'm_kelompok_belajar_pokja2_kf',
+            'kf_warga' => 'm_warga_belajar_pokja2_kf',
+        ];
 
-        foreach ($wb as $r) {
-            $p = strtolower($r->jenis_paket);
-            $alias = $p === 'kf' ? 'kf_warga' : "paket_{$p}_warga";
-            if (!$dataPokja2->has($r->id_kel)) {
-                $dataPokja2[$r->id_kel] = (object) ['id_kel' => $r->id_kel];
+        foreach ($tabelKf as $alias => $namaTabel) {
+            $rows = DB::table($namaTabel)
+                ->where('id_kec', $idKec)
+                ->where('periode', 2026)
+                ->whereNull('deleted_at')
+                ->whereNotNull('id_kel')
+                ->tap($filterKel)
+                ->selectRaw('id_kel, COUNT(*) AS total')
+                ->groupBy('id_kel')
+                ->pluck('total', 'id_kel');
+
+            foreach ($rows as $kelId => $total) {
+                if (!$dataPokja2->has($kelId)) {
+                    $dataPokja2[$kelId] = (object) ['id_kel' => $kelId];
+                }
+                $dataPokja2[$kelId]->$alias = $total;
             }
-            $dataPokja2[$r->id_kel]->$alias = $r->total;
         }
 
         $pd = DB::table('d_paud_2026')
