@@ -55,7 +55,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::get('/data-umum', [DataUmumController::class, 'index']);
     Route::get('/data-umum/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->name('data-umum.kelurahan');
     Route::get('/pokja-2/kecamatan/{idKec}', [DataUmumController::class, 'kelurahan'])->defaults('activeTab', 'pokja2')->name('pokja-2.kelurahan');
-    
+
     Route::prefix('pokja-1')->name('pokja-1.')->group(function () {
         Route::get('/detail', [Pokja1Controller::class, 'detail'])->name('detail');
         Route::post('/store', [Pokja1Controller::class, 'store'])->name('store');
@@ -229,6 +229,9 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::post('/inovasi/kota/pmt-data/{id}', [PmtController::class, 'update']);
     Route::delete('/inovasi/kota/pmt-data/{id}', [PmtController::class, 'destroy']);
 
+     // Foto dari database (dipakai PMT)
+    Route::get('/inovasi/kota/foto-db', [\App\Http\Controllers\FotoDbController::class, 'show'])->name('foto-db.show');
+    
      //Daftar-Ketua-PKK
     Route::get('/daftar-ketua-pkk', [DaftarKetuaPkkController::class, 'index'])->name('ketua-pkk.index');
     Route::post('/daftar-ketua-pkk/upload', [DaftarKetuaPkkController::class, 'upload'])->name('ketua-pkk.upload');
