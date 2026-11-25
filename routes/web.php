@@ -233,6 +233,9 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::post('/inovasi/kota/pmt-data/{id}', [PmtController::class, 'update']);
     Route::delete('/inovasi/kota/pmt-data/{id}', [PmtController::class, 'destroy']);
 
+     // Foto dari database (dipakai PMT)
+    Route::get('/inovasi/kota/foto-db', [\App\Http\Controllers\FotoDbController::class, 'show'])->name('foto-db.show');
+    
      //Daftar-Ketua-PKK
     Route::get('/daftar-ketua-pkk', [DaftarKetuaPkkController::class, 'index'])->name('ketua-pkk.index');
     Route::post('/daftar-ketua-pkk/upload', [DaftarKetuaPkkController::class, 'upload'])->name('ketua-pkk.upload');
