@@ -1,0 +1,123 @@
+[
+  {
+    "id_kelompok": 576,
+    "lembaga": "PKBM IMANUEL HOMESCHOOLING",
+    "id_kel": 104,
+    "kel": "BABATAN",
+    "id_kec": 20,
+    "alamat": "BABATAN PRATAMA XXIX BLOK PP-50",
+    "rt_rw": "005/008",
+    "nama_petugas": "",
+    "nik_petugas": ""
+  },
+  {
+    "id_kelompok": 571,
+    "lembaga": "PKBM BERINGIN RINDANG",
+    "id_kel": 151,
+    "kel": "BERINGIN",
+    "id_kec": 31,
+    "alamat": "JL. RAYA BERINGIN NO.9",
+    "rt_rw": "004/001",
+    "nama_petugas": "",
+    "nik_petugas": ""
+  },
+  {
+    "id_kelompok": 581,
+    "lembaga": "PKBM AT`TIEN",
+    "id_kel": 115,
+    "kel": "KETINTANG",
+    "id_kec": 22,
+    "alamat": "JL. Ketintang Wiyata No. 7",
+    "rt_rw": "002/004",
+    "nama_petugas": "",
+    "nik_petugas": ""
+  },
+  {
+    "id_kelompok": 558,
+    "lembaga": "PKBM Tunas Harapan",
+    "id_kel": 75,
+    "kel": "MANUKAN KULON",
+    "id_kec": 14,
+    "alamat": "JL. RAYA MANUKAN KULON NO. 112",
+    "rt_rw": "005/002",
+    "nama_petugas": "",
+    "nik_petugas": ""
+  },
+  {
+    "id_kelompok": 593,
+    "lembaga": "PKBM MEKAR ASRI",
+    "id_kel": 8,
+    "kel": "MARGOREJO",
+    "id_kec": 2,
+    "alamat": "Margorejo IIID/73",
+    "rt_rw": "002/005",
+    "nama_petugas": "",
+    "nik_petugas": ""
+  },
+  {
+    "id_kelompok": 570,
+    "lembaga": "PKBM INSAN CERDAS INDONESIA",
+    "id_kel": 21,
+    "kel": "NGAGEL REJO",
+    "id_kec": 4,
+    "alamat": "Ngagel Tirtosari No 25",
+    "rt_rw": "012 / 002",
+    "nama_petugas": "",
+    "nik_petugas": ""
+  },
+  {
+    "id_kelompok": 580,
+    "lembaga": "PKBM BINA ABDI WIYATA",
+    "id_kel": 51,
+    "kel": "PACARKELING",
+    "id_kec": 10,
+    "alamat": "Jl. Jolotundo Baru No.6",
+    "rt_rw": "007/003",
+    "nama_petugas": "",
+    "nik_petugas": ""
+  },
+  {
+    "id_kelompok": 562,
+    "lembaga": "PKBM VARIAN CENTER",
+    "id_kel": 28,
+    "kel": "PETEMON",
+    "id_kec": 6,
+    "alamat": "JL. PETEMON 2/123",
+    "rt_rw": "008/009",
+    "nama_petugas": "",
+    "nik_petugas": ""
+  },
+  {
+    "id_kelompok": 717,
+    "lembaga": "PKBM AL-AMIN",
+    "id_kel": 126,
+    "kel": "RUNGKUT MENANGGAL",
+    "id_kec": 25,
+    "alamat": "JL. KYAI ABDUL KARIM NO. 1 GUNUNGANYAR SURABAYA",
+    "rt_rw": "4/2",
+    "nama_petugas": "",
+    "nik_petugas": ""
+  },
+  {
+    "id_kelompok": 589,
+    "lembaga": "PKBM MERCU BUANA",
+    "id_kel": 152,
+    "kel": "SAMBIKEREP",
+    "id_kec": 31,
+    "alamat": "Jl. Dukuh Jelidro Kav. No.5a",
+    "rt_rw": "008/001",
+    "nama_petugas": "",
+    "nik_petugas": ""
+  },
+  {
+    "id_kelompok": 583,
+    "lembaga": "PKBM YASDIKRAMA",
+    "id_kel": 16,
+    "kel": "WONOKROMO",
+    "id_kec": 4,
+    "alamat": "JALAN KARANGREJO IX/ 01 ",
+    "rt_rw": "010/002",
+    "nama_petugas": "",
+    "nik_petugas": ""
+  }
+]
