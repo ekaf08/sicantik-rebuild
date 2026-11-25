@@ -6,6 +6,7 @@ use App\Models\Pmt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Support\IdCipher;
@@ -33,7 +34,7 @@ class PmtController extends Controller
     public function index()
     {
         $data = Pmt::orderByDesc('created_at')->get()->map(function ($row) {
-            $row->foto_url = $row->foto ? asset('storage/' . $row->foto) : null;
+            $row->foto_url = $this->fotoUrl($row->foto);
             // Ubah ke array dulu: model otomatis mengubah 'id' jadi angka, sehingga token akan terbaca 0
             $item = $row->toArray();
             $item['id'] = IdCipher::encode($row->id);
@@ -41,6 +42,42 @@ class PmtController extends Controller
         });
 
         return response()->json($data);
+    }
+
+    // Foto baru disimpan di public/uploads/pmt (langsung bisa dibuka browser, tanpa storage:link).
+    // Di database tetap tersimpan 'pmt/namafile.jpg' seperti sebelumnya.
+    private function simpanFoto(Request $request): string
+    {
+        $file = $request->file('foto');
+        $nama = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('uploads/pmt'), $nama);
+
+        return 'pmt/' . $nama;
+    }
+
+    // Foto lama yang masih di storage tetap terbaca (jaga-jaga data lama)
+    private function fotoUrl(?string $foto): ?string
+    {
+        if (!$foto) {
+            return null;
+        }
+
+        return file_exists(public_path('uploads/' . $foto))
+            ? asset('uploads/' . $foto)
+            : asset('storage/' . $foto);
+    }
+
+    private function hapusFoto(?string $foto): void
+    {
+        if (!$foto) {
+            return;
+        }
+
+        $baru = public_path('uploads/' . $foto);
+        if (file_exists($baru)) {
+            @unlink($baru);
+        }
+        Storage::disk('public')->delete($foto);
     }
 
     private function rules(?int $ignoreId = null, bool $fotoWajib = false): array
@@ -81,7 +118,7 @@ class PmtController extends Controller
         }
 
         if ($request->hasFile('foto')) {
-            $validated['foto'] = $request->file('foto')->store('pmt', 'public');
+            $validated['foto'] = $this->simpanFoto($request);
         }
 
         $item = Pmt::create($validated);
@@ -100,10 +137,8 @@ class PmtController extends Controller
         }
 
         if ($request->hasFile('foto')) {
-            if ($item->foto) {
-                Storage::disk('public')->delete($item->foto);
-            }
-            $validated['foto'] = $request->file('foto')->store('pmt', 'public');
+            $this->hapusFoto($item->foto);
+            $validated['foto'] = $this->simpanFoto($request);
         } else {
             unset($validated['foto']);
         }
