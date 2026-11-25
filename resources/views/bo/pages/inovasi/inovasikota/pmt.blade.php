@@ -535,11 +535,11 @@
             ? 'Menampilkan ' + (mulai + 1) + ' - ' + (mulai + tampil.length) + ' dari ' + rows.length + ' data'
             : 'Tidak ada data';
 
-        let pg = '<li class="page-item ' + (page === 1 ? 'disabled' : '') + '"><a class="page-link pmt-page" href="#" data-page="' + (page - 1) + '">Sebelumnya</a></li>';
+        let pg = '<li class="page-item ' + (page === 1 ? 'disabled' : '') + '"><a class="page-link pmt-page" href="#" data-page="' + (page - 1) + '" title="Sebelumnya">&lsaquo;</a></li>';
         for (let p = 1; p <= totalPage; p++) {
             pg += '<li class="page-item ' + (p === page ? 'active' : '') + '"><a class="page-link pmt-page" href="#" data-page="' + p + '">' + p + '</a></li>';
         }
-        pg += '<li class="page-item ' + (page === totalPage ? 'disabled' : '') + '"><a class="page-link pmt-page" href="#" data-page="' + (page + 1) + '">Berikutnya</a></li>';
+        pg += '<li class="page-item ' + (page === totalPage ? 'disabled' : '') + '"><a class="page-link pmt-page" href="#" data-page="' + (page + 1) + '" title="Berikutnya">&rsaquo;</a></li>';
         $('pagination-pmt').innerHTML = pg;
     }
 
