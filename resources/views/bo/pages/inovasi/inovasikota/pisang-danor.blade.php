@@ -2,6 +2,15 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
+    /* Badge dan link foto netral; pagination memakai warna banner atas Pisang Danor */
+    #tbody-danor .badge.badge-light { background-color: #f1f1f4; color: #252f4a; }
+    #tbody-danor .pd-link-foto, #tbody-danor .pd-link-foto i { color: #252f4a !important; }
+    #tbody-danor .pd-link-foto:hover, #tbody-danor .pd-link-foto:hover i { color: #1b84ff !important; }
+    #pagination-danor .page-item.active .page-link, #bd-pagination .page-item.active .page-link { background-color: #e8f2ee !important; border-color: #bfd8cf !important; color: #1f4a44 !important; font-weight: 700; }
+    #pagination-danor .page-link, #bd-pagination .page-link { color: #1f4a44; border-color: #d6e7e0; }
+    #pagination-danor .page-link:hover, #bd-pagination .page-link:hover { background-color: #f1f8f5; color: #1f4a44; }
+    #pagination-danor .page-item.disabled .page-link, #bd-pagination .page-item.disabled .page-link { color: #8fb0a6; }
+
     /* Kartu kategori: pastel senada banner (kuning = anorganik, tosca = organik), mengambang */
     .card-kategori-danor {
         position: relative;
@@ -1030,15 +1039,15 @@
                 // Tombol Lihat Foto
                 let btnFoto = '<span class="text-muted fs-8">-</span>';
                 if (r.upload_file_1_url || r.upload_file_2_url) {
-                    btnFoto = '<a href="javascript:void(0)" class="text-primary fw-bold text-hover-primary text-decoration-underline d-inline-flex align-items-center gap-1 pd-btn-foto" data-id="' + r.id + '">' +
-                        '<i class="ki-outline ki-file fs-5 text-primary"></i> Lihat Foto</a>';
+                    btnFoto = '<a href="javascript:void(0)" class="pd-link-foto fw-bold text-decoration-underline d-inline-flex align-items-center gap-1 pd-btn-foto" data-id="' + r.id + '">' +
+                        '<i class="ki-outline ki-file fs-5"></i> Lihat Foto</a>';
                 }
 
                 if (kategori === 'anorganik') {
                     return '<tr><td class="text-center fw-bold">' + no + '</td>' +
                         '<td class="fw-bold text-gray-800">' + esc(r.nama_bsi) + '</td>' +
                         '<td>' + esc(r.alamat_bsi) + '</td>' +
-                        '<td><span class="badge badge-light-primary fw-bold px-3 py-2">' + esc(r.metode_pengolahan) + '</span></td>' +
+                        '<td><span class="badge badge-light fw-bold px-3 py-2">' + esc(r.metode_pengolahan) + '</span></td>' +
                         '<td>' + esc(r.kecamatan) + '</td><td>' + esc(r.kelurahan) + '</td>' +
                         '<td class="text-center">' + esc(r.rw) + '</td><td class="text-center">' + esc(r.rt) + '</td>' +
                         '<td class="text-center">' + btnFoto + '</td>' + aksi + '</tr>';
@@ -1052,7 +1061,7 @@
                     '<td class="text-end">' + fmt(r.jumlah_tonase) + '</td>' +
                     '<td class="text-end">' + fmt(terolah) + '</td>' +
                     '<td class="text-end">' + fmt(r.tonase_residu) + '</td>' +
-                    '<td class="text-center"><span class="badge badge-light-success fw-bold px-3 py-2">' + jmlMetode + '</span></td>' +
+                    '<td class="text-center"><span class="badge badge-light fw-bold px-3 py-2">' + jmlMetode + '</span></td>' +
                     '<td class="text-center">' + btnFoto + '</td>' + aksi + '</tr>';
             }).join('');
         }
@@ -1062,11 +1071,11 @@
             : 'Tidak ada data';
 
         let pg = '';
-        pg += '<li class="page-item ' + (page === 1 ? 'disabled' : '') + '"><a class="page-link pd-page" href="#" data-page="' + (page - 1) + '">Sebelumnya</a></li>';
+        pg += '<li class="page-item ' + (page === 1 ? 'disabled' : '') + '"><a class="page-link pd-page" href="#" data-page="' + (page - 1) + '" title="Sebelumnya">&lsaquo;</a></li>';
         for (let p = 1; p <= totalPage; p++) {
             pg += '<li class="page-item ' + (p === page ? 'active' : '') + '"><a class="page-link pd-page" href="#" data-page="' + p + '">' + p + '</a></li>';
         }
-        pg += '<li class="page-item ' + (page === totalPage ? 'disabled' : '') + '"><a class="page-link pd-page" href="#" data-page="' + (page + 1) + '">Berikutnya</a></li>';
+        pg += '<li class="page-item ' + (page === totalPage ? 'disabled' : '') + '"><a class="page-link pd-page" href="#" data-page="' + (page + 1) + '" title="Berikutnya">&rsaquo;</a></li>';
         $('pagination-danor').innerHTML = pg;
     }
 
@@ -1308,11 +1317,11 @@
             ? 'Menampilkan ' + (mulai + 1) + ' - ' + (mulai + tampil.length) + ' dari ' + rows.length + ' data'
             : 'Tidak ada data';
 
-        let pg = '<li class="page-item ' + (bd.page === 1 ? 'disabled' : '') + '"><a class="page-link bd-page" href="#" data-page="' + (bd.page - 1) + '">Sebelumnya</a></li>';
+        let pg = '<li class="page-item ' + (bd.page === 1 ? 'disabled' : '') + '"><a class="page-link bd-page" href="#" data-page="' + (bd.page - 1) + '" title="Sebelumnya">&lsaquo;</a></li>';
         for (let p = 1; p <= totalPage; p++) {
             pg += '<li class="page-item ' + (p === bd.page ? 'active' : '') + '"><a class="page-link bd-page" href="#" data-page="' + p + '">' + p + '</a></li>';
         }
-        pg += '<li class="page-item ' + (bd.page === totalPage ? 'disabled' : '') + '"><a class="page-link bd-page" href="#" data-page="' + (bd.page + 1) + '">Berikutnya</a></li>';
+        pg += '<li class="page-item ' + (bd.page === totalPage ? 'disabled' : '') + '"><a class="page-link bd-page" href="#" data-page="' + (bd.page + 1) + '" title="Berikutnya">&rsaquo;</a></li>';
         $('bd-pagination').innerHTML = pg;
     }
 

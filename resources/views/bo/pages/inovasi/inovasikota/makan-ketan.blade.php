@@ -46,6 +46,15 @@
     #mk-table thead th { color: #000 !important; }
     #mk-table tbody td { color: #000 !important; }
     .mk-toast.show { transform: translateX(0); }
+    /* Badge tahun/juara dan link foto: warna netral seperti tabel lain */
+    #mk-table .badge.badge-light { background-color: #f1f1f4; color: #252f4a; }
+    #mk-table .mk-link-foto, #mk-table .mk-link-foto i { color: #252f4a !important; }
+    #mk-table .mk-link-foto:hover, #mk-table .mk-link-foto:hover i { color: #1b84ff !important; }
+    /* Pagination: warna sama dengan banner atas Makan Ketan */
+    #mk-pagination .page-item.active .page-link { background-color: #ebf3e3 !important; border-color: #cfe0bf !important; color: #2c4a1e !important; font-weight: 700; }
+    #mk-pagination .page-link { color: #2c4a1e; border-color: #e1ebd6; }
+    #mk-pagination .page-link:hover { background-color: #f3f8ee; color: #2c4a1e; }
+    #mk-pagination .page-item.disabled .page-link { color: #9db38a; }
     /* Kartu data per tahun: hijau pastel senada banner, mengambang, terangkat saat disentuh */
     .card.mk-card-tahun {
         position: relative;
@@ -357,6 +366,14 @@
             </div>
         </div>
 
+        <div class="d-flex flex-stack mb-4">
+            <select class="form-select form-select-solid w-75px fs-7 fw-semibold" id="mk-table-length">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+
         <div class="table-responsive">
             <table class="table align-middle table-row-dashed fs-6 gy-4" id="mk-table">
                 <thead>
@@ -378,6 +395,11 @@
                     <tr><td colspan="11" class="text-center text-muted py-5">Memuat data...</td></tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4">
+            <span class="text-gray-600 fs-8 fw-semibold" id="mk-info"></span>
+            <ul class="pagination pagination-outline mb-0" id="mk-pagination"></ul>
         </div>
     </div>
 </div>
@@ -672,6 +694,7 @@
     // ===================== Helper umum =====================
     const csrfToken = document.getElementById('mk-csrf-token').value;
     let allData = [];
+    let page = 1;
 
     function showToast(message) {
         const toast = document.getElementById('mk-toast');
@@ -738,33 +761,51 @@
             return true;
         });
 
+        const perPage = parseInt(document.getElementById('mk-table-length').value, 10) || 10;
+        const totalPage = Math.max(1, Math.ceil(filtered.length / perPage));
+        if (page > totalPage) page = totalPage;
+        const mulai = (page - 1) * perPage;
+        const tampil = filtered.slice(mulai, mulai + perPage);
+
         if (!filtered.length) {
             tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted py-5">Belum ada data</td></tr>';
+            document.getElementById('mk-info').textContent = 'Tidak ada data';
+            document.getElementById('mk-pagination').innerHTML = '';
             return;
         }
 
-        tbody.innerHTML = filtered.map(function (row, i) {
+        tbody.innerHTML = tampil.map(function (row, i) {
             return '<tr>' +
-                '<td>' + (i + 1) + '</td>' +
+                '<td>' + (mulai + i + 1) + '</td>' +
                 '<td>' + escapeHtml(row.kecamatan) + '</td>' +
                 '<td>' + escapeHtml(row.kelurahan) + '</td>' +
                 '<td>' + escapeHtml(row.nama_dasa_wisma) + '</td>' +
                 '<td>' + escapeHtml(row.rt || '-') + '</td>' +
                 '<td>' + escapeHtml(row.rw || '-') + '</td>' +
                 '<td>' + (row.jumlah_rumah ?? '-') + '</td>' +
-                '<td><span class="badge badge-light-primary fw-bold">' + escapeHtml(row.tahun) + '</span></td>' +
+                '<td><span class="badge badge-light fw-bold">' + escapeHtml(row.tahun) + '</span></td>' +
                 '<td>' +
-                    '<a href="javascript:void(0)" class="text-primary fw-bold text-hover-primary text-decoration-underline d-inline-flex align-items-center gap-1 mk-btn-foto" data-id="' + row.id + '">' +
-                        '<i class="ki-outline ki-file fs-5 text-primary"></i> Lihat Foto' +
+                    '<a href="javascript:void(0)" class="mk-link-foto fw-bold text-decoration-underline d-inline-flex align-items-center gap-1 mk-btn-foto" data-id="' + row.id + '">' +
+                        '<i class="ki-outline ki-file fs-5"></i> Lihat Foto' +
                     '</a>' +
                 '</td>' +
-                '<td>' + (row.juara ? '<span class="badge badge-light-success fw-bold">' + escapeHtml(row.juara) + '</span>' : '-') + '</td>' +
+                '<td>' + (row.juara ? '<span class="badge badge-light fw-bold">' + escapeHtml(row.juara) + '</span>' : '-') + '</td>' +
                 '<td class="text-end">' +
                     '<button type="button" class="btn btn-sm btn-icon btn-light-warning me-1 mk-btn-edit" data-id="' + row.id + '"><i class="ki-outline ki-pencil fs-5"></i></button>' +
                     '<button type="button" class="btn btn-sm btn-icon btn-light-danger mk-btn-hapus" data-id="' + row.id + '" data-nama="' + escapeHtml(row.nama_dasa_wisma || '') + '"><i class="ki-outline ki-trash fs-5"></i></button>' +
                 '</td>' +
             '</tr>';
         }).join('');
+
+        document.getElementById('mk-info').textContent =
+            'Menampilkan ' + (mulai + 1) + ' - ' + (mulai + tampil.length) + ' dari ' + filtered.length + ' data';
+
+        let pg = '<li class="page-item ' + (page === 1 ? 'disabled' : '') + '"><a class="page-link mk-page" href="#" data-page="' + (page - 1) + '" title="Sebelumnya">&lsaquo;</a></li>';
+        for (let p = 1; p <= totalPage; p++) {
+            pg += '<li class="page-item ' + (p === page ? 'active' : '') + '"><a class="page-link mk-page" href="#" data-page="' + p + '">' + p + '</a></li>';
+        }
+        pg += '<li class="page-item ' + (page === totalPage ? 'disabled' : '') + '"><a class="page-link mk-page" href="#" data-page="' + (page + 1) + '" title="Berikutnya">&rsaquo;</a></li>';
+        document.getElementById('mk-pagination').innerHTML = pg;
 
         document.querySelectorAll('.mk-btn-foto').forEach(function (btn) {
             btn.addEventListener('click', function () { openFoto(btn.dataset.id); });
@@ -780,14 +821,24 @@
     // Klik kartu tahun: tabel di bawah hanya menampilkan tahun itu. Klik lagi untuk kembali ke semua tahun.
     window.mkFilterTahun = function (tahun) {
         filterTahun.value = (filterTahun.value === tahun) ? '' : tahun;
+        page = 1;
         renderTable();
         const kartuTabel = document.getElementById('mk-tbody').closest('.card');
         if (kartuTabel && filterTahun.value) kartuTabel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    filterKecamatan.addEventListener('change', renderTable);
-    filterKelurahan.addEventListener('change', renderTable);
-    filterTahun.addEventListener('change', renderTable);
+    filterKecamatan.addEventListener('change', function () { page = 1; renderTable(); });
+    filterKelurahan.addEventListener('change', function () { page = 1; renderTable(); });
+    filterTahun.addEventListener('change', function () { page = 1; renderTable(); });
+    document.getElementById('mk-table-length').addEventListener('change', function () { page = 1; renderTable(); });
+
+    document.getElementById('mk-pagination').addEventListener('click', function (e) {
+        const a = e.target.closest('.mk-page');
+        if (!a) return;
+        e.preventDefault();
+        const p = parseInt(a.dataset.page, 10);
+        if (p >= 1) { page = p; renderTable(); }
+    });
 
     // ===================== Modal khusus foto (tombol "Lihat Foto") =====================
     function openFoto(id) {
