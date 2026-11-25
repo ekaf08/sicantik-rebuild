@@ -36,6 +36,16 @@ Route::middleware('guest')->group(function () {
     Route::get('/refresh_captcha', [AuthController::class, 'refresh_captcha'])->name('refresh_captcha');
 });
 
+
+
+// Endpoint AJAX Modal Data Umum (cukup login tanpa cek tabel menu)
+Route::middleware('auth')->group(function () {
+    Route::post('/data-umum/agregat', [DataUmumController::class, 'updateAgregat'])->name('data-umum.agregat.update');
+    Route::post('/data-umum/detail', [DataUmumController::class, 'storeDetail'])->name('data-umum.detail.store');
+    Route::put('/data-umum/detail/{id}', [DataUmumController::class, 'updateDetail'])->name('data-umum.detail.update')->whereNumber('id');
+    Route::delete('/data-umum/detail/{id}', [DataUmumController::class, 'destroyDetail'])->name('data-umum.detail.destroy')->whereNumber('id');
+});
+
 // Hanya untuk yang SUDAH login
 Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

@@ -12,6 +12,7 @@ class ModalController extends Controller
     private const MENU_DASHBOARD = '/dashboard';
 
     private const URL_AGREGAT = [
+        'data_umum_2026' => '/data-umum/agregat',
         'd_pokja_3_2026' => '/pokja-3/agregat',
         'd_pokja_4_2026' => '/pokja-4/agregat',
     ];
@@ -81,17 +82,10 @@ class ModalController extends Controller
 
         abort_unless(preg_match('/^\s*select/i', $sql), 422, 'Query tidak valid.');
 
-<<<<<<< Updated upstream
         $nilai = [
             'kec'           => $kec,
             'kel'           => $kel,
             'periode'       => $periode,
-=======
-       $nilai = [
-            'kec'           => (int) $request->query('kec'),
-            'kel'           => $kel,
-            'periode'       => (int) $request->query('periode', 2026),
->>>>>>> Stashed changes
             'id_pertanyaan' => (int) $p->id,
         ];
 
@@ -131,58 +125,65 @@ class ModalController extends Controller
             }
         }
 
-<<<<<<< Updated upstream
         $tampilan       = (count($kolom) === 1 && $kolom[0] === 'nilai') ? 'angka' : 'tabel';
         $kaderPokja3    = (bool) $p->is_kader && (bool) $p->is_tarik && $p->tb_dashboard === 'd_pokja_3_2026';
+        $kaderDataUmum  = (int) $p->jenis_form === 2 && $p->tb_dashboard === 'data_umum_2026';
         $isPokja4       = $p->tb_dashboard === 'd_pokja_4_2026';
         $isDetailPokja4 = $isPokja4 && !(bool) $p->is_kader && (int) $jenis === 2 && !(bool) $p->is_disable;
-        
-        $user        = auth()->user();
+
+        $user        = $request->user();
         $isKelurahan = $user && !empty($user->id_kel);
         $kelSesuai   = $isKelurahan && $kel > 0 && (int) $user->id_kel === $kel;
-=======
-        $kaderPokja3  = $p->is_kader && $p->is_tarik && $p->tb_dashboard === 'd_pokja_3_2026';
-        $kaderPokja1  = $p->alias === 'jumlah_kader' && (($p->bagian ?? '') === 'pokja1' || str_contains((string) $p->tb_dashboard, 'pokja'));
-        $detailPokja4 = $p->tb_dashboard === 'd_pokja_4_2026' && (int) $p->jenis_form === 2 && !$p->is_disable;
->>>>>>> Stashed changes
 
-        $bisaInput = isset(self::URL_AGREGAT[$p->tb_dashboard])
-            && !(bool) $p->is_kader
-            && in_array((int) $p->jenis_form, [1, 2], true)
-            && !(bool) $p->is_disable
-            && $kelSesuai;
+        $bolehTambah = Access::isSuperUser()
+            || Access::can('/data-umum', 'create')
+            || Access::can('/dashboard', 'create')
+            || Access::can('/pokja-3', 'create')
+            || $p->tb_dashboard === 'data_umum_2026';
+        $bolehUbah   = Access::isSuperUser()
+            || Access::can('/data-umum', 'update')
+            || Access::can('/dashboard', 'update')
+            || Access::can('/pokja-3', 'update')
+            || $p->tb_dashboard === 'data_umum_2026';
+        $bolehHapus  = Access::isSuperUser()
+            || Access::can('/data-umum', 'delete')
+            || Access::can('/dashboard', 'delete')
+            || Access::can('/pokja-3', 'delete')
+            || $p->tb_dashboard === 'data_umum_2026';
+
+        // Angka agregat non-kader boleh diedit hanya di tingkat kelurahan
+$bisaInput = isset(self::URL_AGREGAT[$p->tb_dashboard])
+    && (int) $jenis === 1
+    && !(bool) $p->is_disable
+    && ($kelSesuai || ($p->tb_dashboard === 'data_umum_2026' && $kel > 0 && $bolehUbah));
+
+        $bisaTambah = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4))
+            || ($kaderDataUmum && $kel > 0 && $bolehTambah);
+        $bisaEdit   = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4))
+            || ($kaderDataUmum && $kel > 0 && $bolehUbah);
+        $bisaHapus  = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4))
+            || ($kaderDataUmum && $kel > 0 && $bolehHapus);
+
+        $urlAgregat = match ($p->tb_dashboard) {
+            'data_umum_2026' => '/data-umum/agregat',
+            'd_pokja_4_2026' => '/pokja-4/agregat',
+            default          => '/pokja-3/agregat',
+        };
 
         return response()->json([
-<<<<<<< Updated upstream
-            'id'            => $p->id,
-            'id_pertanyaan' => (int) $p->id,
-            'alias'         => $p->alias,
-            'tb_dashboard'  => $p->tb_dashboard,
-            'judul'         => strtoupper($p->nama_pertanyaan),
-            'jenis_form'    => $jenis,
-            'tampilan'      => $tampilan,
-            'url_agregat'   => self::URL_AGREGAT[$p->tb_dashboard] ?? '/pokja-3/agregat',
-            'bisa_input'    => (bool) $bisaInput,
-            'bisa_tambah'   => (bool) ($kelSesuai && ($kaderPokja3 || $isDetailPokja4)),
-            'bisa_edit'     => (bool) ($kelSesuai && ($kaderPokja3 || $isDetailPokja4)),
-            'bisa_ubah'     => (bool) ($kelSesuai && ($kaderPokja3 || $isDetailPokja4)),
-            'kolom'         => $kolom,
-            'rows'          => $rows,
-=======
             'id'           => $p->id,
-            'alias'        => $p->alias,
+            'judul'        => strtoupper($p->alias),
             'tb_dashboard' => $p->tb_dashboard,
-            'bisa_ubah'    => (bool) (($kaderPokja3 || $kaderPokja1 || ($detailPokja4 && $kel > 0)) && $bolehHapus),
-            'bisa_edit'    => (bool) (($kaderPokja3 || $kaderPokja1 || ($detailPokja4 && $kel > 0)) && $bolehUbah),
-            'bisa_input'   => (bool) $bisaInput,
-            'url_agregat'  => self::URL_AGREGAT[$p->tb_dashboard] ?? null,
-            'bisa_tambah'  => (bool) (($kaderPokja3 || $detailPokja4) && $kel > 0 && $bolehTambah),
-            'judul'        => strtoupper($p->nama_pertanyaan),
-            'jenis_form'   => (int) $p->jenis_form,
+            'alias'        => $p->alias,
+            'jenis_form'   => $jenis,
+            'url_agregat'  => $urlAgregat,
             'tampilan'     => $tampilan,
             'kolom'        => $kolom,
-            'rows'         => $stmt->fetchAll(\PDO::FETCH_ASSOC),
->>>>>>> Stashed changes
+            'rows'         => $rows,
+            'bisa_ubah'    => $bisaHapus,
+            'bisa_edit'    => $bisaEdit,
+            'bisa_tambah'  => $bisaTambah,
+            'bisa_input'   => $bisaInput,
         ]);
     }
 

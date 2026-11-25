@@ -227,6 +227,158 @@ class DataUmumController extends Controller
         ]);
     }
 
+public function updateAgregat(Request $request)
+    {
+        $request->validate([
+            'id_pertanyaan' => 'required|integer',
+            'id_kec'        => 'required|integer',
+            'id_kel'        => 'required|integer|min:1',
+            'nilai'         => 'required|numeric|min:0',
+            'periode'       => 'nullable|integer',
+        ]);
+
+        $pertanyaan = DB::table('m_pertanyaan_dashboard_2026')
+            ->where('id', $request->id_pertanyaan)
+            ->where('tb_dashboard', 'data_umum_2026')
+            ->whereNull('deleted_at')
+            ->first();
+
+        abort_if(!$pertanyaan || $pertanyaan->is_disable, 422, 'Kolom tidak valid atau tidak dapat diubah');
+
+        $kolom   = $pertanyaan->alias;
+        $periode = (int) $request->input('periode', 2026);
+        $kunci   = [
+            'id_kec'  => (int) $request->id_kec,
+            'id_kel'  => (int) $request->id_kel,
+            'periode' => $periode,
+        ];
+
+        if (DB::table('data_umum_2026')->where($kunci)->exists()) {
+            DB::table('data_umum_2026')->where($kunci)->update([
+                $kolom       => (int) $request->nilai,
+                'updated_at' => now(),
+            ]);
+        } else {
+            DB::table('data_umum_2026')->insert([
+                ...$kunci,
+                $kolom       => (int) $request->nilai,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data berhasil disimpan',
+        ]);
+    }
+
+    public function storeDetail(Request $request)
+    {
+        $pertanyaan = DB::table('m_pertanyaan_dashboard_2026')
+            ->where('id', $request->id_pertanyaan)
+            ->where('tb_dashboard', 'data_umum_2026')
+            ->whereNull('deleted_at')
+            ->first();
+
+        abort_if(!$pertanyaan || $pertanyaan->is_disable, 422, 'Kolom tidak valid atau tidak dapat diubah');
+
+        if ($pertanyaan->alias === 'dasa_wisma') {
+            $data = $request->validate([
+                'id_kec' => 'required|integer',
+                'id_kel' => 'required|integer|min:1',
+                'nama'   => 'required|string|max:255',
+                'rt'     => 'nullable|string|max:5',
+                'rw'     => 'nullable|string|max:5',
+                'alamat' => 'nullable|string',
+            ]);
+
+            DB::table('d_dasa_wisma_2026')->insert([
+                ...$data,
+                'periode'    => 2026,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json(['status' => 'success', 'message' => 'Data Dasa Wisma berhasil ditambahkan']);
+        }
+
+        // Kader Data Umum (anggota_tp_pkk_l/p, umum_l/p)
+        $jenisKader = preg_replace('/_[lp]$/', '', $pertanyaan->alias);
+        $data = $request->validate([
+            'id_kec'        => 'required|integer',
+            'id_kel'        => 'required|integer|min:1',
+            'nik'           => 'required|digits:16',
+            'no_kk'         => 'nullable|digits:16',
+            'nama'          => 'required|string|max:255',
+            'jenis_kelamin' => 'required|in:L,P',
+            'jabatan'       => 'nullable|string|max:100',
+            'no_hp'         => 'nullable|string|max:20',
+            'rt'            => 'nullable|string|max:5',
+            'rw'            => 'nullable|string|max:5',
+            'alamat'        => 'nullable|string',
+        ]);
+
+        DB::table('d_kader_2026')->insert([
+            ...$data,
+            'jenis_kader' => $jenisKader,
+            'periode'     => 2026,
+            'created_at'  => now(),
+            'updated_at'  => now(),
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil ditambahkan']);
+    }
+
+    public function updateDetail(Request $request, int $id)
+    {
+        if ($request->input('alias') === 'dasa_wisma') {
+            $data = $request->validate([
+                'nama'   => 'required|string|max:255',
+                'rt'     => 'nullable|string|max:5',
+                'rw'     => 'nullable|string|max:5',
+                'alamat' => 'nullable|string',
+            ]);
+
+            DB::table('d_dasa_wisma_2026')->where('id', $id)->update([
+                ...$data,
+                'updated_at' => now(),
+            ]);
+
+            return response()->json(['status' => 'success', 'message' => 'Data Dasa Wisma berhasil diubah']);
+        }
+
+        $data = $request->validate([
+            'nik'           => 'required|digits:16',
+            'no_kk'         => 'nullable|digits:16',
+            'nama'          => 'required|string|max:255',
+            'jenis_kelamin' => 'required|in:L,P',
+            'jabatan'       => 'nullable|string|max:100',
+            'no_hp'         => 'nullable|string|max:20',
+            'rt'            => 'nullable|string|max:5',
+            'rw'            => 'nullable|string|max:5',
+            'alamat'        => 'nullable|string',
+        ]);
+
+        DB::table('d_kader_2026')->where('id', $id)->update([
+            ...$data,
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil diubah']);
+    }
+
+    public function destroyDetail(Request $request, int $id)
+    {
+        $tabel = $request->input('alias') === 'dasa_wisma' ? 'd_dasa_wisma_2026' : 'd_kader_2026';
+
+        DB::table($tabel)->where('id', $id)->update([
+            'deleted_at' => now(),
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus']);
+    }
+
     private function dataKelurahan(string $tabel, $idKec)
     {
         return DB::table($tabel)
