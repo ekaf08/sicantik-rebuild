@@ -61,8 +61,15 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
         Route::post('/agregat', [Pokja3Controller::class, 'updateAgregat'])->name('agregat.update');
     });
 
-    Route::prefix('pokja-4')->name('pokja-4.')->group(function () {
+   Route::prefix('pokja-4')->name('pokja-4.')->group(function () {
         Route::post('/agregat', [Pokja4Controller::class, 'updateAgregat'])->name('agregat.update');
+        Route::get('/cari-nik', [Pokja4Controller::class, 'cariNik'])->name('cari-nik');
+        Route::post('/detail', [Pokja4Controller::class, 'storeDetail'])->name('detail.store');
+        Route::put('/detail/{id}', [Pokja4Controller::class, 'updateDetail'])->name('detail.update')->whereNumber('id');
+        Route::delete('/detail/{id}', [Pokja4Controller::class, 'destroyDetail'])->name('detail.destroy')->whereNumber('id');
+        Route::post('/gkstb', [Pokja4Controller::class, 'storeGkstb'])->name('gkstb.store');
+        Route::put('/gkstb/{id}', [Pokja4Controller::class, 'updateGkstb'])->name('gkstb.update')->whereNumber('id');
+        Route::delete('/gkstb/{id}', [Pokja4Controller::class, 'destroyGkstb'])->name('gkstb.destroy')->whereNumber('id');
     });
 
     // Mpasi

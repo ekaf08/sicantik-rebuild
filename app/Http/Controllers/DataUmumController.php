@@ -6,6 +6,7 @@ use App\Http\Controllers\Bo\Pokja3Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Support\Pokja1;
+use App\Http\Controllers\Bo\Pokja4Controller;
 
 class DataUmumController extends Controller
 {
@@ -222,7 +223,7 @@ class DataUmumController extends Controller
             'kolomPokja3' => $pokja3['kolomPokja3'],
             'dataPokja3'  => $pokja3['dataPokja3'],
             'kolomPokja4' => $this->kolom('d_pokja_4_2026'),
-            'dataPokja4'  => $this->dataKelurahan('d_pokja_4_2026', $idKec),
+            'dataPokja4' => Pokja4Controller::getRekapData(2026, (int) $idKec),
         ]);
     }
 

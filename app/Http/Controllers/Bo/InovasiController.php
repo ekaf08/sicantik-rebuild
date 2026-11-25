@@ -14,7 +14,6 @@ class InovasiController extends Controller
 {
     private const UPLOAD_DIR = 'uploads/inovasi-global';
 
-    
     private const REGEX_TEKS  = '/^[\p{L}\p{M}\p{N}\s.,\-()\/:!?&%]+$/u';
     private const REGEX_TOKEN = '/^[A-Za-z0-9\-_]+$/';
     private const REGEX_PERIODE = '/^[\p{L}\p{N}\s\-\/]+$/u';
@@ -27,6 +26,7 @@ class InovasiController extends Controller
 
     public function index()
     {
+        abort_unless(\App\Support\Access::can('/inovasi/global', 'table'), 403);
         $kecamatan = DB::table('m_kecamatan')->orderBy('nama_kec', 'asc')->get();
         $kelurahan = DB::table('m_kelurahan')->orderBy('nama_kel', 'asc')->get();
 
@@ -191,7 +191,9 @@ class InovasiController extends Controller
 
     public function storeOrUpdateGlobal(Request $request)
     {
-        /* ---- (5) Tolak input yang mengandung script / simbol berbahaya ---- */
+        $isUpdate = $request->filled('id');
+        abort_unless(\App\Support\Access::can('/inovasi/global', $isUpdate ? 'update' : 'create'), 403);
+
         $labels = [
             'tanggal_entry'     => 'Tanggal Entry',
             'pokja'             => 'Pokja',
@@ -383,6 +385,7 @@ class InovasiController extends Controller
 
     public function destroyGlobal(Request $request)
 {
+    abort_unless(\App\Support\Access::can('/inovasi/global', 'delete'), 403);
     $id = $this->decRef($request->input('id', $request->route('id')));
 
     if (!$id) {
@@ -1171,4 +1174,23 @@ public function destroySiCantik(Request $request, $encryptedId)
     }
 }
 
+public function getElearningData()
+    {
+        return DB::table('elearning_paaredi')
+            ->orderBy('kecamatan', 'asc')
+            ->orderBy('kelurahan', 'asc')
+            ->orderBy('nama_peserta', 'asc')
+            ->get()
+            ->map(function ($row) {
+                if (class_exists(\App\Helpers\IdCipher::class)) {
+                    $row->hash = \App\Helpers\IdCipher::encode($row->id);
+                } elseif (class_exists('IdCipher')) {
+                    $row->hash = \IdCipher::encode($row->id);
+                } else {
+                    $row->hash = (string) $row->id;
+                }
+                unset($row->id);
+                return $row;
+            });
+    }
 }

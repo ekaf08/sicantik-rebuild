@@ -150,7 +150,7 @@ class Pokja3Controller extends Controller
        $pertanyaan = DB::table('m_pertanyaan_dashboard_2026')
             ->where('id', $validated['id_pertanyaan'])
             ->where('tb_dashboard', 'd_pokja_3_2026')
-            ->where(fn ($q) => $q->whereNull('is_kader')->orWhere('is_kader', false))
+            ->where('is_kader', true)
             ->whereIn('jenis_form', [1, 2])
             ->where(fn ($q) => $q->whereNull('is_disable')->orWhere('is_disable', false))
             ->whereNull('deleted_at')
@@ -385,5 +385,18 @@ class Pokja3Controller extends Controller
             ->where('kl.id_kel', $idKel)
             ->where('kc.id_kec', $idKec)
             ->exists();
+    }
+
+    private function cekAksesWilayah(int $idKec, int $idKel): void
+    {
+        $user = auth()->user();
+        abort_if(!$user, 401, 'Unauthenticated.');
+
+        abort_if(empty($user->id_kel), 403, 'Input data Pokja 3 hanya dapat dilakukan oleh user tingkat kelurahan.');
+        abort_if((int) $user->id_kel !== $idKel, 403, 'Anda tidak memiliki hak akses untuk kelurahan ini.');
+
+        if (!empty($user->id_kec)) {
+            abort_if((int) $user->id_kec !== $idKec, 403, 'Anda tidak memiliki hak akses untuk kecamatan ini.');
+        }
     }
 }

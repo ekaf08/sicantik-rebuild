@@ -800,10 +800,10 @@
                         </select>
                     </div>
 
-                    <div class="d-flex align-items-center gap-2 ms-auto">
-                        <button type="button" id="btn-tambah-data-modal" class="btn btn-sm btn-success px-3 py-2 fw-bold rounded-3 shadow-sm me-2 text-white">
-                            <i class="fa-solid fa-plus me-1 text-white"></i> Tambah Inovasi
-                        </button>
+                   <div class="d-flex align-items-center gap-2 ms-auto">
+                            <button type="button" id="btn-tambah-data-modal" class="btn btn-sm btn-success px-3 py-2 fw-bold rounded-3 shadow-sm me-2 text-white">
+                                <i class="fa-solid fa-plus me-1 text-white"></i> Tambah Inovasi
+                            </button>
                         <span class="text-dark fw-semibold" style="font-size: 0.9rem;">Search:</span>
                         <input type="text" id="search-inovasi-input" class="dt-search-input" placeholder="" autocomplete="off" />
                     </div>
@@ -1081,6 +1081,9 @@
 </div>
 
 <script>
+    const canDeleteGlobal = @json(\App\Support\Access::can('/inovasi/global', 'delete'));
+    const canUpdateGlobal = @json(\App\Support\Access::can('/inovasi/global', 'update'));
+    const canCreateGlobal = @json(\App\Support\Access::can('/inovasi/global', 'create'));
     const BASE_ASSET_URL = "{{ url('/') }}";
     const MASTER_KELURAHAN_LIST = @json(isset($kelurahan) ? $kelurahan : []);
     let inovasiData = [];
@@ -1536,6 +1539,29 @@
                    </a>`
                 : '';
 
+            const btnEditHtml = canUpdateGlobal
+                ? `<button type="button" class="btn-icon-square-edit btn-edit-item" data-id="${escapeHtml(item.id)}" title="Edit Data">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                        </svg>
+                   </button>`
+                : '';
+
+            const btnDeleteHtml = canDeleteGlobal
+                ? `<button type="button" class="btn-icon-square-delete btn-delete-item" data-id="${escapeHtml(item.id)}" title="Hapus Data">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                   </button>`
+                : '';
+
+            const aksiHtml = (btnEditHtml || btnDeleteHtml)
+                ? `<div class="d-inline-flex align-items-center justify-content-center gap-2">${btnEditHtml}${btnDeleteHtml}</div>`
+                : `<span class="text-muted small">-</span>`;
+
             return `
                 <tr>
                     <td class="text-center fw-bold text-dark">${start + idx + 1}</td>
@@ -1550,23 +1576,7 @@
                     <td class="text-center fw-bold text-dark">${escapeHtml(item.periode)}</td>
                     <td class="text-center text-dark fw-semibold">${escapeHtml(item.keterangan)}</td>
                     <td class="fw-semibold text-dark">${escapeHtml(item.dibuatOleh)}</td>
-                    <td class="text-center">
-                        <div class="d-inline-flex align-items-center justify-content-center gap-2">
-                            <button type="button" class="btn-icon-square-edit btn-edit-item" data-id="${escapeHtml(item.id)}" title="Edit Data">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                                </svg>
-                            </button>
-                            <button type="button" class="btn-icon-square-delete btn-delete-item" data-id="${escapeHtml(item.id)}" title="Hapus Data">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                                </svg>
-                            </button>
-                        </div>
-                    </td>
+                    <td class="text-center">${aksiHtml}</td>
                 </tr>
             `;
         }).join('');
@@ -1876,11 +1886,12 @@
         if (e.target.closest('#btn-tab-dashboard')) {
             e.preventDefault();
             switchTab('dashboard');
-        } else if (e.target.closest('#btn-tab-input')) {
+       } else if (e.target.closest('#btn-tab-input')) {
             e.preventDefault();
             switchTab('input');
         } else if (e.target.closest('#btn-tambah-data-modal')) {
             e.preventDefault();
+            if (!canCreateGlobal) return;
             openModalTambah();
         } else if (e.target.closest('#btn-close-modal') || e.target.closest('#btn-batal-modal')) {
             e.preventDefault();
@@ -1913,9 +1924,11 @@
             openPreviewModal(b.dataset.type, b.dataset.url, b.dataset.title);
         } else if (e.target.closest('.btn-edit-item')) {
             e.preventDefault();
+            if (!canUpdateGlobal) return;
             openModalEdit(e.target.closest('.btn-edit-item').getAttribute('data-id'));
         } else if (e.target.closest('.btn-delete-item')) {
             e.preventDefault();
+            if (!canDeleteGlobal) return;
             const id = e.target.closest('.btn-delete-item').getAttribute('data-id');
             const item = inovasiData.find(d => d.id == id);
             if (item) {
@@ -2077,7 +2090,11 @@
             fetchDataFromServer(true);
         }
     });
+    if (!canCreateGlobal) {
+    document.querySelectorAll('#btn-tambah-data-modal').forEach(btn => btn.remove());
+}
 
+fetchDataFromServer();
     fetchDataFromServer();
 </script>
 @endsection
