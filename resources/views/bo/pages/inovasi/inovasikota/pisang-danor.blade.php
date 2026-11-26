@@ -150,6 +150,12 @@
         display: flex; align-items: center; justify-content: center; overflow: hidden; height: 150px;
     }
     .pd-photo-box img { width: 100%; height: 100%; object-fit: cover; }
+    /* Popup lihat foto: lebar mengikuti kotak, tinggi mengikuti gambar, portrait bisa di-scroll */
+    .pd-foto-viewer {
+        border: 1px solid #e4e6ef; border-radius: .75rem; background: #f8f9fb;
+        max-height: 70vh; overflow-y: auto; overflow-x: hidden;
+    }
+    .pd-foto-viewer img { display: block; width: 100%; height: auto; }
     .pd-checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .5rem .75rem; }
     .pd-checkbox-item { display: flex; align-items: center; gap: .5rem; font-size: .85rem; font-weight: 600; color: #4b5675; cursor: pointer; }
     /* Popup detail SI BASAM */
@@ -652,8 +658,8 @@
             </div>
             <div class="modal-body py-6 px-8">
                 <div class="row g-4">
-                    <div class="col-6"><div class="pd-photo-box" style="height: 320px;" id="pd-foto-1"></div></div>
-                    <div class="col-6"><div class="pd-photo-box" style="height: 320px;" id="pd-foto-2"></div></div>
+                    <div class="col-6"><div class="pd-foto-viewer" id="pd-foto-1"></div></div>
+                    <div class="col-6"><div class="pd-foto-viewer" id="pd-foto-2"></div></div>
                 </div>
             </div>
             <div class="modal-footer border-0 pt-0">
@@ -1110,14 +1116,21 @@
     });
     function fotoHtml(url) { return url ? '<img src="' + esc(url) + '" alt="foto">' : EMPTY_IMG; }
 
+    // Khusus popup Lihat Foto: kalau tidak ada foto, ikon kosong ditaruh di tengah
+    function fotoViewerHtml(url) {
+        return url ? '<img src="' + esc(url) + '" alt="foto">' : '<div class="text-center py-15">' + EMPTY_IMG + '</div>';
+    }
+
     // Popup "Lihat Foto" (tidak lagi membuka jendela baru)
     function bukaFoto(id) {
         const r = (kategori === 'anorganik' ? dataBsi : dataOrganik).find(function (d) { return String(d.id) === String(id); });
         if (!r) return;
         const nama = kategori === 'anorganik' ? r.nama_bsi : (r.kelurahan + ' RW ' + (r.rw || '-') + ' RT ' + (r.rt || '-'));
         $('pd-foto-title').textContent = 'Foto Dokumentasi - ' + nama;
-        $('pd-foto-1').innerHTML = fotoHtml(r.upload_file_1_url);
-        $('pd-foto-2').innerHTML = fotoHtml(r.upload_file_2_url);
+        $('pd-foto-1').innerHTML = fotoViewerHtml(r.upload_file_1_url);
+        $('pd-foto-2').innerHTML = fotoViewerHtml(r.upload_file_2_url);
+        $('pd-foto-1').scrollTop = 0;
+        $('pd-foto-2').scrollTop = 0;
         modal('modal_foto_danor').show();
     }
 

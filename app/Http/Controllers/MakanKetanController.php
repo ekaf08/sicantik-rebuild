@@ -26,9 +26,12 @@ class MakanKetanController extends Controller
 
     public function index()
     {
-        $data = MakanKetan::orderByDesc('created_at')->get()->map(function ($row) {
-            $row->foto_1_url = $row->foto_1 ? asset('storage/' . $row->foto_1) : null;
-            $row->foto_2_url = $row->foto_2 ? asset('storage/' . $row->foto_2) : null;
+        $rows = MakanKetan::orderByDesc('created_at')->get();
+        $adaDiDb = FotoDbController::yangAdaDiDb(array_merge($rows->pluck('foto_1')->all(), $rows->pluck('foto_2')->all()));
+
+        $data = $rows->map(function ($row) use ($adaDiDb) {
+            $row->foto_1_url = FotoDbController::url($row->foto_1, $adaDiDb);
+            $row->foto_2_url = FotoDbController::url($row->foto_2, $adaDiDb);
             // Ubah ke array dulu: model otomatis mengubah 'id' jadi angka, sehingga token akan terbaca 0
             $item = $row->toArray();
             $item['id'] = IdCipher::encode($row->id);
@@ -54,10 +57,10 @@ class MakanKetanController extends Controller
         ]);
 
         if ($request->hasFile('foto_1')) {
-            $validated['foto_1'] = $request->file('foto_1')->store('makan-ketan', 'public');
+            $validated['foto_1'] = FotoDbController::simpan($request->file('foto_1'), 'makan-ketan');
         }
         if ($request->hasFile('foto_2')) {
-            $validated['foto_2'] = $request->file('foto_2')->store('makan-ketan', 'public');
+            $validated['foto_2'] = FotoDbController::simpan($request->file('foto_2'), 'makan-ketan');
         }
 
         MakanKetan::create($validated);
@@ -84,16 +87,12 @@ class MakanKetanController extends Controller
         ]);
 
         if ($request->hasFile('foto_1')) {
-            if ($item->foto_1) {
-                Storage::disk('public')->delete($item->foto_1);
-            }
-            $validated['foto_1'] = $request->file('foto_1')->store('makan-ketan', 'public');
+            FotoDbController::hapus($item->foto_1);
+            $validated['foto_1'] = FotoDbController::simpan($request->file('foto_1'), 'makan-ketan');
         }
         if ($request->hasFile('foto_2')) {
-            if ($item->foto_2) {
-                Storage::disk('public')->delete($item->foto_2);
-            }
-            $validated['foto_2'] = $request->file('foto_2')->store('makan-ketan', 'public');
+            FotoDbController::hapus($item->foto_2);
+            $validated['foto_2'] = FotoDbController::simpan($request->file('foto_2'), 'makan-ketan');
         }
 
         $item->update($validated);

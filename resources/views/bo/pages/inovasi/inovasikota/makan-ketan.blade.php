@@ -26,6 +26,20 @@
         height: 100%;
         object-fit: cover;
     }
+    /* Popup lihat foto: lebar mengikuti kotak, tinggi mengikuti gambar, portrait bisa di-scroll */
+    .mk-foto-viewer {
+        border: 1px solid #e4e6ef;
+        border-radius: .75rem;
+        background: #f8f9fb;
+        max-height: 70vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .mk-foto-viewer img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
     .mk-toast {
         position: fixed;
         top: 20px;
@@ -529,13 +543,13 @@
             <div class="modal-body py-6 px-8">
                 <div class="row g-4">
                     <div class="col-6">
-                        <div class="mk-photo-box" style="height: 320px;" id="mk-foto-1">
-                            <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
+                        <div class="mk-foto-viewer" id="mk-foto-1">
+                            <div class="text-center py-15"><i class="ki-outline ki-picture fs-5x text-gray-300"></i></div>
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="mk-photo-box" style="height: 320px;" id="mk-foto-2">
-                            <i class="ki-outline ki-picture fs-5x text-gray-300"></i>
+                        <div class="mk-foto-viewer" id="mk-foto-2">
+                            <div class="text-center py-15"><i class="ki-outline ki-picture fs-5x text-gray-300"></i></div>
                         </div>
                     </div>
                 </div>
@@ -718,6 +732,13 @@
             : '<i class="ki-outline ki-picture fs-5x text-gray-300"></i>';
     }
 
+    // Khusus popup Lihat Foto: kalau tidak ada foto, ikon kosong ditaruh di tengah
+    function photoViewerHtml(url) {
+        return url
+            ? '<img src="' + url + '" alt="foto">'
+            : '<div class="text-center py-15"><i class="ki-outline ki-picture fs-5x text-gray-300"></i></div>';
+    }
+
     // ===================== Load data + render tabel + hitung total =====================
     function loadData() {
         const tbody = document.getElementById('mk-tbody');
@@ -846,8 +867,10 @@
         if (!row) return;
 
         document.getElementById('mk-foto-title').textContent = 'Foto Dokumentasi - ' + row.nama_dasa_wisma;
-        document.getElementById('mk-foto-1').innerHTML = photoBoxHtml(row.foto_1_url);
-        document.getElementById('mk-foto-2').innerHTML = photoBoxHtml(row.foto_2_url);
+        document.getElementById('mk-foto-1').innerHTML = photoViewerHtml(row.foto_1_url);
+        document.getElementById('mk-foto-2').innerHTML = photoViewerHtml(row.foto_2_url);
+        document.getElementById('mk-foto-1').scrollTop = 0;
+        document.getElementById('mk-foto-2').scrollTop = 0;
 
         bsModal('modal_foto_makan_ketan').show();
     }

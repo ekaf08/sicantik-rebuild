@@ -34,9 +34,12 @@ class PisangDanorController extends Controller
 
     public function indexBsi()
     {
-        $data = PisangBsi::orderByDesc('created_at')->get()->map(function ($row) {
-            $row->upload_file_1_url = $row->upload_file_1 ? asset('storage/' . $row->upload_file_1) : null;
-            $row->upload_file_2_url = $row->upload_file_2 ? asset('storage/' . $row->upload_file_2) : null;
+        $rows = PisangBsi::orderByDesc('created_at')->get();
+        $adaDiDb = FotoDbController::yangAdaDiDb(array_merge($rows->pluck('upload_file_1')->all(), $rows->pluck('upload_file_2')->all()));
+
+        $data = $rows->map(function ($row) use ($adaDiDb) {
+            $row->upload_file_1_url = FotoDbController::url($row->upload_file_1, $adaDiDb);
+            $row->upload_file_2_url = FotoDbController::url($row->upload_file_2, $adaDiDb);
             // Ubah ke array dulu: model otomatis mengubah 'id' jadi angka, sehingga token akan terbaca 0
             $item = $row->toArray();
             $item['id'] = IdCipher::encode($row->id);
@@ -62,7 +65,7 @@ class PisangDanorController extends Controller
 
         foreach (['upload_file_1', 'upload_file_2'] as $field) {
             if ($request->hasFile($field)) {
-                $validated[$field] = $request->file($field)->store('pisang-danor', 'public');
+                $validated[$field] = FotoDbController::simpan($request->file($field), 'pisang-danor');
             }
         }
 
@@ -90,10 +93,8 @@ class PisangDanorController extends Controller
 
         foreach (['upload_file_1', 'upload_file_2'] as $field) {
             if ($request->hasFile($field)) {
-                if ($item->$field) {
-                    Storage::disk('public')->delete($item->$field);
-                }
-                $validated[$field] = $request->file($field)->store('pisang-danor', 'public');
+                FotoDbController::hapus($item->$field);
+                $validated[$field] = FotoDbController::simpan($request->file($field), 'pisang-danor');
             } else {
                 unset($validated[$field]);
             }
@@ -137,9 +138,12 @@ class PisangDanorController extends Controller
 
     public function indexOrganik()
     {
-        $data = PisangOrganik::orderByDesc('created_at')->get()->map(function ($row) {
-            $row->upload_file_1_url = $row->upload_file_1 ? asset('storage/' . $row->upload_file_1) : null;
-            $row->upload_file_2_url = $row->upload_file_2 ? asset('storage/' . $row->upload_file_2) : null;
+        $rows = PisangOrganik::orderByDesc('created_at')->get();
+        $adaDiDb = FotoDbController::yangAdaDiDb(array_merge($rows->pluck('upload_file_1')->all(), $rows->pluck('upload_file_2')->all()));
+
+        $data = $rows->map(function ($row) use ($adaDiDb) {
+            $row->upload_file_1_url = FotoDbController::url($row->upload_file_1, $adaDiDb);
+            $row->upload_file_2_url = FotoDbController::url($row->upload_file_2, $adaDiDb);
             // Ubah ke array dulu: model otomatis mengubah 'id' jadi angka, sehingga token akan terbaca 0
             $item = $row->toArray();
             $item['id'] = IdCipher::encode($row->id);
@@ -156,7 +160,7 @@ class PisangDanorController extends Controller
 
         foreach (['upload_file_1', 'upload_file_2'] as $field) {
             if ($request->hasFile($field)) {
-                $validated[$field] = $request->file($field)->store('pisang-danor-organik', 'public');
+                $validated[$field] = FotoDbController::simpan($request->file($field), 'pisang-danor-organik');
             }
         }
 
@@ -175,10 +179,8 @@ class PisangDanorController extends Controller
 
         foreach (['upload_file_1', 'upload_file_2'] as $field) {
             if ($request->hasFile($field)) {
-                if ($item->$field) {
-                    Storage::disk('public')->delete($item->$field);
-                }
-                $validated[$field] = $request->file($field)->store('pisang-danor-organik', 'public');
+                FotoDbController::hapus($item->$field);
+                $validated[$field] = FotoDbController::simpan($request->file($field), 'pisang-danor-organik');
             } else {
                 unset($validated[$field]);
             }

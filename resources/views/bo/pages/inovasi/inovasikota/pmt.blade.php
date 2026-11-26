@@ -47,6 +47,12 @@
     display: flex; align-items: center; justify-content: center; overflow: hidden; height: 150px;
 }
 .pmt-photo-box img { width: 100%; height: 100%; object-fit: cover; }
+/* Popup lihat foto: lebar mengikuti kotak, tinggi mengikuti gambar, portrait bisa di-scroll */
+.pmt-foto-viewer {
+    border: 1px solid #e4e6ef; border-radius: .75rem; background: #f8f9fb;
+    max-height: 70vh; overflow-y: auto; overflow-x: hidden;
+}
+.pmt-foto-viewer img { display: block; width: 100%; height: auto; }
 </style>
 
 <input type="hidden" id="pmt-csrf-token" value="{{ csrf_token() }}">
@@ -371,7 +377,7 @@
                 </button>
             </div>
             <div class="modal-body py-6 px-8">
-                <div class="pmt-photo-box" style="height: 420px;" id="pmt-foto-box"></div>
+                <div class="pmt-foto-viewer" id="pmt-foto-box"></div>
             </div>
             <div class="modal-footer border-0 pt-0">
                 <button type="button" class="btn btn-light fw-bold px-6" data-bs-dismiss="modal">Tutup</button>
@@ -586,7 +592,10 @@
         const r = semuaData.find(function (d) { return String(d.id) === String(id); });
         if (!r) return;
         $('pmt-foto-title').textContent = 'Foto Dokumentasi - ' + (r.nama_balita || '');
-        $('pmt-foto-box').innerHTML = r.foto_url ? '<img src="' + esc(r.foto_url) + '" alt="foto">' : EMPTY_IMG;
+        $('pmt-foto-box').innerHTML = r.foto_url
+            ? '<img src="' + esc(r.foto_url) + '" alt="foto">'
+            : '<div class="text-center py-15">' + EMPTY_IMG + '</div>';
+        $('pmt-foto-box').scrollTop = 0;
         bootstrap.Modal.getOrCreateInstance($('modal_foto_pmt')).show();
     }
 
