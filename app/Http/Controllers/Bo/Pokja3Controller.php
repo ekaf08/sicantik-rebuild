@@ -149,14 +149,14 @@ class Pokja3Controller extends Controller
 
        $pertanyaan = DB::table('m_pertanyaan_dashboard_2026')
             ->where('id', $validated['id_pertanyaan'])
-            ->where('tb_dashboard', 'd_pokja_3_2026')
+            ->whereIn('tb_dashboard', ['d_pokja_3_2026', 'd_pokja_2_2026'])
             ->where('is_kader', true)
             ->whereIn('jenis_form', [1, 2])
             ->where(fn ($q) => $q->whereNull('is_disable')->orWhere('is_disable', false))
             ->whereNull('deleted_at')
             ->first();
 
-        abort_if(!$pertanyaan, 422, 'Indikator kader Pokja 3 tidak valid.');
+        abort_if(!$pertanyaan, 422, 'Indikator kader tidak valid.');
 
         $jenisKader = $pertanyaan->alias; // e.g. 'kader_pangan'
 
@@ -208,15 +208,14 @@ class Pokja3Controller extends Controller
 
         abort_if(!$kader, 404, 'Data kader tidak ditemukan.');
 
-        // Hanya kader Pokja 3 yang boleh dihapus lewat endpoint ini
-        $kaderPokja3 = DB::table('m_pertanyaan_dashboard_2026')
-            ->where('tb_dashboard', 'd_pokja_3_2026')
+        $kaderValid = DB::table('m_pertanyaan_dashboard_2026')
+            ->whereIn('tb_dashboard', ['d_pokja_3_2026', 'd_pokja_2_2026'])
             ->where('is_kader', true)
             ->whereNull('deleted_at')
             ->where('alias', $kader->jenis_kader)
             ->exists();
 
-        abort_unless($kaderPokja3, 422, 'Data ini bukan kader Pokja 3.');
+        abort_unless($kaderValid, 422, 'Data ini bukan kader yang valid.');
 
         DB::transaction(function () use ($kader) {
             DB::table('d_kader_2026')
@@ -255,14 +254,14 @@ class Pokja3Controller extends Controller
 
         abort_if(!$kader, 404, 'Data kader tidak ditemukan.');
 
-        $kaderPokja3 = DB::table('m_pertanyaan_dashboard_2026')
-            ->where('tb_dashboard', 'd_pokja_3_2026')
+        $kaderValid = DB::table('m_pertanyaan_dashboard_2026')
+            ->whereIn('tb_dashboard', ['d_pokja_3_2026', 'd_pokja_2_2026'])
             ->where('is_kader', true)
             ->whereNull('deleted_at')
             ->where('alias', $kader->jenis_kader)
             ->exists();
 
-        abort_unless($kaderPokja3, 422, 'Data ini bukan kader Pokja 3.');
+        abort_unless($kaderValid, 422, 'Data ini bukan kader yang valid.');
 
         try {
             DB::table('d_kader_2026')->where('id', $kader->id)->update([

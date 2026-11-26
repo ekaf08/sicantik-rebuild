@@ -59,6 +59,7 @@ Route::middleware(['auth', CheckMenuPermission::class])->group(function () {
     Route::post('/pokja-2/kf', [Pokja2Controller::class, 'storeKf']);
     Route::put('/pokja-2/kf/{id}', [Pokja2Controller::class, 'updateKf']);
     Route::delete('/pokja-2/kf/{id}', [Pokja2Controller::class, 'destroyKf']);
+    Route::post('/pokja-2/agregat', [Pokja2Controller::class, 'updateAgregat'])->name('pokja-2.agregat');
     
     Route::prefix('pokja-1')->name('pokja-1.')->group(function () {
         Route::get('/detail', [Pokja1Controller::class, 'detail'])->name('detail');

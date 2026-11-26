@@ -249,4 +249,62 @@ class Pokja2Controller extends Controller
             'message' => 'Data KF berhasil dihapus',
         ]);
     }
+
+    public function updateAgregat(Request $request)
+    {
+        $validated = $request->validate([
+            'id_pertanyaan' => 'required|integer',
+            'id_kec'        => 'required|integer',
+            'id_kel'        => 'required|integer|min:1',
+            'periode'       => 'nullable|integer',
+            'nilai'         => 'required|integer|min:0|max:2147483647',
+        ]);
+
+        $periode = (int) ($validated['periode'] ?? 2026);
+
+        $wilayahValid = DB::table('m_kelurahan as kl')
+            ->join('m_kecamatan as kc', 'kc.kode_bpjs', '=', 'kl.kode_kec_bpjs')
+            ->where('kl.id_kel', $validated['id_kel'])
+            ->where('kc.id_kec', $validated['id_kec'])
+            ->exists();
+
+        abort_unless($wilayahValid, 422, 'Kelurahan tidak sesuai dengan kecamatan.');
+
+        $pertanyaan = DB::table('m_pertanyaan_dashboard_2026')
+            ->where('id', $validated['id_pertanyaan'])
+            ->where('tb_dashboard', 'd_pokja_2_2026')
+            ->where('is_kader', false)
+            ->where('jenis_form', 1)
+            ->where(fn ($q) => $q->whereNull('is_disable')->orWhere('is_disable', false))
+            ->whereNull('deleted_at')
+            ->first();
+
+        abort_if(!$pertanyaan, 422, 'Indikator Pokja 2 tidak valid.');
+
+        $kolom = $pertanyaan->alias;
+        abort_unless(\Illuminate\Support\Facades\Schema::hasColumn('d_pokja_2_2026', $kolom), 422, 'Kolom target tidak ditemukan.');
+
+        $key = [
+            'id_kec'  => $validated['id_kec'],
+            'id_kel'  => $validated['id_kel'],
+            'periode' => $periode,
+        ];
+
+        $updated = DB::table('d_pokja_2_2026')
+            ->where($key)
+            ->update([$kolom => $validated['nilai'], 'updated_at' => now()]);
+
+        if (!$updated) {
+            DB::table('d_pokja_2_2026')->insert($key + [
+                $kolom       => $validated['nilai'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data berhasil diperbarui.',
+        ]);
+    }
 }

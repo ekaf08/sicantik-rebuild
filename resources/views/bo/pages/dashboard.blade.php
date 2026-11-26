@@ -2493,7 +2493,6 @@ function tampilkan(hasil) {
     const nilai = hasil.rows[0]?.nilai ?? 0;
     if (+ctx.kel > 0 && hasil.bisa_input) {
       isi.innerHTML = `
-        <label class="form-label fw-bold">Jumlah</label>
         <div class="input-group">
           <input type="number" min="0" step="1" id="inputAgregat" class="form-control" value="${esc(nilai)}">
           <button class="btn btn-primary" id="btnSimpanAgregat">Simpan</button>
@@ -2666,7 +2665,9 @@ function formTambahKader(data = null, hasil = null) {
         <label class="form-label fw-semibold">NIK <span class="text-danger">*</span></label>
         <div class="input-group">
           <input id="fNik" class="form-control form-control-solid" maxlength="16" inputmode="numeric" placeholder="16 digit NIK">
-          <button class="btn btn-secondary" id="btnCari" type="button">Cari</button>
+        <button type="button" class="btn btn-success" id="btnCariNik">
+            <i class="bx bx-search"></i> Cari
+        </button>
         </div>
       </div>
       <div class="col-md-6">
@@ -2688,14 +2689,15 @@ function formTambahKader(data = null, hasil = null) {
       <div class="col-md-3">
         <label class="form-label fw-semibold">Jabatan <span class="text-danger">*</span></label>
         <select id="fJabatan" class="form-select form-select-solid">
+            <option value="" selected>-- PILIH JABATAN--</option>
           <option>Ketua</option>
           <option>Wakil Ketua</option>
           <option>Sekretaris</option>
-          <option selected>Anggota</option>
+          <option>Anggota</option>
         </select>
       </div>
       <div class="col-md-6">
-        <label class="form-label fw-semibold">No HP</label>
+        <label class="form-label fw-semibold">No Hp (WhatsApp)</label>
         <input id="fHp" class="form-control form-control-solid" placeholder="Contoh: 08123456789">
       </div>
       <div class="col-md-3">
@@ -2733,9 +2735,16 @@ function formTambahKader(data = null, hasil = null) {
 
   if (data) {
     const set = (id, val) => { document.getElementById(id).value = val ?? ''; };
-    set('fNik', data.nik); set('fNoKk', data.no_kk); set('fNama', data.nama);
-    set('fJk', data.jenis_kelamin); set('fJabatan', data.jabatan); set('fHp', data.no_hp);
-    set('fRw', data.rw); set('fRt', data.rt); set('fAlamat', data.alamat);
+    set('fNik', data['NIK'] ?? data.nik);
+    set('fNoKk', data['NO KK'] ?? data.no_kk);
+    set('fNama', data['NAMA'] ?? data.nama);
+    const jkRaw = data['JENIS KELAMIN'] ?? data.jenis_kelamin ?? '';
+    set('fJk', jkRaw === 'LAKI-LAKI' ? 'L' : (jkRaw === 'PEREMPUAN' ? 'P' : jkRaw));
+    set('fJabatan', data['JABATAN'] ?? data.jabatan ?? '');
+    set('fHp', data['NO HP'] ?? data.no_hp);
+    set('fRw', data['RW'] ?? data.rw);
+    set('fRt', data['RT'] ?? data.rt);
+    set('fAlamat', data['ALAMAT'] ?? data.alamat);
   } else if (hasil?.alias) {
     if (hasil.alias.endsWith('_l')) document.getElementById('fJk').value = 'L';
     if (hasil.alias.endsWith('_p')) document.getElementById('fJk').value = 'P';

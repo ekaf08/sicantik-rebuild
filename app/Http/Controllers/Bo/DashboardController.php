@@ -153,6 +153,27 @@ class DashboardController extends Controller
             $dataPokja2[$kec->id_kec] = $o;
         }
 
+        $basePokja2 = DB::table('d_pokja_2_2026')
+            ->where('periode', 2026)
+            ->whereNotNull('id_kel')
+            ->selectRaw('id_kec,
+                COALESCE(SUM(pemula_kelp), 0) AS pemula_kelp,
+                COALESCE(SUM(madya_kelp), 0) AS madya_kelp,
+                COALESCE(SUM(mandiri_kelp), 0) AS mandiri_kelp,
+                COALESCE(SUM(koperasi), 0) AS koperasi')
+            ->groupBy('id_kec')
+            ->get()
+            ->keyBy('id_kec');
+
+        foreach ($basePokja2 as $idKec => $r) {
+            if ($dataPokja2->has($idKec)) {
+                $dataPokja2[$idKec]->pemula_kelp  = (int) $r->pemula_kelp;
+                $dataPokja2[$idKec]->madya_kelp   = (int) $r->madya_kelp;
+                $dataPokja2[$idKec]->mandiri_kelp = (int) $r->mandiri_kelp;
+                $dataPokja2[$idKec]->koperasi     = (int) $r->koperasi;
+            }
+        }
+
         $mapPokja2 = [
             'warga_3_buta' => 'warga_buta',         'tpk3_pkk' => 'tpk3_pkk',
             'damas_pkk' => 'damas_pkk',             'pemula_psrt' => 'up2k_pemula',
@@ -430,6 +451,23 @@ class DashboardController extends Controller
                 $o->{$k->alias} = 0;
             }
             $dataPokja2[$kel->id_kel] = $o;
+        }
+
+        $basePokja2 = DB::table('d_pokja_2_2026')
+            ->where('id_kec', $idKec)
+            ->where('periode', 2026)
+            ->whereNotNull('id_kel')
+            ->tap($filterKel)
+            ->get()
+            ->keyBy('id_kel');
+
+        foreach ($basePokja2 as $kelId => $r) {
+            if ($dataPokja2->has($kelId)) {
+                $dataPokja2[$kelId]->pemula_kelp  = (int) ($r->pemula_kelp ?? 0);
+                $dataPokja2[$kelId]->madya_kelp   = (int) ($r->madya_kelp ?? 0);
+                $dataPokja2[$kelId]->mandiri_kelp = (int) ($r->mandiri_kelp ?? 0);
+                $dataPokja2[$kelId]->koperasi     = (int) ($r->koperasi ?? 0);
+            }
         }
 
         $mapPokja2 = [

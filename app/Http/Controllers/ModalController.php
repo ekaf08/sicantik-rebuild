@@ -13,6 +13,7 @@ class ModalController extends Controller
 
     private const URL_AGREGAT = [
         'data_umum_2026' => '/data-umum/agregat',
+        'd_pokja_2_2026' => '/pokja-2/agregat',
         'd_pokja_3_2026' => '/pokja-3/agregat',
         'd_pokja_4_2026' => '/pokja-4/agregat',
     ];
@@ -126,6 +127,7 @@ class ModalController extends Controller
         }
 
         $tampilan       = (count($kolom) === 1 && $kolom[0] === 'nilai') ? 'angka' : 'tabel';
+        $kaderPokja2    = (bool) $p->is_kader && !(bool) $p->is_tarik && $p->tb_dashboard === 'd_pokja_2_2026';
         $kaderPokja3    = (bool) $p->is_kader && (bool) $p->is_tarik && $p->tb_dashboard === 'd_pokja_3_2026';
         $kaderDataUmum  = (int) $p->jenis_form === 2 && $p->tb_dashboard === 'data_umum_2026';
         $isPokja4       = $p->tb_dashboard === 'd_pokja_4_2026';
@@ -156,14 +158,14 @@ class ModalController extends Controller
         $bisaInput = isset(self::URL_AGREGAT[$p->tb_dashboard])
             && (int) $jenis === 1
             && !(bool) $p->is_disable
-            && ($kelSesuai || ($p->tb_dashboard === 'data_umum_2026' && $kel > 0 && $bolehUbah));
+            && ($kelSesuai || (in_array($p->tb_dashboard, ['data_umum_2026', 'd_pokja_2_2026'], true) && $kel > 0 && $bolehUbah));
 
-        $bisaTambah = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4 || $isKfPokja2))
-            || (($kaderDataUmum || $isKfPokja2) && $kel > 0 && $bolehTambah);
-        $bisaEdit   = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4 || $isKfPokja2))
-            || (($kaderDataUmum || $isKfPokja2) && $kel > 0 && $bolehUbah);
-        $bisaHapus  = ($kelSesuai && ($kaderPokja3 || $isDetailPokja4 || $isKfPokja2))
-            || (($kaderDataUmum || $isKfPokja2) && $kel > 0 && $bolehHapus);
+        $bisaTambah = ($kelSesuai && ($kaderPokja2 || $kaderPokja3 || $isDetailPokja4 || $isKfPokja2))
+            || (($kaderDataUmum || $kaderPokja2 || $isKfPokja2) && $kel > 0 && $bolehTambah);
+        $bisaEdit   = ($kelSesuai && ($kaderPokja2 || $kaderPokja3 || $isDetailPokja4 || $isKfPokja2))
+            || (($kaderDataUmum || $kaderPokja2 || $isKfPokja2) && $kel > 0 && $bolehUbah);
+        $bisaHapus  = ($kelSesuai && ($kaderPokja2 || $kaderPokja3 || $isDetailPokja4 || $isKfPokja2))
+            || (($kaderDataUmum || $kaderPokja2 || $isKfPokja2) && $kel > 0 && $bolehHapus);
 
         $urlAgregat = match ($p->tb_dashboard) {
             'data_umum_2026' => '/data-umum/agregat',
