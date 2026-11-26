@@ -131,26 +131,37 @@ class Pokja2Controller extends Controller
         }
         $isiNilai($qIbu->selectRaw("$keyWilayah, COUNT(*) AS total")->groupBy($keyWilayah)->pluck('total', $keyWilayah), 'bkb_ibu_peserta');
 
-        // 5. PAUD Sejenis & Tutor PAUD
-        $qPaud = DB::table('d_paud_2026')
-            ->where('periode', $periode)
-            ->whereNull('deleted_at')
+        // 5. PAUD Sejenis (dari m_detail_paud_perkelurahan)
+        $qPaud = DB::table('m_detail_paud_perkelurahan')
             ->whereNotNull($keyWilayah);
         if ($idKec) {
             $qPaud->where('id_kec', $idKec);
         }
+        $isiNilai(
+            $qPaud->selectRaw("$keyWilayah, COUNT(*) AS total")
+                ->groupBy($keyWilayah)
+                ->pluck('total', $keyWilayah),
+            'paud_sejenis'
+        );
 
-        foreach ($qPaud->selectRaw("$keyWilayah, COUNT(DISTINCT npsn) AS lembaga, COUNT(*) FILTER (WHERE nama_pegawai IS NOT NULL) AS tutor")->groupBy($keyWilayah)->get() as $r) {
-            $idWil = $r->$keyWilayah;
-            if (!$dataPokja2->has($idWil)) {
-                $dataPokja2[$idWil] = (object) [$keyWilayah => $idWil];
-            }
-            $dataPokja2[$idWil]->paud_sejenis = $r->lembaga;
-            $dataPokja2[$idWil]->tutor_paud_sejenis = $r->tutor;
+        // Tutor PAUD Sejenis (tetap dari d_paud_2026)
+        $qTutorPaud = DB::table('d_paud_2026')
+            ->where('periode', $periode)
+            ->whereNull('deleted_at')
+            ->whereNotNull('nama_pegawai')
+            ->whereNotNull($keyWilayah);
+        if ($idKec) {
+            $qTutorPaud->where('id_kec', $idKec);
         }
+        $isiNilai(
+            $qTutorPaud->selectRaw("$keyWilayah, COUNT(*) AS total")
+                ->groupBy($keyWilayah)
+                ->pluck('total', $keyWilayah),
+            'tutor_paud_sejenis'
+        );
 
         // 6. Taman Bacaan
-        $qTb = DB::table('d_taman_bacaan_2026')
+        $qTb = DB::table('m_detail_taman_bacaan')
             ->where('periode', $periode)
             ->whereNull('deleted_at')
             ->whereNotNull($keyWilayah);
